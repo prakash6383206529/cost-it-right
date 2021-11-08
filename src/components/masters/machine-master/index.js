@@ -6,7 +6,7 @@ import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
-
+import MachineInsights from './MachineInsights';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
@@ -17,7 +17,7 @@ class MachineMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '1',
+            activeTab: '2',
             isMachineRateForm: false,
             isAddMoreDetails: false,
             isProcessForm: false,
@@ -192,13 +192,18 @@ class MachineMaster extends Component {
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                            Insights
+                                        </NavLink>
+                                    </NavItem> */}
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                             Machine Rate
                                         </NavLink>
                                     </NavItem>
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
@@ -208,6 +213,11 @@ class MachineMaster extends Component {
 
                                     {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
+                                            <MachineInsights />
+                                        </TabPane>}
+
+                                    {this.state.activeTab == 2 &&
+                                        <TabPane tabId="2">
                                             <MachineRateListing
                                                 displayForm={this.displayForm}
                                                 getDetails={this.getDetails}
@@ -219,8 +229,8 @@ class MachineMaster extends Component {
                                             />
                                         </TabPane>}
 
-                                    {this.state.activeTab == 2 &&
-                                        <TabPane tabId="2">
+                                    {this.state.activeTab == 3 &&
+                                        <TabPane tabId="3">
                                             <ProcessListing
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
@@ -228,6 +238,7 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
+
                                 </TabContent>
                             </div>
                         </Col>

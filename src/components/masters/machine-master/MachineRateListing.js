@@ -315,9 +315,8 @@ class MachineRateListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue ? 'Vendor Based' : 'Zero Based';
+        return cellValue === 'VBC' ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -363,6 +362,14 @@ class MachineRateListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
+
+
+    renderPlantFormatter = (props) => {
+        const row = props?.data;
+        console.log('row: ', row);
+        return row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
+    }
+
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
@@ -428,7 +435,7 @@ class MachineRateListing extends Component {
     onSubmit = (values) => { }
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.MachineTonnage === null) {
                 item.MachineTonnage = ' '
             } else if (item.EffectiveDate === null) {
@@ -471,7 +478,7 @@ class MachineRateListing extends Component {
         data && data.map((item => {
             tempArr.push(item.data)
         }))
-        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, this.props.machineDatalist)
     };
 
     onFilterTextBoxChanged(e) {
@@ -480,6 +487,7 @@ class MachineRateListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -502,14 +510,15 @@ class MachineRateListing extends Component {
             costingHeadRenderer: this.costingHeadFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            renderPlantFormatter: this.renderPlantFormatter
         };
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
                             <Col md="12" lg="11" className="filter-block machine-rate-filter">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -691,6 +700,7 @@ class MachineRateListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
+                                    floatingFilter={true}
                                     // columnDefs={c}
                                     rowData={this.props.machineDatalist}
                                     pagination={true}
@@ -701,20 +711,21 @@ class MachineRateListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-                                    <AgGridColumn field="Plants" headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter' filter={true} floatingFilter={true}></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number"></AgGridColumn>
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

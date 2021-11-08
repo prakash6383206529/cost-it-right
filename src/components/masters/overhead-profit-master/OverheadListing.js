@@ -11,7 +11,6 @@ import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -392,12 +391,12 @@ class OverheadListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, this.props.overheadProfitList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
             } if (item.OverheadPercentage === null) {
@@ -436,6 +435,7 @@ class OverheadListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -634,8 +634,6 @@ class OverheadListing extends Component {
                 </form>
                 <Row>
                     <Col>
-
-
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -647,6 +645,7 @@ class OverheadListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
+                                    floatingFilter={true}
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
@@ -657,13 +656,14 @@ class OverheadListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass:'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                     <AgGridColumn field="PlantName" headerName="Plant" cellRenderer='plantFormatter'></AgGridColumn>
-                                    <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {/* <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                     <AgGridColumn field="OverheadApplicabilityType" headerName="Overhead Applicability"></AgGridColumn>
                                     <AgGridColumn width={215} field="OverheadPercentage" headerName="Overhead Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -671,7 +671,7 @@ class OverheadListing extends Component {
                                     <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="OverheadId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

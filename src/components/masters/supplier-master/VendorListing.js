@@ -9,7 +9,6 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import {
     getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI,
     getVendorTypesSelectList, getVendorsByVendorTypeID, getAllVendorSelectList,
@@ -321,7 +320,7 @@ class VendorListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch"  className="normal-switch" >
+                    <label htmlFor="normal-switch" className="normal-switch" >
                         <Switch
                             onChange={() => this.handleChange(cellValue, rowData)}
                             checked={cellValue}
@@ -414,7 +413,6 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
-        $('html, body').animate({ scrollTop: 0 }, 'slow');
         this.setState({ isOpenVendor: true })
     }
 
@@ -458,12 +456,12 @@ class VendorListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, this.props.supplierDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.Country == 'NA') {
                 item.Country = ' '
             } else if (item.State == 'NA') {
@@ -488,6 +486,7 @@ class VendorListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -671,30 +670,7 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                {/* <BootstrapTable
-                    data={this.props.supplierDataList}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${VendorMaster}.csv`}
-                    //ignoreSinglePage
-                    ref={"table"}
-                    trClassName={"userlisting-row"}
-                    tableHeaderClass="my-custom-header"
-                    pagination
-                >
-                    <TableHeaderColumn dataField="VendorType" dataAlign="left" dataSort={true} >Vendor Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorName" dataAlign="left" dataSort={true}>Vendor Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorCode" dataAlign="left" dataSort={true}> Vendor Code </TableHeaderColumn>
-                    <TableHeaderColumn dataField="Country" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="State" dataAlign="left" dataSort={true}> State </TableHeaderColumn>
-                    <TableHeaderColumn dataField="City" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}> Actions </TableHeaderColumn>
-                </BootstrapTable> */}
+
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -707,6 +683,7 @@ class VendorListing extends Component {
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             domLayout='autoHeight'
+                            floatingFilter={true}
                             // columnDefs={c}
                             rowData={this.props.supplierDataList}
                             pagination={true}
@@ -726,8 +703,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

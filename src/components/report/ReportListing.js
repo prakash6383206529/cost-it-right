@@ -5,22 +5,22 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../layout/HookFormInputs'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../helper/auth'
 import { Badge } from 'reactstrap'
 import NoContentFound from '../common/NoContentFound'
 import { CONSTANT } from '../../helper/AllConastant'
-import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
+import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import { table } from 'react-dom-factories';
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -43,6 +43,11 @@ function ReportListing(props) {
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
     const dispatch = useDispatch()
+
+
+    // var CryptoJS = require("crypto-js");
+    // var next = CryptoJS.AES.encrypt('secret key 123').toString();
+
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -209,6 +214,11 @@ function ReportListing(props) {
         return cell
         // return params.value !== null ? params.value : '-'
     }
+    const requestterFormatter = (props) => {
+
+        return userDetails().Name
+        // return params.value !== null ? params.value : '-'
+    }
 
     const onGridReady = (params) => {
         // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -248,13 +258,14 @@ function ReportListing(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     const onRowSelect = () => {
 
         var selectedRows = gridApi.getSelectedRows();
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-
+        var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
 
     }
@@ -272,15 +283,81 @@ function ReportListing(props) {
 
     }
 
-
-
     const returnExcelColumn = (data = [], TempData) => {
+        // console.log('TempData: ', TempData);
         let temp = []
-
 
 
         return (<ExcelSheet data={TempData} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+    const renderColumnSAP = (fileName) => {
+        let tempData = []
+
+        if (selectedRowData.length == 0) {
+            tempData = reportListingData
+        }
+        else {
+            tempData = selectedRowData
+        }
+        return returnExcelColumnSAP(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+
+    }
+
+
+    const renderColumnSAPEncoded = (fileName) => {
+        console.log('fileName: ', fileName);
+        let tempData = []
+
+        if (selectedRowData.length == 0) {
+
+
+            tempData = reportListingData
+
+        }
+        else {
+            tempData = selectedRowData
+
+        }
+        return returnExcelColumnSAPEncoded(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+
+    }
+
+
+
+
+    const returnExcelColumnSAP = (data = [], TempData) => {
+
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+
+
+    const returnExcelColumnSAPEncoded = (data = [], TempData) => {
+
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+
+
+        TempData && TempData.map(item => {
+
+            temp.push({ SrNo: btoa(item.SrNo), SANumber: btoa(item.SANumber), LineNumber: btoa(item.LineNumber), CreatedDate: btoa(item.CreatedDate), NetPOPrice: btoa(item.NetPOPrice), Reason: btoa(item.Reason), Text: btoa(item.Text), PersonRequestingChange: btoa(item.PersonRequestingChange) })
+            return null;
+        });
+
+
+
+
+        return (<ExcelSheet data={temp} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => < ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
@@ -301,6 +378,7 @@ function ReportListing(props) {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: isFirstColumn,
         checkboxSelection: isFirstColumn
     };
@@ -314,7 +392,8 @@ function ReportListing(props) {
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
         customLoadingOverlay: LoaderCustom,
-        revisionFormatter: revisionFormatter
+        revisionFormatter: revisionFormatter,
+        requestterFormatter: requestterFormatter
     };
 
 
@@ -334,6 +413,13 @@ function ReportListing(props) {
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
+                                    {renderColumnSAP(ReportSAPMaster)}
+                                </ExcelFile>
+
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
+                                    {renderColumnSAPEncoded(ReportSAPMaster)}
+                                </ExcelFile>
 
                                 <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
 
@@ -350,15 +436,12 @@ function ReportListing(props) {
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>
-                <div
-                    className="ag-theme-material"
-                    style={{ height: '100%', width: '100%' }}
-                >
+                <div className="ag-theme-material" >
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
                         defaultColDef={defaultColDef}
-                        domLayout='autoHeight'
+                        floatingFilter={true}
                         // columnDefs={c}
                         rowData={reportListingData}
                         pagination={true}
@@ -374,20 +457,21 @@ function ReportListing(props) {
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
+
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
-                        <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
+                        <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                         <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                        <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -395,7 +479,7 @@ function ReportListing(props) {
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
-                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
+                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net Insert Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>
                         <AgGridColumn field="NetOperationCost" headerName="Operation Cost"></AgGridColumn>
                         <AgGridColumn field="SurfaceTreatmentCost" headerName="Surface Treatment"></AgGridColumn>
@@ -403,26 +487,35 @@ function ReportListing(props) {
                         <AgGridColumn field="NetConversionCost" headerName="Net Conversion Cost"></AgGridColumn>
                         <AgGridColumn field="ModelTypeForOverheadAndProfit" headerName="Model Type For Overhead/Profit" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="OverheadOn" headerName="Overhead On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="OverheadCost" headerName="Overhead Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ProfitOn" headerName="Profit On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ProfitCost" headerName="Profit Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RejectOn" headerName="Rejection On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="RejectionCost" headerName="Rejection Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ICCOn" headerName="ICC On" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ICCCost" headerName="ICC Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn>
+                        {/* <AgGridColumn field="PaymentTermCost" headerName="Payment Terms"></AgGridColumn> */}
                         <AgGridColumn field="NetOverheadAndProfitCost" headerName="Net Overhead & Profits"></AgGridColumn>
                         <AgGridColumn field="PackagingCost" headerName="Packaging Cost"></AgGridColumn>
-                        <AgGridColumn field="FreightCost" headerName="Freight"></AgGridColumn>
+                        <AgGridColumn field="FreightCost" headerName="Freight Cost"></AgGridColumn>
                         <AgGridColumn field="NetFreightPackagingCost" headerName="Net Packaging & Freight"></AgGridColumn>
                         <AgGridColumn field="ToolMaintenaceCost" headerName="Tool Maintenance Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="ToolPrice" headerName="Tool Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="AmorizationQuantity" headerName="Amortization Quantity(Tool Life)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="AmorizationQuantity" headerName="Amortization Quantity (Tool Life)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="TotalCost" headerName="Total Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetDiscountsCost" headerName="Hundi/Other Discount" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="AnyOtherCost" headerName="Any Other Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="NetPOPrice" headerName="Net PO Price(INR)"></AgGridColumn>
+                        <AgGridColumn field="NetPOPrice" headerName="Net PO Price (INR)"></AgGridColumn>
                         <AgGridColumn field="Currency" headerName="Currency"></AgGridColumn>
                         <AgGridColumn field="NetPOPriceInCurrency" headerName="Net PO Price Currency"></AgGridColumn>
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
+                        <AgGridColumn field="SANumber" headerName="SA Number"></AgGridColumn>
+                        <AgGridColumn field="LineNumber" headerName="Line Number"></AgGridColumn>
+                        <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
                     <div className="paging-container d-inline-block float-right">
                         <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -439,16 +532,16 @@ function ReportListing(props) {
 }
 
 
+export default ReportListing
+// function mapStateToProps({ report, auth }) {
+//     const { reportDataList, loading } = report;
+//     const { initialConfiguration } = auth;
+//     return { reportDataList, loading, initialConfiguration, }
+// }
 
-function mapStateToProps({ report, auth }) {
-    const { reportDataList, loading } = report;
-    const { initialConfiguration } = auth;
-    return { reportDataList, loading, initialConfiguration, }
-}
-
-export default connect(mapStateToProps, {
-    getReportListing,
-})(reduxForm({
-    form: 'ReportListing',
-    enableReinitialize: true,
-})(ReportListing));
+// export default connect(mapStateToProps, {
+//     getReportListing,
+// })(reduxForm({
+//     form: 'ReportListing',
+//     enableReinitialize: true,
+// })(ReportListing));

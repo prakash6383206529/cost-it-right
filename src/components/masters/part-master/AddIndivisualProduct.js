@@ -217,8 +217,8 @@ class AddIndivisualProduct extends Component {
         if (isEditFlag) {
 
 
-            if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
-                DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
+            if (DropdownChanged && DataToCheck.ProductNumber == values.ProductNumber && DataToCheck.Description == values.Description &&
+                DataToCheck.ProductGroupCode == values.ProductGroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
                 DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
                 this.cancel()
                 return false;
@@ -235,7 +235,7 @@ class AddIndivisualProduct extends Component {
                 ECNNumber: values.ECNNumber,
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
-                GroupCode: values.GroupCode,
+                ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
                 EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
@@ -244,21 +244,21 @@ class AddIndivisualProduct extends Component {
             }
 
             if (isEditFlag) {
+                this.props.reset()
+                this.props.updateProduct(updateData, (res) => {
+                    if (res.data.Result) {
+                        toastr.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
+                        this.cancel()
+                    }
+                });
+                // const toastrConfirmOptions = {
+                //     onOk: () => {
 
-                const toastrConfirmOptions = {
-                    onOk: () => {
-                        this.props.reset()
-                        this.props.updateProduct(updateData, (res) => {
-                            if (res.data.Result) {
-                                toastr.success(MESSAGES.UPDATE_PART_SUCESS);
-                                this.cancel()
-                            }
-                        });
-                    },
-                    onCancel: () => { },
-                    component: () => <ConfirmComponent />,
-                }
-                return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+                //     },
+                //     onCancel: () => { },
+                //     component: () => <ConfirmComponent />,
+                // }
+                // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
             }
 
 
@@ -283,7 +283,7 @@ class AddIndivisualProduct extends Component {
             this.props.reset()
             this.props.createProduct(formData, (res) => {
                 if (res.data.Result === true) {
-                    toastr.success(MESSAGES.PART_ADD_SUCCESS);
+                    toastr.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()
                 }
             });
@@ -397,9 +397,9 @@ class AddIndivisualProduct extends Component {
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={""}
-                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                                                     component={renderText}
-                                                                    //required={true}
+                                                                    required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
                                                                 />
@@ -544,7 +544,7 @@ class AddIndivisualProduct extends Component {
                                                     <Col md="3">
                                                         <label>
                                                             Upload Files (upload up to 3 files)
-                                </label>
+                                                        </label>
                                                         {this.state.files &&
                                                             this.state.files.length >= 3 ? (
                                                             <div class="alert alert-danger" role="alert">
@@ -572,8 +572,8 @@ class AddIndivisualProduct extends Component {
                                                                                     Browse
                                                                                 </span>
                                                                                 <br />
-                                                                                      file to upload
-                                                                             </span>
+                                                                                file to upload
+                                                                            </span>
                                                                         </div>
                                                                     )
                                                                 }

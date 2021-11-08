@@ -9,10 +9,10 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
 import moment from 'moment';
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -103,8 +103,6 @@ class AddExchangeRate extends Component {
         isEditFlag: true,
         ExchangeRateId: data.ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
-
       this.props.getExchangeRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -196,6 +194,7 @@ class AddExchangeRate extends Component {
             });
           },
           onCancel: () => { },
+          component:() => <ConfirmComponent/>,
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }

@@ -3,7 +3,7 @@ import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch } from 'react-redux'
 import { pushedApprovedCosting, createRawMaterialSAP, approvalPushedOnSap } from '../../actions/Approval'
-import { loggedInUserId, userDetails } from '../../../../helper'
+import { getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
 import { useForm, Controller } from "react-hook-form";
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { materialGroup, purchasingGroup } from '../../../../config/masterData';
@@ -101,9 +101,11 @@ function PushButtonDrawer(props) {
       let temp = []
       costingList && costingList.map(item => {
         const vendor = item.VendorName.split('(')[1]
+        const { netPo, quantity } = getPOPriceAfterDecimal(simulationDetail.DecimalOption, item.NewPOPrice)
         temp.push({
-          CostingId: item.CostingId, effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: item.NewPOPrice, plant: item.PlantCode ? item.PlantCode : '1511',
-          currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW', TokenNumber: simulationDetail.Token
+          CostingId: item.CostingId, effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: netPo, plant: item.PlantCode ? item.PlantCode : '1511',
+          currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW', TokenNumber: simulationDetail.Token,
+          Quantity: quantity
         })
       })
       let simObj = {
@@ -117,12 +119,12 @@ function PushButtonDrawer(props) {
         props.closeDrawer('', 'Push')
       }))
     } else {
-
+      const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
       let pushdata = {
         effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
         vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
         materialNumber: dataSend[1].PartNumber,
-        netPrice: dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : '',
+        netPrice: netPo,
         plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
         currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
         materialGroup: MaterialGroup?.label ? MaterialGroup.label.split('(')[0] : '',
@@ -131,6 +133,7 @@ function PushButtonDrawer(props) {
         purchasingGroup: PurchasingGroup?.label ? PurchasingGroup.label.split('(')[0] : '',
         purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
         CostingId: approvalData[0].CostingId,
+        Quantity: quantity
         // effectiveDate: '11/30/2021',
         // vendorCode: '203670',
         // materialNumber: 'S07004-003A0Y',

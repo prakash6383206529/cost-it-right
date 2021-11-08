@@ -280,12 +280,12 @@ class ClientListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, this.props.clientDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
             } else {
@@ -307,6 +307,7 @@ class ClientListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -389,29 +390,7 @@ class ClientListing extends Component {
 
                     </form>
 
-                    {/* <BootstrapTable
-                        data={this.props.clientDataList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        search
-                        // exportCSV={this.state.DownloadAccessibility}
-                        // csvFileName={`${Clientmaster}.csv`}
-                        //ignoreSinglePage
-                        ref={'table'}
-                        trClassName={'userlisting-row'}
-                        tableHeaderClass='my-custom-header client-table'
-                        className={'client-table'}
-                        pagination>
-                        <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Contact Name'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientEmailId" dataAlign="left" >{'Email Id'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CountryName" dataAlign="left" >{'Country'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="StateName" dataAlign="left" >{'State'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CityName" dataAlign="left" >{'City'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientId" dataAlign="right" className="action" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable> */}
+
 
                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                         <div className="ag-grid-header">
@@ -424,6 +403,7 @@ class ClientListing extends Component {
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 domLayout='autoHeight'
+                                floatingFilter={true}
                                 // columnDefs={c}
                                 rowData={this.props.clientDataList}
                                 pagination={true}
@@ -443,7 +423,7 @@ class ClientListing extends Component {
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ClientId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

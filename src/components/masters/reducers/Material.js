@@ -1,3 +1,4 @@
+import { li } from 'react-dom-factories';
 import {
     API_REQUEST, API_FAILURE, CREATE_MATERIAL_SUCCESS, CREATE_MATERIAL_FAILURE, GET_RM_LIST_SUCCESS, GET_RM_GRADE_LIST_SUCCESS,
     GET_GRADE_DATA_SUCCESS, GET_RM_CATEGORY_LIST_SUCCESS, GET_RM_SPECIFICATION_LIST_SUCCESS, GET_SPECIFICATION_DATA_SUCCESS, GET_MATERIAL_LIST_SUCCESS,
@@ -7,8 +8,9 @@ import {
     GET_GRADE_SELECTLIST_BY_RAWMATERIAL, GET_GRADE_SELECTLIST_SUCCESS, GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA, GET_GRADE_FILTER_BY_RAW_MATERIAL_SELECTLIST,
     GET_VENDOR_FILTER_BY_RAW_MATERIAL_SELECTLIST, GET_RAW_MATERIAL_FILTER_BY_GRADE_SELECTLIST, GET_VENDOR_FILTER_BY_GRADE_SELECTLIST, GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST, GET_MATERIAL_DATA_SELECTLIST_SUCCESS, GET_RM_DOMESTIC_LIST, GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA,
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_RM_APPROVAL_LIST
 } from '../../../config/constants';
+import { userDetails } from '../../../helper';
 
 const initialState = {
     filterRMSelectList: {}
@@ -295,6 +297,23 @@ export default function materialReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 filteredRMData: action.payload
+            }
+        case GET_ALL_MASTER_APPROVAL_DEPARTMENT:
+            const list = action.payload
+            const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+            const updateList = list && list.filter(item => Departments.includes(item.Text))
+
+            return {
+                ...state,
+                loading: false,
+                deptList: updateList
+            }
+        case GET_RM_APPROVAL_LIST:
+
+            return {
+                ...state,
+                loading: false,
+                approvalList: action.payload
             }
         default:
             return state;

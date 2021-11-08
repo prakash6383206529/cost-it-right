@@ -59,7 +59,18 @@ class Login extends Component {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data);
+        let departmentList = ''
+        const dept = userDetail && userDetail.Department.map((item) => {
+          if (item.DepartmentName === 'Corporate' || item.DepartmentName === 'Administration') {
+            return ''
+          } else {
+            return item.DepartmentCode
+          }
+
+        })
+        departmentList = dept.join(',')
         reactLocalStorage.setObject("userDetail", userDetail);
+        reactLocalStorage.setObject("departmentList", departmentList);
         this.props.logUserIn();
         // this.setState({ isRedirect: true })
         setTimeout(() => {
@@ -151,7 +162,7 @@ class Login extends Component {
                   </div>
                   <div className="form-group forgot-link d-flex pt-2 justify-content-center">
                     {/* <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" /> */}
-                    <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
+                    <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password ?'}</a>
                   </div>
                   {this.state.flag && (
                     <div className="text-help mb-2 text-center">Please contact your IT Administrator</div>

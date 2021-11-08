@@ -7,7 +7,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import moment from 'moment';
@@ -16,7 +15,6 @@ import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull } from '../../../helper';
 import { AssemblyPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { ASSEMBLYPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -205,16 +203,7 @@ class AssemblyPartListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        // this.props.activeInactiveStatus(data, res => {
-        //     if (res && res.data && res.data.Result) {
-        //         if (cell == true) {
-        //             toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-        //         } else {
-        //             toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-        //         }
-        //         this.getTableListData()
-        //     }
-        // })
+
     }
 
     /**
@@ -224,7 +213,7 @@ class AssemblyPartListing extends Component {
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <label htmlFor="normal-switch"  className="normal-switch">
+                <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -300,12 +289,12 @@ class AssemblyPartListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, this.props.partsListing)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -333,6 +322,7 @@ class AssemblyPartListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -343,20 +333,7 @@ class AssemblyPartListing extends Component {
     render() {
         const { isOpenVisualDrawer, isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
 
-        };
 
         const defaultColDef = {
             resizable: true,
@@ -429,34 +406,7 @@ class AssemblyPartListing extends Component {
                     </Col>
                 </Row>
 
-                {/* <BootstrapTable
-                    data={this.props.partsListing}
-                    striped={false}
-                    bordered={false}
-                    hover={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${AssemblyPart}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMNumber" width={'100'} >BOM NO.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" width={'100'} >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} export={false} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
+
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -468,9 +418,9 @@ class AssemblyPartListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
-                            // columnDefs={c}
                             domLayout='autoHeight'
+                            floatingFilter={true}
+                            // columnDefs={c}
                             rowData={this.props.partsListing}
                             pagination={true}
                             paginationPageSize={10}
@@ -494,7 +444,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

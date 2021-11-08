@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { getVerifySimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
@@ -19,6 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { node } from 'prop-types';
 const gridOptions = {};
 
 function VerifySimulation(props) {
@@ -29,6 +29,8 @@ function VerifySimulation(props) {
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
+    const [simulationTechnologyId, setSimulationTechnologyId] = useState('')
+    const [vendorId, setVendorId] = useState('')
     const [hideRunButton, setHideRunButton] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
@@ -37,6 +39,7 @@ function VerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    const { filteredRMData } = useSelector(state => state.material)
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -52,7 +55,8 @@ function VerifySimulation(props) {
     }, [])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
-        dispatch(getVerifySimulationList(props.token, plantId, rawMatrialId, (res) => {
+        const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
+        dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
             if (res.data.Result) {
                 const data = res.data.Data
                 if (data.SimulationImpactedCostings.length === 0) {
@@ -60,9 +64,12 @@ function VerifySimulation(props) {
                     setHideRunButton(true)
                     return false
                 }
-                setTokenNo(data.TokenId)
+                setTokenNo(data.TokenNumber)
                 setSimualtionId(data.SimulationId)
                 setHideRunButton(false)
+                setSimulationTechnologyId(data.SimulationtechnologyId)
+                setVendorId(data.VendorId)
+
             }
         }))
     }
@@ -181,24 +188,29 @@ function VerifySimulation(props) {
     }
 
     const onRowSelect = () => {
-        var selectedRows = gridApi.getSelectedRows();
-        setSelectedRowData(selectedRows)
-        // if (isSelected) {
-        //     let tempArr = [...selectedRowData, row]
-        //     setSelectedRowData(tempArr)
-        // } else {
-        //     const CostingId = row.CostingId;
-        //     let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
-        //     setSelectedRowData(tempArr)
-        // }
+
+        // setGridSelection(true)
+
     }
 
-    const onSelectAll = (isSelected, rows) => {
-        if (isSelected) {
-            setSelectedRowData(rows)
-        } else {
-            setSelectedRowData([])
-        }
+    const onRowSelected = (e) => {
+        let row = e.node.isSelected()
+        setGridSelection(row, e.node)
+    }
+
+    const setGridSelection = (type, clickedElement) => {
+        var selectedRows = gridApi.getSelectedRows();
+        const rowIndex = clickedElement.rowIndex
+        const costingNumber = clickedElement.data.CostingNumber
+        gridApi.forEachNode(node => {
+            if (node.rowIndex !== rowIndex) {
+                if (node.data.CostingNumber === costingNumber) {
+                    node.setSelected(type);
+
+                }
+            }
+        });
+        setSelectedRowData(selectedRows)
     }
 
     const renderDropdownListing = (label) => {
@@ -222,23 +234,7 @@ function VerifySimulation(props) {
         }
     }
 
-    const selectRowProp = {
-        mode: 'checkbox',
-        clickToSelect: true,
-        unselectable: selectedIds,
-        onSelect: onRowSelect,
-        onSelectAll: onSelectAll,
-    };
 
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-        // paginationShowsTotal: renderPaginationShowsTotal(),
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-    };
 
     const runSimulation = () => {
         if (selectedRowData.length === 0) {
@@ -325,6 +321,8 @@ function VerifySimulation(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+
     }
 
     const frameworkComponents = {
@@ -381,6 +379,7 @@ function VerifySimulation(props) {
                                             <AgGridReact
                                                 // style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
+                                                floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
                                                 rowData={verifyList}
@@ -394,10 +393,12 @@ function VerifySimulation(props) {
                                                     title: CONSTANT.EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
-                                                suppressRowClickSelection={true}
+                                                // suppressRowClickSelection={true}
                                                 rowSelection={'multiple'}
+                                                onRowSelected={onRowSelected}
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
+
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
@@ -454,6 +455,9 @@ function VerifySimulation(props) {
             {
                 simulationDrawer &&
                 <RunSimulationDrawer
+                    tokenNo={tokenNo}
+                    masterId={simulationTechnologyId}
+                    vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
                     objs={objs}

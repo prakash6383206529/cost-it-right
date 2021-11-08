@@ -180,7 +180,7 @@ class ReasonListing extends Component {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        <label htmlFor="normal-switch"  className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           <Switch
             onChange={() => this.handleChange(cellValue, rowData)}
             checked={cellValue}
@@ -274,12 +274,12 @@ class ReasonListing extends Component {
     data && data.map((item => {
       tempArr.push(item.data)
     }))
-    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, this.props.reasonDataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    TempData && TempData.map((item) => {
       if (item.ECNNumber === null) {
         item.ECNNumber = ' '
       } else if (item.RevisionNumber === null) {
@@ -307,6 +307,7 @@ class ReasonListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
 
@@ -338,7 +339,7 @@ class ReasonListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
+      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       statusButtonFormatter: this.statusButtonFormatter
     };
@@ -450,6 +451,7 @@ class ReasonListing extends Component {
               <AgGridReact
                 defaultColDef={defaultColDef}
                 domLayout='autoHeight'
+                floatingFilter={true}
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}
@@ -465,7 +467,7 @@ class ReasonListing extends Component {
               >
                 <AgGridColumn field="Reason" headerName="Reason"></AgGridColumn>
                 <AgGridColumn field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                <AgGridColumn field="ReasonId" headerName="Actions" type="rightAligned" cellRenderer='totalValueRenderer'></AgGridColumn>
+                <AgGridColumn field="ReasonId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

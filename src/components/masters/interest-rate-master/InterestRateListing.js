@@ -337,37 +337,7 @@ class InterestRateListing extends Component {
     return serialNumber;
   }
 
-  renderSerialNumber = () => {
-    return <>Sr. <br />No. </>
-  }
 
-  renderCostingHead = () => {
-    return <>Costing <br />Head </>
-  }
-
-  renderVendorName = () => {
-    return <>Vendor <br />Name </>
-  }
-
-  renderIccApp = () => {
-    return <> ICC <br />Applicability</>
-  }
-
-  renderAnnualIcc = () => {
-    return <> Annual <br />ICC(%) </>
-  }
-
-  renderPaymentTerm = () => {
-    return <>Payment Term <br /> Applicability </>
-  }
-
-  renderRepayment = () => {
-    return <> Repayment <br />Period(Days) </>
-  }
-
-  renderInterestRate = () => {
-    return <> Payment Term <br />Interest Rate(%) </>
-  }
 
   /**
   * @method costingHeadFormatter
@@ -480,12 +450,12 @@ class InterestRateListing extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, this.props.interestRateDataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    TempData && TempData.map((item) => {
       if (item.ICCPercent === null) {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {
@@ -514,6 +484,7 @@ class InterestRateListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
 
@@ -725,16 +696,18 @@ class InterestRateListing extends Component {
               <AgGridReact
                 defaultColDef={defaultColDef}
                 domLayout='autoHeight'
+                floatingFilter={true}
                 // columnDefs={c}
                 rowData={this.props.interestRateDataList}
                 pagination={true}
                 paginationPageSize={10}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
-                loadingOverlayComponent={'customLoadingOverlay'}
+                // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
+                  imagClass:'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -747,7 +720,7 @@ class InterestRateListing extends Component {
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)"></AgGridColumn>
                 <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn width={120} field="VendorInterestRateId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn width={120} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

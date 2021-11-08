@@ -7,7 +7,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import moment from 'moment';
@@ -224,7 +223,7 @@ class AssemblyProductListing extends Component {
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <label htmlFor="normal-switch"  className="normal-switch">
+                <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -385,44 +384,44 @@ class AssemblyProductListing extends Component {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {AddAccessibility && (
-                                                 <button
-                                                 type="button"
-                                                 className={'user-btn mr5'}
-                                                 title="Add"
-                                                 onClick={this.displayForm}>
-                                                 <div className={'plus mr-0'}></div></button>
-                                            )}
-                                            {BulkUploadAccessibility && (
-                                                <button
-                                                    type="button"
-                                                    className={"user-btn mr5"}
-                                                    onClick={this.bulkToggle}
-                                                    title="Bulk Upload"
-                                                >
-                                                    <div className={"upload mr-0"}></div>
-                                                    {/* Bulk Upload */}
-                                                </button>
-                                            )}
-                                            {
-                                                DownloadAccessibility &&
-                                                <>
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        title="Add"
+                                        onClick={this.displayForm}>
+                                        <div className={'plus mr-0'}></div></button>
+                                )}
+                                {BulkUploadAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={"user-btn mr5"}
+                                        onClick={this.bulkToggle}
+                                        title="Bulk Upload"
+                                    >
+                                        <div className={"upload mr-0"}></div>
+                                        {/* Bulk Upload */}
+                                    </button>
+                                )}
+                                {
+                                    DownloadAccessibility &&
+                                    <>
 
-                                                    <ExcelFile filename={'Assembly Part'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                    {/* DOWNLOAD */}
-                                                    </button>}>
+                                        <ExcelFile filename={'Assembly Part'} fileExtension={'.xls'} element={
+                                            <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                {/* DOWNLOAD */}
+                                            </button>}>
 
-                                                        {this.onBtExport()}
-                                                    </ExcelFile>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
 
-                                                </>
+                                    </>
 
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
-                                            }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                                <div className="refresh mr-0"></div>
-                                            </button>
+                                }
+                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
 
                             </div>
                         </div>
@@ -468,7 +467,7 @@ class AssemblyProductListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                            floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
@@ -494,7 +493,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={120} headerName="Action"  type="rightAligned"  cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={120} headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

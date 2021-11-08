@@ -40,7 +40,7 @@ function ViewBOP(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'View BOP Cost:'}</h3>
+                  <h3>{'View Insert Cost:'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -53,18 +53,18 @@ function ViewBOP(props) {
               <Col md="12">
                 <Row>
                   <Col md="12">
-                    <div className="left-border">{'View BOP:'}</div>
+                    <div className="left-border">{'View Insert:'}</div>
                   </Col>
                 </Row>
                 <Table className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
-                      <th>{`BOP Part No.`}</th>
-                      <th>{`BOP Part Name`}</th>
+                      <th>{`Insert Part No.`}</th>
+                      <th>{`Insert Part Name`}</th>
                       <th>{`Currency`}</th>
-                      <th>{`Landed Cost(INR)`}</th>
+                      <th>{`Landed Cost (INR)`}</th>
                       <th>{`Quantity`}</th>
-                      <th className="costing-border-right">{`Net BOP Cost`}</th>
+                      <th className="costing-border-right">{`Net Insert Cost`}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -102,7 +102,7 @@ function ViewBOP(props) {
                 <hr />
                 <Row>
                   <Col md="12">
-                    <div className="left-border">{'BOP Handling Charge:'}</div>
+                    <div className="left-border">{'Insert Handling Charge:'}</div>
                   </Col>
                 </Row>
                 <Table className="table cr-brdr-main" size="sm">

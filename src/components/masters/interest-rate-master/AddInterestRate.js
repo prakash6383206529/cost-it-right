@@ -11,7 +11,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
-import $ from 'jquery';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -189,7 +188,6 @@ class AddInterestRate extends Component {
         isEditFlag: true,
         InterestRateId: data.ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getInterestRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -513,10 +511,10 @@ class AddInterestRate extends Component {
                           validate={
                             this.state.PaymentTermsApplicability == null ||
                               this.state.PaymentTermsApplicability.length === 0
-                              ? [required]
+                              ? []
                               : []
                           }
-                          required={true}
+                          required={false}
                           handleChangeDescription={
                             this.handlePaymentApplicability
                           }
@@ -532,9 +530,9 @@ class AddInterestRate extends Component {
                           name={"RepaymentPeriod"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, postiveNumber, maxLength10]}
+                          validate={[postiveNumber, maxLength10]}
                           component={renderText}
-                          required={true}
+                          required={false}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"
@@ -546,10 +544,10 @@ class AddInterestRate extends Component {
                           name={"PaymentTermPercent"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
+                          validate={[positiveAndDecimalNumber, decimalLengthThree]}
                           component={renderText}
                           max={100}
-                          required={true}
+                          required={false}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"

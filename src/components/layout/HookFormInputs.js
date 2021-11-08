@@ -2,6 +2,7 @@ import React from "react";
 import Select from "react-select";
 import "./formInputs.css";
 import ReactDatePicker from 'react-datepicker'
+import AsyncSelect from 'react-select/async';
 
 export const TextFieldHooks = (input) => {
 
@@ -35,7 +36,7 @@ export const TextFieldHooks = (input) => {
 
 
 export const TextFieldHookForm = (field) => {
-  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+  const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange, hidden } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -44,10 +45,13 @@ export const TextFieldHookForm = (field) => {
   return (
     <>
       <div className={className}>
-        <label>
-          {label}
-          {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
-        </label>
+        {
+          !hidden &&
+          <label>
+            {label}
+            {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+          </label>
+        }
         <Controller
           name={name}
           control={control}
@@ -55,6 +59,7 @@ export const TextFieldHookForm = (field) => {
           // ref={reg}
           {...register}
           defaultValue={defaultValue}
+          hidden={hidden}
           render={({ field: { onChange, onBlur, value } }) => {
             return (
               <input
@@ -68,6 +73,7 @@ export const TextFieldHookForm = (field) => {
                   handleChange(e);
                   onChange(e)
                 }}
+                hidden={hidden}
               />
             )
           }
@@ -168,6 +174,7 @@ export const SearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
+
             />
           )
 
@@ -391,3 +398,57 @@ export const RadioHookForm = (field) => {
 //     </>
 //   )
 // }
+
+export const AsyncSearchableSelectHookForm = (field) => {
+  const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
+    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message } = field;
+
+
+  let isDisable = (disabled && disabled === true) ? true : false;
+  let isLoader = (isLoading && isLoading === true) ? true : false;
+
+  return (
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
+      <label>
+        {label}
+        {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
+      </label>
+      <Controller
+
+        name={name}
+        control={control}
+        rules={rules}
+        {...register}
+        defaultValue={defaultValue}
+        render={({ field: { onChange, onBlur, value, name } }) => {
+          return (
+            <AsyncSelect
+              {...field}
+              {...register}
+              name={name}
+              placeholder={placeholder}
+              isDisabled={disabled}
+              onChange={(e) => {
+                handleChange(e);
+                onChange(e)
+              }}
+              menuPlacement="auto"
+              loadOptions={asyncOptions}
+              onBlur={onBlur}
+              selected={value}
+              value={value}
+              isLoading={isLoader}
+            />
+          )
+
+        }}
+      />
+
+      {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
+      {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
+      {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+
+    </div>
+  )
+}

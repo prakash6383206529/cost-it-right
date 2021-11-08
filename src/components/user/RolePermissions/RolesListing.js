@@ -10,7 +10,6 @@ import NoContentFound from '../../common/NoContentFound';
 import { loggedInUserId } from '../../../helper/auth';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { ROLE } from '../../../config/constants';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -161,6 +160,7 @@ class RolesListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -250,6 +250,7 @@ class RolesListing extends Component {
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     domLayout='autoHeight'
+                    floatingFilter={true}
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -260,12 +261,13 @@ class RolesListing extends Component {
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: CONSTANT.EMPTY_DATA,
+                      imagClass:'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-                    <AgGridColumn field="RoleId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="RoleId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   <div className="paging-container d-inline-block float-right">
                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

@@ -11,7 +11,6 @@ import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
-import $ from 'jquery'
 import { costingHeadObjs, Months, VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
@@ -360,63 +359,8 @@ class VolumeListing extends Component {
     }
   }
 
-  /**
-   * @method indexFormatter
-   * @description Renders serial number
-   */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    let currentPage = this.refs.table.state.currPage
-    let sizePerPage = this.refs.table.state.sizePerPage
-    let serialNumber = ''
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1
-    } else {
-      serialNumber = rowIndex + 1 + sizePerPage * (currentPage - 1)
-    }
-    return serialNumber
-  }
 
-  renderSerialNumber = () => {
-    return (
-      <>
-        Sr. <br />
-        No.{' '}
-      </>
-    )
-  }
 
-  renderCostingHead = () => {
-    return (
-      <>
-        Costing <br />
-        Head{' '}
-      </>
-    )
-  }
-  renderOperationName = () => {
-    return (
-      <>
-        Operation <br />
-        Name{' '}
-      </>
-    )
-  }
-  renderOperationCode = () => {
-    return (
-      <>
-        Operation <br />
-        Code{' '}
-      </>
-    )
-  }
-  renderVendorName = () => {
-    return (
-      <>
-        Vendor <br />
-        Name{' '}
-      </>
-    )
-  }
 
   /**
    * @method costingHeadFormatter
@@ -532,7 +476,6 @@ class VolumeListing extends Component {
     this.setState(
       { showVolumeForm: false, data: { isEditFlag: false, ID: '' } },
       () => {
-        $('html, body').animate({ scrollTop: 0 }, 'slow')
         this.getTableListData()
       },
     )
@@ -563,12 +506,12 @@ class VolumeListing extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, this.props.volumeDataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    TempData && TempData.map((item) => {
       if (item.IsVendor === true) {
         item.IsVendor = 'Vendor Based'
       } else if (item.IsVendor === false) {
@@ -595,6 +538,7 @@ class VolumeListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -867,32 +811,7 @@ class VolumeListing extends Component {
               </Col>
             </Row>
           </form>
-          {/* <BootstrapTable
-            data={this.props.volumeDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${VolumeMaster}.csv`}
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass="my-custom-header"
-            pagination
-          >
-            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter} >{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Year" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Year'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} >{'Month'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="VendorName" columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'Part No.'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={true} >{'Part Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="left" dataFormat={this.plantFormatter} dataSort={true}>{'Plant'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="BudgetedQuantity" width={150} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="ApprovedQuantity" width={150} columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
-            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-          </BootstrapTable> */}
+
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
@@ -905,6 +824,7 @@ class VolumeListing extends Component {
               <AgGridReact
                 defaultColDef={defaultColDef}
                 domLayout='autoHeight'
+                floatingFilter={true}
                 // columnDefs={c}
                 rowData={this.props.volumeDataList}
                 pagination={true}
@@ -916,6 +836,7 @@ class VolumeListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
+                  imagClass:'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -928,7 +849,7 @@ class VolumeListing extends Component {
                 <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
-                <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

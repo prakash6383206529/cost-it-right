@@ -193,33 +193,7 @@ class ProfitListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
-    renderVendor = () => {
-        return <>Vendor <br />Name </>
-    }
-    renderClient = () => {
-        return <>Client <br />Name </>
-    }
-    renderModelType = () => {
-        return <>Model <br />Type </>
-    }
-    renderOverheadAppli = () => {
-        return <>Profit  <br />Applicability</>
-    }
-    renderOverheadAppliPercent = () => {
-        return <>Profit  <br />Applicability (%)</>
-    }
-    renderOverheadCC = () => {
-        return <>Profit  <br />on CC (%)</>
-    }
-    renderOverheadRM = () => {
-        return <>Profit  <br />on RM (%)</>
-    }
-    renderOverheadBOP = () => {
-        return <>Profit  <br />on BOP (%)</>
-    }
-    renderEffectiveDate = () => {
-        return <>Effective <br />Date</>
-    }
+
     /**
     * @method indexFormatter
     * @description Renders serial number
@@ -450,12 +424,12 @@ class ProfitListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, this.props.overheadProfitList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.ClientName === '-') {
                 item.ClientName = ' '
             } if (item.TypeOfHead === 'VBC') {
@@ -495,6 +469,7 @@ class ProfitListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -723,6 +698,7 @@ class ProfitListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
+                                    floatingFilter={true}
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
@@ -733,13 +709,14 @@ class ProfitListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass:'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                     <AgGridColumn field="PlantName" headerName="Plant" cellRenderer='plantFormatter'></AgGridColumn>
-                                    <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {/* <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                     <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability"></AgGridColumn>
                                     <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -747,7 +724,7 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProfitId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="ProfitId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

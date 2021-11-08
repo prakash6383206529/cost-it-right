@@ -12,11 +12,12 @@ import {
 } from '../../../actions/Common'
 import {
   createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode
+  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
+  masterFinalLevelUser
 } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { loggedInUserId, getConfigurationKey, } from '../../../helper/auth'
+import { loggedInUserId, getConfigurationKey, userDetails, } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddSpecification from './AddSpecification'
 import AddGrade from './AddGrade'
@@ -25,16 +26,17 @@ import AddUOM from '../uom-master/AddUOM'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
-import $, { data } from 'jquery'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, SHEET_METAL, ZBC } from '../../../config/constants'
+import { EMPTY_GUID, FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
-// import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
+import imgRedcross from '../../../assests/images/red-cross.png'
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval'
+
+
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -88,7 +90,10 @@ class AddRMDomestic extends Component {
       isDateChange: false,
       isSourceChange: false,
       source: '',
-      showExtraCost: false
+      showExtraCost: false,
+      approveDrawer: false,
+      approvalObj: {},
+      isFinalApprovar: false
     }
   }
   /**
@@ -101,6 +106,7 @@ class AddRMDomestic extends Component {
     this.props.getSupplierList(() => { })
     this.props.fetchPlantDataAPI(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', (res) => { })
+
   }
 
   /**
@@ -109,7 +115,6 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data } = this.props
-
     this.getDetails(data)
     //this.props.change('NetLandedCost', 0)
     this.props.getRawMaterialCategory((res) => { })
@@ -118,14 +123,20 @@ class AddRMDomestic extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-    if (getConfigurationKey() && getConfigurationKey().IsRawMaterialCodeConfigure && (Object.keys(data).length === 0 || data.isEditFlag === false)) {
-      this.props.checkAndGetRawMaterialCode('', (res) => {
-        let Data = res.data.DynamicData;
-        this.props.change('Code', Data.RawMaterialCode)
-      })
-    }
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
+    })
+    let obj = {
+      MasterId: RM_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
     })
 
   }
@@ -182,6 +193,7 @@ class AddRMDomestic extends Component {
   handleSpecChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ RMSpec: newValue })
+      this.props.change('Code', newValue.RawMaterialCode ? newValue.RawMaterialCode : '')
     } else {
       this.setState({ RMSpec: [] })
     }
@@ -308,6 +320,15 @@ class AddRMDomestic extends Component {
       this.setState({ UOM: [] })
     }
   }
+
+  handleScrapRate = (newValue, actionMeta) => {
+    const { fieldsObj } = this.props
+    if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
+      toastr.warning("Scrap rate should not be greater than basic rate")
+      return false
+    }
+  }
+
   /**
    * @method calculateNetCost
    * @description CALCUALTION NET COST
@@ -357,7 +378,6 @@ class AddRMDomestic extends Component {
       this.setState({
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow')
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
@@ -503,8 +523,9 @@ class AddRMDomestic extends Component {
               this.setState({
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-                RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value, RawMaterialCode: specObj.RawMaterialCode } : [],
               })
+              this.props.change('Code', specObj.RawMaterialCode ? specObj.RawMaterialCode : '')
             })
           })
         }
@@ -585,6 +606,13 @@ class AddRMDomestic extends Component {
       this.props.getUOMSelectList(() => { })
     })
   }
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.clearForm()
+      this.cancel()
+    }
+  }
 
   /**
    * @method onCancel
@@ -634,7 +662,7 @@ class AddRMDomestic extends Component {
     if (label === 'specification') {
       rmSpecification && rmSpecification.map((item) => {
         if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Text, value: item.Value, RawMaterialCode: item.RawMaterialCode })
         return null
       })
       return temp
@@ -880,10 +908,6 @@ class AddRMDomestic extends Component {
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state
     const { initialConfiguration } = this.props
 
-    // if (!anyTouched) {
-    //   return toastr.warning('No  changes at alllllllllllllllllllllll.')
-    // }
-
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -897,16 +921,6 @@ class AddRMDomestic extends Component {
         return vendorPlantArray
       })
 
-
-    // if (DataToChange.IsVendor != true) {
-
-    // }
-    // if (DataToChange.IsVendor) {
-    //   if (DropdownChanged && DataToChange.Source === values.Source && DataToChange.BasicRatePerUOM === values.BasicRate && DataToChange.ScrapRate === values.ScrapRate && DataToChange.Remark === values.Remark) {
-    //     this.cancel()
-    //     return false
-    //   }
-    // }
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: RawMaterialID }
     })
@@ -982,47 +996,59 @@ class AddRMDomestic extends Component {
       }
     }
 
-
-
     else {
-      const formData = {
-        IsVendor: IsVendor,
-        RawMaterial: RawMaterial.value,
-        RMGrade: RMGrade.value,
-        RMSpec: RMSpec.value,
-        Category: Category.value,
-        TechnologyId: Technology.value,
-        Vendor: vendorName.value,
-        HasDifferentSource: HasDifferentSource,
-        Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-        SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
-        UOM: UOM.value,
-        BasicRatePerUOM: values.BasicRate,
-        RMFreightCost: values.FrieghtCharge,
-        RMShearingCost: values.ShearingCost,
-        ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
-        NetLandedCost: values.NetLandedCost,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
-        Remark: remarks,
-        LoggedInUserId: loggedInUserId(),
-        Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
-        VendorCode: VendorCode,
-        Attachements: files,
-        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000',
-        CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
-        RawMaterialCode: values.Code,
-        JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
+      let formData = {}
+      // const formData = {
+      formData.IsVendor = IsVendor
+      formData.RawMaterial = RawMaterial.value
+      formData.RMGrade = RMGrade.value
+      formData.RMSpec = RMSpec.value
+      formData.Category = Category.value
+      formData.TechnologyId = Technology.value
+      formData.Vendor = vendorName.value
+      formData.HasDifferentSource = HasDifferentSource
+      formData.Source = !IsVendor && !HasDifferentSource ? '' : values.Source
+      formData.SourceLocation = !IsVendor && !HasDifferentSource ? '' : sourceLocation.value
+      formData.UOM = UOM.value
+      formData.BasicRatePerUOM = values.BasicRate
+      formData.RMFreightCost = values.FrieghtCharge
+      formData.RMShearingCost = values.ShearingCost
+      formData.ScrapRate = this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
+      formData.NetLandedCost = netLandedCost
+      formData.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+      formData.Remark = remarks
+      formData.LoggedInUserId = loggedInUserId()
+      formData.Plant = IsVendor === false ? plantArray : []
+      formData.VendorPlant = initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : []
+      formData.VendorCode = VendorCode
+      formData.Attachements = files
+      formData.DestinationPlantId = IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
+      formData.CutOffPrice = values.cutOffPrice
+      formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCost ? true : false
+      formData.RawMaterialCode = values.Code
+      formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        formData.NetLandedCostConversion = 0
+        formData.Currency = "INR"
+        formData.IsSendForApproval = true
+      } else {
+        formData.IsSendForApproval = false
       }
-      this.props.reset()
-      this.props.createRMDomestic(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS)
-          this.clearForm()
-          this.cancel()
-        }
-      })
+      // }
+
+      // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
+      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createRMDomestic(formData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS)
+            this.clearForm()
+            this.cancel()
+          }
+        })
+      }
 
     }
   }
@@ -1037,14 +1063,11 @@ class AddRMDomestic extends Component {
     this.setState({ singlePlantSelected: newValue })
   }
 
-  checkUniqCode = (e) => {
-    this.props.checkAndGetRawMaterialCode(e.target.value, res => {
-      if (res && res.data && res.data.Result === false) {
-        toastr.warning(res.data.Message);
-        $('input[name="Code"]').focus()
-      }
-    })
-  }
+
+
+  // sendForMasterApproval = () => {
+
+  // }
 
   /**
    * @method render
@@ -1172,20 +1195,6 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {/* {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
-                                <div
-                                  className={
-                                    "plus-icon-square blurPlus-icon-square right"
-                                  }
-                                ></div>
-                              ) : (
-                                  !isEditFlag && (
-                                    <div
-                                      onClick={this.gradeToggler}
-                                      className={"plus-icon-square right"}
-                                    ></div>
-                                  )
-                                )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -1194,7 +1203,7 @@ class AddRMDomestic extends Component {
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
-                                  label="Specification"
+                                  label="Specs"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("specification")}
@@ -1207,20 +1216,6 @@ class AddRMDomestic extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {/* {this.state.RawMaterial == null ||                                this.state.RawMaterial.length === 0 ||                                this.state.RMGrade == null ||                                this.state.RMGrade.length === 0 ? (
-                                  <div
-                                    className={
-                                      "plus-icon-square blurPlus-icon-square right"
-                                    }
-                                  ></div>
-                                ) : (
-                                  !isEditFlag && (
-                                    <div
-                                      onClick={this.specificationToggler}
-                                      className={"plus-icon-square  right"}
-                                    ></div>
-                                  )
-                                )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -1251,9 +1246,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              onBlur={this.checkUniqCode}
-                              // disabled={isEditFlag ? true : false} // NEED TO UNCOMMENT IT LATER
-                              disabled={false}
+                              disabled={true}
                             />
                           </Col>
 
@@ -1469,7 +1462,7 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
-                              // onChange={thishandleBasicRate.}
+                              // onChange={this.handleBasicRate}
                               required={true}
                               disabled={false}
                               className=" "
@@ -1491,6 +1484,7 @@ class AddRMDomestic extends Component {
                                 className=""
                                 customClassName=" withBorder"
                                 maxLength="15"
+                                onChange={this.handleScrapRate}
                               />
                             </Col>
                           }
@@ -1572,27 +1566,7 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           <Col md="4">
-                            {/* <label>
-                                Effective Date
-                                <span className="asterisk-required">*</span>
-                              </label> */}
                             <div className="inputbox date-section form-group">
-                              {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //minDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
-                                /> */}
                               <Field
                                 label="Effective Date"
                                 name="EffectiveDate"
@@ -1729,13 +1703,33 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
+                          {
+                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                // onClick={this.sendForMasterApproval}
+                                disabled={this.state.isFinalApprovar}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          }
+
+                          {/* <button
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
-                          </button>
+                          </button> */}
                         </div>
                       </Row>
                     </form>
@@ -1818,6 +1812,21 @@ class AddRMDomestic extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                masterId={RM_MASTER_ID}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntery={false}
+              />
+            )
+          }
 
           {/* {isVisible && (
             <ImageModel
@@ -1909,7 +1918,8 @@ export default connect(mapStateToProps, {
   getVendorWithVendorCodeSelectList,
   checkAndGetRawMaterialCode,
   getCityByCountry,
-  getAllCity
+  getAllCity,
+  masterFinalLevelUser
 })(
   reduxForm({
     form: 'AddRMDomestic',

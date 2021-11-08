@@ -2,7 +2,7 @@ import React, { useState, useEffect, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, AsyncSearchableSelectHookForm } from '../../layout/HookFormInputs';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
@@ -13,7 +13,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
 import {
   getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
@@ -26,6 +26,8 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
+import AsyncSelect from 'react-select/async';
+import TooltipCustom from '../../common/Tooltip';
 
 export const ViewCostingContext = React.createContext()
 
@@ -82,6 +84,7 @@ function CostingDetails(props) {
   const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
+  const [partDropdown, setPartDropdown] = useState([])
 
 
   //FOR VIEW MODE COSTING
@@ -192,7 +195,6 @@ function CostingDetails(props) {
    */
   const renderListing = (label) => {
     const temp = []
-
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
         if (item.Value === '0') return false
@@ -208,8 +210,11 @@ function CostingDetails(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
+      setPartDropdown(temp)
+
       return temp
     }
+
 
 
   }
@@ -229,6 +234,10 @@ function CostingDetails(props) {
     })
     return temp
   }
+
+  // useEffect(() => {
+  //   promiseOptions()
+  // }, [partSelectListByTechnology])
 
   /**
    * @method handleTechnologyChange
@@ -251,6 +260,7 @@ function CostingDetails(props) {
       reset({
         Part: '',
       })
+
     } else {
       setTechnology([])
       setIsTechnologySelected(false)
@@ -484,9 +494,30 @@ function CostingDetails(props) {
    * @method closeCopyCostingDrawer
    * @description HIDE COPY COSTING DRAWER
    */
-  const closeCopyCostingDrawer = (e = '') => {
+  const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
     nextToggle()
     setIsCopyCostingDrawer(false)
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    if (type === ZBC) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+
+    if (type === VBC) {
+      setCostingData({ costingId: costingId, type })
+      dispatch(getZBCCostingByCostingId(costingId, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
+    }
+    // resetGrid()
   }
 
   /**
@@ -689,6 +720,7 @@ function CostingDetails(props) {
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -943,7 +975,7 @@ function CostingDetails(props) {
         }
         tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
         setZBCPlantGrid(tempArray)
-        setValue(`zbcPlantGridFields[${index}]CostingVersion`, '')
+        setValue(`zbcPlantGridFields.${index}.CostingVersion`, '')
       }
 
       if (type === VBC) {
@@ -960,7 +992,7 @@ function CostingDetails(props) {
         }
         tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
         setVBCVendorGrid(tempArray)
-        setValue(`vbcGridFields[${index}]CostingVersion`, '')
+        setValue(`vbcGridFields.${index}.CostingVersion`, '')
       }
     }))
   }
@@ -1000,10 +1032,17 @@ function CostingDetails(props) {
     setVBCVendorGrid([])
     setIsOpenVendorSOBDetails(false)
     setShowNextBtn(false)
+    setEffectiveDate('')
     dispatch(getPartInfo('', () => { }))
     reset({
       Technology: '',
       Part: '',
+      PartName: '',
+      Description: '',
+      ECNNumber: '',
+      DrawingNumber: '',
+      RevisionNumber: '',
+      ShareOfBusiness: '',
     })
   }
 
@@ -1012,7 +1051,8 @@ function CostingDetails(props) {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
+    dispatch(getZBCCostingByCostingId('', (res) => {
+    }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
@@ -1028,6 +1068,8 @@ function CostingDetails(props) {
     dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
     setStepTwo(false);
+
+    resetGrid()
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     nextToggle()
@@ -1043,6 +1085,25 @@ function CostingDetails(props) {
       setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
     }))
 
+  }
+
+  /**
+   * @method resetGrid
+   * @description TO RESET THE GRID DATA OF ZBC,VBC AND CBC (COSTING VVERSION RESET)
+   */
+  const resetGrid = () => {
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    zbcPlantGrid && zbcPlantGrid.map((el, index) => {
+      setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
+
+    // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
+    vbcVendorGrid && vbcVendorGrid.map((el, index) => {
+      setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
+      return null;
+    })
   }
 
   /**
@@ -1320,6 +1381,34 @@ function CostingDetails(props) {
    */
   const onSubmit = (values) => { }
 
+  const filterColors = (inputValue) => {
+    if (inputValue) {
+      let tempArr = []
+      tempArr = partDropdown && partDropdown.filter(i => {
+        return i.label.toLowerCase().includes(inputValue.toLowerCase())
+      }
+      );
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    } else {
+      return partDropdown
+    }
+  };
+
+  const promiseOptions = inputValue =>
+    new Promise(resolve => {
+      resolve(filterColors(inputValue));
+    });
+
+  useEffect(() => {
+    renderListing('PartList')
+  }, [partSelectListByTechnology])
+
+
+
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1376,7 +1465,27 @@ function CostingDetails(props) {
                         />
                       </Col>
                       <Col className="col-md-15">
-                        <SearchableSelectHookForm
+                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                        <AsyncSearchableSelectHookForm
+                          label={"Assembly No./Part No."}
+                          name={"Part"}
+                          placeholder={"Enter"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={part.length !== 0 ? part : ""}
+                          asyncOptions={promiseOptions}
+                          mandatory={true}
+                          isLoading={false}
+                          handleChange={handlePartChange}
+                          errors={errors.Part}
+                          message={"Enter"}
+                          disabled={technology.length === 0 ? true : false}
+                        />
+
+
+                        {/* <SearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
                           placeholder={"Select"}
@@ -1391,7 +1500,7 @@ function CostingDetails(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={technology.length === 0 ? true : false}
-                        />
+                        /> */}
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
@@ -1485,7 +1594,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
+                          label={`Current Price (Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
                           name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
@@ -1537,7 +1646,7 @@ function CostingDetails(props) {
                       <>
                         <Row className="align-items-center">
                           <Col md="6" className={"mb-2 mt-3"}>
-                            <h6 className="dark-blue-text sec-heading">ZBC:</h6>
+                            <h6 className="dark-blue-text sec-heading">NCC:</h6>
                           </Col>
                           <Col md="6" className={"mb-2 mt-3"}>
                             <button
@@ -1545,7 +1654,7 @@ function CostingDetails(props) {
                               className={"user-btn"}
                               onClick={plantDrawerToggle}
                             >
-                              <div className={"plus"}></div>ADD PLANT
+                              <div className={"plus"}></div>ADD NCC
                             </button>
                           </Col>
                         </Row>
@@ -1574,7 +1683,7 @@ function CostingDetails(props) {
                                     let displayCopyBtn = (item.Status === DRAFT ||
                                       item.Status === PENDING ||
                                       item.Status === WAITING_FOR_APPROVAL ||
-                                      item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+                                      item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
                                     let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -1708,11 +1817,10 @@ function CostingDetails(props) {
                               </thead>
                               <tbody>
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
-
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
                                     item.Status === WAITING_FOR_APPROVAL ||
-                                    item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+                                    item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
                                   let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
@@ -1778,7 +1886,7 @@ function CostingDetails(props) {
                                         {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                         {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete mr-2 All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                         {item?.CostingOptions?.length === 0 && <button className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}
                                       </td>

@@ -295,6 +295,7 @@ function AddBOP(props) {
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -313,7 +314,7 @@ function AddBOP(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD BOP'}</h3>
+                    <h3>{'ADD Insert'}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -395,7 +396,8 @@ function AddBOP(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                        floatingFilter={true}
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={bopDrawerList}
                         pagination={true}
@@ -414,10 +416,10 @@ domLayout='autoHeight'
                         isRowSelectable={isRowSelectable}
                       >
                         <AgGridColumn field="BoughtOutPartId" hide={true}></AgGridColumn>
-                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="BOP Type"  ></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                        <AgGridColumn cellClass="has-checkbox" field="EntryType" headerName="Insert Type"  ></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                         <AgGridColumn field="Specification" cellRenderer={'specificationFormat'}></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>

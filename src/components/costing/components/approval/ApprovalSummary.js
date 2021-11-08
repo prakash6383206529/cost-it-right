@@ -47,7 +47,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, PurchasingGroup, MaterialGroup } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, PurchasingGroup, MaterialGroup, DecimalOption } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const partNumber = PartDetails.PartNumber
@@ -69,7 +69,8 @@ function ApprovalSummary(props) {
         CostingId: CostingId,
         ReasonId: ApprovalDetails[0].ReasonId,
         PurchasingGroup: PurchasingGroup,
-        MaterialGroup: MaterialGroup
+        MaterialGroup: MaterialGroup,
+        DecimalOption: DecimalOption
       })
     }),
     )
@@ -128,7 +129,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           <div className="container-fluid approval-summary-page">
-            <Errorbox customClass="d-none" errorText="There is some error in your page" />
+            {/* <Errorbox customClass="d-none" errorText="There is some error in your page" /> */}
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
               <Col md="8">

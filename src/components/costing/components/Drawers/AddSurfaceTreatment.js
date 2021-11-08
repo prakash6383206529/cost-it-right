@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getSurfaceTreatmentDrawerDataList, getSurfaceTreatmentDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
@@ -211,6 +210,8 @@ function AddSurfaceTreatment(props) {
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+
   }
 
 
@@ -278,6 +279,7 @@ function AddSurfaceTreatment(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
+                        floatingFilter = {true}
 domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={tableData}

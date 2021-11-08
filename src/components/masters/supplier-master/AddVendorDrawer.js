@@ -12,7 +12,6 @@ import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlan
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
-import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -263,7 +262,6 @@ class AddVendorDrawer extends Component {
                 VendorId: ID,
                 isVisible: true
             })
-            $('html, body').animate({ scrollTop: 0 }, 'slow');
             this.props.getSupplierByIdAPI(ID, isEditFlag, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
@@ -536,9 +534,9 @@ class AddVendorDrawer extends Component {
                                             name={"Email"}
                                             type="email"
                                             //placeholder={'email@domain.com/co.us'}
-                                            validate={[required, email, minLength7, maxLength70]}
+                                            validate={[email, minLength7, maxLength70]}
                                             component={renderEmailInputField}
-                                            required={true}
+                                            required={false}
                                             customClassName={'withBorder '}
                                             className=" "
 

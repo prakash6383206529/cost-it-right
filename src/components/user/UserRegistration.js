@@ -22,7 +22,6 @@ import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
 import { CONSTANT } from "../../helper/AllConastant";
 import NoContentFound from "../common/NoContentFound";
-import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import ConfirmComponent from "../../helper/ConfirmComponent";
@@ -329,7 +328,6 @@ class UserRegistration extends Component {
         UserId: data.UserId,
       })
       if (data.passwordFlag === false) {
-        $('html, body').animate({ scrollTop: 0 }, 'slow');
       }
 
       this.props.getUserDataAPI(data.UserId, (res) => {
@@ -365,12 +363,10 @@ class UserRegistration extends Component {
             }
 
           }, 500)
-
           this.getUsersTechnologyLevelData(data.UserId)
           this.getUsersSimulationTechnologyLevelData(data.UserId)
           this.getUsersMasterLevelData(data.UserId)
           if (data.passwordFlag) {
-            $('input[type="password"]').get(0).focus()
           }
         }
       })
@@ -474,6 +470,7 @@ class UserRegistration extends Component {
     */
   setInitialModuleData = (data) => {
     this.setState({ Modules: data })
+   
   }
 
   /**
@@ -492,6 +489,7 @@ class UserRegistration extends Component {
         tempArray.push(index)
       }
       return null;
+    
     })
 
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
@@ -983,8 +981,12 @@ class UserRegistration extends Component {
   confirmUpdateUser = (updatedData, RemoveCostingFlag) => {
 
     updatedData.IsRemoveCosting = RemoveCostingFlag;
+    //set state here true
+    this.setState({isLoader:true})
     this.props.updateUserAPI(updatedData, (res) => {
       if (res && res.data && res.data.Result) {
+        //set state false
+        this.setState({isLoader:false})
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
       this.cancel();
@@ -1132,7 +1134,7 @@ class UserRegistration extends Component {
           onOk: () => {
             this.confirmUpdateUser(updatedData, true)
           },
-          onCancel: () => { this.confirmUpdateUser(updatedData, false) },
+          onCancel: () => { },
           component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
@@ -1179,16 +1181,17 @@ class UserRegistration extends Component {
         SimulationTechnologyLevels: tempHeadLevelArray,
         MasterLevels: tempMasterLevelArray
       }
+      this.setState({isLoader:true})
       this.props.registerUserAPI(userData, res => {
+       
         this.setState({ isSubmitted: false, })
 
         if (res && res.data && res.data.Result) {
+          this.setState({isLoader:false})
           toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
           this.cancel();
-
         }
       })
-
     }
   }
 
@@ -1663,6 +1666,7 @@ class UserRegistration extends Component {
                       ///////////////////////////////////////////////// */}
 
 
+
                     <Row>
                       <Col md="8">
                         <HeaderTitle title={'Simulation Heads & Level:'} customClass={''} />
@@ -1766,105 +1770,111 @@ class UserRegistration extends Component {
                         </div>
                       </>
                     }
-                    <Row>
-                      <Col md="8">
-                        <HeaderTitle title={'Masters & Level:'} customClass={''} />
-                      </Col>
-                      <Col md="4" className="text-right">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc3: !this.state.acc3 }) }}>
-
-                          {this.state.acc2 ? (
-                            <i className="fa fa-minus" ></i>
-                          ) : (
-                            <i className="fa fa-plus"></i>
-                          )}
-                        </button>
-                      </Col>
-                    </Row>
-                    {this.state.acc3 &&
+                    {
+                      getConfigurationKey().IsMasterApprovalAppliedConfigure &&
                       <>
-                        <div className="row form-group">
-                          <div className="col-md-3">
-                            <Field
-                              name="Master"
-                              type="text"
-                              label="Master"
-                              component={searchableSelect}
-                              options={this.searchableSelectType('masters')}
-                              handleChangeDescription={this.masterHandler}
-                              valueDescription={this.state.master}
-                            />
-                          </div>
-                          <div className="col-md-3">
-                            <Field
-                              name="masterLevel"
-                              type="text"
-                              label="Level"
-                              component={searchableSelect}
-                              options={this.searchableSelectType('masterLevel')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                              //required={true}
-                              handleChangeDescription={this.masterLevelHandler}
-                              valueDescription={this.state.masterLevel}
-                            />
-                          </div>
-                          <div className="col-md-3 btn-mr-rate d-flex">
-                            {this.state.isMasterEditIndex ?
-                              <>
-                                <button
-                                  type="button"
-                                  className={'btn btn-primary add-button-big'}
-                                  onClick={this.updateMasterLevel}
-                                >Update</button>
+                        <Row>
+                          <Col md="8">
+                            <HeaderTitle title={'Masters & Level:'} customClass={''} />
+                          </Col>
+                          <Col md="4" className="text-right">
+                            <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc3: !this.state.acc3 }) }}>
 
-                                <button
-                                  type="button"
-                                  className={'reset-btn ml-2'}
-                                  onClick={this.resetMasterLevel}
-                                >Cancel</button>
-                              </>
-                              :
-                              <button
-                                type="button"
-                                className={'user-btn add-button-big ml-2'}
-                                onClick={this.setMasterLevel}
-                              ><div className={'plus'}></div>ADD</button>}
-                          </div>
-                        </div>
+                              {this.state.acc3 ? (
+                                <i className="fa fa-minus" ></i>
+                              ) : (
+                                <i className="fa fa-plus"></i>
+                              )}
+                            </button>
+                          </Col>
+                        </Row>
+                        {this.state.acc3 &&
+                          <>
+                            <div className="row form-group">
+                              <div className="col-md-3">
+                                <Field
+                                  name="Master"
+                                  type="text"
+                                  label="Master"
+                                  component={searchableSelect}
+                                  options={this.searchableSelectType('masters')}
+                                  handleChangeDescription={this.masterHandler}
+                                  valueDescription={this.state.master}
+                                />
+                              </div>
+                              <div className="col-md-3">
+                                <Field
+                                  name="masterLevel"
+                                  type="text"
+                                  label="Level"
+                                  component={searchableSelect}
+                                  options={this.searchableSelectType('masterLevel')}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
+                                  //required={true}
+                                  handleChangeDescription={this.masterLevelHandler}
+                                  valueDescription={this.state.masterLevel}
+                                />
+                              </div>
+                              <div className="col-md-3 btn-mr-rate d-flex">
+                                {this.state.isMasterEditIndex ?
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={'btn btn-primary add-button-big'}
+                                      onClick={this.updateMasterLevel}
+                                    >Update</button>
 
-                        <div className="row form-group">
-                          <div className="col-md-12">
-                            <Table className="table" size="sm" >
-                              <thead>
-                                <tr>
-                                  <th>{`Master`}</th>
-                                  <th>{`Level`}</th>
-                                  <th className="text-right">{`Action`}</th>
-                                </tr>
-                              </thead>
-                              <tbody >
-                                {
-                                  this.state.masterLevelGrid &&
-                                  this.state.masterLevelGrid.map((item, index) => {
-                                    return (
-                                      <tr key={index}>
-                                        <td>{item.Master}</td>
-                                        <td>{item.Level}</td>
-                                        <td className="text-right">
-                                          <button className="Edit mr-2" type={'button'} onClick={() => this.editMasterItem(index)} />
-                                          <button className="Delete" type={'button'} onClick={() => this.deleteMasterItem(index)} />
-                                        </td>
-                                      </tr>
-                                    )
-                                  })
-                                }
-                              </tbody>
-                            </Table>
-                            {this.state.masterLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                          </div>
-                        </div>
+                                    <button
+                                      type="button"
+                                      className={'reset-btn ml-2'}
+                                      onClick={this.resetMasterLevel}
+                                    >Cancel</button>
+                                  </>
+                                  :
+                                  <button
+                                    type="button"
+                                    className={'user-btn add-button-big ml-2'}
+                                    onClick={this.setMasterLevel}
+                                  ><div className={'plus'}></div>ADD</button>}
+                              </div>
+                            </div>
+
+                            <div className="row form-group">
+                              <div className="col-md-12">
+                                <Table className="table" size="sm" >
+                                  <thead>
+                                    <tr>
+                                      <th>{`Master`}</th>
+                                      <th>{`Level`}</th>
+                                      <th className="text-right">{`Action`}</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody >
+                                    {
+                                      this.state.masterLevelGrid &&
+                                      this.state.masterLevelGrid.map((item, index) => {
+                                        return (
+                                          <tr key={index}>
+                                            <td>{item.Master}</td>
+                                            <td>{item.Level}</td>
+                                            <td className="text-right">
+                                              <button className="Edit mr-2" type={'button'} onClick={() => this.editMasterItem(index)} />
+                                              <button className="Delete" type={'button'} onClick={() => this.deleteMasterItem(index)} />
+                                            </td>
+                                          </tr>
+                                        )
+                                      })
+                                    }
+                                  </tbody>
+                                </Table>
+                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                              </div>
+                            </div>
+                          </>
+                        }
                       </>
+
                     }
 
                     {/* ////////////////////////////////////////////////////

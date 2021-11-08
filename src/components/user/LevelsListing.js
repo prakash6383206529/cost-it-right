@@ -8,10 +8,9 @@ import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
-import { loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
@@ -276,7 +275,7 @@ class LevelsListing extends Component {
 		// if (ActivateAccessibility) {
 		return (
 			<>
-				<label htmlFor="normal-switch"  className="normal-switch">
+				<label htmlFor="normal-switch" className="normal-switch">
 					{/* <span>Switch with default style</span> */}
 					<Switch
 						onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
@@ -350,6 +349,7 @@ class LevelsListing extends Component {
 
 	resetState() {
 		gridOptions.columnApi.resetColumnState();
+		gridOptions.api.setFilterModel(null);
 	}
 
 
@@ -419,7 +419,9 @@ class LevelsListing extends Component {
 									<Row>
 										<Col md="6" className=""></Col>
 										<Col md="6" className="search-user-block mb-3 text-right">
-											<button type="button" className="user-btn refresh-icon" onClick={() => this.resetState()}></button>
+											<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+												<div className="refresh mr-0"></div>
+											</button>
 										</Col>
 									</Row>
 									<Row>
@@ -472,7 +474,7 @@ class LevelsListing extends Component {
 														frameworkComponents={frameworkComponents}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn width="180" suppressSizeToFit={true} field="Technology" headerName="Technology/Heads"></AgGridColumn>
+														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Tehnology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
 														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>

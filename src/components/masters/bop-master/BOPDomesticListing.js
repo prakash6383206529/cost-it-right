@@ -13,11 +13,9 @@ import {
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
@@ -395,6 +393,7 @@ class BOPDomesticListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -447,9 +446,9 @@ class BOPDomesticListing extends Component {
 
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation  ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
-                            <Col md="12" lg="10" className="filter-block">
+                            <Col md="12" lg="10" className="filter-block ">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
                                     <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                     <div className="flex-fill">
@@ -576,7 +575,7 @@ class BOPDomesticListing extends Component {
                                         DownloadAccessibility &&
                                         <>
 
-                                            <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={'Insert Domestic'} fileExtension={'.xls'} element={
                                                 <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
                                                 </button>}>
@@ -610,7 +609,7 @@ class BOPDomesticListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     // columnDefs={c}
                                     rowData={this.props.bopDomesticList}
                                     pagination={true}
@@ -621,14 +620,15 @@ class BOPDomesticListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass:'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
 
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
@@ -638,7 +638,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={120} floatingFilter={false} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -656,9 +656,9 @@ class BOPDomesticListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'BOPDomestic'}
+                    fileName={'InsertDomestic'}
                     isZBCVBCTemplate={true}
-                    messageLabel={'BOP Domestic'}
+                    messageLabel={'Insert Domestic'}
                     anchor={'right'}
                 />}
             </div >

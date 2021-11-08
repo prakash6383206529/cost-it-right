@@ -13,8 +13,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL,ZBC } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
@@ -118,7 +117,6 @@ class AddOverhead extends Component {
         isLoader: true,
         OverheadID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getOverheadData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -727,7 +725,7 @@ class AddOverhead extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {/* <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -740,7 +738,7 @@ class AddOverhead extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Client Based</span>
-                          </Label>
+                          </Label> */}
                         </Col>
                       </Row>
                       <Row>

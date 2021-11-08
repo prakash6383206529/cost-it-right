@@ -2,11 +2,13 @@ import { toastr } from 'react-redux-toastr'
 import Moment from 'moment'
 import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { checkForNull } from './validation'
+import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   G, KG, MG, PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
+import { getConfigurationKey } from './auth'
+import { func } from 'joi'
 
 /**
  * @method  apiErrors
@@ -555,7 +557,7 @@ export function formViewData(costingSummary) {
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
-    overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
+    overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail !== null && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
     overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadCost !== null ? dataFromAPI.CostingPartDetails.NetOverheadCost : '-'
   }
   obj.profitOn = {
@@ -756,11 +758,80 @@ export function isRMDivisorApplicable(technology) {
 export function findLostWeight(tableVal) {
   let sum = 0
   tableVal && tableVal.map(item => {
-    if (item.LossOfType === 2) {
+    if (Number(item.LossOfType) === 2) {
       return false
     } else {
       sum = sum + item.LossWeight
     }
   })
   return sum
+}
+
+//THIS FUNCTION TO CHECK WHETHER RM APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
+export function CheckApprovalApplicableMaster(number) {
+  const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
+  return isApproval
+}
+
+export function isMultipleRMAllow(technology) {
+  const allowedMultipleRM = [MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, MACHINING, FORGING, PLASTIC];
+  return allowedMultipleRM.includes(technology);
+}
+
+// THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
+export function applyEditCondSimulation(master) {
+  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT]
+  return ApplyEditCondition.includes(String(master))
+}
+
+//THIS FUNCTION FOR CONDITION RNDERING OF COMPONENT FOR DIFFERENT MASTER
+export function getOtherCostingSimulation(master) {
+  const useOtherSimulationPage = [EXCHNAGERATE]
+  return useOtherSimulationPage.includes(master)
+}
+
+// THIS FUNCTION IS TO GET FILTERED DATA FOR RM WHERE IsRMAssociated IS TRUE (ONLY APPLICABLE IN CASE OF SIMULATION)
+export function getFilteredRMData(arr) {
+  const list = arr && arr.filter((item => item.IsRMAssociated === true))
+  return list
+}
+
+export function calculateScrapWeight(grossWeight, finishWeight) {
+  const scrapWeight = checkForNull(grossWeight - finishWeight)
+  return scrapWeight
+}
+
+export function calculateScrapCost(scrapWeight, scrapRate) {
+  const scrapCost = scrapWeight * scrapRate
+  return scrapCost
+}
+
+export function calculateNetLandedCost(rmRate, grossWeight, scrapWeight, scrapRate) {
+  const netLandedCost = (rmRate * grossWeight) - (scrapWeight * scrapRate)
+  return netLandedCost
+}
+
+export function isUploadSimulation(master) {
+  const isUploadSimulation = [EXCHNAGERATE]
+  return isUploadSimulation.includes(String(master))
+}
+
+export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
+  let netPo = 0
+  let quantity = 1
+  if (decimalValue === 'RoundOff') {
+    netPo = Math.round(PoPrice)
+    quantity = 1
+    return { netPo, quantity }
+  }
+  else if (decimalValue === 'Truncate') {
+    netPo = checkForDecimalAndNull(PoPrice, 2)
+    quantity = 1
+    return { netPo, quantity }
+  }
+  else if (decimalValue === 'Per100') {
+    netPo = PoPrice * 100
+    quantity = 100
+    return { netPo, quantity }
+  }
 }

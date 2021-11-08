@@ -2,7 +2,6 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
@@ -11,7 +10,7 @@ import { CONSTANT } from '../../../helper/AllConastant'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { DRAFT, EMPTY_GUID } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID, APPROVED } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
@@ -21,9 +20,13 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
+import { getConfigurationKey } from '../../../helper'
+import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
+
 const gridOptions = {};
 
 function SimulationApprovalListing(props) {
+    const { isDashboard } = props
     const loggedUser = loggedInUserId()
     const [shown, setshown] = useState(false)
 
@@ -37,6 +40,7 @@ function SimulationApprovalListing(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    const [isPendingForApproval, setIsPendingForApproval] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -77,6 +81,7 @@ function SimulationApprovalListing(props) {
             simulated_by: createdBy,
             requestedBy: requestedBy,
             status: status,
+            isDashboard: isDashboard ?? false
             // partNo: partNo,
             // createdBy: createdBy,
         }
@@ -178,6 +183,10 @@ function SimulationApprovalListing(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
     }
+    const reasonFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell != null ? cell : '-';
+    }
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -187,6 +196,7 @@ function SimulationApprovalListing(props) {
 
     const buttonFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <>
                 <button className="View" type={'button'} onClick={() => viewDetails(row)} />
@@ -197,7 +207,7 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
-        if (rowObj.DisplayStatus === 'Draft') {
+        if (rowObj.DisplayStatus === 'Draft' || rowObj.SimulationType === 'Provisional') {
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
@@ -234,23 +244,32 @@ function SimulationApprovalListing(props) {
         return cell !== null ? cell : '-'
     }
 
+    const conditionFormatter = (props) => {
+
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        const status = props.node.data.DisplayStatus;
+
+        if (status === DRAFT) {
+            return `Y`;
+        }
+        else if (status === APPROVED) {
+            return `R`
+        } else {
+            return `U`
+        }
+
+
+
+
+    }
+
     const renderVendor = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
     }
 
-    const renderImpactCost = () => {
-        return <>Impacted <br />Costing</>
-    }
-
-    const renderImpactPart = () => {
-        return <>Impacted <br />Parts</>
-    }
-
-    const renderHead = () => {
-        return <>Costing <br />Head</>
-    }
 
 
 
@@ -265,9 +284,24 @@ function SimulationApprovalListing(props) {
         setValue('status', '')
         getTableData()
     }
+    const allEqual = arr => arr.every(val => val === arr[0]);
 
     const onRowSelect = (row, isSelected, e) => {
+
+        let arr = []
         var selectedRows = gridApi.getSelectedRows();
+
+        selectedRows.map(item => {
+            arr.push(item?.DisplayStatus)
+        })
+
+        if (!allEqual(arr)) {
+            toastr.warning('Please select costing of similar Status.')
+            gridApi.deselectAll()
+        }
+
+        setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
+
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
@@ -279,6 +313,14 @@ function SimulationApprovalListing(props) {
         //     let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
         //     setSelectedRowData(tempArr)
         // }
+    }
+    const isRowSelectable = (rowNode) => {
+        if (rowNode.data.DisplayStatus === "Approved" || rowNode.data.DisplayStatus === "Rejected" || rowNode.data.DisplayStatus === "Awaiting Approval") {
+            return false;
+        } else {
+            return true
+        }
+        // return rowNode.data ? !selectedIds.includes(rowNode.data.OperationId) : false;
     }
 
     const onSelectAll = (isSelected, rows) => {
@@ -313,7 +355,7 @@ function SimulationApprovalListing(props) {
     const sendForApproval = () => {
         let count = 0
         let technologyCount = 0
-
+      
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one approval to send for approval.')
             return false
@@ -331,29 +373,31 @@ function SimulationApprovalListing(props) {
             }
         })
 
-        selectedRowData.forEach((element, index, arr) => {
-            if (index > 0) {
-                if (element.TechnologyId !== arr[index - 1].TechnologyId) {
-                    technologyCount = technologyCount + 1
-                } else {
-                    return false
-                }
-            } else {
-                return false
-            }
-        })
+        // selectedRowData.forEach((element, index, arr) => {
+        //     if (index > 0) {
+        //         if (element.TechnologyId !== arr[index - 1].TechnologyId) {
+        //             technologyCount = technologyCount + 1
+        //         } else {
+        //             return false
+        //         }
+        //     } else {
+        //         return false
+        //     }
+        // })
 
-        if (technologyCount > 0) {
-            return toastr.warning("Technology should be same for sending multiple costing for approval")
-        }
+        // if (technologyCount > 0) {
+        //     return toastr.warning("Technology should be same for sending multiple costing for approval")
+        // }
 
         if (count > 0) {
-            return toastr.warning("Reason should be same for sending multiple costing for approval")
+             toastr.warning("Reason should be same for sending multiple costing for approval")
+             return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
+            setApproveDrawer(true)
         }
 
-        setApproveDrawer(true)
+        
     }
 
     const closeDrawer = (e = '') => {
@@ -364,14 +408,16 @@ function SimulationApprovalListing(props) {
 
     if (redirectCostingSimulation === true) {
 
+        // HERE FIRST IT WILL GO TO SIMULATION.JS COMPONENT FROM THERE IT WILL GO TO COSTING SIMULATION OR OTHER COSTINGSIMULATION.JS PAGE
         return <Redirect
             to={{
                 pathname: "/simulation",
                 state: {
                     isFromApprovalListing: true,
                     approvalProcessId: approvalData.approvalProcessId,
-                    master: approvalData.SimulationTechnologyHead
+                    master: approvalData.SimulationTechnologyId
                 }
+
             }}
         />
     }
@@ -382,16 +428,24 @@ function SimulationApprovalListing(props) {
                 pathname: "/simulation-approval-summary",
                 state: {
                     approvalNumber: approvalData.approvalNumber,
-                    approvalId: approvalData.approvalProcessId
+                    approvalId: approvalData.approvalProcessId,
+                    SimulationTechnologyId: approvalData.SimulationTechnologyId
                 }
             }}
         />
     }
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
 
+        return thisIsFirstColumn;
+    }
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -416,6 +470,7 @@ function SimulationApprovalListing(props) {
 
     const resetState = () => {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     const frameworkComponents = {
@@ -430,6 +485,8 @@ function SimulationApprovalListing(props) {
         buttonFormatter: buttonFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        reasonFormatter: reasonFormatter,
+        conditionFormatter: conditionFormatter
     };
 
 
@@ -446,7 +503,14 @@ function SimulationApprovalListing(props) {
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
-
+                                        <button
+                                            class="user-btn approval-btn mr5"
+                                            onClick={sendForApproval}
+                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                        >
+                                            <div className="send-for-approval"></div>
+                                            {/* {'Send For Approval'} */}
+                                        </button>
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
@@ -462,12 +526,11 @@ function SimulationApprovalListing(props) {
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                                    floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}
@@ -481,20 +544,33 @@ domLayout='autoHeight'
                                         title: CONSTANT.EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
+                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn> 
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
+                                    <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-                                    <AgGridColumn width={142} field="RequestedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
+                                    <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
+
+
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' cellRenderer='conditionFormatter' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
+
+
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
+                                    <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -504,6 +580,22 @@ domLayout='autoHeight'
                                         <option value="100">100</option>
                                     </select>
                                 </div>
+                                {approveDrawer &&
+                                    <ApproveRejectDrawer
+                                        isOpen={approveDrawer}
+                                        anchor={'right'}
+                                        approvalData={[]}
+                                        type={isPendingForApproval ? 'Approve' : 'Sender'}
+                                        // simulationDetail={}
+                                        selectedRowData={selectedRowData}
+                                        // costingArr={costingArr}
+                                        // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : this.state.master}
+                                        closeDrawer={closeDrawer}
+                                        isSimulation={true}
+                                        isSimulationApprovalListing={true}
+
+                                    />
+                                }
                             </div>
                         </div>
                     </div>

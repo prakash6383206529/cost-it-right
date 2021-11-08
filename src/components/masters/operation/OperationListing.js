@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import $ from "jquery";
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
@@ -175,11 +174,20 @@ class OperationListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
-        this.setState({
-            data: { isEditFlag: true, ID: Id },
+    // editItemDetails = (Id) => {
+    //     this.setState({
+    //         data: { isEditFlag: true, ID: Id },
+    //         toggleForm: true,
+    //     })
+    // }
+
+    editItemDetails = (Id, rowData) => {
+        let data = {
+            isEditFlag: true,
+            ID: Id,
             toggleForm: true,
-        })
+        }
+        this.props.getDetails(data);
     }
 
     /**
@@ -332,7 +340,7 @@ class OperationListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <label htmlFor="normal-switch"  className="normal-switch">
+                <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cellValue, rowData)}
@@ -372,7 +380,11 @@ class OperationListing extends Component {
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return rowData.CostingHead ? rowData.DestinationPlant : rowData.Plants
+
+        let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
+
+        return data;
+
     }
 
     /**
@@ -407,7 +419,8 @@ class OperationListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ toggleForm: true })
+        // this.setState({ toggleForm: true })
+        this.props.formToggle()
     }
 
     hideForm = () => {
@@ -420,7 +433,6 @@ class OperationListing extends Component {
     }
 
     bulkToggle = () => {
-        $("html,body").animate({ scrollTop: 0 }, "slow");
         this.setState({ isBulkUpload: true })
     }
 
@@ -456,12 +468,12 @@ class OperationListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, this.props.operationList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
             } else if (item.CostingHead === true) {
@@ -472,8 +484,6 @@ class OperationListing extends Component {
                 item.Plants = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
-            } else {
-                return false
             }
             return item
         })
@@ -490,6 +500,7 @@ class OperationListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -525,7 +536,8 @@ class OperationListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            statusButtonFormatter: this.statusButtonFormatter
+            statusButtonFormatter: this.statusButtonFormatter,
+            plantFilter: this.plantFilter
         };
 
         return (
@@ -534,10 +546,10 @@ class OperationListing extends Component {
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
                         {
-                            !this.props.isSimulation &&
-                            <Row>
-                                <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
-                            </Row>
+                            // !this.props.isSimulation &&
+                            // <Row>
+                            //     <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
+                            // </Row>
                         }
                         <Row className="pt-4 filter-row-large blue-before">
                             {this.state.shown &&
@@ -702,10 +714,14 @@ class OperationListing extends Component {
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
+                                floatingFilter={true}
                                 domLayout='autoHeight'
                                 // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
+
+                                // <AgGridColumn field="country" filter={true} floatingFilter={true} />
+
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
@@ -713,19 +729,21 @@ class OperationListing extends Component {
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: CONSTANT.EMPTY_DATA,
+                                    imagClass: 'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
+
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+                                <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plants" floatingFilter={true} cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} ></AgGridColumn>
-                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -747,7 +765,7 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </div>
+            </div >
         );
     }
 }

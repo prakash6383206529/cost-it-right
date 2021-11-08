@@ -10,7 +10,7 @@ import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 
-import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getPOPriceAfterDecimal } from '../../../../helper'
 import moment from 'moment'
 import WarningMessage from '../../../common/WarningMessage'
 import { renderDatePicker } from '../../../layout/FormInputs'
@@ -343,7 +343,7 @@ const SendForApproval = (props) => {
     }
 
     viewApprovalData.map((data) => {
-
+      // const { netPo, quantity } = getPOPriceAfterDecimal(SAPData.DecimalOption.value, data.revisedPrice)
       let tempObj = {}
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
@@ -370,6 +370,8 @@ const SendForApproval = (props) => {
       // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
       tempObj.FinancialYear = financialYear
       tempObj.OldPOPrice = data.oldPrice
+      // tempObj.Quantity = quantity
+      // tempObj.NewPoPrice = netPo // here price condition on the basis of Decimal option dropdown (Specifically in Minda)
       tempObj.NewPoPrice = data.revisedPrice
       tempObj.POCurrency = data.nPOPriceWithCurrency
       tempObj.CurrencyRate = data.currencyRate
@@ -400,7 +402,7 @@ const SendForApproval = (props) => {
     obj.CostingsList = temp
     obj.PurchasingGroup = SAPData.PurchasingGroup?.label
     obj.MaterialGroup = SAPData.MaterialGroup?.label
-
+    obj.DecimalOption = SAPData.DecimalOption?.value
 
     // debounce_fun()
     // console.log("After debounce");
@@ -678,7 +680,7 @@ const SendForApproval = (props) => {
                             register={register}
                             defaultValue={""}
                             options={renderDropdownListing("Dept")}
-                            disabled={true}
+                            disabled={userData.Department.length > 1 ? false : true}
                             mandatory={false}
                             handleChange={handleDepartmentChange}
                             errors={errors.dept}
@@ -696,7 +698,7 @@ const SendForApproval = (props) => {
                             defaultValue={""}
                             options={approvalDropDown}
                             mandatory={false}
-                            disabled={true}
+                            disabled={userData.Department.length > 1 ? false : true}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
                           />

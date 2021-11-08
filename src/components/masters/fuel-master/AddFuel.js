@@ -12,7 +12,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'
 import { loggedInUserId } from "../../../helper/auth";
-import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddFuelNameDrawer from './AddFuelNameDrawer';
@@ -74,7 +73,6 @@ class AddFuel extends Component {
         isLoader: true,
         FuelDetailId: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getFuelDetailData(data.Id, res => {
         if (res && res.data && res.data.Result) {
 

@@ -20,7 +20,6 @@ import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC, INR } from '../../../config/constants';
@@ -149,7 +148,7 @@ class AddBOPImport extends Component {
         isLoader: true,
         BOPID: data.Id,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow');
+
       this.props.getBOPImportById(data.Id, res => {
         if (res && res.data && res.data.Result) {
 
@@ -702,8 +701,8 @@ class AddBOPImport extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isEditFlag
-                            ? `Update BOP (Import)`
-                            : `Add BOP (Import)`}
+                            ? `Update Insert (Import)`
+                            : `Add Insert (Import)`}
                         </h1>
                       </div>
                     </div>
@@ -741,11 +740,11 @@ class AddBOPImport extends Component {
 
                         <Row>
                           <Col md="12">
-                            <div className="left-border">{"BOP:"}</div>
+                            <div className="left-border">{"Insert:"}</div>
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`BOP Part No`}
+                              label={`Insert Part No`}
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
@@ -759,7 +758,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`BOP Part Name`}
+                              label={`Insert Part Name`}
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
@@ -777,7 +776,7 @@ class AddBOPImport extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="BOP Category"
+                                  label="Insert Category"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("BOPCategory")}

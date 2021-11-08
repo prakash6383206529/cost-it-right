@@ -47,10 +47,12 @@ export function formatLoginResult(res) {
             expires_in: res.expires_in,
             token_type: res.token_type,
             DepartmentId: res.DepartmentId,
-            Department: res.Department,
+            Department: JSON.parse(res.Department),
             DepartmentCode: res.DepartmentCode,
             LoggedInSimulationLevel: res.LoggedInSimulationLevel,
             LoggedInSimulationLevelId: res.LoggedInSimulationLevelId,
+            LoggedInMasterLevel: res.LoggedInMasterLevel,
+            LoggedInMasterLevelId: res.LoggedInMasterLevelId,
             Role: res.Role
         };
         return userObj;
@@ -125,7 +127,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
                 }
                 return true
             })
-            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked })
+            temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
         })
 
         const simulationObj = {

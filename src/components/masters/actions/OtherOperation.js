@@ -385,9 +385,9 @@ export function fileUploadOperation(data, callback) {
  * @method checkAndGetOperationCode
  * @description CHECK AND GET OPERATION CODE
  */
-export function checkAndGetOperationCode(code, callback) {
+export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}`, '', headers);
+        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', headers);
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

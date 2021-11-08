@@ -12,8 +12,6 @@ import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
-import $ from 'jquery'
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import { ZBC } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -367,7 +365,6 @@ class AddVolume extends Component {
         isEditFlag: false,
         VolumeId: data.ID,
       })
-      $('html, body').animate({ scrollTop: 0 }, 'slow')
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
@@ -836,7 +833,6 @@ class AddVolume extends Component {
                                 <AgGridReact
                                   style={{ height: '100%', width: '100%' }}
                                   defaultColDef={defaultColDef}
-                                  domLayout='autoHeight'
                                   domLayout='autoHeight'
                                   // columnDefs={c}
                                   rowData={this.state.tableData}

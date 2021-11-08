@@ -7,7 +7,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
-  getTopAndLeftMenuData,
+  getTopAndLeftMenuData, ApprovalDashboard,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -34,6 +34,7 @@ import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 
+
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -44,15 +45,43 @@ class SideBar extends Component {
       isRedirect: false,
       isLoader: false,
       isLeftMenuRendered: false,
+      CostingsAwaitingApprovalDashboard: false,
     };
   }
 
-  UNSAFE_componentWillMount() {
+  // UNSAFE_componentWillMount() {
+  //   // const { location } = this.props;
+  //   // this.setState({ isLoader: true });
+  //   // if (location && location !== undefined) {
+  //   //   this.props.getModuleIdByPathName(location.pathname, (res) => {
+  //   //     this.setLeftMenu(res.data.Data.ModuleId);
+  //   //     this.setState({ isLoader: false });
+  //   //   });
+
+  //   //   this.props.getTopAndLeftMenuData(() => { })
+  //   // }
+
+  //   // const loginUserId = loggedInUserId();
+  //   // this.props.getModuleSelectList(() => { });
+  //   // if (loginUserId != null) {
+  //   //   this.props.getMenuByUser(loginUserId, () => {
+  //   //     this.setState({ isLoader: false });
+  //   //   });
+  //   // }
+
+  // }
+
+
+  /**
+   * @method componentDidMount
+   * @description used to called after mounting component
+   */
+  componentDidMount() {
     const { location } = this.props;
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
       this.props.getModuleIdByPathName(location.pathname, (res) => {
-        this.setLeftMenu(res.data.Data.ModuleId);
+        // this.setLeftMenu(res.data.Data.ModuleId);
         this.setState({ isLoader: false });
       });
 
@@ -66,15 +95,7 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
     }
-
   }
-
-
-  /**
-   * @method componentDidMount
-   * @description used to called after mounting component
-   */
-  componentDidMount() { }
 
   /**
    * @method toggleMenue
@@ -125,6 +146,8 @@ class SideBar extends Component {
     });
   };
 
+  commonObj = {}
+
   /**
    * @method renderMenus
    * @description Render menus according to user access.
@@ -134,12 +157,15 @@ class SideBar extends Component {
       case "Dashboard":
         return this.renderDashboard(module);
       case "Master":
+        this.props.ApprovalDashboard(this.commonObj = { RMApprovalDashboard: true });
         return this.renderMaster(module);
       case "Additional Masters":
         return this.renderAdditionalMaster(module);
       case "Costing":
+        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, CostingsApprovalDashboard: true });
         return this.renderCosting(module);
       case "Simulation":
+        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, AmendmentsApprovalDashboard: true });
         return this.renderSimulation(module);
       case "Reports And Analytics":
         return this.renderReportAnalytics(module);
@@ -167,11 +193,6 @@ class SideBar extends Component {
     });
   };
 
-  setLeftMenuAccToMenu = (pathname) => {
-    this.props.getModuleIdByPathName(pathname, res => {
-      this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
-    })
-  }
 
   setModuleId = (ModuleId) => {
     reactLocalStorage.set('ModuleId', ModuleId)
@@ -394,11 +415,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/costing-detail-report",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "costing-detail-report",
-                    PageURL: "/costing-detail-report",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -679,107 +700,6 @@ class SideBar extends Component {
               </button>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
-                  {isLoggedIn && (
-                    <>
-                      <li className="nav-item active d-xl-inline-block">
-                        <div className="dropdown">
-                          <a
-                            className="dropdown-toggle nav-link bell"
-                            href="#"
-                            role="button"
-                            id="dropdownMenuLink"
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                          >
-                            <i className="fa fa-bell" aria-hidden="true"></i>
-                            <span className="count">3</span>
-                          </a>
-                          <div
-                            className="dropdown-menu preview-list notification-dropdown"
-                            aria-labelledby="dropdownMenuLink"
-                          >
-                            <a className="dropdown-item pb-2  mb-2 border-bottom d-flex justify-content-between align-items-center top-row">
-                              <p className="mb-0 font-weight-medium">
-                                You have 3 unread mails{" "}
-                              </p>
-                              <span className="badge badge-pill badge-primary float-right">
-                                View all
-                              </span>
-                            </a>
-                            <div className="notification-items-cons">
-
-                              <a className="dropdown-item preview-item d-flex py-2 align-items-start">
-                                <div className="preview-thumbnail d-inline-block">
-                                  <img
-                                    src={userPic}
-                                    alt={""}
-                                    className="img-sm profile-pic"
-                                  />{" "}
-                                </div>
-                                <div className="preview-item-content flex-grow">
-                                  <p className="preview-subject ellipsis font-weight-medium text-dark mb-2">
-                                    Marian Garner{" "}
-                                  </p>
-                                  <p className="font-weight-light small-text">
-                                    {" "}
-                                    The meeting is cancelled{" "}
-                                  </p>
-                                </div>
-                              </a>
-
-                              <a className="dropdown-item preview-item d-flex py-2 align-items-start">
-                                <div className="preview-thumbnail d-inline-block">
-                                  <img
-                                    src={userPic}
-                                    alt={""}
-                                    className="img-sm profile-pic"
-                                  />{" "}
-                                </div>
-                                <div className="preview-item-content flex-grow">
-                                  <p className="preview-subject ellipsis font-weight-medium text-dark mb-2">
-                                    Marian Garner{" "}
-                                  </p>
-                                  <p className="font-weight-light small-text">
-                                    {" "}
-                                    The meeting is cancelled{" "}
-                                  </p>
-                                </div>
-                              </a>
-
-                              <a className="dropdown-item preview-item d-flex py-2 align-items-start">
-                                <div className="preview-thumbnail d-inline-block">
-                                  <img
-                                    src={userPic}
-                                    alt={""}
-                                    className="img-sm profile-pic"
-                                  />{" "}
-                                </div>
-                                <div className="preview-item-content flex-grow">
-                                  <p className="preview-subject ellipsis font-weight-medium text-dark mb-2">
-                                    Marian Garner{" "}
-                                  </p>
-                                  <p className="font-weight-light small-text">
-                                    {" "}
-                                    The meeting is cancelled{" "}
-                                  </p>
-                                </div>
-                              </a>
-
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      {/* <li className="nav-item d-xl-inline-block">
-                        <a className="nav-link" href="#"><i className="fa fa-cog" aria-hidden="true"></i></a>
-                      </li>
-                      <li className="nav-item d-xl-inline-block">
-                        <a className="nav-link" href="#"><i className="fa fa-question-circle" aria-hidden="true"></i>
-                        </a>
-                      </li> */}
-                    </>
-                  )}
-
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
@@ -790,11 +710,11 @@ class SideBar extends Component {
                           <DropdownToggle caret>
                             {isLoggedIn ? (
                               <>
-                                <img
+                                  {/* <img
                                   className="img-xs rounded-circle"
                                   alt={""}
                                   src={UserImg}
-                                />
+                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */} 
                                 {userData.Name}
                               </>
                             ) : (
@@ -852,6 +772,10 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
+
+
+
+
         </div>
       </nav>
     )
@@ -883,4 +807,5 @@ export default connect(mapStateToProps, {
   getModuleIdByPathName,
   getMenu,
   getTopAndLeftMenuData,
+  ApprovalDashboard,
 })(SideBar)

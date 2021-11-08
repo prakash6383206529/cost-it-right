@@ -342,7 +342,7 @@ class LabourListing extends Component {
   statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        <label htmlFor="normal-switch"  className="normal-switch">
+        <label htmlFor="normal-switch" className="normal-switch">
           <Switch
             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
             checked={cell}
@@ -409,32 +409,7 @@ class LabourListing extends Component {
     return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
   }
 
-  renderEffectiveDate = () => {
-    return <> Effective Date </>
-  }
 
-  renderEmploymentTerm = () => {
-    return <> Employment <br />Terms </>
-  }
-  renderVendorName = () => {
-    return <> Vendor <br />Name</>
-  }
-
-  renderMachineType = () => {
-    return <> Machine <br />Type</>
-  }
-  renderRatePerPerson = () => {
-    return <>Rate Per <br />Person/Annum</>
-  }
-
-  renderLabourType = () => {
-    return <>Labour <br />Type</>
-  }
-
-  onExportToCSV = (row) => {
-    // ...
-    return this.state.userData // must return the data which you want to be exported
-  }
 
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
@@ -546,12 +521,12 @@ class LabourListing extends Component {
       tempArr.push(item.data)
     }))
 
-    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
+    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, this.props.labourDataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } else if (item.IsContractBase === true) {
@@ -580,6 +555,7 @@ class LabourListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -629,7 +605,7 @@ class LabourListing extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {/* {this.state.isLoader && <LoaderCustom />} */}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
 
           <form
@@ -811,96 +787,7 @@ class LabourListing extends Component {
               </Col>
             </Row>
           </form>
-          {/* <BootstrapTable
-            data={this.props.labourDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${LabourMaster}.csv`}
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass="my-custom-header"
-            pagination
-          > */}
-          {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-          {/* <TableHeaderColumn width={110} dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {this.renderEmploymentTerm()}  </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="Vendor"
-              columnTitle={true}
-              width={110}
-              dataAlign="left"
-              dataFormat={this.dashFormatter}
-            >
-              {this.renderVendorName()}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="Plant"
-              columnTitle={true}
-              dataAlign="left"
-              width={100}
-            >
-              {'Plant'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="State"
-              columnTitle={true}
-              dataAlign="left"
-              width={150}
-            >
-              {'State'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="MachineType"
-              columnTitle={true}
-              dataAlign="left"
-              width={100}
-            >
-              {this.renderMachineType()}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="LabourType"
-              columnTitle={true}
-              dataAlign="left"
-              width={100}
-            >
-              {this.renderLabourType()}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="LabourRate"
-              columnTitle={true}
-              width={120}
-              dataAlign="left"
-            >
-              {this.renderRatePerPerson()}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="EffectiveDate"
-              dataSort={true}
-              columnTitle={true}
-              dataAlign="left"
-              dataSort={true}
-              width={120}
-              dataFormat={this.effectiveDateFormatter}
-            >
-              {this.renderEffectiveDate()}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataAlign="right"
-              className="action"
-              searchable={false}
-              dataField="LabourId"
-              export={false}
-              isKey={true}
-              width={100}
-              dataFormat={this.buttonFormatter}
-            >
-              Actions
-            </TableHeaderColumn>
-          </BootstrapTable> */}
+
 
           <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
             <div className="ag-grid-header">
@@ -913,6 +800,7 @@ class LabourListing extends Component {
               <AgGridReact
                 defaultColDef={defaultColDef}
                 domLayout='autoHeight'
+                floatingFilter={true}
                 // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
@@ -923,6 +811,7 @@ class LabourListing extends Component {
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: CONSTANT.EMPTY_DATA,
+                  imagClass:'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -934,7 +823,7 @@ class LabourListing extends Component {
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
                 <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

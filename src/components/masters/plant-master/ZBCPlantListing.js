@@ -9,7 +9,6 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
@@ -167,7 +166,7 @@ class ZBCPlantListing extends Component {
         if (ActivateAccessibility) {
             return (
                 <>
-                    <label htmlFor="normal-switch"  className="normal-switch">
+                    <label htmlFor="normal-switch" className="normal-switch">
                         {/* <span>Switch with default style</span> */}
                         <Switch
                             onChange={() => this.handleChange(cellValue, rowData)}
@@ -380,7 +379,7 @@ class ZBCPlantListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, this.props.plantDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -413,6 +412,7 @@ class ZBCPlantListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -571,30 +571,7 @@ class ZBCPlantListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                {/* <BootstrapTable
-                    data={this.props.plantDataList}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${PlantZbc}.csv`}
-                    //ignoreSinglePage
-                    ref={"table"}
-                    trClassName={"userlisting-row"}
-                    tableHeaderClass="my-custom-header"
-                    pagination
-                >
-                    <TableHeaderColumn dataField="PlantName" dataAlign="left" dataSort={true}>Plant Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantCode" dataAlign="left" dataSort={true}>Plant Code</TableHeaderColumn>
-                    {initialConfiguration && initialConfiguration.IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="CompanyName" dataAlign="left" dataSort={true}>Company</TableHeaderColumn>}
-                    <TableHeaderColumn dataField="CountryName" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="StateName" dataAlign="left" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CityName" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" dataAlign="left" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" dataSort={false} searchable={false} className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
+
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -606,7 +583,8 @@ class ZBCPlantListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
+                            domLayout='autoHeight'
+                            floatingFilter={true}
                             // columnDefs={c}
                             rowData={this.props.plantDataList}
                             pagination={true}
@@ -617,6 +595,7 @@ domLayout='autoHeight'
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: CONSTANT.EMPTY_DATA,
+                                imagClass: 'imagClass'
                             }}
                             frameworkComponents={frameworkComponents}
                         >
@@ -626,8 +605,8 @@ domLayout='autoHeight'
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                            <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import NoContentFound from '../../../common/NoContentFound';
@@ -18,11 +17,16 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
-const gridOptions = {};
+import Simulation from '../Simulation';
+import { VBC, ZBC } from '../../../../config/constants';
+const gridOptions = {
+
+};
 
 
 function RMSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
+    console.log("RM SIMULATIOn");
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -32,6 +36,7 @@ function RMSimulation(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [update, setUpdate] = useState(true)
+    const [showMainSimulation, setShowMainSimulation] = useState(false)
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -44,9 +49,12 @@ function RMSimulation(props) {
 
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
-        setValue('NoOfCorrectRow', rowCount.correctRow)
-        setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+        if (isbulkUpload) {
+            setValue('NoOfCorrectRow', rowCount.correctRow)
+            setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
+        }
     }, [])
 
     const verifySimulation = () => {
@@ -68,23 +76,27 @@ function RMSimulation(props) {
             toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
-
+        basicRateCount = 0
+        basicScrapCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.Vendor = list[0].VendorName
+        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
-        obj.VendorId = list[0].VendorId
+
         obj.TechnologyId = list[0].TechnologyId
-        obj.VendorId = list[0].VendorId
+
+        if (filteredRMData.plantId && filteredRMData.plantId.value) {
+            obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        }
         let tempArr = []
         list && list.map(item => {
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
-                tempObj.CostingHead = item.CostingHead
+                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterial
                 tempObj.MaterialType = item.MaterialType
                 tempObj.RawMaterialGrade = item.RMGrade
@@ -102,6 +114,7 @@ function RMSimulation(props) {
                 tempObj.EffectiveDate = item.EffectiveDate
                 tempObj.RawMaterialId = item.RawMaterialId
                 tempObj.PlantId = item.PlantId
+                tempObj.VendorId = item.VendorId
                 tempObj.Delta = 0
                 tempArr.push(tempObj)
             }
@@ -162,26 +175,33 @@ function RMSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
-
-        // costFormatter(props)
-        gridApi && gridApi.redrawRows({ force: true })
-        if (value) {
-            setTimeout(() => {
-
-                setUpdate(!update)
-            }, 200);
-        }
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                {
+                    isImpactedMaster ?
+                        Number(row.NewBasicRate) :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                }
+
+            </>
+        )
+    }
+    const oldBasicRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldBasicRate :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                }
+
             </>
         )
     }
 
-
-    useEffect(() => {
-
-    }, [update])
 
     const newScrapRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -189,7 +209,25 @@ function RMSimulation(props) {
         const value = beforeSaveCell(cell)
         return (
             <>
-                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                {
+                    isImpactedMaster ?
+                        row.NewScrapRate :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                }
+            </>
+        )
+    }
+    const oldScrapRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldScrapRate :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                }
             </>
         )
     }
@@ -285,7 +323,8 @@ function RMSimulation(props) {
     };
 
     const cancel = () => {
-        props.cancelEditPage()
+        // props.cancelEditPage()
+        setShowMainSimulation(true)
     }
     const cellEditProp = {
         mode: 'click',
@@ -323,23 +362,23 @@ function RMSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-
+    const cellChange = (props) => {
+    }
     const frameworkComponents = {
-        // totalValueRenderer: this.buttonFormatter,
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
-        // descriptionFormatter: descriptionFormatter,
-        // ecnFormatter: ecnFormatter,
         shearingCostFormatter: shearingCostFormatter,
         freightCostFormatter: freightCostFormatter,
         newScrapRateFormatter: newScrapRateFormatter,
         NewcostFormatter: NewcostFormatter,
-        // buttonFormatter: buttonFormatter,
         costFormatter: costFormatter,
-        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        newBasicRateFormatter: newBasicRateFormatter
+        newBasicRateFormatter: newBasicRateFormatter,
+        cellChange: cellChange,
+        oldBasicRateFormatter: oldBasicRateFormatter,
+        oldScrapRateFormatter: oldScrapRateFormatter,
     };
+
 
 
 
@@ -351,7 +390,7 @@ function RMSimulation(props) {
                 {
 
 
-                    !showverifyPage &&
+                    (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
                         {
                             isbulkUpload &&
@@ -404,11 +443,11 @@ function RMSimulation(props) {
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
-                                    <div className="ag-theme-material" style={{width:'100%'}}>
+                                    <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
+                                            floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
                                             defaultColDef={defaultColDef}
-                                            domLayout='autoHeight'
                                             domLayout='autoHeight'
                                             // columnDefs={c}
                                             rowData={list}
@@ -424,20 +463,29 @@ function RMSimulation(props) {
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
                                         >
-                                            <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                            {
+                                                !isImpactedMaster &&
+                                                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                            }
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
                                             <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
                                             <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>
                                             <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
                                             <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
+
+                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
+                                            {costingAndPartNo && <AgGridColumn field="PartNumber" headerName="Part No" minWidth={190}></AgGridColumn>}
+
+
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newBasicRateFormatter'} field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
-                                                <AgGridColumn width={120} field="ScrapRate" editable='false' headerName="Old" colId="ScrapRate" ></AgGridColumn>
+                                                <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Old" colId="ScrapRate" ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
@@ -463,30 +511,37 @@ function RMSimulation(props) {
 
                             </Col>
                         </Row>
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                            <div className="col-sm-12 text-right bluefooter-butn">
-                                <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
-                                    <div className={"cancel-icon"}></div>
-                                    {"CANCEL"}
-                                </button>
-                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
-                                    <div className={"Run-icon"}>
-                                    </div>{" "}
-                                    {"Verify"}
-                                </button>
-                                {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
+                        {
+                            !isImpactedMaster &&
+                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                                <div className="col-sm-12 text-right bluefooter-butn">
+                                    <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                        <div className={"cancel-icon"}></div>
+                                        {"CANCEL"}
+                                    </button>
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
+                                        <div className={"Run-icon"}>
+                                        </div>{" "}
+                                        {"Verify"}
+                                    </button>
+                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button> */}
-                            </div>
-                        </Row>
+                                </div>
+                            </Row>
+                        }
                     </Fragment>
 
                 }
                 {
                     showverifyPage &&
                     <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                }
+
+                {
+                    showMainSimulation && <Simulation isRMPage={true} />
                 }
                 {
                     showRunSimulationDrawer &&

@@ -8,7 +8,6 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
@@ -19,6 +18,7 @@ import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import LoaderCustom from '../../common/LoaderCustom';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -210,12 +210,11 @@ class RMListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
+        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, this.props.rawMaterialTypeDataList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        TempData.map((item) => {
+        TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } if (item.RMGrade === '-') {
@@ -225,8 +224,8 @@ class RMListing extends Component {
             }
             return item
         })
-        return (
 
+        return (
             <ExcelSheet data={TempData} name={RmMaterial}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
@@ -238,6 +237,7 @@ class RMListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
     /**
@@ -267,6 +267,8 @@ class RMListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
+            customLoadingOverlay: LoaderCustom,
+            customNoRowsOverlay: NoContentFound
         };
 
 
@@ -351,7 +353,7 @@ class RMListing extends Component {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     rowData={this.props.rawMaterialTypeDataList}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -361,6 +363,7 @@ class RMListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass:'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
@@ -369,7 +372,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName"></AgGridColumn>
                                     <AgGridColumn field="RMGrade"></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

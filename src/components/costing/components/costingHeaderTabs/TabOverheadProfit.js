@@ -36,17 +36,23 @@ function TabOverheadProfit(props) {
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
+  //BELOW CONDITION IS USED TO DISABLED CHECKBOX WHEN ACCORDION IS CLOSED
+  const IsCheckBoxDisabled = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsOpen
+
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
-    let topHeaderData = {
-      NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
-        checkForNull(TopHeaderValues.ProfitCost) +
-        checkForNull(TopHeaderValues.RejectionCost) +
-        checkForNull(TopHeaderValues.ICCCost) +
-        checkForNull(TopHeaderValues.PaymentTermCost))
+    // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
+    if (CostingViewMode === false) {
+      let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
+      let topHeaderData = {
+        NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
+          checkForNull(TopHeaderValues.ProfitCost) +
+          checkForNull(TopHeaderValues.RejectionCost) +
+          checkForNull(TopHeaderValues.ICCCost) +
+          checkForNull(TopHeaderValues.PaymentTermCost))
+      }
+      props.setHeaderCost(topHeaderData)
     }
-    props.setHeaderCost(topHeaderData)
   }, [OverheadProfitTabData]);
 
   const filteredUsers = React.useMemo(() => {
@@ -554,7 +560,7 @@ function TabOverheadProfit(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressIncludeSurfaceTreatment}
                   >
-                    Include Surface Treatment Cost in Overhead & Profit
+                    Include Surface Treatment Cost in Overheads & Profits
                     <input
                       type="checkbox"
                       checked={IsIncludeSurfaceTreatment}
@@ -577,7 +583,7 @@ function TabOverheadProfit(props) {
                         <tr>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Net Overheads`}</th>
+                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Net Overhead`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Rejection`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net ICC`}</th>

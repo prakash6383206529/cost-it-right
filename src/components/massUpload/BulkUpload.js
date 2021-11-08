@@ -13,7 +13,7 @@ import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
 import { overheadBulkUpload, profitBulkUpload } from '../masters/actions/OverheadProfit';
 import { operationZBCBulkUpload, operationVBCBulkUpload } from '../masters/actions/OtherOperation';
-import { partComponentBulkUpload } from '../masters/actions/Part';
+import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/actions/Part';
 import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, } from '../masters/actions/InterestRateMaster';
@@ -198,27 +198,33 @@ class BulkUpload extends Component {
             LoggedInUserId: loggedInUserId(),
         }
 
+        let rmUploadData = {
+            Records: fileData,
+            LoggedInUserId: loggedInUserId(),
+            IsFinalApprover: this.props.isFinalApprovar
+        }
+
         if (fileName === 'RMDomestic' && costingHead === 'ZBC') {
 
-            this.props.bulkUploadRMDomesticZBC(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticZBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMDomestic' && costingHead === 'VBC') {
 
-            this.props.bulkUploadRMDomesticVBC(uploadData, (res) => {
+            this.props.bulkUploadRMDomesticVBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'ZBC') {
 
-            this.props.bulkUploadRMImportZBC(uploadData, (res) => {
+            this.props.bulkUploadRMImportZBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'VBC') {
 
-            this.props.bulkUploadRMImportVBC(uploadData, (res) => {
+            this.props.bulkUploadRMImportVBC(rmUploadData, (res) => {
                 this.responseHandler(res)
             });
 
@@ -293,25 +299,25 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'ZBC') {
+        } else if (fileName === 'InsertDomestic' && costingHead === 'ZBC') {
 
             this.props.bulkUploadBOPDomesticZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPDomestic' && costingHead === 'VBC') {
+        } else if (fileName === 'InsertDomestic' && costingHead === 'VBC') {
 
             this.props.bulkUploadBOPDomesticVBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'ZBC') {
+        } else if (fileName === 'InsertImport' && costingHead === 'ZBC') {
 
             this.props.bulkUploadBOPImportZBC(uploadData, (res) => {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'BOPImport' && costingHead === 'VBC') {
+        } else if (fileName === 'InsertImport' && costingHead === 'VBC') {
 
             this.props.bulkUploadBOPImportVBC(uploadData, (res) => {
                 this.responseHandler(res)
@@ -347,7 +353,15 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else {
+        } else if (fileName === 'ProductComponent') {
+
+            this.props.productComponentBulkUpload(uploadData, (res) => {
+                this.responseHandler(res)
+            });
+
+        }
+
+        else {
 
         }
 
@@ -464,7 +478,7 @@ class BulkUpload extends Component {
                                         type="submit"
                                         className="submit-button save-btn" >
                                         <div className={"save-icon"}></div>
-                                         {isEditFlag ? 'Update' : 'Save'}
+                                        {isEditFlag ? 'Update' : 'Save'}
                                     </button>
                                 </div>
                             </Row>
@@ -510,6 +524,7 @@ export default connect(mapStateToProps, {
     bulkUploadMachineVBC,
     bulkUploadMachineMoreZBC,
     partComponentBulkUpload,
+    productComponentBulkUpload,
     bulkUploadBOPDomesticZBC,
     bulkUploadBOPDomesticVBC,
     bulkUploadBOPImportZBC,

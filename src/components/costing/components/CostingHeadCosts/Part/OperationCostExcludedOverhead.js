@@ -101,9 +101,9 @@ function OperationCostExcludedOverhead(props) {
   */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map(el => {
-      if (Ids.includes(el.OperationId) === false) {
+      if (Ids.includes(el.OtherOperationId) === false) {
         let selectedIds = Ids;
-        selectedIds.push(el.OperationId)
+        selectedIds.push(el.OtherOperationId)
         setIds(selectedIds)
       }
       return null;

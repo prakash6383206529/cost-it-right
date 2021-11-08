@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT
+  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -54,6 +54,9 @@ import ReportListing from './report/ReportListing'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 import CostingSimulation from './simulation/components/CostingSimulation'
+import RMApproval from './masters/material-master/RMApproval'
+import OperationsMaster from './masters/operation/index'
+import NewReport from './report/NewReport'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -120,6 +123,18 @@ class Main extends Component {
         if (res && res.status === 200) {
           let userDetail = formatLoginResult(res.data.Data);
           reactLocalStorage.setObject("userDetail", userDetail);
+          let departmentList = ''
+          const dept = userDetail && userDetail.Department.map((item) => {
+            if (item.DepartmentName === 'Corporate' || item.DepartmentName === 'Administration') {
+              return ''
+            } else {
+              return item.DepartmentCode
+            }
+  
+          })
+          departmentList = dept.join(',')
+          reactLocalStorage.setObject("userDetail", userDetail);
+          reactLocalStorage.setObject("departmentList", departmentList);
           this.props.logUserIn();
           setTimeout(() => {
             this.setState({ isLoader: false })
@@ -288,7 +303,7 @@ class Main extends Component {
                 )}
 
               <div className={isLogin ? `content-page ${fullSizeClass} ${DashboardPage} ${DashboardMainPage}` : ''}>
-                <div className={isLogin ? 'middleContainer' : ''}>
+                <div className={`${isLogin ? `middleContainer ${Simulation ? 'mh-auto' : ''}` : ''}`}>
                   <Switch>
 
                     <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
@@ -314,7 +329,9 @@ class Main extends Component {
 
                     <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster, UOM)} />
 
-                    <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+                    <Route path="/raw-material-master" exact component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
+
+                    <Route path="/raw-material-master/raw-material-approval" component={AuthMiddleware(RMApproval, RAW_MATERIAL)} />
 
                     <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
@@ -326,7 +343,7 @@ class Main extends Component {
 
                     <Route path="/machine-master" component={AuthMiddleware(MachineMaster, MACHINE)} />
 
-                    <Route path="/operation-master" component={AuthMiddleware(OperationListing, OPERATION)} />
+                    <Route path="/operation-master" component={AuthMiddleware(OperationsMaster, OPERATION)} />
 
                     <Route path="/freight-master" component={AuthMiddleware(FreightMaster, FREIGHT)} />
 
@@ -368,6 +385,9 @@ class Main extends Component {
                     <Route path="/simulation" component={Simulation} />
 
                     <Route path="/simulation-upload" component={SimulationUpload} />
+
+                    <Route path="/costing-breakup-details" component={NewReport} />
+
 
                     <Route path="/costing-detail-report" component={ReportListing} />
 

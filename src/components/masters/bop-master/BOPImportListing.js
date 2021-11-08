@@ -384,6 +384,7 @@ class BOPImportListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -435,7 +436,7 @@ class BOPImportListing extends Component {
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4 filter-row-large">
+                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation  ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
                             <Col md="12" lg="10" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -565,7 +566,7 @@ class BOPImportListing extends Component {
                                         DownloadAccessibility &&
                                         <>
 
-                                            <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={'Insert Import'} fileExtension={'.xls'} element={
                                                 <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
                                                 </button>}>
@@ -599,7 +600,7 @@ class BOPImportListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
+                                    floatingFilter={true}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.bopImportList}
@@ -607,18 +608,19 @@ class BOPImportListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    // loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: CONSTANT.EMPTY_DATA,
+                                        imagClass:'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                                    <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
+                                    <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
@@ -628,7 +630,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={120} floatingFilter={false} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -646,9 +648,9 @@ class BOPImportListing extends Component {
                     isOpen={isBulkUpload}
                     closeDrawer={this.closeBulkUploadDrawer}
                     isEditFlag={false}
-                    fileName={'BOPImport'}
+                    fileName={'InsertImport'}
                     isZBCVBCTemplate={true}
-                    messageLabel={'BOP Import'}
+                    messageLabel={'Insert Import'}
                     anchor={'right'}
                 />}
             </div >
