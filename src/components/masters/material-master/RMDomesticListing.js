@@ -542,14 +542,18 @@ function RMDomesticListing(props) {
     }
 
     const onRowSelect = () => {
-
         var selectedRows = gridApi.getSelectedRows();
+        if (isSimulation) {
+            let len = gridApi.getSelectedRows().length
+            props.isRowSelected(len)
+            apply(selectedRows)
+        }
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         setSelectedRowData(selectedRows)
-        apply(selectedRows)
-
     }
-
+    const onFloatingFilterChanged = (p) => {
+        gridApi.deselectAll()
+    }
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -674,6 +678,7 @@ function RMDomesticListing(props) {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
