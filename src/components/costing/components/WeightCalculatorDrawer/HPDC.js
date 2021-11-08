@@ -12,8 +12,7 @@ import { toastr } from 'react-redux-toastr'
 
 
 function HPDC(props) {
-    const trimValue = getConfigurationKey()
-    const trim = trimValue.NumberOfDecimalForWeightCalculation
+
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
@@ -105,7 +104,7 @@ function HPDC(props) {
 
         let scrapWeight = 0
 
-
+        const castingWeight = Number(getValues("castingWeight"))
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostSum
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
 
@@ -116,7 +115,7 @@ function HPDC(props) {
         }
         if (finishedWeight !== 0) {
 
-            scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+            scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
 
         }
 
@@ -171,7 +170,7 @@ function HPDC(props) {
         obj.RawMaterialType = rmRowData.MaterialType
         obj.BasicRatePerUOM = rmRowData.RMRate
         obj.ScrapRate = rmRowData.ScrapRate
-        obj.NetLandedCost = dataToSend.grossWeight * rmRowData.RMRate - (dataToSend.grossWeight - getValues('finishedWeight')) * rmRowData.ScrapRate
+        obj.NetLandedCost = dataToSend.materialCost
         obj.PartNumber = costData.PartNumber
         obj.TechnologyName = costData.TechnologyName
         obj.Density = rmRowData.Density
@@ -256,7 +255,7 @@ function HPDC(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.shotWeight}
-                                        disabled={false}
+                                        disabled={props.isEditFlag ? false : true}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -281,7 +280,7 @@ function HPDC(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.cavity}
-                                        disabled={false}
+                                        disabled={props.isEditFlag ? false : true}
                                     />
                                 </Col>
                                 <Col md="3" >
@@ -306,7 +305,7 @@ function HPDC(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.burningPercent}
-                                        disabled={false}
+                                        disabled={props.isEditFlag ? false : true}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -357,7 +356,7 @@ function HPDC(props) {
                                         className=""
                                         customClassName={'withBorder text-nowrap'}
                                         errors={errors.castingWeight}
-                                        disabled={false}
+                                        disabled={props.isEditFlag ? false : true}
                                     />
                                 </Col>
                                 {/* <Col md="2">
@@ -469,7 +468,7 @@ function HPDC(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.finishedWeight}
-                                        disabled={false}
+                                        disabled={props.isEditFlag ? false : true}
                                     />
                                 </Col>
 
@@ -526,7 +525,7 @@ function HPDC(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.recovery}
-                                        disabled={false}
+                                        disabled={props.isEditFlag ? false : true}
                                     />
                                 </Col>
                             </Row>
@@ -620,8 +619,8 @@ function HPDC(props) {
                             className="reset mr15 cancel-btn"
                         >
                             <div className={'cancel-icon'}></div>
-                  CANCEL
-                </button>
+                            CANCEL
+                        </button>
                         <button
                             type="submit"
                             // disabled={isSubmitted ? true : false}

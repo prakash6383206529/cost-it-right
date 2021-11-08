@@ -5,7 +5,7 @@ import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -304,7 +304,7 @@ class AssemblyProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        temp = TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -316,11 +316,16 @@ class AssemblyProductListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
+
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyPart}>
+            <ExcelSheet data={temp} name={AssemblyPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -344,7 +349,7 @@ class AssemblyProductListing extends Component {
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const options = {
             clearSearch: true,
-            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -463,7 +468,11 @@ class AssemblyProductListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
+<<<<<<< HEAD
                         style={{ height: '100%', width: '100%' }}
+=======
+
+>>>>>>> a11380b7f (pagination task done on report + vendor + individualpart listing)
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -478,7 +487,7 @@ class AssemblyProductListing extends Component {
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
-                                title: CONSTANT.EMPTY_DATA,
+                                title: EMPTY_DATA,
                             }}
                             frameworkComponents={frameworkComponents}
                         >
@@ -493,7 +502,11 @@ class AssemblyProductListing extends Component {
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
+<<<<<<< HEAD
                             <AgGridColumn field="PartId" width={120} headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+=======
+                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+>>>>>>> a11380b7f (pagination task done on report + vendor + individualpart listing)
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

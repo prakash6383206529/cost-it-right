@@ -7,7 +7,7 @@ import {
   getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser, getVendorListByVendorType
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -711,157 +711,7 @@ function RMImportListing(props) {
       {/* { this.props.loading && <Loader />} */}
       < form onSubmit={handleSubmit(onSubmit)} noValidate >
         <Row className="filter-row-large pt-4 ">
-          {shown &&
-            <Col md="12" lg="11" className="filter-block ">
-              <div className="d-inline-flex justify-content-start  w100 rm-domestic-filter">
-                <div className="flex-fills">
-                  <h5>{`Filter By:`}</h5>
-                </div>
-                <div className="flex-fill">
-                  <SearchableSelectHookForm
-                    label={""}
-                    name={"CostingHead"}
-                    placeholder={'CostingHead'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    // defaultValue={(costingHead === null || costingHead.length === 0) ? [required] : []}
-                    options={renderListing('costingHead')}
-                    mandatory={false}
-                    handleChange={handleHeadChange}
-                    errors={errors}
-                    disabled={false}
-                  />
-                </div>
-                <div className="flex-fill">
-                  <SearchableSelectHookForm
-                    label={""}
-                    name={"Plant"}
-                    placeholder={'Plant'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={(plant === null || plant.length === 0) ? [] : []}
-                    options={renderListing('plant')}
-                    mandatory={false}
-                    handleChange={handlePlantChange}
-                    errors={errors}
-                    disabled={false}
-                  />
 
-                </div>
-                {
-                  !isSimulation &&
-                  <div className="flex-fill">
-
-                    <SearchableSelectHookForm
-                      label={""}
-                      name={"Technology"}
-                      placeholder={'Technology'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={(technology === null || technology.length === 0) ? [] : []}
-                      options={renderListing('technology')}
-                      mandatory={false}
-                      handleChange={handleTechnologyChange}
-                      errors={errors}
-                      disabled={false}
-                    />
-
-                  </div>
-                }
-                <div className="flex-fill">
-                  <SearchableSelectHookForm
-                    label={""}
-                    name={"RawMaterialId"}
-                    placeholder={"Raw Material"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    // defaultValue={RawMaterial === null || RawMaterial.length === 0 ? [required] : []}
-                    options={renderListing("material")}
-                    mandatory={false}
-                    handleChange={handleRMChange}
-                    errors={errors}
-                    disabled={false}
-                  />
-                </div>
-                <div className="flex-fill">
-
-                  <SearchableSelectHookForm
-                    label={""}
-                    name={"RawMaterialGradeId"}
-                    placeholder={"RM Grade"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    // defaultValue={RMGrade === null || RMGrade.length === 0 ? [required] : []}
-                    options={renderListing("grade")}
-                    mandatory={false}
-                    handleChange={handleGradeChange}
-                    errors={errors}
-                    disabled={false}
-                  />
-
-                </div>
-                <div className="flex-fill">
-
-                  <SearchableSelectHookForm
-                    label={""}
-                    name={"VendorId"}
-                    placeholder={"Vendor"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    // defaultValue={vendorName == null || vendorName.length === 0 ? [required] : []}
-                    options={renderListing("VendorNameList")}
-                    mandatory={false}
-                    handleChange={handleVendorName}
-                    errors={errors}
-                    disabled={false}
-                  />
-
-                </div>
-                <div className="flex-fill sliderange ">
-                  <InputRange
-                    //formatLabel={value => `${value}cm`}
-                    maxValue={maxRange}
-                    minValue={0}
-                    value={value}
-                    height={2}
-                    onChange={(value) => setvalue(value)}
-                  />
-                </div>
-                <div className="flex-fill">
-                  <button
-                    type="button"
-                    //disabled={pristine || submitting}
-                    onClick={resetFilter}
-                    className="reset mr10"
-                  >
-                    {"Reset"}
-                  </button>
-
-                  <button
-                    type="button"
-                    //disabled={pristine || submitting}
-                    onClick={filterList}
-                    className="user-btn"
-                  >
-                    {"Apply"}
-                  </button>
-                </div>
-              </div>
-            </Col>
-            // ) : ("")
-          }
           {
             // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
             (!isSimulation && !props.isMasterSummaryDrawer) &&
@@ -953,7 +803,7 @@ function RMImportListing(props) {
                 // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
+                  title: EMPTY_DATA,
                   imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}

@@ -47,6 +47,7 @@ function Simulation(props) {
     const [tableData, setTableData] = useState([])
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
+    const [isRowSelected, setIsRowSelected] = useState(0)
 
     const dispatch = useDispatch()
 
@@ -198,6 +199,11 @@ function Simulation(props) {
             setShowEditTable(true)
             setIsBulkUpload(true)
         }
+    }
+    let selectedRowCount = 0
+    const rowSelected = (value) => {
+        selectedRowCount = value
+        setIsRowSelected(value)
     }
 
     const editTable = (Data) => {

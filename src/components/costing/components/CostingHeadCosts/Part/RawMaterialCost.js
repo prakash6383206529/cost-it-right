@@ -5,7 +5,7 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { CONSTANT } from '../../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isMultipleRMAllow, isRMDivisorApplicable } from '../../../../../helper'
@@ -841,7 +841,7 @@ function RawMaterialCost(props) {
                                 <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
-                                  disabled={(CostingViewMode && item.WeightCalculationId === EMPTY_GUID) ? true : false}
+                                  disabled={false}
                                   onClick={() => toggleWeightCalculator(index)}
                                 />
                               </td>
@@ -954,7 +954,7 @@ function RawMaterialCost(props) {
                     {gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={11}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     }
@@ -1113,6 +1113,7 @@ function RawMaterialCost(props) {
       {isWeightDrawerOpen && (
         <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
+          CostingViewMode={CostingViewMode}
           closeDrawer={closeWeightDrawer}
           isEditFlag={CostingViewMode ? false : true}
           inputDiameter={inputDiameter}

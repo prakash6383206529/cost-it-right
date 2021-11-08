@@ -5,7 +5,7 @@ import { getSurfaceTreatmentDrawerDataList, getSurfaceTreatmentDrawerVBCDataList
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -95,7 +95,7 @@ function AddSurfaceTreatment(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+    noDataText: <NoContentFound title={EMPTY_DATA} />,
     paginationShowsTotal: renderPaginationShowsTotal(),
 
   };
@@ -279,8 +279,8 @@ function AddSurfaceTreatment(props) {
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         defaultColDef={defaultColDef}
-                        floatingFilter = {true}
-domLayout='autoHeight'
+                        floatingFilter={true}
+                        domLayout='autoHeight'
                         // columnDefs={c}
                         rowData={tableData}
                         pagination={true}
@@ -290,7 +290,7 @@ domLayout='autoHeight'
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                          title: CONSTANT.EMPTY_DATA,
+                          title: EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}

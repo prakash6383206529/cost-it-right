@@ -9,7 +9,7 @@ import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
@@ -602,11 +602,11 @@ function ProcessCost(props) {
                                 />
                               }
                             </span>
-                            {!CostingViewMode && <button
+                            <button
                               className="CalculatorIcon cr-cl-icon calc-icon-middle"
                               type={'button'}
                               onClick={() => toggleWeightCalculator(index)}
-                            />}
+                            />
                           </td>
 
                           <td style={{ width: 100 }}>
@@ -639,7 +639,7 @@ function ProcessCost(props) {
                   {gridData && gridData.length === 0 && (
                     <tr>
                       <td colSpan={7}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
                   )}
@@ -686,6 +686,7 @@ function ProcessCost(props) {
           technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          CostingViewMode={CostingViewMode}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}

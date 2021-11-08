@@ -31,11 +31,11 @@ function CostingSummary(props) {
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false)
   const [part, setPart] = useState([])
+  const [partDropdown, setPartDropdown] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
   const [TechnologyId, setTechnologyId] = useState('')
   const [disabled, setDisabled] = useState(false)
   const [showWarningMsg, setShowWarningMsg] = useState(false)
-  const [partDropdown, setPartDropdown] = useState([])
 
   const partNumber = useSelector(state => state.costing.partNo);
 
@@ -168,6 +168,11 @@ function CostingSummary(props) {
   useEffect(() => {
 
   }, [disabled])
+
+  useEffect(() => {
+    renderDropdownListing('PartList')
+  }, [partSelectListByTechnology])
+
   /**
    * @method handlePartChange
    * @description  USED TO HANDLE PART CHANGE
@@ -304,7 +309,7 @@ function CostingSummary(props) {
     SetIsBulkOpen(false)
   }
 
-  const filterColors = (inputValue) => {
+  const filterList = (inputValue) => {
     if (inputValue) {
       let tempArr = []
       tempArr = partDropdown && partDropdown.filter(i => {
@@ -320,10 +325,9 @@ function CostingSummary(props) {
       return partDropdown
     }
   };
-
   const promiseOptions = inputValue =>
     new Promise(resolve => {
-      resolve(filterColors(inputValue));
+      resolve(filterList(inputValue));
     });
 
   useEffect(() => {
@@ -410,7 +414,7 @@ function CostingSummary(props) {
                           errors={errors.Part}
                           message={"Enter"}
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
-                        />
+                        /> 
                       </Col>
 
                       <Col className="col-md-15">

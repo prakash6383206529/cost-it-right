@@ -8,7 +8,7 @@ import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import { getAllPartSelectList, } from '../../actions/Costing'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../config/constants'
 import moment from 'moment'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
@@ -377,7 +377,7 @@ function ApprovalListing(props) {
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-            {/* {isLoader && <LoaderCustom />} */}
+            {isLoader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
               {shown &&
                 <Col lg="10" md="12" className="filter-block">
@@ -515,10 +515,10 @@ function ApprovalListing(props) {
                       paginationPageSize={10}
                       onGridReady={onGridReady}
                       gridOptions={gridOptions}
-                      loadingOverlayComponent={'customLoadingOverlay'}
+                      //loadingOverlayComponent={'customLoadingOverlay'}
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
-                        title: CONSTANT.EMPTY_DATA,
+                        title: EMPTY_DATA,
                       }}
                       frameworkComponents={frameworkComponents}
                       suppressRowClickSelection={true}

@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
@@ -132,44 +132,6 @@ class InterestRateListing extends Component {
     });
   }
 
-  /**
-  * @method renderListing
-  * @description Used show listing of unit of measurement
-  */
-  renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
-    const temp = [];
-
-    if (label === 'costingHead') {
-      let tempObj = [
-        { label: 'ZBC', value: 'ZBC' },
-        { label: 'VBC', value: 'VBC' },
-      ]
-      return tempObj;
-    }
-
-    if (label === 'VendorList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'ICC') {
-      iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'PaymentTerms') {
-      paymentTermsSelectList && paymentTermsSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-  }
 
   /**
   * @method editItemDetails
@@ -260,41 +222,7 @@ class InterestRateListing extends Component {
     // })
   }
 
-  /**
-  * @method handleICCApplicability
-  * @description called
-  */
-  handleICCApplicability = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ ICCApplicability: newValue, });
-    } else {
-      this.setState({ ICCApplicability: [], })
-    }
-  };
 
-  /**
-  * @method handlePaymentApplicability
-  * @description called
-  */
-  handlePaymentApplicability = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ PaymentTermsApplicability: newValue, });
-    } else {
-      this.setState({ PaymentTermsApplicability: [], })
-    }
-  };
-
-  /**
-  * @method handleVendorName
-  * @description called
-  */
-  handleVendorName = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue });
-    } else {
-      this.setState({ vendorName: [] })
-    }
-  };
 
   /**
   * @method statusButtonFormatter
@@ -369,33 +297,7 @@ class InterestRateListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  /**
-  * @method filterList
-  * @description Filter user listing on the basis of role and department
-  */
-  filterList = () => {
-    const { vendorName, ICCApplicability, PaymentTermsApplicability, } = this.state;
 
-    const vendorTemp = vendorName ? vendorName.value : '';
-    const iccTemp = ICCApplicability ? ICCApplicability.value : '';
-    const paymentTemp = PaymentTermsApplicability ? PaymentTermsApplicability.value : '';
-
-    this.getTableListData(vendorTemp, iccTemp, paymentTemp)
-  }
-
-  /**
-  * @method resetFilter
-  * @description Reset user filter
-  */
-  resetFilter = () => {
-    this.setState({
-      vendorName: [],
-      ICCApplicability: [],
-      PaymentTermsApplicability: [],
-    }, () => {
-      this.getTableListData()
-    })
-  }
 
   formToggle = () => {
     this.setState({ toggleForm: true })
@@ -544,87 +446,7 @@ class InterestRateListing extends Component {
               </Col>
             </Row>
             <Row className="pt-4 filter-row-large blue-before">
-              {this.state.shown &&
-                <Col lg="10" md="12" className="filter-block interest-rate-filter-block">
-                  <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills">
-                      <h5>{`Filter By:`}</h5>
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="vendorName"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Vendors"}
-                        isClearable={false}
-                        options={this.renderListing("VendorList")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.handleVendorName}
-                        valueDescription={this.state.vendorName}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="ICCApplicability"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"ICC Applicability"}
-                        isClearable={false}
-                        options={this.renderListing("ICC")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.handleICCApplicability}
-                        valueDescription={this.state.ICCApplicability}
-                        disabled={false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="PaymentTermsApplicability"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Payment Term Applicability"}
-                        isClearable={false}
-                        options={this.renderListing("PaymentTerms")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={
-                          this.handlePaymentApplicability
-                        }
-                        valueDescription={
-                          this.state.PaymentTermsApplicability
-                        }
-                        disabled={false}
-                      />
-                    </div>
 
-                    <div className="flex-fill">
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.resetFilter}
-                        className="reset mr10"
-                      >
-                        {"Reset"}
-                      </button>
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.filterList}
-                        className="user-btn mr5"
-                      >
-                        {"Apply"}
-                      </button>
-                    </div>
-                  </div>
-                </Col>}
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
@@ -632,9 +454,7 @@ class InterestRateListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
-                      </button>
+                      ""
                     )}
                     {AddAccessibility && (
                       <button
@@ -695,8 +515,8 @@ class InterestRateListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
                 floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.interestRateDataList}
                 pagination={true}
@@ -706,8 +526,8 @@ class InterestRateListing extends Component {
                 // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
-                  imagClass:'imagClass'
+                  title: EMPTY_DATA,
+                  imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >

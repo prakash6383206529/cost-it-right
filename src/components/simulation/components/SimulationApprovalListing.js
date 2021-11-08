@@ -6,11 +6,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
 import NoContentFound from '../../common/NoContentFound'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getAllUserAPI } from '../../../actions/auth/AuthActions'
-import { DRAFT, EMPTY_GUID, APPROVED } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
@@ -296,7 +296,7 @@ function SimulationApprovalListing(props) {
         })
 
         if (!allEqual(arr)) {
-            toastr.warning('Please select costing of similar Status.')
+            toastr.warning('Please select token of similar Status.')
             gridApi.deselectAll()
         }
 
@@ -315,7 +315,7 @@ function SimulationApprovalListing(props) {
         // }
     }
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.DisplayStatus === "Approved" || rowNode.data.DisplayStatus === "Rejected" || rowNode.data.DisplayStatus === "Awaiting Approval") {
+        if (rowNode.data.DisplayStatus === APPROVED || rowNode.data.DisplayStatus === REJECTED || rowNode.data.DisplayStatus === WAITING_FOR_APPROVAL || rowNode.data.DisplayStatus === PUSHED || rowNode.data.DisplayStatus === ERROR) {
             return false;
         } else {
             return true
@@ -341,7 +341,7 @@ function SimulationApprovalListing(props) {
 
     const options = {
         clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        noDataText: <NoContentFound title={EMPTY_DATA} />,
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
         firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -355,9 +355,9 @@ function SimulationApprovalListing(props) {
     const sendForApproval = () => {
         let count = 0
         let technologyCount = 0
-      
+
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one approval to send for approval.')
+            toastr.warning('Please select atleast one token to send for approval.')
             return false
         }
 
@@ -390,14 +390,14 @@ function SimulationApprovalListing(props) {
         // }
 
         if (count > 0) {
-             toastr.warning("Reason should be same for sending multiple costing for approval")
+             toastr.warning("Reason should be same for sending multiple token for approval")
              return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
             setApproveDrawer(true)
         }
 
-        
+
     }
 
     const closeDrawer = (e = '') => {
@@ -541,7 +541,7 @@ function SimulationApprovalListing(props) {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
                                     }}
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
@@ -552,7 +552,7 @@ function SimulationApprovalListing(props) {
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
-                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn> 
+                                    <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>

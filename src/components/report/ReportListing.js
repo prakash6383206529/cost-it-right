@@ -1,16 +1,12 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import moment from 'moment'
-import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
 import { Row, Col } from 'reactstrap'
-import { SearchableSelectHookForm } from '../layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId, userDetails } from '../../helper/auth'
-import { Badge } from 'reactstrap'
+import { loggedInUserId, userDetails, } from '../../helper/auth'
 import NoContentFound from '../common/NoContentFound'
-import { CONSTANT } from '../../helper/AllConastant'
-import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
+import { EMPTY_DATA } from '../../config/constants'
+import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -19,7 +15,9 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
-import { table } from 'react-dom-factories';
+import WarningMessage from '../common/WarningMessage'
+
+
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -27,6 +25,30 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
+
+var filterParams = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+        var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+            Number(dateParts[2]),
+            Number(dateParts[1]) - 1,
+            Number(dateParts[0])
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+            return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+            return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+            return 1;
+        }
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+};
 
 function ReportListing(props) {
 
@@ -42,6 +64,11 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(true)
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
+    const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
+
+
     const dispatch = useDispatch()
 
 
@@ -53,6 +80,29 @@ function ReportListing(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+
+
+
+
+    const onBtFirst = () => {
+        gridApi.paginationGoToFirstPage();
+    };
+
+    const onBtLast = () => {
+        gridApi.paginationGoToLastPage();
+    };
+
+
+
+
+    const onBtPageFive = () => {
+        gridApi.paginationGoToPage(4);
+    };
+
+    const onBtPageFifty = () => {
+        gridApi.paginationGoToPage(49);
+    };
+
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
     const reportListingData = useSelector((state) => state.report.reportListing)
@@ -114,7 +164,7 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = () => {
+    const getTableData = (index, take, isPagination) => {
         const filterData = {
             costingNumber: "",
             toDate: null,
@@ -127,12 +177,10 @@ function ReportListing(props) {
             isSortByOrderAsc: true,
         }
         var t0 = performance.now();
-        // console.log('t0: ', t0);
-        dispatch(getReportListing(filterData, (res) => {
+
+        dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
-
-            setLoader(false)
 
             // var t1 = performance.now();
             // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
@@ -142,10 +190,53 @@ function ReportListing(props) {
 
 
     useEffect(() => {
-        getTableData();
+
+
+        setLoader(true)
+        getTableData(0, 100, true);
+
+        return () => {
+
+            getTableData(0, 500, false);
+
+
+        }
+
+
+
     }, [])
 
+    useEffect(() => {
+        var tempArr = []
 
+        // reportListingData && reportListingData.map(item => {
+        //     if (item.Value === '0') return false;
+        //     temp.push({ label: item.Text, value: item.Value })
+        //     return null;
+        // });
+        const blank = () => { setWarningMessage(false) }
+
+        setReportListingDataStateArray(reportListingData)
+        if (reportListingData.length > 0) {
+
+            if (totalRecordCount === 0) {
+                setTotalRecordCount(reportListingData[0].TotalRecordCount)
+
+                reportListingData[0].TotalRecordCount > 100 ? getTableData(100, reportListingData[0].TotalRecordCount, true) : blank()
+                setLoader(false)
+            }
+            if (totalRecordCount !== 0) {
+                setWarningMessage(false)
+            }
+
+
+        }
+
+
+
+
+
+    }, [reportListingData])
 
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -154,7 +245,7 @@ function ReportListing(props) {
 
     const options = {
         clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        noDataText: <NoContentFound title={EMPTY_DATA} />,
         paginationShowsTotal: renderPaginationShowsTotal(),
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -227,6 +318,21 @@ function ReportListing(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
+
+        //setGridApi(params.api);
+        // setGridColumnApi(params.columnApi);
+
+        // const updateData = (data) => {
+        //     setRowData(data);
+        // };
+
+        console.log(params.api.paginationProxy.bottomDisplayedRowIndex, "new")
+
+
+        // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
+        //     .then((resp) => resp.json())
+        //     .then((data) => updateData(data));
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -243,6 +349,7 @@ function ReportListing(props) {
     //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
     // }
 
+ 
 
     /**
     * @method resetHandler
@@ -391,15 +498,15 @@ function ReportListing(props) {
         customNoRowsOverlay: NoContentFound,
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
-        customLoadingOverlay: LoaderCustom,
         revisionFormatter: revisionFormatter,
         requestterFormatter: requestterFormatter
     };
+  
 
 
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
-            {/* {isLoader && <LoaderCustom />} */}
+            {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Report</h1>
@@ -407,7 +514,7 @@ function ReportListing(props) {
                 <Row className="pt-4 blue-before">
 
 
-                    <Col md="6" lg="6" className="search-user-block mb-3">
+                    <Col md="8" lg="8" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
@@ -421,7 +528,6 @@ function ReportListing(props) {
                                     {renderColumnSAPEncoded(ReportSAPMaster)}
                                 </ExcelFile>
 
-                                <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
 
                             </div>
                         </div>
@@ -430,6 +536,17 @@ function ReportListing(props) {
                 </Row>
             </form>
 
+            <div>
+                {/* <button onClick={() => onBtFirst()}>To First</button>
+                <button onClick={() => onBtLast()} id="btLast">
+                    To Last
+                </button> */}
+                {/* <button onClick={onBtPrevious}>To Previous</button>
+                <button onClick={onBtNext}>To Next</button> */}
+                {/* // <button onClick={() => onBtPageFive()}>To Page 5</button>
+                //<button onClick={() => onBtPageFifty()}>To Page 50</button> */}
+
+            </div>
 
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
@@ -443,15 +560,20 @@ function ReportListing(props) {
                         defaultColDef={defaultColDef}
                         floatingFilter={true}
                         // columnDefs={c}
-                        rowData={reportListingData}
+                        rowData={reportListingDataStateArray}
                         pagination={true}
+                        //   suppressPaginationPanel={true}
+                        suppressScrollOnNewData={true}
+
                         paginationPageSize={10}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
+
+                        // onFilterModified={onFloatingFilterChanged}
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                            title: CONSTANT.EMPTY_DATA,
+                            title: EMPTY_DATA,
                         }}
                         // suppressRowClickSelection={true}
                         rowSelection={'multiple'}
@@ -523,6 +645,9 @@ function ReportListing(props) {
                             <option value="50">50</option>
                             <option value="100">100</option>
                         </select>
+                    </div>
+                    <div className="warning-text">
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading More Data'} />}
                     </div>
                 </div>
             </div>

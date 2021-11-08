@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import moment from 'moment';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
@@ -25,7 +25,6 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    console.log("RM SIMULATIOn");
     const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
@@ -313,7 +312,7 @@ function RMSimulation(props) {
 
     const options = {
         clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        noDataText: <NoContentFound title={EMPTY_DATA} />,
         paginationShowsTotal: renderPaginationShowsTotal(),
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -349,7 +348,10 @@ function RMSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
+        if(isImpactedMaster) {
+            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
+        }
         params.api.paginationGoToPage(0);
 
     };
@@ -378,7 +380,6 @@ function RMSimulation(props) {
         oldBasicRateFormatter: oldBasicRateFormatter,
         oldScrapRateFormatter: oldScrapRateFormatter,
     };
-
 
 
 
@@ -458,7 +459,7 @@ function RMSimulation(props) {
                                             loadingOverlayComponent={'customLoadingOverlay'}
                                             noRowsOverlayComponent={'customNoRowsOverlay'}
                                             noRowsOverlayComponentParams={{
-                                                title: CONSTANT.EMPTY_DATA,
+                                                title: EMPTY_DATA,
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
@@ -470,10 +471,10 @@ function RMSimulation(props) {
                                             <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
                                             <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
                                             <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                            <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>
-                                            <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>
-                                            <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>}
                                             <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
 
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
@@ -490,10 +491,11 @@ function RMSimulation(props) {
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
+                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
                                                 <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
+                                            }
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 

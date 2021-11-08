@@ -509,8 +509,8 @@ function Plastic(props) {
               className="reset mr15 cancel-btn"
             >
               <div className={'cancel-icon'}></div>
-                CANCEL
-              </button>
+              CANCEL
+            </button>
             <button
               type="submit"
               disabled={props.CostingViewMode}

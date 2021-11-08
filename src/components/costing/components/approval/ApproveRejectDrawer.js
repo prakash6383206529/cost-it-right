@@ -8,7 +8,7 @@ import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFie
 import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
-import { INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
+import {EMPTY_GUID, INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import moment from 'moment'
 import PushSection from '../../../common/PushSection'
@@ -119,16 +119,19 @@ function ApproveRejectDrawer(props) {
   }, [])
 
 
+
+
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
+    let count = 0
     selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
     })
     if (values.length > 1) {
-      values.map(item => {
+      values.map((item, index) => {
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
@@ -144,6 +147,8 @@ function ApproveRejectDrawer(props) {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
+            let listForDropdown = []
+
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
               tempDropdownList.push({
@@ -154,7 +159,7 @@ function ApproveRejectDrawer(props) {
               })
               return null
             })
-            approverDropdownValue.push(tempDropdownList)            
+            approverDropdownValue.push(tempDropdownList)
             let allObjVal = []
 
             for (let v = 0; v < approverDropdownValue.length; v++) {
@@ -169,23 +174,33 @@ function ApproveRejectDrawer(props) {
             let filteredArray1 = allObjVal.length && allObjVal[0]?.filter(value => allObjVal.length && allObjVal[1]?.includes(value));
             let filteredArray = filteredArray1
             for (let v = 2; v < allObjVal.length; v++) {
-              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));         
+              filteredArray = filteredArray && filteredArray?.filter(value => allObjVal && allObjVal[v]?.includes(value));
+
             }
-            let pushDD = []
-         
+
             tempDropdownList.map(i => {
               filteredArray.map(item => {
                 if (i.value === item) {
-                  pushDD.push(i)
+                  listForDropdown.push(i)
                 }
               })
             })
 
-            setApprovalDropDown(pushDD)
+
+            setApprovalDropDown(listForDropdown)
+            count = count + 1;
+            if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
+
+              toastr.warning('User does not exist on next level for selected simulation.')
+              setApprovalDropDown([])
+              return false
+            }
           },
           ),
         )
       })
+
+
     } else {
 
       let obj = {
@@ -657,6 +672,7 @@ function ApproveRejectDrawer(props) {
   const handleChangeStatus = ({ meta, file }, status) => {
 
 
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
@@ -677,6 +693,8 @@ function ApproveRejectDrawer(props) {
 
     if (status === 'rejected_file_type') {
       toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      toastr.warning("File size greater than 5mb not allowed")
     }
   }
 
@@ -690,6 +708,9 @@ function ApproveRejectDrawer(props) {
   }
 
   const deleteFile = (FileId, OriginalFileName) => {
+
+
+
     if (FileId != null) {
       let deleteData = {
         Id: FileId,
@@ -707,6 +728,8 @@ function ApproveRejectDrawer(props) {
       setFiles(tempArr)
       setIsOpen(!IsOpen)
     }
+
+
   }
   return (
     <>
@@ -977,7 +1000,7 @@ function ApproveRejectDrawer(props) {
                               accept="*"
                               initialFiles={initialFiles}
                               maxFiles={4}
-                              maxSizeBytes={2000000000}
+                              maxSizeBytes={5000000}
                               inputContent={(files, extra) =>
                                 extra.reject ? (
                                   "Image, audio and video files only"
@@ -1013,14 +1036,15 @@ function ApproveRejectDrawer(props) {
                                 const withOutTild = f.FileURL.replace("~", "");
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
-                                  <div className={"attachment images"}>
+                                  <div className={"attachment images"} >
                                     <a href={fileURL} target="_blank">
                                       {f.OriginalFileName}
                                     </a>
                                     <img
+
                                       alt={""}
                                       className="float-right"
-                                      onClick={() => deleteFile(f.FileId, f.FileName)}
+                                      onClick={() => props.isOpen ? "" : deleteFile(f.FileId, f.FileName)}
                                       src={redcrossImg}
                                     ></img>
                                   </div>

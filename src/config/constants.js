@@ -16,6 +16,8 @@ export const config = {
 
 // DEVELOPMENT MIL URL
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
+// const BASE_URL = `http://10.10.1.100:10132/api/v1`;
+
 
 //DEVELOPMENT MIL URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -496,6 +498,7 @@ export const API = {
   getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
+  getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -1428,8 +1431,11 @@ export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 
 
+export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
+
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
+export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1446,6 +1452,8 @@ export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
+export const PUSHED = 'Pushed'
+export const ERROR = 'Error'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1694,3 +1702,19 @@ export const RM_MASTER_ID = 1
 
 //approve reject drawer
 export const provisional = "Provisional"
+
+
+//AllConastant File Moved here
+
+export const NAME = 'Name';
+export const TYPE = 'Type';
+export const CATEGORY = 'Category';
+export const MATERIAL = 'Raw Material';
+export const GRADE = 'Grade';
+export const SPECIFICATION = 'Specification';
+export const DATE = 'Created Date';
+export const EMPTY_DATA = 'No Record Found';
+
+export const LEVEL0 = 'L0';
+export const LEVEL1 = 'L1';
+export const SUB_ASSEMBLY = 'Sub Assembly';

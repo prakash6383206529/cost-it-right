@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../config/constants'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useForm, Controller, useWatch } from 'react-hook-form';
@@ -175,7 +175,7 @@ function ViewOverheadProfit(props) {
                       {(viewOverheadData.IsOverheadFixedApplicable === null && viewOverheadData.IsOverheadRMApplicable === null && viewOverheadData.IsOverheadBOPApplicable === null && viewOverheadData.IsOverheadCCApplicable === null && viewOverheadData.IsOverheadCombined === null) && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -286,7 +286,7 @@ function ViewOverheadProfit(props) {
                         {(viewProfitData.IsProfitFixedApplicable === null && viewProfitData.IsProfitRMApplicable === null && viewProfitData.IsProfitBOPApplicable === null && viewProfitData.IsProfitCCApplicable === null && viewProfitData.IsProfitCombined === null) && (
                           <tr>
                             <td colSpan={12}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}
@@ -320,7 +320,7 @@ function ViewOverheadProfit(props) {
                           (rejectData.RejectionApplicability === null) ?
                             <tr>
                               <td colSpan={8}>
-                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr> :
                             <tr>
