@@ -669,11 +669,12 @@ function RMDomesticListing(props) {
 
         var selectedRows = gridApi.getSelectedRows();
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-        let len = gridApi.getSelectedRows().length
-        props.isRowSelected(len)
+        if (isSimulation) {
+            let len = gridApi.getSelectedRows().length
+            props.isRowSelected(len)
+            apply(selectedRows)
+        }
         setSelectedRowData(selectedRows)
-        apply(selectedRows)
-
     }
 
     const onFloatingFilterChanged = (p) => {
