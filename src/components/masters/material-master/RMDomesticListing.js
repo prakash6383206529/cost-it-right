@@ -669,9 +669,16 @@ function RMDomesticListing(props) {
 
         var selectedRows = gridApi.getSelectedRows();
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+        if (isSimulation) {
+            let len = gridApi.getSelectedRows().length
+            props.isRowSelected(len)
+            apply(selectedRows)
+        }
         setSelectedRowData(selectedRows)
-        apply(selectedRows)
+    }
 
+    const onFloatingFilterChanged = (p) => {
+        gridApi.deselectAll()
     }
 
     const defaultColDef = {
@@ -801,6 +808,7 @@ function RMDomesticListing(props) {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Head"></AgGridColumn>
 

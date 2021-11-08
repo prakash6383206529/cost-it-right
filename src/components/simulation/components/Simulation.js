@@ -49,6 +49,7 @@ function Simulation(props) {
     const [rowCount, setRowCount] = useState({})
     const [editWarning, setEditWarning] = useState(true)
     const [isRowSelected, setIsRowSelected] = useState(0)
+    const [filterStatus, setFilterStatus] = useState('')
 
     const dispatch = useDispatch()
 
@@ -129,7 +130,7 @@ function Simulation(props) {
     const renderModule = (value) => {
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case MACHINERATE:
@@ -214,9 +215,11 @@ function Simulation(props) {
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
+        if (selectedRowCount === 0) {
+            setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
+        }
         switch (master.value) {
             case RMDOMESTIC:
-                console.log(Data, "rmDomesticListingrmDomesticListing");
                 if (Data.length === 0) {
                     setEditWarning(true)
                     return false
@@ -224,33 +227,34 @@ function Simulation(props) {
                 Data && Data.forEach((element, index) => {
                     if (index !== 0) {
                         if (element.CostingHead !== Data[index - 1].CostingHead) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            return false
+                            // return false
                         }
                         if (userDetails().Role !== 'Group Category Head') {
 
                             if (element.VendorName !== Data[index - 1].VendorName) {
-
+                                (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                                 // toastr.warning('Please select one vendor at a time.')
 
                                 setEditWarning(true);
 
                                 vendorFlag = false
 
-                                return false
+                                // return false
 
                             }
 
                             if (element.PlantId !== Data[index - 1].PlantId) {
-
+                                (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                                 // toastr.warning('Please select one Plant at a time.')
 
                                 setEditWarning(true);
 
                                 plantFlag = false
 
-                                return false
+                                // return false
 
                             }
 
@@ -258,8 +262,14 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    // setShowEditTable(true)
+                    (selectedRowCount !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 }
                 //  else {
                 //     setEditWarning(true)
@@ -313,6 +323,10 @@ function Simulation(props) {
             default:
                 break;
         }
+        console.log(selectedRowCount, 'selectedRowCountselectedRowCountselectedRowCountselectedRowCountselectedRowCount')
+        if (selectedRowCount === 0) {
+            setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
+        }
 
     }
 
@@ -339,10 +353,8 @@ function Simulation(props) {
     if (location?.state?.isFromApprovalListing === true) {
         const simulationId = location?.state?.approvalProcessId;
         const masterId = location?.state?.master
-        console.log('masterId: ', masterId);
         // THIS WILL RENDER CONDITIONALLY.(IF BELOW FUNC RETUTM TRUE IT WILL GO TO OTHER COSTING SIMULATION COMPONENT OTHER WISE COSTING SIMULATION)
         if (getOtherCostingSimulation(String(masterId))) {
-            console.log(masterId, "masterIdmasterId");
             return <OtherCostingSimulation master={masterId} simulationId={simulationId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
         }
         return <CostingSimulation simulationId={simulationId} master={masterId} isFromApprovalListing={location?.state?.isFromApprovalListing} />
@@ -414,7 +426,7 @@ function Simulation(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head, Plant,Vendor from the filters and click on checkbox before editing'} />}
+                                    {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {

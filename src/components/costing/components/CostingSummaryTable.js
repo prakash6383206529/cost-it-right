@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -821,7 +821,9 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(((data.gWeight - data.fWeight).toFixed(9)) * (data.netRMCostView[0]?.ScrapRecoveryPercentage !== 1 ? calculatePercentage(data.netRMCostView[0]?.ScrapRecoveryPercentage) : 1), initialConfiguration.NoOfDecimalForInputOutput) : ''}
+
                               </span>
                             </td>
                           )
@@ -1219,7 +1221,7 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>Attachment</td>
                       {viewCostingData &&
-                        viewCostingData.map((data, index) => {                    
+                        viewCostingData.map((data, index) => {
                           return (
 
                             <td>
