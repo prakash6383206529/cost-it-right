@@ -123,7 +123,6 @@ class PartMaster extends Component {
     render() {
         const { isAddBOMForm, isPartForm, isProductForm } = this.state;
         const { initialConfiguration } = this.props;
-        console.log(initialConfiguration, 'initialConfigurationinitialConfigurationinitialConfiguration')
         if (isAddBOMForm === true) {
             return <AddAssemblyPart
                 hideForm={this.hideForm}

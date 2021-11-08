@@ -34,8 +34,6 @@ function Plastic(props) {
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
-  console.log('getPlasticData: ', getPlasticData);
-
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
