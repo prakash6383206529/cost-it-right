@@ -218,8 +218,6 @@ const CostingSummaryTable = (props) => {
 
 
   const viewAttachmentData = (index) => {
-    console.log('index: ', index);
-    console.log(viewCostingData, "viewCostingData");
     let data = viewCostingData[index].attachment
     setAttachment(true)
     setViewAttachment(index)

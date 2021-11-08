@@ -622,7 +622,6 @@ export function getImpactedMasterData(simulationId, callback) {
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
         request.then((response) => {
-            console.log(response.data.Data.ImpactedMasterDataList, 'lllkokl')
             if (response.data.Result) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,
