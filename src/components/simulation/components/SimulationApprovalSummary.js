@@ -111,6 +111,7 @@ function SimulationApprovalSummary(props) {
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,
 
             })
+            setFiles(Attachements)
             setIsApprovalDone(IsSent)
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
@@ -217,43 +218,43 @@ function SimulationApprovalSummary(props) {
             return tempDropdownList
         }
     }
-    
+
     const Preview = ({ meta }) => {
         const { name, percent, status } = meta
         return (
-          <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
-            {/* {Math.round(percent)}% */}
-          </span>
+            <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+                {/* {Math.round(percent)}% */}
+            </span>
         )
-      }
-      const getUploadParams = ({ file, meta }) => {
+    }
+    const getUploadParams = ({ file, meta }) => {
         return { url: 'https://httpbin.org/post', }
-      }
-      const handleChangeStatus = ({ meta, file }, status) => {
+    }
+    const handleChangeStatus = ({ meta, file }, status) => {
 
 
         if (status === 'removed') {
-          const removedFileName = file.name;
-          let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
-          setFiles(tempArr)
-          setIsOpen(!IsOpen)
-        }
-    
-        if (status === 'done') {
-          let data = new FormData()
-          data.append('file', file)
-          dispatch(uploadSimulationAttachment(data, (res) => {
-            let Data = res.data[0]
-            files.push(Data)
-            setFiles(files)
+            const removedFileName = file.name;
+            let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+            setFiles(tempArr)
             setIsOpen(!IsOpen)
-          }))
         }
-    
+
+        if (status === 'done') {
+            let data = new FormData()
+            data.append('file', file)
+            dispatch(uploadSimulationAttachment(data, (res) => {
+                let Data = res.data[0]
+                files.push(Data)
+                setFiles(files)
+                setIsOpen(!IsOpen)
+            }))
+        }
+
         if (status === 'rejected_file_type') {
-          toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
-      }
+    }
     const DisplayCompareCosting = (el, data) => {
         setId(data.CostingNumber)
         // setCompareCostingObj(el)
@@ -525,23 +526,23 @@ function SimulationApprovalSummary(props) {
     };
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
-          let deleteData = {
-            Id: FileId,
-            DeletedBy: loggedInUserId(),
-          }
-          // dispatch(fileDeleteCosting(deleteData, (res) => {
-          //     toastr.success('File has been deleted successfully.')
-          //   }))
-          let tempArr = files && files.filter(item => item.FileId !== FileId)
-          setFiles(tempArr)
-          setIsOpen(!IsOpen)
+            let deleteData = {
+                Id: FileId,
+                DeletedBy: loggedInUserId(),
+            }
+            // dispatch(fileDeleteCosting(deleteData, (res) => {
+            //     toastr.success('File has been deleted successfully.')
+            //   }))
+            let tempArr = files && files.filter(item => item.FileId !== FileId)
+            setFiles(tempArr)
+            setIsOpen(!IsOpen)
         }
         if (FileId == null) {
-          let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
-          setFiles(tempArr)
-          setIsOpen(!IsOpen)
+            let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
+            setFiles(tempArr)
+            setIsOpen(!IsOpen)
         }
-      }
+    }
     return (
         <>
             {showListing === false &&
@@ -820,73 +821,73 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         <Row>
-                        <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
-                        <Col md="12" className="px-4">
-                          <label>Upload Attachment (upload up to 2 files)</label>
-                          {files && files.length >= 2 ? (
-                            <div class="alert alert-danger" role="alert">
-                              Maximum file upload limit has been reached.
-                            </div>
-                          ) : (
-                            <Dropzone
-                              getUploadParams={getUploadParams}
-                              onChangeStatus={handleChangeStatus}
-                              PreviewComponent={Preview}
-                              // onSubmit={handleImapctSubmit}
-                              accept="*"
-                              initialFiles={initialFiles}
-                              maxFiles={4}
-                              maxSizeBytes={2000000000}
-                              inputContent={(files, extra) =>
-                                extra.reject ? (
-                                  "Image, audio and video files only"
+                            <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
+                            <Col md="12" className="px-4">
+                                <label>Upload Attachment (upload up to 2 files)</label>
+                                {files && files.length > 2 ? (
+                                    <div class="alert alert-danger" role="alert">
+                                        Maximum file upload limit has been reached.
+                                    </div>
                                 ) : (
-                                  <div className="text-center">
-                                    <i className="text-primary fa fa-cloud-upload"></i>
-                                    <span className="d-block">
-                                      Drag and Drop or{" "}
-                                      <span className="text-primary">Browse</span>
-                                      <br />
-                                      file to upload
-                                    </span>
-                                  </div>
-                                )
-                              }
-                              styles={{
-                                dropzoneReject: {
-                                  borderColor: "red",
-                                  backgroundColor: "#DAA",
-                                },
-                                inputLabel: (files, extra) =>
-                                  extra.reject ? { color: "red" } : {},
-                              }}
-                              classNames="draper-drop"
-                              disabled={true}
-                            />
-                          )}
-                        </Col>
-                        <div className="w-100">
-                          <div className={"attachment-wrapper mt-0 mb-3"}>
-                            {files &&
-                              files.map((f) => {
-                                const withOutTild = f.FileURL.replace("~", "");
-                                const fileURL = `${FILE_URL}${withOutTild}`;
-                                return (
-                                  <div className={"attachment images"}>
-                                    <a href={fileURL} target="_blank">
-                                      {f.OriginalFileName}
-                                    </a>
-                                    <img
-                                      alt={""}
-                                      className="float-right"
-                                      onClick={() => deleteFile(f.FileId, f.FileName)}
-                                      src={redcrossImg}
-                                    ></img>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
+                                    <Dropzone
+                                        getUploadParams={getUploadParams}
+                                        onChangeStatus={handleChangeStatus}
+                                        PreviewComponent={Preview}
+                                        // onSubmit={handleImapctSubmit}
+                                        accept="*"
+                                        initialFiles={initialFiles}
+                                        maxFiles={4}
+                                        maxSizeBytes={2000000000}
+                                        inputContent={(files, extra) =>
+                                            extra.reject ? (
+                                                "Image, audio and video files only"
+                                            ) : (
+                                                <div className="text-center">
+                                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                                    <span className="d-block">
+                                                        Drag and Drop or{" "}
+                                                        <span className="text-primary">Browse</span>
+                                                        <br />
+                                                        file to upload
+                                                    </span>
+                                                </div>
+                                            )
+                                        }
+                                        styles={{
+                                            dropzoneReject: {
+                                                borderColor: "red",
+                                                backgroundColor: "#DAA",
+                                            },
+                                            inputLabel: (files, extra) =>
+                                                extra.reject ? { color: "red" } : {},
+                                        }}
+                                        classNames="draper-drop"
+                                        disabled={true}
+                                    />
+                                )}
+                            </Col>
+                            <div className="w-100">
+                                <div className={"attachment-wrapper mt-0 mb-3"}>
+                                    {files &&
+                                        files.map((f) => {
+                                            const withOutTild = f.FileURL.replace("~", "");
+                                            const fileURL = `${FILE_URL}${withOutTild}`;
+                                            return (
+                                                <div className={"attachment images"}>
+                                                    <a href={fileURL} target="_blank">
+                                                        {f.OriginalFileName}
+                                                    </a>
+                                                    <img
+                                                        alt={""}
+                                                        className="float-right"
+                                                        onClick={() => false ? deleteFile(f.FileId, f.FileName) : ""}
+                                                        src={redcrossImg}
+                                                    ></img>
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                            </div>
                         </Row>
                         {/* Costing Summary page here */}
                         {/* page starts */}

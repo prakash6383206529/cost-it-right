@@ -16,7 +16,7 @@ import { func } from 'joi'
  * @param res
  */
 export const apiErrors = (res) => {
-  const response = res ? res : undefined
+  const response = res ? res.response : undefined
 
 
   if (response?.data?.error?.message?.value) {
@@ -49,6 +49,7 @@ const handleHTTPStatus = (response) => {
     case 301:
     case 302:
     case 303:
+
       return toastr.error('Something is not right. Please contact your IT Team.')
     case 400:
       return toastr.error('Bad Request. Please contact your IT Team.')
@@ -65,6 +66,7 @@ const handleHTTPStatus = (response) => {
     case 405:
       return toastr.error('You are not allowed to access this resource. Please contact your IT Team',)
     case 406:
+
       const errMsg406 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toastr.error(errMsg406)
     case 409:
@@ -87,6 +89,7 @@ const handleHTTPStatus = (response) => {
     case 415:
       return toastr.error('This request is not supported by the server. Please contact your IT Team')
     case 417:
+
       const errMsg417 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toastr.error(errMsg417)
     case 500:
@@ -100,7 +103,9 @@ const handleHTTPStatus = (response) => {
     case 504:
       return toastr.error('Server is unavailable due to timeout. Please contact your IT Team')
     default:
+
       return toastr.error('Something is not right. Please contact your IT Team')
+
   }
 }
 
@@ -539,7 +544,7 @@ export function formViewData(costingSummary) {
   let dataFromAPI = costingSummary
   let obj = {}
   let type = dataFromAPI.CostingHeading ? dataFromAPI.CostingHeading : 'other'
-  console.log('type: ', type);
+
 
   obj.zbc = dataFromAPI.TypeOfCosting || dataFromAPI.TypeOfCosting === 0 ? dataFromAPI.TypeOfCosting : '-'
   obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked !== null ? dataFromAPI.IsApprovalLocked : '-'
@@ -658,7 +663,7 @@ export function formViewData(costingSummary) {
   obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
   obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
-  console.log('obj: ', obj);
+
 
 
   // temp = [...temp, obj]

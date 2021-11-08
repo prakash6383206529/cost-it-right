@@ -114,17 +114,19 @@ function ApproveRejectDrawer(props) {
   }, [])
 
 
+
+
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    let listForDropdown = []
+    let count = 0
     selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
     })
     if (values.length > 1) {
-      values.map(item => {
+      values.map((item, index) => {
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
@@ -140,6 +142,8 @@ function ApproveRejectDrawer(props) {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
+            let listForDropdown = []
+
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
               tempDropdownList.push({
@@ -176,19 +180,22 @@ function ApproveRejectDrawer(props) {
                 }
               })
             })
+
+
+            setApprovalDropDown(listForDropdown)
+            count = count + 1;
+            if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
+
+              toastr.warning('User does not exist on next level for selected simulation.')
+              setApprovalDropDown([])
+              return false
+            }
           },
           ),
         )
       })
 
 
-      if (listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) {
-
-        toastr.warning('User does not exist on next level for selected simulation.')
-        return false
-      }
-
-      setApprovalDropDown(listForDropdown)
     } else {
 
       let obj = {
@@ -624,6 +631,9 @@ function ApproveRejectDrawer(props) {
   }
 
   const deleteFile = (FileId, OriginalFileName) => {
+
+
+
     if (FileId != null) {
       let deleteData = {
         Id: FileId,
@@ -641,6 +651,8 @@ function ApproveRejectDrawer(props) {
       setFiles(tempArr)
       setIsOpen(!IsOpen)
     }
+
+
   }
   return (
     <>
@@ -934,14 +946,15 @@ function ApproveRejectDrawer(props) {
                                 const withOutTild = f.FileURL.replace("~", "");
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
-                                  <div className={"attachment images"}>
+                                  <div className={"attachment images"} >
                                     <a href={fileURL} target="_blank">
                                       {f.OriginalFileName}
                                     </a>
                                     <img
+
                                       alt={""}
                                       className="float-right"
-                                      onClick={() => deleteFile(f.FileId, f.FileName)}
+                                      onClick={() => props.isOpen ? "" : deleteFile(f.FileId, f.FileName)}
                                       src={redcrossImg}
                                     ></img>
                                   </div>
