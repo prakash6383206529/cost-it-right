@@ -38,7 +38,7 @@ import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR, SIMULATION_APPROVAL_SUM,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, APPROVAL_APP,
-  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
+  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
   config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster, SHEET_METAL,CUSTOMER
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
@@ -228,7 +228,7 @@ class Main extends Component {
         location.pathname === APPROVAL_LISTING_PATH ||
         location.pathname === APPROVAL_SUMMARY_PATH ||
         location.pathname === COSTING_BULK_UPLOAD ||
-        location.pathname === COSTING_SUMMARY_ ||
+        location.pathname === COSTING_SUMMARY ||
         location.pathname === SIMULATION_APPROVAL_SUMMARY_PATH ||
         location.pathname === DASHBOARD_PATH ||
         location.pathname === DASHBOARD_PATH_SECOND ||
@@ -281,7 +281,7 @@ class Main extends Component {
                 location.pathname !== APPROVAL_SUMMARY_PATH &&
                 location.pathname !== APPROVAL_LISTING_PATH &&
                 location.pathname !== COSTING_BULK_UPLOAD &&
-                location.pathname !== COSTING_SUMMARY_ &&
+                location.pathname !== COSTING_SUMMARY &&
                 location.pathname !== DASHBOARDWITHGRAPH_PATH &&
                 location.pathname !== SIMULATION_APPROVAL_SUMMARY_PATH &&
                 location.pathname !== DASHBOARD_PATH &&
