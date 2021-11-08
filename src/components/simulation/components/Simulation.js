@@ -161,7 +161,7 @@ function Simulation(props) {
     const renderModule = (value) => {
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case MACHINERATE:
@@ -491,7 +491,7 @@ function Simulation(props) {
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Vendor:</div>
                                     <div className="flex-fills hide-label pl-0">
-                                    <TooltipCustom customClass= "combine-tooltip" tooltipText="Please enter first few digits to see the part numbers" />
+                                        <TooltipCustom customClass="combine-tooltip" tooltipText="Please enter first few digits to see the part numbers" />
                                         <AsyncSearchableSelectHookForm
                                             label={''}
                                             name={'Vendor'}
@@ -519,7 +519,7 @@ function Simulation(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
-                                    {editWarning && <WarningMessage dClass="mr-3" message={'Please select costing head,vendor from the filters and click on checkbox before editing'} />}
+                                    {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={((rmDomesticListing && rmDomesticListing.length === 0) || (rmImportListing && rmImportListing.length === 0) || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {
