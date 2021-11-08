@@ -45,7 +45,6 @@ function ApproveRejectDrawer(props) {
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
-  const [maxCountofFile, setMaxCountofFile] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
@@ -120,14 +119,14 @@ function ApproveRejectDrawer(props) {
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    let listForDropdown = []
+    let count = 0
     selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
     })
     if (values.length > 1) {
-      values.map(item => {
+      values.map((item, index) => {
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
@@ -143,6 +142,8 @@ function ApproveRejectDrawer(props) {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
+            let listForDropdown = []
+
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
               tempDropdownList.push({
@@ -179,19 +180,22 @@ function ApproveRejectDrawer(props) {
                 }
               })
             })
+
+
+            setApprovalDropDown(listForDropdown)
+            count = count + 1;
+            if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
+
+              toastr.warning('User does not exist on next level for selected simulation.')
+              setApprovalDropDown([])
+              return false
+            }
           },
           ),
         )
       })
 
 
-      if (listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) {
-
-        toastr.warning('User does not exist on next level for selected simulation.')
-        return false
-      }
-
-      setApprovalDropDown(listForDropdown)
     } else {
 
       let obj = {
@@ -607,7 +611,6 @@ function ApproveRejectDrawer(props) {
         files.push(Data)
         setFiles(files)
         setIsOpen(!IsOpen)
-        if (files.length > 1) { setMaxCountofFile(true) }
       }))
     }
 
@@ -885,7 +888,7 @@ function ApproveRejectDrawer(props) {
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
                 {
-                  isSimulation && type === 'Sender' &&
+                  isSimulation &&
                   <div className="col-md-12 drawer-attachment">
                     <div className="d-flex w-100 flex-wrap">
                       <Col md="8" className="p-0"><h6 className="mb-0">Attachment</h6></Col>
@@ -894,7 +897,7 @@ function ApproveRejectDrawer(props) {
                       {<>
                         <Col md="12" className="p-0">
                           <label>Upload Attachment (upload up to 2 files)</label>
-                          {files && maxCountofFile && files.length >= 2 ? (
+                          {files && files.length >= 2 ? (
                             <div class="alert alert-danger" role="alert">
                               Maximum file upload limit has been reached.
                             </div>
@@ -907,7 +910,6 @@ function ApproveRejectDrawer(props) {
                               accept="*"
                               initialFiles={initialFiles}
                               maxFiles={2}
-                              multiple
                               maxSizeBytes={5000000}
                               inputContent={(files, extra) =>
                                 extra.reject ? (
@@ -952,7 +954,7 @@ function ApproveRejectDrawer(props) {
 
                                       alt={""}
                                       className="float-right"
-                                      onClick={() => props.isOpen ? "" : deleteFile(f.FileId, f.FileName)}
+                                      onClick={() => deleteFile(f.FileId, f.FileName)}
                                       src={redcrossImg}
                                     ></img>
                                   </div>
