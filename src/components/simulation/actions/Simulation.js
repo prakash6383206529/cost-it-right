@@ -641,13 +641,21 @@ export function getCombinedProcessList(data, callback) {
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCombinedProcessList}?technologyId=${data.technologyId}&vendorId=${data.vendorId}`, headers)
             .then((response) => {
-                if (response.data.Result === true) {
+                console.log(response.status, 'response.dataresponse.data')
+                if (response.data.Result === true || response.status === 204) {
                     dispatch({
                         type: GET_COMBINED_PROCESS_LIST,
-                        payload: response.data.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList
                     });
                     callback(response);
                 }
+                //  if (response.data.Result === true) {
+                //     dispatch({
+                //         type: GET_COMBINED_PROCESS_LIST,
+                //         payload: response.data.DataList,
+                //     });
+                //     callback(response);
+                // }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
                 callback(error);
