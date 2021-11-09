@@ -17,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import AttachmentSec from './AttachmentSec'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
+import LoaderCustom from '../../../common/LoaderCustom';
 
 
 function ApproveRejectDrawer(props) {
@@ -41,6 +42,7 @@ function ApproveRejectDrawer(props) {
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [disableSubmitButton, setDisableSubmitbutton] = useState(false)
+  const [loader, setLoader] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
@@ -48,7 +50,7 @@ function ApproveRejectDrawer(props) {
 
   useEffect(() => {
     dispatch(setAttachmentFileData([], () => { }))
-
+    setLoader(true)
   }, [])
 
   useEffect(() => {
@@ -249,6 +251,7 @@ function ApproveRejectDrawer(props) {
             if (status === 400) {
               setDisableSubmitbutton(true)
             }
+            setLoader(false)
           }))
         }
       }))
@@ -564,6 +567,7 @@ function ApproveRejectDrawer(props) {
 
   return (
     <>
+
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
@@ -571,6 +575,7 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
+            {loader && <LoaderCustom />}
             <form>
               <Row className="drawer-heading">
                 <Col>
