@@ -978,7 +978,7 @@ function ApproveRejectDrawer(props) {
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
                 {
-                  isSimulation &&
+                  isSimulation && type==='Sender' &&
                   <div className="col-md-12 drawer-attachment">
                     <div className="d-flex w-100 flex-wrap">
                       <Col md="8" className="p-0"><h6 className="mb-0">Attachment</h6></Col>
