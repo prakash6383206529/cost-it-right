@@ -2356,7 +2356,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "Vendor Name", value: "VendorName" },
     { label: "Currency", value: "Currency" },
     { label: "OldNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
-    { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" }, 
+    { label: "NewNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
     { label: "Old Exchange Rate", value: "OldExchangeRate" },
     { label: "NewExchangeRate", value: "NewExchangeRate" },
     { label: "PO Price", value: "OldPOPrice" },
@@ -2374,11 +2374,11 @@ export const COMBINEDPROCESSSIMULATION = [
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
-    { label: "Revision Number", value: "RevisionNumber" },  
+    { label: "Revision Number", value: "RevisionNumber" },
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
     { label: 'Old Net CC', value: 'OldNetCC' },
-    { label: "New Net CC", value: "NewNetCC" },   
+    { label: "New Net CC", value: "NewNetCC" },
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2740,14 +2740,14 @@ export const REPORT_DOWNLOAD_EXCEl = [
 ]
 
 export const CombinedProcessSimulation = [
-    { label: "Technology", value: "Technology" },
-    { label: "Plant", value: "Plant" },
-    { label: "NetCC", value: "NetCC" },
+    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "PlantName", value: "PlantName" },
+    { label: "ConversionCost", value: "ConversionCost" },
     { label: "NewCC", value: "NewCC" },
-    { label: "RemainingFieldsTotal", value: "RemainingFieldsTotal" },
-    { label: "Total", value: "Total" },
+    { label: "RemainingTotal", value: "RemainingTotal" },
+    { label: "TotalCost", value: "TotalCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "DisplayStatus", value: "DisplayStatus" }
+    // { label: "DisplayStatus", value: "DisplayStatus" }
 ]
 
 export const CombinedProcessSimulationFinal = [
