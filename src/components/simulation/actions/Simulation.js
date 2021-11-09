@@ -770,7 +770,7 @@ export function setVendorForSimulation(selectedVendorForSimulation) {
     }
 }
 
-export function sapPushedInitialMoment(simulationId,callback){
+export function sapPushedInitialMoment(simulationId, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.sapPushedInitialMoment}?simulationId=${simulationId}`, headers);
         request.then((response) => {
@@ -781,13 +781,13 @@ export function sapPushedInitialMoment(simulationId,callback){
             //     })
             // }
             callback(response)
+            apiErrors(response)
         }).catch((error) => {
-            console.log('error: ', error);
             dispatch({ type: API_FAILURE });
             callback(error)
             apiErrors(error);
         })
-    } 
+    }
 }
 export function getImpactedMasterData(simulationId, callback) {
     return (dispatch) => {
@@ -795,7 +795,6 @@ export function getImpactedMasterData(simulationId, callback) {
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
         request.then((response) => {
-            console.log(response.data.Data.ImpactedMasterDataList, 'lllkokl')
             if (response.data.Result) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,

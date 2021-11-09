@@ -40,7 +40,6 @@ function OperationInsights(props) {
     }, []);
 
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
-    // console.log(processSelectList,'this is material')
 
 
     const handleTechnologyChange = (value) => {
@@ -101,7 +100,6 @@ function OperationInsights(props) {
         setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
-        // console.log(rowData);
     }
 
     const renderListing = (label) => {
@@ -118,7 +116,6 @@ function OperationInsights(props) {
 
         }
         else {
-            // console.log('genrated');
         }
     }
 

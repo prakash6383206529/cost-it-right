@@ -191,7 +191,6 @@ function ReportListing(props) {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
             // var t1 = performance.now();
-            // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         }))
 
     }
@@ -330,7 +329,6 @@ function ReportListing(props) {
         //     setRowData(data);
         // };
 
-        console.log(params.api.paginationProxy.bottomDisplayedRowIndex, "new")
 
 
         // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
