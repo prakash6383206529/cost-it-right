@@ -1437,7 +1437,6 @@ export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
 export const GET_COMBINED_PROCESS_LIST = 'GET_COMBINED_PROCESS_LIST'
 export const GET_FG_WISE_IMPACT_DATA = ' GET_FG_WISE_IMPACT_DATA'
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
-
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
 export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
@@ -1459,6 +1458,8 @@ export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
+export const PUSHED = 'Pushed'
+export const ERROR = 'Error'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1522,8 +1523,12 @@ export const CostingSummary_BulkUpload = 'Costing Summary BulkUpload'
 export const Simulation_History = 'Simulation History'
 export const Simulation_Page = "Simulation"
 export const Simulation_Upload = 'Simulation Upload'
-
+export const COSTING_SUMMARY_ = 'Costing Summary'
+export const APPROVAL_APP = 'Approval'
 export const TAX = 'Tax'
+export const COSTING_DETAILS_REPORT = 'Costing Details Report'
+export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
+//export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
 export const PLASTIC = 'Plastic';

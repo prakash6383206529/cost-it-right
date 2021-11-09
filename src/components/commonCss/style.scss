@@ -6181,6 +6181,25 @@ body{
     }
   }
 }
+.simulation-history {
+   .token-no-grid {
+     .ag-cell-value {
+       position: absolute;
+       left: 38px;
+     }
+   }
+}
+.unset-height {
+  min-height: auto !important;
+}
+.costing-summary {
+  button {
+    float: right;
+  }
+}
+.d-none {
+  display: none !important;
+}
   .token-no-grid {
     .ag-cell-value {
       position: absolute;
