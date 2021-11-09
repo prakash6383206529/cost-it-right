@@ -999,7 +999,7 @@ function ApproveRejectDrawer(props) {
                               // onSubmit={handleImapctSubmit}
                               accept="*"
                               initialFiles={initialFiles}
-                              maxFiles={4}
+                              maxFiles={2}
                               maxSizeBytes={5000000}
                               inputContent={(files, extra) =>
                                 extra.reject ? (
@@ -1044,7 +1044,7 @@ function ApproveRejectDrawer(props) {
 
                                       alt={""}
                                       className="float-right"
-                                      onClick={() => props.isOpen ? "" : deleteFile(f.FileId, f.FileName)}
+                                      onClick={() => deleteFile(f.FileId, f.FileName)}
                                       src={redcrossImg}
                                     ></img>
                                   </div>
