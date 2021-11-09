@@ -188,7 +188,6 @@ class SimulationTab extends Component {
                 } else {
                     item1.IsChecked = isCheckedSelectAll;
                 }
-                // console.log('item1: ', item1);
 
             })
             return actionRows;
