@@ -2412,6 +2412,9 @@ body {
   >a{
     padding-right: 10px;
     word-break: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 .attachment-row{
