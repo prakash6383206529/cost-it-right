@@ -323,7 +323,7 @@ function Simulation(props) {
             default:
                 break;
         }
-        console.log(selectedRowCount, 'selectedRowCountselectedRowCountselectedRowCountselectedRowCountselectedRowCount')
+     
         if (selectedRowCount === 0) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
