@@ -6284,7 +6284,6 @@ body{
   right: -20px;
   top: 8px;
 }
-.pagination-button-container {
 
 .part-manage-component {
   .ag-paging-panel {
@@ -6304,10 +6303,8 @@ body{
 .pagination-button-container {
   display: flex;
   align-items: center;
-}
   grid-column-gap: 10px;
 }
-
 .previous-btn {
   font-family: "agGridMaterial";
   font-size: 22px;
