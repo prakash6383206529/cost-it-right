@@ -51,7 +51,8 @@ const handleHTTPStatus = (response) => {
 
       return toastr.error('Something is not right. Please contact your IT Team.')
     case 400:
-      return toastr.error('Bad Request. Please contact your IT Team.')
+      const errMsg400 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
+      return toastr.error(errMsg400)
     case 401:
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
