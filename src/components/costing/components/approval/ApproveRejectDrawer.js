@@ -50,7 +50,6 @@ function ApproveRejectDrawer(props) {
 
   useEffect(() => {
     dispatch(setAttachmentFileData([], () => { }))
-    setLoader(true)
   }, [])
 
   useEffect(() => {
@@ -246,6 +245,7 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
           toastr.success('Simulation has been saved successfully.')
+          setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
             const status = res.response.status
             if (status === 400) {
