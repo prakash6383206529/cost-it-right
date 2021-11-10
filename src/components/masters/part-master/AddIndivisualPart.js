@@ -65,7 +65,6 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           let productArray = []
-          console.log(Data, "new")
           Data && Data.GroupCodeList.map((item) => {
             productArray.push({ Text: item.GroupCode, Value: "", })
             return productArray
@@ -449,7 +448,7 @@ class AddIndivisualPart extends Component {
                                 placeholder={""}
                                 validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                 component={renderText}
-                                //required={true}
+                                required={true}
                                 className=""
                                 customClassName={"withBorder"}
                               />

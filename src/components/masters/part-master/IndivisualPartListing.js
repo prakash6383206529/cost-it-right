@@ -105,7 +105,7 @@ class IndivisualPartListing extends Component {
             const nextNo = data.state.currentRowIndex + 10;
 
             //     //gridApi.paginationGoToNextPage();
-            data.ApiActionCreator(nextNo, 10, this.state.floatingFilterData, true)
+            data.ApiActionCreator(nextNo, 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: nextNo })
         }
 
@@ -118,7 +118,7 @@ class IndivisualPartListing extends Component {
             data.setState({ pageNo: data.state.pageNo - 1 })
             const previousNo = data.state.currentRowIndex - 10;
 
-            data.ApiActionCreator(previousNo, 10, this.state.floatingFilterData, true)
+            data.ApiActionCreator(previousNo, 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: previousNo })
 
         }
@@ -132,7 +132,7 @@ class IndivisualPartListing extends Component {
         this.setState({ warningMessage: false })
         this.setState({ pageNo: 1 })
         data.setState({ currentRowIndex: 0 })
-        data.ApiActionCreator(0, 10, this.state.floatingFilterData, true)
+        data.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
         data.setState({ enableExitFilterSearchButton: true })
 
     }
@@ -142,7 +142,7 @@ class IndivisualPartListing extends Component {
         this.setState({ floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" } })
         let emptyObj = { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "" }
         data.setState({ pageNo: 1 })
-        data.ApiActionCreator(0, 10, emptyObj, true)
+        data.ApiActionCreator(0, 100, emptyObj, true)
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
 
@@ -179,7 +179,7 @@ class IndivisualPartListing extends Component {
 
 
     componentDidMount() {
-        this.ApiActionCreator(0, 10, this.state.floatingFilterData, true)
+        this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
 
 
         //this.props.checkStatusCodeAPI(412, () => { })
@@ -484,7 +484,7 @@ class IndivisualPartListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.newPartsListing === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
+            noDataText: <NoContentFound title={EMPTY_DATA} />,
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -522,7 +522,7 @@ class IndivisualPartListing extends Component {
                         <Col md="6" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -576,8 +576,10 @@ class IndivisualPartListing extends Component {
                         <div className="ag-grid-header">
                             <Row className="pt-5 no-filter-row">
                             </Row>
+                            <div className="warning-message">
+                                {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
+                            </div>
 
-                            {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
                         </div>
                         <div
                             className="ag-theme-material"

@@ -18,7 +18,8 @@ import {
     GET_AMMENDENT_STATUS_COSTING, 
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
-    GET_LAST_SIMULATION_DATA
+    GET_LAST_SIMULATION_DATA,
+    SET_ATTACHMENT_FILE_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -621,7 +622,6 @@ export function getImpactedMasterData(simulationId, callback) {
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
         request.then((response) => {
-            console.log(response.data.Data.ImpactedMasterDataList, 'lllkokl')
             if (response.data.Result) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,

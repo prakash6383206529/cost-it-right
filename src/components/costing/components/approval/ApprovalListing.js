@@ -377,7 +377,7 @@ function ApprovalListing(props) {
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-            {/* {isLoader && <LoaderCustom />} */}
+            {isLoader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
               {shown &&
                 <Col lg="10" md="12" className="filter-block">
@@ -515,7 +515,7 @@ function ApprovalListing(props) {
                       paginationPageSize={10}
                       onGridReady={onGridReady}
                       gridOptions={gridOptions}
-                      loadingOverlayComponent={'customLoadingOverlay'}
+                      //loadingOverlayComponent={'customLoadingOverlay'}
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
                         title: EMPTY_DATA,
