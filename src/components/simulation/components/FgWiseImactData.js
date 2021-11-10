@@ -8,6 +8,8 @@ import { EMPTY_GUID } from '../../../config/constants'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
 import { Callbacks } from 'jquery'
 import { sortedLastIndex } from 'lodash-es'
+import NoContentFound from '../../common/NoContentFound'
+import { EMPTY_DATA } from '../../../config/constants'
 
 
 
@@ -39,7 +41,7 @@ export function Fgwiseimactdata(props) {
         props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
 
     }
-
+   console.log(showTableData, "impactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactData")
 
 
 
@@ -50,7 +52,7 @@ export function Fgwiseimactdata(props) {
 
             <Row className="mb-3">
                 <Col md="12">
-                    <div className="table-responsive">
+                    <div className={`table-responsive ${!showTableData ? 'fgwise-table' : ""}`}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
                                 <tr>
@@ -65,7 +67,7 @@ export function Fgwiseimactdata(props) {
 
                                     <th><span>Volume/Year</span></th>
                                     <th><span>Impact/Quater</span></th>
-                                    <th><span>Impact/Year</span></th>
+                                    <th className="second-last-child"><span>Impact/Year</span></th>
                                     <th><span></span></th>
                                 </tr>
                             </thead>
@@ -109,22 +111,20 @@ export function Fgwiseimactdata(props) {
                                                     <td><span></span></td>
                                                     <td><span> <button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></span></td>
 
-
-
                                                 </tr>)
                                         })}
-
-
-
-
-
                                     </tbody>
                                 </>)
                             })
                             }
-
-
+                           
                         </table>
+                            {!showTableData ?
+                               
+                                    <Col md="12">
+                                        <NoContentFound title={EMPTY_DATA} />
+                                    </Col>
+                              : ""}
                     </div>
                 </Col>
             </Row>
