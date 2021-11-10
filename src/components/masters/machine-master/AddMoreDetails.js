@@ -3177,7 +3177,11 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files.length >= 3 ? '' :
+                          {this.state.files.length >= 3 ? (
+                            <div class="alert alert-danger" role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                          ) :
                             <Dropzone
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
