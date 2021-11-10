@@ -2741,6 +2741,8 @@ export const REPORT_DOWNLOAD_EXCEl = [
 
 export const CombinedProcessSimulation = [
     { label: "TechnologyName", value: "TechnologyName" },
+    { label: "PartName", value: "PartName" },
+    { label: "PartNumber", value: "PartNumber" },
     { label: "PlantName", value: "PlantName" },
     { label: "ConversionCost", value: "ConversionCost" },
     { label: "NewCC", value: "NewCC" },

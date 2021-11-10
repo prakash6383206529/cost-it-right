@@ -147,10 +147,10 @@ class SimulationUploadDrawer extends Component {
                         case Number(COMBINED_PROCESS):
                             resp.rows.map((val, index) => {
                                 if (index > 0) {
-                                    if (val[3] !== '' && val[3] !== undefined) {
+                                    if (val[5] !== '' && val[5] !== undefined) {
                                         basicRateCount = 1
                                     }
-                                    if (val[3] === '') {
+                                    if (val[5] === '') {
                                         NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                         return false
                                     }
