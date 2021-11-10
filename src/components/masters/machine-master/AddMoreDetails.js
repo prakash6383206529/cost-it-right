@@ -36,6 +36,7 @@ import moment from 'moment';
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import { Fragment } from 'react';
+import attachClose from '../../../assests/images/red-cross.png'
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -3172,7 +3173,11 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files.length >= 3 ? '' :
+                          {this.state.files.length >= 3 ? (
+                            <div class="alert alert-danger" role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                          ) :
                             <Dropzone
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
@@ -3206,7 +3211,7 @@ class AddMoreDetails extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../assests/images/red-cross.png')}></img>
+                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={attachClose}></img>
                                   </div>
                                 )
                               })
