@@ -3,16 +3,14 @@ import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { getApprovalList, getSelectedCostingList } from '../../actions/Approval'
+import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
-import { getAllPartSelectList, } from '../../actions/Costing'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import moment from 'moment'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
-import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
 import { PENDING } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
@@ -59,10 +57,6 @@ function ApprovalListing(props) {
   })
   useEffect(() => {
     getTableData()
-    dispatch(getAllPartSelectList(() => { }))
-    dispatch(getSelectedCostingList(() => { }))
-    dispatch(getAllUserAPI(() => { }))
-
   }, [])
 
 
