@@ -241,10 +241,10 @@ function Simulation(props) {
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
    */
-    const closeDrawer = (e = '', tableData = {}, correctRow = 0, NoOfRowsWithoutChange = 0) => {
+    const closeDrawer = (e = '', tableDataTemp = {}, correctRow = 0, NoOfRowsWithoutChange = 0) => {
         setShowDrawer(false)
-        if (Object.keys(tableData).length > 0) {
-            setTableData(tableData)
+        if (Object.keys(tableDataTemp).length > 0) {
+            setTableData(tableDataTemp)
             setRowCount({ correctRow: correctRow, NoOfRowsWithoutChange: NoOfRowsWithoutChange })
             setShowEditTable(true)
             setIsBulkUpload(true)
@@ -393,7 +393,7 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.value} />
             case COMBINED_PROCESS:
-                return <CPSimulation cancelEditPage={cancelEditPage} list={processCostingList} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <CPSimulation cancelEditPage={cancelEditPage} list={isbulkUpload ? tableData : processCostingList} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }
