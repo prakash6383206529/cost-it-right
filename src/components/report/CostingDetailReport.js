@@ -6,14 +6,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, } from '../../helper/auth'
 import NoContentFound from '../common/NoContentFound'
 import { EMPTY_DATA } from '../../config/constants'
-import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
+import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from './actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
 
@@ -406,11 +406,81 @@ function ReportListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        let temp = []
+        // console.log('TempData: ', TempData);
+      
 
 
         return (<ExcelSheet data={TempData} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+
+    const renderColumnSAP = (fileName) => {
+        let tempData = []
+
+        if (selectedRowData.length === 0) {
+            tempData = reportListingData
+        }
+        else {
+            tempData = selectedRowData
+        }
+        return returnExcelColumnSAP(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+
+    }
+
+
+    const renderColumnSAPEncoded = (fileName) => {
+        console.log('fileName: ', fileName);
+        let tempData = []
+
+        if (selectedRowData.length === 0) {
+
+
+            tempData = reportListingData
+
+        }
+        else {
+            tempData = selectedRowData
+
+        }
+        return returnExcelColumnSAPEncoded(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+
+    }
+
+
+
+
+    const returnExcelColumnSAP = (data = [], TempData) => {
+
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+
+
+    const returnExcelColumnSAPEncoded = (data = [], TempData) => {
+
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+
+
+        TempData && TempData.map(item => {
+
+            temp.push({ SrNo: btoa(item.SrNo), SANumber: btoa(item.SANumber), LineNumber: btoa(item.LineNumber), CreatedDate: btoa(item.CreatedDate), NetPOPrice: btoa(item.NetPOPrice), Reason: btoa(item.Reason), Text: btoa(item.Text), PersonRequestingChange: btoa(item.PersonRequestingChange) })
+            return null;
+        });
+
+
+
+
+        return (<ExcelSheet data={temp} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => < ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
@@ -438,10 +508,19 @@ function ReportListing(props) {
                 <Row className="pt-4 blue-before">
 
 
-                    <Col md="6" lg="6" className="search-user-block mb-3">
+                <Col md="8" lg="8" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
+                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    {renderColumn(ReportMaster)}
+                                </ExcelFile>
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>SAP Excel Download</button>}>
+                                    {renderColumnSAP(ReportSAPMaster)}
+                                </ExcelFile>
 
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
+                                    {renderColumnSAPEncoded(ReportSAPMaster)}
+                                </ExcelFile>
 
 
                             </div>
