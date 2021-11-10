@@ -24,6 +24,7 @@ import BOMViewer from './BOMViewer';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
+import imgRedcross from '../../../assests/images/red-cross.png'
 const selector = formValueSelector('AddAssemblyPart')
 
 class AddAssemblyPart extends Component {
@@ -929,7 +930,7 @@ class AddAssemblyPart extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={require("../../../assests/images/red-cross.png")}
+                                      src={imgRedcross}
                                     ></img>
                                   </div>
                                 );
