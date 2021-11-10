@@ -497,7 +497,7 @@ function CostingDetails(props) {
    * @description HIDE COPY COSTING DRAWER
    */
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
-    nextToggle()
+    //nextToggle()
     setIsCopyCostingDrawer(false)
     dispatch(getZBCCostingByCostingId('', (res) => { }))
     if (type === ZBC) {
@@ -722,6 +722,8 @@ function CostingDetails(props) {
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+
+
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -854,6 +856,8 @@ function CostingDetails(props) {
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -885,6 +889,8 @@ function CostingDetails(props) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1053,6 +1059,8 @@ function CostingDetails(props) {
    */
   const backToFirstStep = () => {
     dispatch(getZBCCostingByCostingId('', (res) => {
+
+
     }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
