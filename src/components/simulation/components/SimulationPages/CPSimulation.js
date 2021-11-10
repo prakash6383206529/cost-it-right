@@ -147,7 +147,7 @@ function CPSimulation(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
         window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if(isImpactedMaster) {
+        if (isImpactedMaster) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
         var allColumnIds = [];
@@ -331,7 +331,8 @@ function CPSimulation(props) {
                                                 onSelectionChanged={onRowSelect}
                                             >
                                                 <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>}
+                                                <AgGridColumn field="PartNumber" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
@@ -346,10 +347,10 @@ function CPSimulation(props) {
                                                 {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
-                                                        <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
-                                                            <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
-                                                            <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
-                                                        </AgGridColumn>
+                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
+                                                        <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
+                                                        <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
+                                                    </AgGridColumn>
                                                 }
 
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
