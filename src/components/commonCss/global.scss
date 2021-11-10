@@ -2409,6 +2409,13 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 5px 0;
+  >a{
+    padding-right: 10px;
+    word-break: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 .attachment-row{
   border-bottom: 1px solid #e6e3e3;
