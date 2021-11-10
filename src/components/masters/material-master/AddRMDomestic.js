@@ -1684,7 +1684,7 @@ class AddRMDomestic extends Component {
                                         onClick={() =>
                                           this.deleteFile(f.FileId, f.FileName)
                                         }
-                                        src={require("../../../assests/images/red-cross.png")}
+                                        src={imgRedcross}
                                       ></img>
                                     </div>
                                   );

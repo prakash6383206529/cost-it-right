@@ -17,6 +17,7 @@ import { FILE_URL,ZBC } from '../../../config/constants';
 import moment from 'moment';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import imgRedcross from '../../../assests/images/red-cross.png'
 
 const selector = formValueSelector('AddProfit');
 
@@ -1046,7 +1047,7 @@ class AddProfit extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={require("../../../assests/images/red-cross.png")}
+                                      src={imgRedcross}
                                     ></img>
                                   </div>
                                 );
