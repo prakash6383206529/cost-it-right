@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
-import { getComparisionSimulationData, getExchangeCostingSimulationList,getCombinedProcessCostingSimulationList } from '../actions/Simulation';
+import { getComparisionSimulationData, getExchangeCostingSimulationList, getCombinedProcessCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -472,13 +472,38 @@ function OtherCostingSimulation(props) {
         </ExcelSheet>);
     }
 
+    const returnExcelColumnCombine = (data = [], TempData) => {
+        let temp = []
+        let tempNext = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            }
+            return item
+        })
+
+
+        temp && temp.map(item => {
+
+
+            tempNext.push({ CostingHead: (item.CostingHead), CostingNumber: (item.CostingNumber), VendorName: (item.VendorName), PlantName: (item.PlantName), Technology: (item.Technology), PlantCode: (item.PlantCode), PartNo: (item.PartNo), PartName: (item.PartName), ECNNumber: (item.ECNNumber), RevisionNumber: (item.RevisionNumber), OldPOPrice: (item.OldPOPrice), NewPOPrice: (item.NewPOPrice == 0 ? item.OldPOPrice : item.NewPOPrice), OldNetCC: (item.OldNetCC), NewNetCC: (item.NewNetCC == 0 ? item.OldNetCC : item.NewNetCC), OldOverheadCost: (item.OldOverheadCost), NewOverheadCost: (item.NewOverheadCost == 0 ? item.OldOverheadCost : item.NewOverheadCost), OldProfitCost: (item.OldProfitCost), NewProfitCost: (item.NewProfitCost == 0 ? item.OldProfitCost : item.NewProfitCost), OldRejectionCost: (item.OldRejectionCost), NewRejectionCost: (item.NewRejectionCost == 0 ? item.OldRejectionCost : item.NewRejectionCost), OldICCCost: (item.OldICCCost), NewICCCost: (item.NewICCCost == 0 ? item.OldICCCost : item.NewICCCost), OldPaymentTermsCost: (item.OldPaymentTermsCost), NewPaymentTermsCost: (item.NewPaymentTermsCost == 0 ? item.OldPaymentTermsCost : item.NewPaymentTermsCost), OldOtherCost: (item.OldOtherCost), NewOtherCost: (item.NewOtherCost == 0 ? item.OldOtherCost : item.NewOtherCost), NOldDiscountCostewRMPrice: (item.NOldDiscountCostewRMPrice), NewDiscountCost: (item.NewDiscountCost == 0 ? item.NOldDiscountCostewRMPrice : item.NewDiscountCost), OldNetOverheadAndProfitCost: (item.OldNetOverheadAndProfitCost), NewNetOverheadAndProfitCost: (item.NewNetOverheadAndProfitCost == 0 ? item.OldNetOverheadAndProfitCost : item.NewNetOverheadAndProfitCost), Variance: (item.Variance) })
+            return null;
+        });
+
+        return (<ExcelSheet data={tempNext} name={'Costing'}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
+    }
+
     const renderColumn = () => {
         switch (Number(master)) {
             case Number(EXCHNAGERATE):
                 return returnExcelColumn(EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
 
             case Number(COMBINED_PROCESS):
-                return returnExcelColumn(COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+                return returnExcelColumnCombine(COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
 
             default:
                 break;
