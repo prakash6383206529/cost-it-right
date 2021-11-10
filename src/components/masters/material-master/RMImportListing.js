@@ -62,7 +62,7 @@ var filterParams = {
 };
 
 function RMImportListing(props) {
-  const { AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility, isSimulation } = props;
+  const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation } = props;
   const [tableData, settableData] = useState([]);
   const [RawMaterial, setRawMaterial] = useState([]);
   const [RMGrade, setRMGrade] = useState([]);
@@ -278,7 +278,7 @@ function RMImportListing(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditbale = false
-    const { EditAccessibility, DeleteAccessibility } = props;
+
     if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
       if (EditAccessibility && !rowData.IsRMAssociated) {
         isEditbale = true
