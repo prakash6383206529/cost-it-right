@@ -3,7 +3,7 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    GET_REPORT_LIST,config, EMPTY_GUID
+    GET_REPORT_LIST, config, EMPTY_GUID
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -16,10 +16,8 @@ const headers = config
 //         dispatch({ type: API_REQUEST });
 //         const queryParameter = `logged_in_user_id=${data.loggedUser}&logged_in_user_level_id=${data.logged_in_user_level_id}&part_number=${data.partNo}&created_by=${data.createdBy}&requested_by=${data.requestedBy}&status=${data.status}&type_of_costing=''`
 //         const request = axios.get(`${API.getReportListing}/${queryParameter}`, headers)
-//         console.log(request);
 //         request.then((response) => {
 //             alert(response.data);
-//             console.log(response.data);
 //             if (response.data.Result || response.status === 204) {
 //                 //
 //                 dispatch({

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import moment from 'moment';
-import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
+import { getFgWiseImpactData, getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
 
 
 function VerifyImpactDrawer(props) {
@@ -38,7 +38,7 @@ function VerifyImpactDrawer(props) {
       }
 
     }))
-    // dispatch(getFgWiseImpactData(simulationId, () => { setshowTableData(true) }))
+    dispatch(getFgWiseImpactData(simulationId, () => { }))
 
   }, [])
 
@@ -153,7 +153,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />}
+                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationTechnologyIdOfRevisionData} viewCostingAndPartNo={false} />}
 
                 </div>
               </Row>

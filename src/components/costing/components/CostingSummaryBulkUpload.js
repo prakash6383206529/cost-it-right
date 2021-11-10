@@ -75,7 +75,6 @@ class CostingSummaryBulkUpload extends Component {
    */
     buttonFormatter = (props) => {
         const row = props?.data;
-        //  console.log(row,'row: ', row.FileUploadStatus);
         const status = row.FileUploadStatus
 
         if (status === PENDING) {

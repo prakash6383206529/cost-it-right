@@ -398,7 +398,6 @@ function ApproveRejectDrawer(props) {
 
       }
       if (type === 'Sender') {
-        console.log(attachmentsData, 'attachmentsDataattachmentsData')
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
@@ -434,7 +433,6 @@ function ApproveRejectDrawer(props) {
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false
-        console.log(senderObj, 'attachmentsDataattachmentsData SENDER OBJ')
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {

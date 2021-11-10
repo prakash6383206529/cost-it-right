@@ -38,7 +38,6 @@ function Insights(props) {
     }, []);
 
     const CategorySelectList = useSelector(state => state.boughtOutparts.bopCategorySelectList)
-    // console.log(filterRMSelectList,'this is material')
 
 
     const handleTechnologyChange = (value) => {
@@ -99,7 +98,6 @@ function Insights(props) {
         setAverageGrpahData(avgGraphData);
         setMinimumGrpahData(minGraphData);
         setMaximumGrpahData(maxGraphData);
-        // console.log(rowData);
     }
 
     const renderListing = (label) => {
@@ -115,7 +113,6 @@ function Insights(props) {
             }
         }
         else {
-            // console.log('genrated');
         }
     }
 
