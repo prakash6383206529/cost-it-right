@@ -41,9 +41,6 @@ export function Fgwiseimactdata(props) {
         props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
 
     }
-   console.log(showTableData, "impactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactDataimpactData")
-
-
 
 
     return (
