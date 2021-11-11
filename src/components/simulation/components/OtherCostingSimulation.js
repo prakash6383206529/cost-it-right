@@ -474,7 +474,7 @@ function OtherCostingSimulation(props) {
 
     const returnExcelColumnCombine = (data = [], TempData) => {
         let temp = []
-        let tempNext = []
+
         temp = TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
@@ -487,12 +487,20 @@ function OtherCostingSimulation(props) {
 
         temp && temp.map(item => {
 
-
-            tempNext.push({ CostingHead: (item.CostingHead), CostingNumber: (item.CostingNumber), VendorName: (item.VendorName), PlantName: (item.PlantName), Technology: (item.Technology), PlantCode: (item.PlantCode), PartNo: (item.PartNo), PartName: (item.PartName), ECNNumber: (item.ECNNumber), RevisionNumber: (item.RevisionNumber), OldPOPrice: (item.OldPOPrice), NewPOPrice: (item.NewPOPrice == 0 ? item.OldPOPrice : item.NewPOPrice), OldNetCC: (item.OldNetCC), NewNetCC: (item.NewNetCC == 0 ? item.OldNetCC : item.NewNetCC), OldOverheadCost: (item.OldOverheadCost), NewOverheadCost: (item.NewOverheadCost == 0 ? item.OldOverheadCost : item.NewOverheadCost), OldProfitCost: (item.OldProfitCost), NewProfitCost: (item.NewProfitCost == 0 ? item.OldProfitCost : item.NewProfitCost), OldRejectionCost: (item.OldRejectionCost), NewRejectionCost: (item.NewRejectionCost == 0 ? item.OldRejectionCost : item.NewRejectionCost), OldICCCost: (item.OldICCCost), NewICCCost: (item.NewICCCost == 0 ? item.OldICCCost : item.NewICCCost), OldPaymentTermsCost: (item.OldPaymentTermsCost), NewPaymentTermsCost: (item.NewPaymentTermsCost == 0 ? item.OldPaymentTermsCost : item.NewPaymentTermsCost), OldOtherCost: (item.OldOtherCost), NewOtherCost: (item.NewOtherCost == 0 ? item.OldOtherCost : item.NewOtherCost), NOldDiscountCostewRMPrice: (item.NOldDiscountCostewRMPrice), NewDiscountCost: (item.NewDiscountCost == 0 ? item.NOldDiscountCostewRMPrice : item.NewDiscountCost), OldNetOverheadAndProfitCost: (item.OldNetOverheadAndProfitCost), NewNetOverheadAndProfitCost: (item.NewNetOverheadAndProfitCost == 0 ? item.OldNetOverheadAndProfitCost : item.NewNetOverheadAndProfitCost), Variance: (item.Variance) })
-            return null;
+            item.NewPOPrice = (item.NewPOPrice === 0 ? item.OldPOPrice : item.NewPOPrice)
+            item.NewNetCC = (item.NewNetCC === 0 ? item.OldNetCC : item.NewNetCC)
+            item.NewOverheadCost = (item.NewOverheadCost === 0 ? item.OldOverheadCost : item.NewOverheadCost)
+            item.NewProfitCost = (item.NewProfitCost === 0 ? item.OldProfitCost : item.NewProfitCost)
+            item.NewRejectionCost = (item.NewRejectionCost === 0 ? item.OldRejectionCost : item.NewRejectionCost)
+            item.NewICCCost = (item.NewICCCost === 0 ? item.OldICCCost : item.NewICCCost)
+            item.NewPaymentTermsCost = (item.NewPaymentTermsCost === 0 ? item.OldPaymentTermsCost : item.NewPaymentTermsCost)
+            item.NewOtherCost = (item.NewOtherCost === 0 ? item.OldOtherCost : item.NewOtherCost)
+            item.NewDiscountCost = (item.NewDiscountCost === 0 ? item.NOldDiscountCostewRMPrice : item.NewDiscountCost)
+            item.NewNetOverheadAndProfitCost = (item.NewNetOverheadAndProfitCost === 0 ? item.OldNetOverheadAndProfitCost : item.NewNetOverheadAndProfitCost)
+            return null
         });
 
-        return (<ExcelSheet data={tempNext} name={'Costing'}>
+        return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
