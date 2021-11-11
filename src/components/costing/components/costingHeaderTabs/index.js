@@ -24,7 +24,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 
 function CostingHeaderTabs(props) {
-
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,

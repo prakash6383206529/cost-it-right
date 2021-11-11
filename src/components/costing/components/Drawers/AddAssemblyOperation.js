@@ -120,6 +120,7 @@ function AddAssemblyOperation(props) {
         "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse,
       }
     }
+    
     dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
       props.closeDrawer('')
     }))

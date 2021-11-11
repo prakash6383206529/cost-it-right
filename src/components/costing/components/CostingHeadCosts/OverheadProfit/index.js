@@ -2,15 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
-import Switch from "react-switch";
+import { fetchModelTypeAPI,   getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { getOverheadProfitDataByModelType,  gridDataAdded, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
-import TooltipCustom from '../../../../common/Tooltip';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
@@ -671,6 +669,7 @@ function OverheadProfit(props) {
   */
 
   const IncludeSurfaceTreatmentCall = () => {
+    console.log("COMING IN SURFECE TREATMENT CALL");
 
     if (!CostingViewMode) {
 

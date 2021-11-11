@@ -401,7 +401,8 @@ export default connect(mapStateToProps,
     {
         bulkUploadCosting,
         getCostingTechnologySelectList,
-        plasticBulkUploadCosting
+        plasticBulkUploadCosting,
+        machiningBulkUploadCosting
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,

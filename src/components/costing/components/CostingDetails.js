@@ -1104,12 +1104,14 @@ function CostingDetails(props) {
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
     zbcPlantGrid && zbcPlantGrid.map((el, index) => {
       setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
+      setValue('ShareOfBusinessPercent','')
       return null;
     })
 
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
     vbcVendorGrid && vbcVendorGrid.map((el, index) => {
       setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
+      setValue('ShareOfBusinessPercent','')
       return null;
     })
   }

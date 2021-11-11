@@ -231,6 +231,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight:scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -250,6 +251,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight:scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -276,6 +278,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight:scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -294,6 +297,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight:scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -333,6 +337,7 @@ function RawMaterialCost(props) {
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
         CutOffRMC: CutOffRMC,
+        ScrapWeight:scrapWeight
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -351,6 +356,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight:scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -379,6 +385,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight:scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -397,6 +404,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight:scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -417,6 +425,7 @@ function RawMaterialCost(props) {
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           CutOffRMC: CutOffRMC,
+          ScrapWeight:scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -435,6 +444,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight:scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -475,6 +485,7 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: ScrapRecoveryPercentage,
         IsScrapRecoveryPercentageApplied: true,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+        ScrapWeight:recoveredScrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -496,6 +507,7 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: ScrapRecoveryPercentage,
         IsScrapRecoveryPercentageApplied: true,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+        ScrapWeight:scrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -936,7 +948,7 @@ function RawMaterialCost(props) {
                                 />
                               </td>
                             }
-                            <td>{checkForDecimalAndNull(item.FinishWeight ? ((item.GrossWeight - item.FinishWeight).toFixed(9)) * (item.ScrapRecoveryPercentage ? calculatePercentage(item.ScrapRecoveryPercentage) : 1) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>

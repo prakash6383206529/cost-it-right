@@ -15,6 +15,7 @@ import {
   GET_COSTING_SPECIFIC_TECHNOLOGY,
   EMPTY_GUID,
   SET_PLASTIC_ARR,
+  SET_ASSEM_BOP_CHARGE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2200,4 +2201,13 @@ export function saveAssemblyPartRowCostingCalculation(data, callback) {
      apiErrors(error);
    });
  };
+}
+
+export function saveAssemblyBOPHandlingCharge(data,callback){
+  return (dispatch)=>{
+    dispatch({
+      type: SET_ASSEM_BOP_CHARGE,
+      payload: data
+    })
+  }
 }

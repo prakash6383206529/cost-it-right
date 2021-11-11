@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, } from '../../../actions/Costing';
+import { getRMCCTabData, saveAssemblyBOPHandlingCharge, } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -32,6 +32,15 @@ function AssemblyPart(props) {
         console.log("IN ASSEMBLY SERVER DATA");
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
+          if(Data.CostingPartDetails.IsApplyBOPHandlingCharges){
+            let obj={
+              IsApplyBOPHandlingCharges: true,
+              BOPHandlingPercentage: Data.CostingPartDetails.BOPHandlingPercentage,
+              BOPHandlingCharges:Data.CostingPartDetails.BOPHandlingCharges
+            }
+            dispatch(saveAssemblyBOPHandlingCharge(obj,()=>{
+          }))
+          }
           props.toggleAssembly(BOMLevel, PartNumber, Data)
         }
       }))

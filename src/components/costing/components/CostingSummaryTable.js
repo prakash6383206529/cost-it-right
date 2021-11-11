@@ -821,7 +821,7 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netRMCostView[0].ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                             </td>
                           )

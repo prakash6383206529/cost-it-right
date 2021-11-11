@@ -21,7 +21,7 @@ import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 
 let counter = 0;
 function ProcessCost(props) {
-  const { data } = props
+  const { data,item } = props
 
   const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange',
@@ -59,8 +59,8 @@ function ProcessCost(props) {
   //   //defaultValue: 'default' // default value before the render
   // })
 
-  useEffect(() => {
-  }, [gridData])
+  // useEffect(() => {
+  // }, [gridData])
 
   useEffect(() => {
     const Params = {
@@ -69,8 +69,9 @@ function ProcessCost(props) {
       PartNumber: props.item.PartNumber,
     }
     if (!CostingViewMode) {
+      console.log("HOW MANY TIME COMING HER");
       selectedIds(gridData)
-      props.setProcessCost(tabData, Params)
+      props.setProcessCost(tabData, Params,item)
     }
   }, [tabData]);
 
@@ -457,7 +458,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOperationCost(tempArr, props.index)
+    props.setOperationCost(tempArr, props.index,item)
   }
 
   const setOtherOperationCost = (otherOperationGrid, index) => {
@@ -474,7 +475,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOtherOperationCost(tempArr, props.index)
+    props.setOtherOperationCost(tempArr, props.index,item)
   }
 
   /**
