@@ -6,7 +6,7 @@ import {
     getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
@@ -180,85 +180,8 @@ class FuelListing extends Component {
 
 
 
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { fuelComboSelectList } = this.props;
-        const temp = [];
-        if (label === 'fuel') {
-            fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-        if (label === 'state') {
-            fuelComboSelectList && fuelComboSelectList.States && fuelComboSelectList.States.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
 
-    }
 
-    /**
-    * @method handleFuel
-    * @description called
-    */
-    handleFuel = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ fuel: newValue, }, () => {
-                const { fuel } = this.state;
-                this.props.getStateListByFuel(fuel.value, () => { })
-            })
-        } else {
-            this.setState({ fuel: [] })
-        }
-    };
-
-    /**
-    * @method handleState
-    * @description called
-    */
-    handleState = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ StateName: newValue, }, () => {
-                const { StateName } = this.state;
-                this.props.getFuelListByState(StateName.value, () => { })
-            })
-        } else {
-            this.setState({ StateName: [] })
-        }
-    };
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { StateName, fuel } = this.state;
-        const fuelID = fuel ? fuel.value : 0;
-        const stateId = StateName ? StateName.value : 0;
-
-        this.getDataList(fuelID, stateId)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            fuel: [],
-            StateName: [],
-        }, () => {
-            this.props.getFuelComboData(() => { })
-            this.getDataList(0, 0)
-        })
-    }
 
     formToggle = () => {
         this.props.formToggle()
@@ -325,7 +248,7 @@ class FuelListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
-       gridOptions.api.setFilterModel(null);
+        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -346,7 +269,7 @@ class FuelListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.fuelDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             // exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -375,66 +298,7 @@ class FuelListing extends Component {
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="Fuel"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Select Fuel'}
-                                            isClearable={false}
-                                            options={this.renderListing('fuel')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.fuel == null || this.state.fuel.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.handleFuel}
-                                            valueDescription={this.state.fuel}
-                                            disabled={false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="state"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Select State'}
-                                            isClearable={false}
-                                            options={this.renderListing('state')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.handleState}
-                                            valueDescription={this.state.StateName}
-                                            disabled={false}
-                                        />
-                                    </div>
 
-
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>)}
                         <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -442,9 +306,7 @@ class FuelListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        ""
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -506,8 +368,8 @@ class FuelListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    floatingFilter = {true}
-domLayout='autoHeight'
+                                    floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.fuelDataList}
                                     pagination={true}
@@ -517,8 +379,8 @@ domLayout='autoHeight'
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >

@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
@@ -119,22 +119,6 @@ class ExchangeRateListing extends Component {
         });
     }
 
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { currencySelectList } = this.props;
-        const temp = [];
-        if (label === 'currency') {
-            currencySelectList && currencySelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-    }
 
     /**
     * @method editItemDetails
@@ -212,40 +196,7 @@ class ExchangeRateListing extends Component {
         )
     };
 
-    /**
-    * @method handleCurrency
-    * @description called
-    */
-    handleCurrency = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ currency: newValue, });
-        } else {
-            this.setState({ currency: [], })
-        }
-    };
 
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { currency, } = this.state;
-        const currencyTemp = currency ? currency.value : 0;
-        this.getTableListData(currencyTemp)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            currency: [],
-        }, () => {
-            this.getTableListData()
-        })
-    }
 
     formToggle = () => {
         this.setState({ toggleForm: true })
@@ -360,10 +311,10 @@ class ExchangeRateListing extends Component {
         };
 
 
-        
+
         const options = {
             clearSearch: true,
-            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             exportCSVBtn: this.createCustomExportCSVButton,
@@ -390,48 +341,7 @@ class ExchangeRateListing extends Component {
                             }
 
                             <Row className="pt-4 blue-before">
-                                {this.state.shown && (
-                                    <Col md="7" className="filter-block">
-                                        <div className="d-inline-flex justify-content-start align-items-top w100">
-                                            <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                            <div className="flex-fill">
-                                                <Field
-                                                    name="Currency"
-                                                    type="text"
-                                                    label=""
-                                                    component={searchableSelect}
-                                                    placeholder={'Select Currency'}
-                                                    isClearable={false}
-                                                    options={this.renderListing('currency')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleCurrency}
-                                                    valueDescription={this.state.currency}
-                                                    disabled={false}
-                                                />
-                                            </div>
 
-                                            <div className="flex-fill">
-                                                <button
-                                                    type="button"
-                                                    //disabled={pristine || submitting}
-                                                    onClick={this.resetFilter}
-                                                    className="reset mr10"
-                                                >
-                                                    {'Reset'}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    //disabled={pristine || submitting}
-                                                    onClick={this.filterList}
-                                                    className="user-btn mr5"
-                                                >
-                                                    {'Apply'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </Col>)}
                                 <Col md="6" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div>
@@ -439,9 +349,7 @@ class ExchangeRateListing extends Component {
                                                 <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                     <div className="cancel-icon-white"></div></button>
                                             ) : (
-                                                <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                    <div className="filter mr-0"></div>
-                                                </button>
+                                                ""
                                             )}
                                             {(AddAccessibility && !this.props.isSimulation) && <button
                                                 type="button"
@@ -488,7 +396,7 @@ class ExchangeRateListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
+                                        title: EMPTY_DATA,
                                     }}
                                     frameworkComponents={this.frameworkComponents}
                                 >
@@ -499,7 +407,7 @@ class ExchangeRateListing extends Component {
                                     <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' minWidth={160}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'minWidth={160} ></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

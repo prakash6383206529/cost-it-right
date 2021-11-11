@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -287,9 +287,10 @@ function CostingDetails(props) {
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
-              setValue('ShareOfBusiness', Data?.Price ? Data.Price : '')
+              setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
               setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
               setShowNextBtn(true)
+
             }),
             )
           } else {
@@ -494,10 +495,10 @@ function CostingDetails(props) {
    * @description HIDE COPY COSTING DRAWER
    */
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
-    nextToggle()
+    //nextToggle()
     setIsCopyCostingDrawer(false)
     dispatch(getZBCCostingByCostingId('', (res) => { }))
-    console.log('res from after copy costig before if: ');
+
     if (type === ZBC) {
       setCostingData({ costingId: costingId, type })
       dispatch(getZBCCostingByCostingId(costingId, (res) => {
@@ -511,7 +512,7 @@ function CostingDetails(props) {
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
       dispatch(getZBCCostingByCostingId(costingId, (res) => {
-        console.log('res from after copy costig: ', res);
+
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -722,7 +723,7 @@ function CostingDetails(props) {
         if (res.data.Result) {
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
 
-            console.log('res from after copy costig add detail: ', res);
+
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -856,7 +857,7 @@ function CostingDetails(props) {
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
 
-          console.log('res from after copy costig from update costing confirm: ', res);
+
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -889,7 +890,7 @@ function CostingDetails(props) {
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
 
-        console.log('res from after copy costig move to costing : ', res);
+
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1059,7 +1060,7 @@ function CostingDetails(props) {
   const backToFirstStep = () => {
     dispatch(getZBCCostingByCostingId('', (res) => {
 
-      console.log('res from after copy costig back to step one: ', res);
+
     }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
@@ -1748,7 +1749,7 @@ function CostingDetails(props) {
                                   <tr>
                                     <td colSpan={7}>
                                       <NoContentFound
-                                        title={CONSTANT.EMPTY_DATA}
+                                        title={EMPTY_DATA}
                                       />
                                     </td>
                                   </tr>
@@ -1881,7 +1882,7 @@ function CostingDetails(props) {
                                   <tr>
                                     <td colSpan={7}>
                                       <NoContentFound
-                                        title={CONSTANT.EMPTY_DATA}
+                                        title={EMPTY_DATA}
                                       />
                                     </td>
                                   </tr>

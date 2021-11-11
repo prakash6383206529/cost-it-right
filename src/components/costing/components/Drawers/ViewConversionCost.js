@@ -3,7 +3,7 @@ import { checkForDecimalAndNull } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 
 function ViewConversionCost(props) {
@@ -111,7 +111,7 @@ function ViewConversionCost(props) {
                       {costingProcessCost && costingProcessCost.length === 0 && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -179,7 +179,7 @@ function ViewConversionCost(props) {
                         {costingOperationCost && costingOperationCost.length === 0 && (
                           <tr>
                             <td colSpan={9}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}
@@ -248,7 +248,7 @@ function ViewConversionCost(props) {
                         {othercostingOperationCost && othercostingOperationCost.length === 0 && (
                           <tr>
                             <td colSpan={9}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}
@@ -301,7 +301,7 @@ function ViewConversionCost(props) {
                           {costingToolsCost.length === 0 && (
                             <tr>
                               <td colSpan={8}>
-                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr>
                           )}
@@ -346,7 +346,7 @@ function ViewConversionCost(props) {
                       {surfaceTreatmentDetails && surfaceTreatmentDetails.length === 0 && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -376,7 +376,7 @@ function ViewConversionCost(props) {
                       {netTransportationCostView && netTransportationCostView.UOM === null ?
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr> :
                         <tr>

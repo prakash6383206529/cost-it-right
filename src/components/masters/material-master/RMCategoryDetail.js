@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getRowMaterialDataAPI, deleteCategoryAPI } from '../../actions/Material';
 import { Loader } from '../../../../common/Loader';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { CATEGORY, NAME, DATE, EMPTY_DATA } from '../../../config/constants';
 import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
@@ -76,9 +76,9 @@ class RMCategoryDetail extends Component {
                             {this.props.rowMaterialCategoryDetail && this.props.rowMaterialCategoryDetail.length > 0 &&
                                 <thead>
                                     <tr>
-                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CATEGORY} ${NAME}`}</th>
                                         {/* <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th> */}
-                                        <th>{`${CONSTANT.DATE}`}</th>
+                                        <th>{`${DATE}`}</th>
                                     </tr>
                                 </thead>}
                             <tbody >
@@ -96,7 +96,7 @@ class RMCategoryDetail extends Component {
                                             </tr>
                                         )
                                     })}
-                                {this.props.rowMaterialCategoryDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.rowMaterialCategoryDetail === undefined && <NoContentFound title={EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>

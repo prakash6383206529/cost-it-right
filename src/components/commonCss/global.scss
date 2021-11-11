@@ -1953,6 +1953,9 @@ label {
   font-size: $font-15;
   font-weight: $font-regular;
   margin-bottom: 5px !important;
+  @media screen and (max-width: $miniDesktop) {
+    font-size:$font-14
+  }
 }
 
 form .form-control {
@@ -2409,6 +2412,9 @@ body {
   >a{
     padding-right: 10px;
     word-break: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
   }
 }
 .attachment-row{

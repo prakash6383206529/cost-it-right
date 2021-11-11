@@ -1427,6 +1427,8 @@ export const GET_SELECTLIST_APPLICABILITY_HEAD = 'GET_SELECTLIST_APPLICABILITY_H
 export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMULATION'
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
 
+export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
+
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
 export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
@@ -1446,6 +1448,8 @@ export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
+export const PUSHED = 'Pushed'
+export const ERROR = 'Error'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1508,8 +1512,12 @@ export const CostingSummary_BulkUpload = 'Costing Summary BulkUpload'
 export const Simulation_History = 'Simulation History'
 export const Simulation_Page = "Simulation"
 export const Simulation_Upload = 'Simulation Upload'
-
+export const COSTING_SUMMARY_ = 'Costing Summary'
+export const APPROVAL_APP = 'Approval'
 export const TAX = 'Tax'
+export const COSTING_DETAILS_REPORT = 'Costing Details Report'
+export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
+//export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
 export const PLASTIC = 'Plastic';
@@ -1697,3 +1705,19 @@ export const RM_MASTER_ID = 1
 
 //approve reject drawer
 export const provisional = "Provisional"
+
+
+//AllConastant File Moved here
+
+export const NAME = 'Name';
+export const TYPE = 'Type';
+export const CATEGORY = 'Category';
+export const MATERIAL = 'Raw Material';
+export const GRADE = 'Grade';
+export const SPECIFICATION = 'Specification';
+export const DATE = 'Created Date';
+export const EMPTY_DATA = 'No Record Found';
+
+export const LEVEL0 = 'L0';
+export const LEVEL1 = 'L1';
+export const SUB_ASSEMBLY = 'Sub Assembly';

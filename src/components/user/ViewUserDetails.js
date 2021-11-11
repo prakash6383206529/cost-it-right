@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import { getUserDataAPI, getPermissionByUser, getActionHeadsSelectList, getUsersTechnologyLevelAPI, } from "../../actions/auth/AuthActions";
 import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
+import { EMPTY_DATA } from '../../config/constants'
 import NoContentFound from '../common/NoContentFound';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../common/HeaderTitle';
@@ -312,7 +312,7 @@ class ViewUserDetails extends Component {
                           }
                         </tbody>
                       </Table>
-                      {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                      {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                     </Col>}
 
                 </Row>

@@ -20,7 +20,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Table, Button, Row, Col } from 'reactstrap';
 import "./UserRegistration.scss";
-import { CONSTANT } from "../../helper/AllConastant";
+import { EMPTY_DATA } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -470,7 +470,7 @@ class UserRegistration extends Component {
     */
   setInitialModuleData = (data) => {
     this.setState({ Modules: data })
-   
+
   }
 
   /**
@@ -489,7 +489,7 @@ class UserRegistration extends Component {
         tempArray.push(index)
       }
       return null;
-    
+
     })
 
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
@@ -982,11 +982,11 @@ class UserRegistration extends Component {
 
     updatedData.IsRemoveCosting = RemoveCostingFlag;
     //set state here true
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     this.props.updateUserAPI(updatedData, (res) => {
       if (res && res.data && res.data.Result) {
         //set state false
-        this.setState({isLoader:false})
+        this.setState({ isLoader: false })
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
       this.cancel();
@@ -1181,13 +1181,13 @@ class UserRegistration extends Component {
         SimulationTechnologyLevels: tempHeadLevelArray,
         MasterLevels: tempMasterLevelArray
       }
-      this.setState({isLoader:true})
+      this.setState({ isLoader: true })
       this.props.registerUserAPI(userData, res => {
-       
+
         this.setState({ isSubmitted: false, })
 
         if (res && res.data && res.data.Result) {
-          this.setState({isLoader:false})
+          this.setState({ isLoader: false })
           toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
           this.cancel();
         }
@@ -1507,7 +1507,7 @@ class UserRegistration extends Component {
 
 
                     <div className=" row mb-4">
-                      <div className={'col-md-3'}>
+                      <div className={'col-md-4'}>
                         <label
                           className="custom-checkbox"
                           onChange={this.onPressUserPermission}
@@ -1653,7 +1653,7 @@ class UserRegistration extends Component {
                                 }
                               </tbody>
                             </Table>
-                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                           </div>
                         </div>
                       </>
@@ -1765,7 +1765,7 @@ class UserRegistration extends Component {
                                 }
                               </tbody>
                             </Table>
-                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            {this.state.HeadLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                           </div>
                         </div>
                       </>
@@ -1868,7 +1868,7 @@ class UserRegistration extends Component {
                                     }
                                   </tbody>
                                 </Table>
-                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.state.masterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                               </div>
                             </div>
                           </>

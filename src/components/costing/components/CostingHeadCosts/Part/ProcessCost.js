@@ -9,7 +9,7 @@ import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
@@ -640,7 +640,7 @@ function ProcessCost(props) {
                   {gridData && gridData.length === 0 && (
                     <tr>
                       <td colSpan={7}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
                   )}

@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
+import { SimulationUtils } from '../SimulationUtils'
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -401,15 +402,19 @@ function OtherCostingSimulation(props) {
     }, [isView])
 
     const returnExcelColumn = (data = [], TempData) => {
+
         let temp = []
-        temp = TempData.map((item) => {
-            if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            }
-            return item
-        })
+        temp = SimulationUtils(TempData)
+
+        // temp = TempData.map((item) => {
+        //     if (item.CostingHead === true) {
+        //         item.CostingHead = 'Vendor Based'
+        //     } else if (item.CostingHead === false) {
+        //         item.CostingHead = 'Zero Based'
+        //     }
+        //     return item
+        // })
+
 
         return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -553,7 +558,7 @@ function OtherCostingSimulation(props) {
                                                     loadingOverlayComponent={'customLoadingOverlay'}
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
+                                                        title: EMPTY_DATA,
                                                         customClassName: 'nodata-found-container'
                                                     }}
                                                     frameworkComponents={frameworkComponents}

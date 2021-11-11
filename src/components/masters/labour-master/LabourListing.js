@@ -6,7 +6,7 @@ import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
 import { getPlantListByState, getZBCPlantList, getStateSelectList, } from '../actions/Fuel';
@@ -130,67 +130,7 @@ class LabourListing extends Component {
     })
   }
 
-  /**
-   * @method renderListing
-   * @description Used show listing of unit of measurement
-   */
-  renderListing = (label) => {
-    const {
-      plantSelectList,
-      stateSelectList,
-      machineTypeSelectList,
-      labourTypeByPlantSelectList,
-    } = this.props
-    const temp = []
 
-    if (label === 'EmploymentTerms') {
-      let tempObj = [
-        { label: 'Employed', value: 'Employed' },
-        { label: 'Contractual', value: 'Contractual' },
-      ]
-      return tempObj
-    }
-
-    if (label === 'state') {
-      stateSelectList &&
-        stateSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-
-    if (label === 'plant') {
-      plantSelectList &&
-        plantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-
-    if (label === 'MachineTypeList') {
-      machineTypeSelectList &&
-        machineTypeSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-
-    if (label === 'labourList') {
-      labourTypeByPlantSelectList &&
-        labourTypeByPlantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-  }
 
   /**
    * @method editItemDetails
@@ -268,72 +208,6 @@ class LabourListing extends Component {
     // })
   }
 
-  /**
-   * @method handleHeadChange
-   * @description called
-   */
-  handleHeadChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ EmploymentTerms: newValue })
-    } else {
-      this.setState({ EmploymentTerms: '' })
-    }
-  }
-
-  /**
-   * @method handleState
-   * @description  STATE FILTER
-   */
-  handleState = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue }, () => {
-        const { StateName } = this.state
-        this.props.getPlantListByState(StateName.value, () => { })
-      })
-    } else {
-      this.setState({ StateName: [] })
-      this.props.getZBCPlantList(() => { })
-    }
-  }
-
-  /**
-   * @method handlePlant
-   * @description  PLANT FILTER
-   */
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue }, () => {
-        const { plant } = this.state
-        this.props.getLabourTypeByPlantSelectList(plant.value, () => { })
-      })
-    } else {
-      this.setState({ plant: [] })
-    }
-  }
-
-  /**
-   * @method labourHandler
-   * @description called
-   */
-  labourHandler = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ labourType: newValue })
-    } else {
-      this.setState({ labourType: [] })
-    }
-  }
-
-  /**
-   * @method handleMachineType
-   * @description called
-   */
-  handleMachineType = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ machineType: newValue })
-    } else {
-      this.setState({ machineType: [] })
-    }
-  }
 
   /**
    * @method statusButtonFormatter
@@ -430,28 +304,7 @@ class LabourListing extends Component {
     this.getTableListData(ETerms, State, Plant, labour, machine)
   }
 
-  /**
-   * @method resetFilter
-   * @description Reset user filter
-   */
-  resetFilter = () => {
-    this.setState(
-      {
-        EmploymentTerms: [],
-        StateName: [],
-        plant: [],
-        labourType: [],
-        machineType: [],
-      },
-      () => {
-        this.props.getZBCPlantList(() => { })
-        this.props.getStateSelectList(() => { })
-        this.props.getMachineTypeSelectList(() => { })
-        this.props.getLabourTypeByPlantSelectList('', () => { })
-        this.getTableListData()
-      },
-    )
-  }
+
 
   /**
    * @method formToggle
@@ -555,7 +408,7 @@ class LabourListing extends Component {
 
   resetState() {
     gridOptions.columnApi.resetColumnState();
-   gridOptions.api.setFilterModel(null);
+    gridOptions.api.setFilterModel(null);
   }
 
   /**
@@ -579,7 +432,7 @@ class LabourListing extends Component {
     }
     const options = {
       clearSearch: true,
-      noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       // exportCSVBtn: this.createCustomExportCSVButton,
       // onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
@@ -620,116 +473,7 @@ class LabourListing extends Component {
               </Col>
             </Row>
             <Row className="pt-4 filter-row-large blue-before">
-              {this.state.shown && (
-                <Col md="12" className="filter-block col-lg-10 labour-filter-block">
-                  <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills">
-                      <h5>{`Filter By:`}</h5>
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="Employment Terms"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Employment"}
-                        isClearable={false}
-                        options={this.renderListing("EmploymentTerms")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.EmploymentTerms == null || this.state.EmploymentTerms.length === 0 ? [required] : []}
-                        required={true}
-                        handleChangeDescription={this.handleHeadChange}
-                        valueDescription={this.state.EmploymentTerms}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="state"
-                        type="text"
-                        label={""}
-                        component={searchableSelect}
-                        placeholder={"State"}
-                        isClearable={false}
-                        options={this.renderListing("state")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.handleState}
-                        valueDescription={this.state.StateName}
-                        disabled={false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="plant"
-                        type="text"
-                        label={""}
-                        component={searchableSelect}
-                        placeholder={"Plant"}
-                        isClearable={false}
-                        options={this.renderListing("plant")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.handlePlant}
-                        valueDescription={this.state.plant}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="LabourTypeIds"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Labour Type"}
-                        isClearable={false}
-                        options={this.renderListing("labourList")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.labourHandler}
-                        valueDescription={this.state.labourType}
-                      />
-                    </div>
-                    <div className="flex-fill pr-0">
-                      <Field
-                        name="MachineType"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Machine Type"}
-                        isClearable={false}
-                        options={this.renderListing("MachineTypeList")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.handleMachineType}
-                        valueDescription={this.state.machineType}
-                        disabled={false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.resetFilter}
-                        className="reset mr5 px-2"
-                      >
-                        {"Reset"}
-                      </button>
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.filterList}
-                        className="user-btn mr0"
-                      >
-                        {"Apply"}
-                      </button>
-                    </div>
-                  </div>
-                </Col>
-              )}
+
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
@@ -737,9 +481,7 @@ class LabourListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
-                      </button>
+                      ""
                     )}
                     {AddAccessibility && (
                       <button
@@ -799,8 +541,8 @@ class LabourListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                floatingFilter = {true}
-domLayout='autoHeight'
+                floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
@@ -810,8 +552,8 @@ domLayout='autoHeight'
                 loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
-                  imagClass:'imagClass'
+                  title: EMPTY_DATA,
+                  imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
