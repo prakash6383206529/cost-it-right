@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
-import { getVerifyExchangeSimulationList,getverifyCombinedProcessSimulationList } from '../actions/Simulation';
+import { getVerifyExchangeSimulationList, getverifyCombinedProcessSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { toastr } from 'react-redux-toastr';
@@ -75,7 +75,7 @@ function OtherVerifySimulation(props) {
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                                toastr.warning('No approved costing exist for this exchange rate.')
+                                toastr.warning('No approved costing exist for this combined process.')
                                 setHideRunButton(true)
                                 return false
                             }
