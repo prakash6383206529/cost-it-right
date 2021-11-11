@@ -573,7 +573,7 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            {loader && <LoaderCustom />}
+            {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form>
               <Row className="drawer-heading">
                 <Col>
