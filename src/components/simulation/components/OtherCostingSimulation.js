@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
+import { SimulationUtils } from '../SimulationUtils'
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -402,32 +403,8 @@ function OtherCostingSimulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
 
-
-        TempData && TempData.map(item => {
-
-
-            if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            }
-
-            item.NewPOPrice = (item.NewPOPrice === 0 ? item.OldPOPrice : item.NewPOPrice)
-            item.NewRMRate = (item.NewRMRate === 0 ? item.OldRMRate : item.NewRMRate)
-            item.NewScrapRate = (item.NewScrapRate === 0 ? item.OldScrapRate : item.NewScrapRate)
-            item.NewRMPrice = (item.NewRMPrice === 0 ? item.OldRMPrice : item.NewRMPrice)
-
-            item.NewOverheadCost = (item.NewOverheadCost === 0 ? item.OldOverheadCost : item.NewOverheadCost)
-            item.NewProfitCost = (item.NewProfitCost === 0 ? item.OldProfitCost : item.NewProfitCost)
-            item.NewRejectionCost = (item.NewRejectionCost === 0 ? item.OldRejectionCost : item.NewRejectionCost)
-            item.NewICCCost = (item.NewICCCost === 0 ? item.OldICCCost : item.NewICCCost)
-            item.NewPaymentTermsCost = (item.NewPaymentTermsCost === 0 ? item.OldPaymentTermsCost : item.NewPaymentTermsCost)
-            item.NewOtherCost = (item.NewOtherCost === 0 ? item.OldOtherCost : item.NewOtherCost)
-            item.NewDiscountCost = (item.NewDiscountCost === 0 ? item.NOldDiscountCostewRMPrice : item.NewDiscountCost)
-            item.NewNetOverheadAndProfitCost = (item.NewNetOverheadAndProfitCost === 0 ? item.OldNetOverheadAndProfitCost : item.NewNetOverheadAndProfitCost)
-            return null
-        });
-
+        let temp = []
+        temp = SimulationUtils(TempData)
 
         // temp = TempData.map((item) => {
         //     if (item.CostingHead === true) {
@@ -439,7 +416,7 @@ function OtherCostingSimulation(props) {
         // })
 
 
-        return (<ExcelSheet data={TempData} name={'Costing'}>
+        return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
