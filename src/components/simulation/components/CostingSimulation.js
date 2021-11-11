@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
+import { Errorbox } from '../../common/ErrorBox';
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -63,6 +64,9 @@ function CostingSimulation(props) {
     const [simulationTypeState, setSimulationTypeState] = useState("")
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [tableData, setTableData] = useState([])
+    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
+    const [status, setStatus] = useState('')
+    const [noContent, setNoContent] = useState(false)
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -89,6 +93,7 @@ function CostingSimulation(props) {
             if (res.data.Result) {
                 const tokenNo = res.data.Data.SimulationTokenNumber
                 const Data = res.data.Data
+                setStatus(Data.SapMessage)
                 var vendorId = Data.VendorId
                 var SimulationTechnologyId = Data.SimulationTechnologyId
                 var SimulationType = Data.SimulationType
@@ -474,6 +479,11 @@ function CostingSimulation(props) {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
+    const errorBoxClass = () => {
+        let temp
+        temp =status===(null && '')?  'd-none':''
+        return temp
+    }
 
 
     const frameworkComponents = {
@@ -513,6 +523,11 @@ function CostingSimulation(props) {
                             <div className={`ag-grid-react`}>
 
 
+                                <Row>
+                                    <Col sm="12">
+                                    <Errorbox customClass={errorBoxClass()} errorText={status} />
+                                    </Col>
+                                </Row>
                                 <Row>
                                     <Col sm="12">
                                         <h1 class="mb-0">Token No:{tokenNo}</h1>
