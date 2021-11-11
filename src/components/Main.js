@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import SideBar from './nav/NavBar'
 import { Route, Switch } from 'react-router-dom'
 import ReduxToastr from 'react-redux-toastr'
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Footer from './common/Footer'
 import Login from './login/Login'
 import NotFoundPage from './common/NotFoundPage'
@@ -56,7 +58,7 @@ import SimulationApprovalSummary from './simulation/components/SimulationApprova
 import productMaster from './masters/product-master'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
-import NewReport from './report/NewReport'
+import CostingBenchmarkReport from './report/CostingBenchmarkReport'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -370,13 +372,14 @@ class Main extends Component {
                     <Route path="/simulation-history" component={AuthMiddleware(SimulationApprovalListing, Simulation_History)} />
 
                     <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_History)} />
-                    AuthMiddleware
+
                     <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
 
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
 
 
                     <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
+                    <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
@@ -413,6 +416,19 @@ class Main extends Component {
             // transitionIn="bounceIn"
             // transitionOut="bounceOut"
             progressBar
+          />
+
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            transition={Slide}
           />
           {this.handleUserData()}
         </div>
