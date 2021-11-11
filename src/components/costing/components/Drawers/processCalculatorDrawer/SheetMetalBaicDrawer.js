@@ -361,7 +361,6 @@ function SheetMetalBaicDrawer(props) {
                       customClassName={'withBorder'}
                       errors={errors.Quantity}
                       disabled={(props.calculatorData.UOMType === MASS || props.calculatorData.UOMType === TIME || props.CostingViewMode) ? true : false}
-
                     />
                   </Col>
                   <Col md="4">
