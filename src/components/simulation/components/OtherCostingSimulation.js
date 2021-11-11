@@ -473,19 +473,16 @@ function OtherCostingSimulation(props) {
     }
 
     const returnExcelColumnCombine = (data = [], TempData) => {
-        let temp = []
 
-        temp = TempData.map((item) => {
+
+        TempData && TempData.map(item => {
+
+
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
                 item.CostingHead = 'Zero Based'
             }
-            return item
-        })
-
-
-        temp && temp.map(item => {
 
             item.NewPOPrice = (item.NewPOPrice === 0 ? item.OldPOPrice : item.NewPOPrice)
             item.NewNetCC = (item.NewNetCC === 0 ? item.OldNetCC : item.NewNetCC)
@@ -500,7 +497,7 @@ function OtherCostingSimulation(props) {
             return null
         });
 
-        return (<ExcelSheet data={temp} name={'Costing'}>
+        return (<ExcelSheet data={TempData} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
