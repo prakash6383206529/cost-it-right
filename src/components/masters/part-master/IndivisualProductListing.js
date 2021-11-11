@@ -472,11 +472,9 @@ class IndivisualProductListing extends Component {
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
+                            <AgGridColumn field="Description" headerName="Description" ></AgGridColumn>
                             <AgGridColumn field="ProductGroupCode" headerName="Group Code"></AgGridColumn>
-                            <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="Description" headerName="Description." ></AgGridColumn>
                             <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="ProductId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
