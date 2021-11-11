@@ -33,6 +33,12 @@ export const apiErrors = (res) => {
  * @param response
  */
 const handleHTTPStatus = (response) => {
+  const toastrOptions = {
+    timeOut: 0,
+    onCloseButtonClick: () => console.log('Close button was clicked'),
+    showCloseButton: true,
+    // closeOnToastrClick: true,
+  }
   switch (response.status) {
     case 202:
       return toastr.error('No Data Available.')
@@ -52,7 +58,8 @@ const handleHTTPStatus = (response) => {
       return toastr.error('Something is not right. Please contact your IT Team.')
     case 400:
       const errMsg400 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg400)
+      return toastr.error(errMsg400, toastrOptions)
+
     case 401:
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
@@ -84,7 +91,7 @@ const handleHTTPStatus = (response) => {
       return toastr.error('The resource you requested no longer exists.')
     case 412:
       const errMsg = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg)
+      return toastr.error(errMsg, toastrOptions)
     case 413:
       return toastr.error("Server can't process such long request. Please contact your IT Team")
     case 415:
