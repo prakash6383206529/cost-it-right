@@ -244,10 +244,10 @@ function ApproveRejectDrawer(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
-          toastr.success('Simulation has been saved successfully.')
+          toastr.success('Simulation has been saved successfully')
           setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
-            const status = res.response.status
+            const status = res.response?.status
             if (status === 400) {
               setDisableSubmitbutton(true)
             }
