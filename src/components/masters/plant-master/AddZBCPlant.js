@@ -332,7 +332,7 @@ class AddZBCPlant extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>
-                        {isEditFlag ? "Update ZBC Plant" : "Add ZBC Plant"}
+                        {isEditFlag ? "Update f Plant" : "Add ZBC Plant"}
                       </h3>
                     </div>
                     <div

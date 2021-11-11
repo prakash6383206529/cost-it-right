@@ -223,11 +223,23 @@ class MachineRateListing extends Component {
     }
 
 
+    // renderPlantFormatter = (props) => {
+    //     const row = props?.data;
+    //     return row.IsVendor ? row.DestinationPlant : row.Plants
+    // }
     renderPlantFormatter = (props) => {
-        const row = props?.data;
-        return row.IsVendor ? row.DestinationPlant : row.Plants
-    }
 
+        const row = props?.data;
+
+
+
+
+
+        const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
+
+        return value
+
+    }
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })

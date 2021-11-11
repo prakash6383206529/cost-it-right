@@ -5,10 +5,10 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
-import { EXCHNAGERATE } from '../../../config/constants';
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
@@ -184,23 +184,75 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
+        console.log(masterId, 'masterIdmasterId')
+        switch (Number(masterId)) {
+            case Number(EXCHNAGERATE):
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(RMDOMESTIC):
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(RMIMPORT):
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(SURFACETREATMENT):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
-        if (masterId === Number(EXCHNAGERATE)) {
-            dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                if (res.data.Result) {
-                    toastr.success('Simulation process has been run successfully.')
-                    runSimulationCosting()
-                }
-            }))
-        } else {
-            //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
-            dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                if (res.data.Result) {
-                    toastr.success('Simulation process has been run successfully.')
-                    runSimulationCosting()
-                }
-            }))
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            case Number(OPERATIONS):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            default:
+                break;
         }
+
+
+
+
+        // if (masterId === Number(EXCHNAGERATE)) {
+        //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+        //         if (res.data.Result) {
+        //             toastr.success('Simulation process has been run successfully.')
+        //             runSimulationCosting()
+        //         }
+        //     }))
+        // } else {
+        //     //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
+        //     dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+        //         if (res.data.Result) {
+        //             toastr.success('Simulation process has been run successfully.')
+        //             runSimulationCosting()
+        //         }
+        //     }))
+        // }
     }), 500)
 
     const onSubmit = () => {

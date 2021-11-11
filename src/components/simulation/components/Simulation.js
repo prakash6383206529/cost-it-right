@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
@@ -24,6 +24,7 @@ import { setFilterForRM } from '../../masters/actions/Material';
 import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
+import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -134,7 +135,7 @@ function Simulation(props) {
             case RMDOMESTIC:
                 return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
             case MACHINERATE:
                 return (<MachineRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case BOPDOMESTIC:
@@ -144,7 +145,9 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
+            case SURFACETREATMENT:
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -217,7 +220,7 @@ function Simulation(props) {
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
-        if (selectedRowCount === 0) {
+        if (isRowSelected === 0) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
         switch (master.value) {
@@ -250,7 +253,7 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (selectedRowCount !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
@@ -268,36 +271,128 @@ function Simulation(props) {
 
                     if (index !== 0) {
                         if (element.CostingHead !== Data[index - 1].CostingHead) {
-                            // toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            return false
+                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
-                            // toastr.warning('Please select one vendor at a time.')
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
-                            return false
+                            // return false
                         }
                         if (element.PlantId !== Data[index - 1].PlantId) {
-                            // toastr.warning('Please select one Plant at a time.')
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            return false
+                            // return false
                         }
                     }
                 })
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    // setShowEditTable(true)
-                    setEditWarning(false);
+                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 }
                 break;
+
+            case SURFACETREATMENT:
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
+                Data && Data.forEach((element, index) => {
+                    if (index !== 0) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+                            setEditWarning(true);
+                            flag = false
+                            // return false
+                        }
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
+                            vendorFlag = false
+                            // return false
+                        }
+                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                            setEditWarning(true);
+                            plantFlag = false
+                            // return false
+                        }
+                    }
+                });
+                if (flag === true && vendorFlag === true && plantFlag === true) {
+                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (isRowSelected !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                }
+                //  else {
+                //     setEditWarning(true)
+                // }
+                break;
+            case OPERATIONS:
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
+                Data && Data.forEach((element, index) => {
+                    console.log(element, 'elementttt')
+                    if (index !== 0) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+                            setEditWarning(true);
+                            flag = false
+                            // return false
+                        }
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
+                            vendorFlag = false
+                            // return false
+                        }
+                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                            setEditWarning(true);
+                            plantFlag = false
+                            // return false
+                        }
+                    }
+                });
+                if (flag === true && vendorFlag === true && plantFlag === true) {
+                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (isRowSelected !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                }
+                //  else {
+                //     setEditWarning(true)
+                // }
+                break;
+
 
             default:
                 break;
         }
-
-        if (selectedRowCount === 0) {
+        if (isRowSelected === 0) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
 
@@ -316,6 +411,10 @@ function Simulation(props) {
                 return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmImportListing)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} />
+            case SURFACETREATMENT:
+                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            case OPERATIONS:
+                return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }

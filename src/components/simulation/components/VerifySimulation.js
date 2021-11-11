@@ -4,9 +4,9 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { getVerifySimulationList } from '../actions/Simulation';
+import { getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -24,7 +24,7 @@ import { debounce } from 'lodash'
 const gridOptions = {};
 
 function VerifySimulation(props) {
-    const { cancelVerifyPage } = props
+    const { cancelVerifyPage, isSurfaceTreatment } = props
     const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -48,6 +48,8 @@ function VerifySimulation(props) {
         reValidateMode: 'onChange',
     })
 
+    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -58,22 +60,54 @@ function VerifySimulation(props) {
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-        dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
-            if (res.data.Result) {
-                const data = res.data.Data
-                if (data.SimulationImpactedCostings.length === 0) {
-                    toastr.warning('No approved costing exist for this raw material.')
-                    setHideRunButton(true)
-                    return false
-                }
-                setTokenNo(data.TokenNumber)
-                setSimualtionId(data.SimulationId)
-                setHideRunButton(false)
-                setSimulationTechnologyId(data.SimulationtechnologyId)
-                setVendorId(data.VendorId)
+        console.log(selectedMasterForSimulation, 'selectedMasterForSimulationselectedMasterForSimulation')
+        console.log(props.token, 'kkkkk')
+        // if (props.token) {
+        switch (Number(selectedMasterForSimulation.value)) {
+            case Number(RMDOMESTIC || RMIMPORT):
+                dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationImpactedCostings.length === 0) {
+                            toastr.warning('No approved costing exist for this raw material.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        setHideRunButton(false)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
+                        setVendorId(data.VendorId)
 
-            }
-        }))
+                    }
+                }))
+                break;
+            case Number(SURFACETREATMENT):
+
+                dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            toastr.warning('No approved costing exist for this exchange rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        setHideRunButton(false)
+                    }
+                }))
+                break;
+            default:
+                break;
+        }
+        // }
+
+
+
+
     }
 
 
@@ -239,10 +273,10 @@ function VerifySimulation(props) {
 
 
     const runSimulation = debounce(() => {
-        if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
-            return false
-        }
+        // if (selectedRowData.length === 0) {
+        //     toastr.warning('Please select atleast one costing.')
+        //     return false
+        // }
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -384,7 +418,7 @@ function VerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={verifyList}
+                                                rowData={[]}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -404,20 +438,29 @@ function VerifySimulation(props) {
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
                                                 <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
-                                                <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
-                                                <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
-                                                <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
-                                                <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
-
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="UOM" headerName="UOM"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="NewPO" headerName="New PO"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OldPO" headerName="Old PO"></AgGridColumn>}
+                                                {!isSurfaceTreatment &&
+                                                    <>  <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
+                                                        <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
+                                                    </>
+                                                }
                                             </AgGridReact>
 
                                             <div className="paging-container d-inline-block float-right">
@@ -452,7 +495,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId} />
+                <CostingSimulation simulationId={simulationId} isSurfaceTreatment={isSurfaceTreatment} />
             }
             {
                 simulationDrawer &&
@@ -464,6 +507,7 @@ function VerifySimulation(props) {
                     closeDrawer={closeDrawer}
                     objs={objs}
                     anchor={"right"}
+                    masterId={selectedMasterForSimulation.value}
                 />
             }
         </>
