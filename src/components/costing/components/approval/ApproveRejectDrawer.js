@@ -956,6 +956,7 @@ function ApproveRejectDrawer(props) {
                                       className="float-right"
                                       onClick={() => deleteFile(f.FileId, f.FileName)}
                                       src={redcrossImg}
+
                                     ></img>
                                   </div>
                                 );
