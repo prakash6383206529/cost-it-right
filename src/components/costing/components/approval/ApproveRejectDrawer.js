@@ -962,6 +962,7 @@ function ApproveRejectDrawer(props) {
                                       className="float-right"
                                       onClick={() => props.isOpen ? "" : deleteFile(f.FileId, f.FileName)}
                                       src={redcrossImg}
+
                                     ></img>
                                   </div>
                                 );
