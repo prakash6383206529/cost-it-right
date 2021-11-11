@@ -17,6 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import AttachmentSec from './AttachmentSec'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
+import LoaderCustom from '../../../common/LoaderCustom';
 
 
 function ApproveRejectDrawer(props) {
@@ -41,6 +42,7 @@ function ApproveRejectDrawer(props) {
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [disableSubmitButton, setDisableSubmitbutton] = useState(false)
+  const [loader, setLoader] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
@@ -48,7 +50,6 @@ function ApproveRejectDrawer(props) {
 
   useEffect(() => {
     dispatch(setAttachmentFileData([], () => { }))
-
   }, [])
 
   useEffect(() => {
@@ -113,17 +114,19 @@ function ApproveRejectDrawer(props) {
   }, [])
 
 
+
+
   const getApproversList = (departObj) => {
     let values = []
     let approverDropdownValue = []
-    let listForDropdown = []
+    let count = 0
     selectedRowData && selectedRowData.map(item => {
       if (!(values.includes(item.SimulationTechnologyId))) {
         values.push(item.SimulationTechnologyId)
       }
     })
     if (values.length > 1) {
-      values.map(item => {
+      values.map((item, index) => {
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departObj,
@@ -139,6 +142,8 @@ function ApproveRejectDrawer(props) {
             // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             // setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
             let tempDropdownList = []
+            let listForDropdown = []
+
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
               tempDropdownList.push({
@@ -175,19 +180,22 @@ function ApproveRejectDrawer(props) {
                 }
               })
             })
+
+
+            setApprovalDropDown(listForDropdown)
+            count = count + 1;
+            if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
+
+              toastr.warning('User does not exist on next level for selected simulation.')
+              setApprovalDropDown([])
+              return false
+            }
           },
           ),
         )
       })
 
 
-      if (listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) {
-
-        toastr.warning('User does not exist on next level for selected simulation.')
-        return false
-      }
-
-      setApprovalDropDown(listForDropdown)
     } else {
 
       let obj = {
@@ -237,11 +245,13 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
           toastr.success('Simulation has been saved successfully.')
+          setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
             const status = res.response.status
             if (status === 400) {
               setDisableSubmitbutton(true)
             }
+            setLoader(false)
           }))
         }
       }))
@@ -388,7 +398,6 @@ function ApproveRejectDrawer(props) {
 
       }
       if (type === 'Sender') {
-        console.log(attachmentsData, 'attachmentsDataattachmentsData')
         //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
         let senderObj = {}
         senderObj.ApprovalId = "00000000-0000-0000-0000-000000000000"
@@ -424,7 +433,6 @@ function ApproveRejectDrawer(props) {
         senderObj.Attachements = attachmentsData
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false
-        console.log(senderObj, 'attachmentsDataattachmentsData SENDER OBJ')
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
@@ -557,6 +565,7 @@ function ApproveRejectDrawer(props) {
 
   return (
     <>
+
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
@@ -564,6 +573,7 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
+            {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form>
               <Row className="drawer-heading">
                 <Col>

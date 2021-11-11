@@ -1005,7 +1005,7 @@ class AddProfit extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={require("../../../assests/images/red-cross.png")}
+                                      src={attachClose}
                                     ></img>
                                   </div>
                                 );

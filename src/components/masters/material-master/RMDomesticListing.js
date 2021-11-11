@@ -62,7 +62,7 @@ var filterParams = {
 };
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, DownloadAccessibility, isSimulation, apply } = props;
+    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
     const [tableData, settableData] = useState([]);
     const [RawMaterial, setRawMaterial] = useState([]);
     const [RMGrade, setRMGrade] = useState([]);
@@ -280,7 +280,8 @@ function RMDomesticListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
-        const { EditAccessibility, DeleteAccessibility } = props;
+        //const { EditAccessibility, DeleteAccessibility } = props;
+
         if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
             if (EditAccessibility && !rowData.IsRMAssociated) {
                 isEditbale = true
@@ -542,14 +543,18 @@ function RMDomesticListing(props) {
     }
 
     const onRowSelect = () => {
-
         var selectedRows = gridApi.getSelectedRows();
+        if (isSimulation) {
+            let len = gridApi.getSelectedRows().length
+            props.isRowSelected(len)
+            apply(selectedRows)
+        }
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         setSelectedRowData(selectedRows)
-        apply(selectedRows)
-
     }
-
+    const onFloatingFilterChanged = (p) => {
+        gridApi.deselectAll()
+    }
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -674,6 +679,7 @@ function RMDomesticListing(props) {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>

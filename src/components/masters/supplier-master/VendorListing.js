@@ -88,7 +88,7 @@ class VendorListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData(0, '', "", "", 10, this.state.floatingFilterData, true)
+        this.getTableListData(0, '', "", "", 100, this.state.floatingFilterData, true)
 
         this.applyPermission(this.props.topAndLeftMenuData)
     }
@@ -134,7 +134,7 @@ class VendorListing extends Component {
             const nextNo = data.state.currentRowIndex + 10;
 
             //     //gridApi.paginationGoToNextPage();
-            data.getTableListData(nextNo, '', "", "", 10, this.state.floatingFilterData, true)
+            data.getTableListData(nextNo, '', "", "", 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: nextNo })
 
         }
@@ -149,7 +149,7 @@ class VendorListing extends Component {
             const previousNo = data.state.currentRowIndex - 10;
 
 
-            data.getTableListData(previousNo, '', "", "", 10, this.state.floatingFilterData, true)
+            data.getTableListData(previousNo, '', "", "", 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: previousNo })
 
         }
@@ -163,7 +163,7 @@ class VendorListing extends Component {
         this.setState({ warningMessage: false })
         this.setState({ pageNo: 1 })
         data.setState({ currentRowIndex: 0 })
-        this.getTableListData(0, '', "", "", 10, data.state.floatingFilterData, true)
+        this.getTableListData(0, '', "", "", 100, data.state.floatingFilterData, true)
         data.setState({ enableExitFilterSearchButton: true })
 
     }
@@ -173,7 +173,7 @@ class VendorListing extends Component {
         this.setState({ floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" } })
         let emptyObj = { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" }
 
-        this.getTableListData(0, '', "", "", 10, emptyObj, true)
+        this.getTableListData(0, '', "", "", 100, emptyObj, true)
         data.setState({ pageNo: 1 })
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -474,7 +474,7 @@ class VendorListing extends Component {
 
     closeBulkUploadDrawer = () => {
         this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData(this.state.currentRowIndex, '', "", "", 10, this.state.floatingFilterData, true)
+            this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
         })
     }
 
@@ -489,7 +489,7 @@ class VendorListing extends Component {
         const Country = country && country != null ? country.value : null;
 
 
-        this.getTableListData(this.state.currentRowIndex, '', "", "", 10, this.state.floatingFilterData, true)
+        this.getTableListData(this.state.currentRowIndex, '', "", "", 100, this.state.floatingFilterData, true)
         //this.getTableListData(vType, vName, Country)
     }
 
@@ -595,12 +595,14 @@ class VendorListing extends Component {
     render() {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const ExcelFile = ReactExport.ExcelFile;
 
         const options = {
             clearSearch: true,
             noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             exportCSVBtn: this.createCustomExportCSVButton,
+            onExportToCSV: this.handleExportCSVButtonClick,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -784,8 +786,8 @@ class VendorListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            domLayout='autoHeight'
                             floatingFilter={true}
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.supplierDataList}
                             pagination={true}

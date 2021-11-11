@@ -6181,6 +6181,25 @@ body{
     }
   }
 }
+.simulation-history {
+   .token-no-grid {
+     .ag-cell-value {
+       position: absolute;
+       left: 38px;
+     }
+   }
+}
+.unset-height {
+  min-height: auto !important;
+}
+.costing-summary {
+  button {
+    float: right;
+  }
+}
+.d-none {
+  display: none !important;
+}
   .token-no-grid {
     .ag-cell-value {
       position: absolute;
@@ -6265,7 +6284,6 @@ body{
   right: -20px;
   top: 8px;
 }
-.pagination-button-container {
 
 .part-manage-component {
   .ag-paging-panel {
@@ -6285,10 +6303,8 @@ body{
 .pagination-button-container {
   display: flex;
   align-items: center;
-}
   grid-column-gap: 10px;
 }
-
 .previous-btn {
   font-family: "agGridMaterial";
   font-size: 22px;
@@ -6319,8 +6335,31 @@ body{
   content: "\f11f";
 }
 .warning-text{
-
 position:absolute;
 bottom: 1rem;
 left: 17rem;
+}
+// FG-Wise table css Start
+.fgwise-table {
+  .cr-brdr-main {
+    width: 100% !important;
+  }
+  border: 1px solid #3333;
+  table {
+   th {
+     border: 1px solid #3333 !important;
+     border-top: none !important;
+     &:last-child {
+       border-left: none !important;
+       border-right: none !important;
+     }
+     &.second-last-child {
+      border-right: none !important;
+     }
+   }
+  }
+}
+// FG-Wise table css End
+.approve-reject-drawer-loader {
+  min-height: calc(100vh + 250px);
 }

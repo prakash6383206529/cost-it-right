@@ -8,7 +8,7 @@ import NoContentFound from '../common/NoContentFound'
 import { EMPTY_DATA } from '../../config/constants'
 import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
-import { getReportListing } from '../report/actions/ReportListing'
+import { getReportListing } from './actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -190,9 +190,7 @@ function ReportListing(props) {
         dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
-
             // var t1 = performance.now();
-
         }))
 
     }
@@ -201,8 +199,8 @@ function ReportListing(props) {
     useEffect(() => {
 
 
-
-        getTableData(0, 100, true);
+        setLoader(true)
+        getTableData(0, 500, true);
 
         return () => {
 
@@ -227,10 +225,11 @@ function ReportListing(props) {
 
         setReportListingDataStateArray(reportListingData)
         if (reportListingData.length > 0) {
+
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
 
-                reportListingData[0].TotalRecordCount > 100 ? getTableData(100, reportListingData[0].TotalRecordCount, true) : blank()
+                reportListingData[0].TotalRecordCount > 500 ? getTableData(500, reportListingData[0].TotalRecordCount, true) : blank()
                 setLoader(false)
             }
             if (totalRecordCount !== 0) {
@@ -362,7 +361,7 @@ function ReportListing(props) {
         customNoRowsOverlay: NoContentFound,
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
-        customLoadingOverlay: LoaderCustom
+        //customLoadingOverlay: LoaderCustom
     };
 
     /**
@@ -383,7 +382,6 @@ function ReportListing(props) {
     }
 
     const onRowSelect = () => {
-
 
         var selectedRows = gridApi.getSelectedRows();
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
@@ -409,7 +407,6 @@ function ReportListing(props) {
         let temp = []
 
 
-
         return (<ExcelSheet data={TempData} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
@@ -431,7 +428,7 @@ function ReportListing(props) {
 
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
-            {/* {isLoader && <LoaderCustom />} */}
+            {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Report</h1>
@@ -514,6 +511,7 @@ function ReportListing(props) {
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
                         <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>
@@ -559,7 +557,7 @@ function ReportListing(props) {
                         </select>
                     </div>
                     <div className="warning-text">
-                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading More Data'} />}
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading more data'} />}
                     </div>
                 </div>
             </div>

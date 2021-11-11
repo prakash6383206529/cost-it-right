@@ -497,7 +497,7 @@ function CostingDetails(props) {
    * @description HIDE COPY COSTING DRAWER
    */
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
-    nextToggle()
+    //nextToggle()
     setIsCopyCostingDrawer(false)
     dispatch(getZBCCostingByCostingId('', (res) => { }))
     if (type === ZBC) {
@@ -722,6 +722,8 @@ function CostingDetails(props) {
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
+
+
             setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
@@ -854,6 +856,8 @@ function CostingDetails(props) {
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -885,9 +889,12 @@ function CostingDetails(props) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
+         
         }, 500)
       }))
     }
@@ -1053,6 +1060,8 @@ function CostingDetails(props) {
    */
   const backToFirstStep = () => {
     dispatch(getZBCCostingByCostingId('', (res) => {
+
+
     }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
@@ -1097,12 +1106,14 @@ function CostingDetails(props) {
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
     zbcPlantGrid && zbcPlantGrid.map((el, index) => {
       setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
+      setValue('ShareOfBusinessPercent','')
       return null;
     })
 
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
     vbcVendorGrid && vbcVendorGrid.map((el, index) => {
       setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
+      setValue('ShareOfBusinessPercent','')
       return null;
     })
   }
@@ -1792,6 +1803,7 @@ function CostingDetails(props) {
                               </thead>
                               <tbody>
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
+                                  console.log(index,'item: ', item);
                                   let displayCopyBtn = (item.Status === DRAFT ||
                                     item.Status === PENDING ||
                                     item.Status === WAITING_FOR_APPROVAL ||

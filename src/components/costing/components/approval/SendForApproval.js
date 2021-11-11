@@ -398,7 +398,6 @@ const SendForApproval = (props) => {
 
 
     // debounce_fun()
-    // console.log("After debounce");
     // props.closeDrawer()
     dispatch(
       sendForApprovalBySender(obj, (res) => {

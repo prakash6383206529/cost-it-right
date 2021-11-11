@@ -2740,14 +2740,16 @@ export const REPORT_DOWNLOAD_EXCEl = [
 ]
 
 export const CombinedProcessSimulation = [
-    { label: "Technology", value: "Technology" },
-    { label: "Plant", value: "Plant" },
-    { label: "NetCC", value: "NetCC" },
+    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "PartName", value: "PartName" },
+    { label: "PartNumber", value: "PartNumber" },
+    { label: "PlantName", value: "PlantName" },
+    { label: "ConversionCost", value: "ConversionCost" },
     { label: "NewCC", value: "NewCC" },
-    { label: "RemainingFieldsTotal", value: "RemainingFieldsTotal" },
-    { label: "Total", value: "Total" },
+    { label: "RemainingTotal", value: "RemainingTotal" },
+    { label: "TotalCost", value: "TotalCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
-    { label: "DisplayStatus", value: "DisplayStatus" }
+    // { label: "DisplayStatus", value: "DisplayStatus" }
 ]
 
 export const CombinedProcessSimulationFinal = [
