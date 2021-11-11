@@ -43,6 +43,7 @@ function RunSimulationDrawer(props) {
     const [disableAdditionalDiscount, setDisableAdditionalDiscount] = useState(false)
     const [disableAdditionalOtherCost, setDisableAdditionalOtherCost] = useState(false)
     const [toggleSwitchLabel, setToggleSwitchLabel] = useState(false)
+    const [toggleSwitchAdditionalDiscount, setToggleSwitchAdditionalDiscount] = useState(false)
 
 
     const [linkingTokenNumber, setLinkingTokenNumber] = useState('')
@@ -106,7 +107,7 @@ function RunSimulationDrawer(props) {
         }
 
 
-        if (elementObj.Text === "Additional Discount %") {
+        if (elementObj.Text === "Additional Discount") {
             setinputAdditionalDiscount(!inputAdditionalDiscount)
 
             setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
@@ -167,7 +168,7 @@ function RunSimulationDrawer(props) {
         const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
         const PaymentTerms = selectedData.includes("Payment Terms")
         const Inventory = selectedData.includes("Inventory")
-        const AdditionalDiscount = selectedData.includes("Additional Discount %")
+        const AdditionalDiscount = selectedData.includes("Additional Discount")
         const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
 
         let temp = []
@@ -182,6 +183,7 @@ function RunSimulationDrawer(props) {
         obj.AdditionalOtherValue = getValues("OtherCost")
         obj.AdditionalDiscountPercentage = getValues("Discount")
         obj.IsAdditionalOtherCostPercentage = toggleSwitchLabel
+        obj.IsAdditionalDiscountPercentage = toggleSwitchAdditionalDiscount
 
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
@@ -244,6 +246,10 @@ function RunSimulationDrawer(props) {
 
     }
 
+    const onChangeAdditionalDiscount = () => {
+        setToggleSwitchAdditionalDiscount(!toggleSwitchAdditionalDiscount)
+
+    }
     return (
         <>
             {/* <runSimulationDrawerDataContext.Provider value={runSimulationDrawerData}>
@@ -288,7 +294,7 @@ function RunSimulationDrawer(props) {
                                                     if (el.Value === '0') return false;
                                                     return (
                                                         <Col md="12" className="mb-3 p-0">
-                                                            <div class={`custom-check1 d-inline-block ${el.Text === "Additional Discount %" ? "drawer-side-input" : ''} ${el.Text === "Additional Other Cost" ? 'drawer-side-input-other' : ''}`}>
+                                                            <div class={`custom-check1 d-inline-block ${el.Text === "Additional Discount" ? "drawer-side-input" : ''} ${el.Text === "Additional Other Cost" ? 'drawer-side-input-other' : ''}`}>
                                                                 <label
                                                                     className="custom-checkbox mb-0"
                                                                     onChange={() => handleApplicabilityChange(el)}
@@ -298,7 +304,7 @@ function RunSimulationDrawer(props) {
                                                                     <input
                                                                         type="checkbox"
                                                                         value={"All"}
-                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount %" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
+                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
                                                                         checked={IsAvailable(el.Value)}
                                                                     />
 
@@ -352,35 +358,63 @@ function RunSimulationDrawer(props) {
                                                                 }
 
 
-                                                                {(el.Text === "Additional Discount %") && inputAdditionalDiscount ?
-                                                                    <TextFieldHookForm
-                                                                        label=""
-                                                                        name={"Discount"}
-                                                                        Controller={Controller}
-                                                                        control={control}
-                                                                        register={register}
-                                                                        mandatory={true}
-                                                                        rules={{
-                                                                            required: true,
-                                                                            pattern: {
-                                                                                value: /^\d*\.?\d*$/,
-                                                                                message: 'Invalid Number.'
-                                                                            },
+                                                                {(el.Text === "Additional Discount") && inputAdditionalDiscount ?
 
-                                                                            max: {
-                                                                                value: 100,
-                                                                                message: "Should not be greater than 100"
-                                                                            },
-                                                                        }}
-                                                                        handleChange={() => { }}
-                                                                        defaultValue={""}
-                                                                        className=""
-                                                                        customClassName={"withBorder"}
-                                                                        errors={errors.Discount}
-                                                                        disabled={false}
-                                                                    /> : " "
+                                                                    <Fragment>
+                                                                        <div className="toggle-button-per-and-fix">
+                                                                            <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                                <Switch
+                                                                                    onChange={onChangeAdditionalDiscount}
+                                                                                    checked={toggleSwitchLabel}
+                                                                                    id="normal-switch"
+                                                                                    disabled={false}
+                                                                                    background="#4DC771"
+                                                                                    onColor="#4DC771"
+                                                                                    onHandleColor="#ffffff"
+                                                                                    offColor="#4DC771"
+                                                                                    uncheckedIcon={true}
+                                                                                    checkedIcon={true}
+                                                                                    height={20}
+                                                                                    width={46}
+                                                                                />
+                                                                                <span className="ml-2">Percentage</span>
+                                                                            </label>
+                                                                            {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+
+
+
+                                                                            <TextFieldHookForm
+                                                                                label=""
+                                                                                name={"Discount"}
+                                                                                Controller={Controller}
+                                                                                control={control}
+                                                                                register={register}
+                                                                                mandatory={true}
+                                                                                rules={{
+                                                                                    required: true,
+                                                                                    pattern: {
+                                                                                        value: /^\d*\.?\d*$/,
+                                                                                        message: 'Invalid Number.'
+                                                                                    },
+
+                                                                                    max: {
+                                                                                        value: 100,
+                                                                                        message: "Should not be greater than 100"
+                                                                                    },
+                                                                                }}
+                                                                                handleChange={() => { }}
+                                                                                defaultValue={""}
+                                                                                className=""
+                                                                                customClassName={"withBorder"}
+                                                                                errors={errors.Discount}
+                                                                                disabled={false}
+                                                                            />
+                                                                        </div>
+                                                                    </Fragment>
+
+                                                                    : " "
+
                                                                 }
-
 
 
                                                             </div>
