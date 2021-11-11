@@ -290,9 +290,10 @@ function CostingDetails(props) {
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
-              setValue('ShareOfBusiness', Data?.Price ? Data.Price : '')
+              setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
               setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
               setShowNextBtn(true)
+
             }),
             )
           } else {

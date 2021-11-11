@@ -4,15 +4,13 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
-import { getAllPartSelectList, } from '../../../components/costing/actions/Costing'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
-import { getAllUserAPI } from '../../../actions/auth/AuthActions'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { getSimulationApprovalList, setMasterForSimulation, getSimulationStatus, deleteDraftSimulation } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -61,10 +59,6 @@ function SimulationApprovalListing(props) {
 
     useEffect(() => {
         getTableData()
-        dispatch(getAllPartSelectList(() => { }))
-        dispatch(getSimulationStatus(() => { }))
-        dispatch(getAllUserAPI(() => { }))
-
     }, [])
 
     useEffect(() => {

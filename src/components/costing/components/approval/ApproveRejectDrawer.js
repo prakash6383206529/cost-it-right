@@ -209,7 +209,7 @@ function ApproveRejectDrawer(props) {
       dispatch(
         getAllSimulationApprovalList(obj, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+          // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           let tempDropdownList = []
           res.data.DataList && res.data.DataList.map((item) => {
@@ -223,6 +223,12 @@ function ApproveRejectDrawer(props) {
             return null
           })
           setApprovalDropDown(tempDropdownList)
+          if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
+
+            toastr.warning('User does not exist on next level for selected simulation.')
+            setApprovalDropDown([])
+            return false
+          }
         },
         ),
       )
@@ -244,10 +250,10 @@ function ApproveRejectDrawer(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
-          toastr.success('Simulation has been saved successfully.')
+          toastr.success('Simulation has been saved successfully')
           setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
-            const status = res.response.status
+            const status = res.response?.status
             if (status === 400) {
               setDisableSubmitbutton(true)
             }

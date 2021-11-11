@@ -20,6 +20,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
+import { SimulationUtils } from '../SimulationUtils'
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -458,14 +459,7 @@ function OtherCostingSimulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
-            if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            }
-            return item
-        })
+        temp = SimulationUtils(TempData)
 
         return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
