@@ -1,4 +1,7 @@
+import React from 'react';
 import { toastr } from 'react-redux-toastr'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Moment from 'moment'
 import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -8,7 +11,9 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
-import { func } from 'joi'
+
+
+toast.configure();
 
 /**
  * @method  apiErrors
@@ -20,11 +25,11 @@ export const apiErrors = (res) => {
 
 
   if (response?.data?.error?.message?.value) {
-    toastr.error(response.data.error.message.value)
+    toast.warning(response.data.error.message.value)
   } else if (response) {
     response && handleHTTPStatus(response)
   } else {
-    toastr.error('Something went wrong please try again.')
+    toast.error('Something went wrong please try again.')
   }
 }
 
@@ -36,75 +41,76 @@ export const apiErrors = (res) => {
 const handleHTTPStatus = (response) => {
   switch (response.status) {
     case 202:
-      return toastr.error('No Data Available.')
+      return toast.error('No Data Available.')
     case 203:
-      return toastr.error('Data is inconsistent. Please refresh your session by re-login')
+      return toast.error('Data is inconsistent. Please refresh your session by re-login')
     case 204:
-      return toastr.error('Intentionally blank for now.')
+      return toast.error('Intentionally blank for now.')
     case 205:
-      return toastr.error('Please clear your cache for data to reflect')
+      return toast.error('Please clear your cache for data to reflect')
     case 206:
-      return toastr.error('The data might not have been updated properly. Please try again to ensure')
+      return toast.error('The data might not have been updated properly. Please try again to ensure')
     case 300:
     case 301:
     case 302:
     case 303:
 
-      return toastr.error('Something is not right. Please contact your IT Team.')
+      return toast.error('Something is not right. Please contact your IT Team.')
     case 400:
-      return toastr.error('Bad Request. Please contact your IT Team.')
+      return toast.error('Bad Request. Please contact your IT Team.')
     case 401:
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
       reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
-      return toastr.error('Authentication error. Please contact your IT Team.')
+      return toast.error('Authentication error. Please contact your IT Team.')
     case 403:
-      return toastr.error('You are not allowed to access this resource. Please contact your IT Team.',)
+      return toast.error('You are not allowed to access this resource. Please contact your IT Team.',)
     case 404:
-      return toastr.error('Not found')
+      return toast.error('Not found')
     case 405:
-      return toastr.error('You are not allowed to access this resource. Please contact your IT Team',)
+      return toast.error('You are not allowed to access this resource. Please contact your IT Team',)
     case 406:
 
       const errMsg406 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg406)
+      return toast.error(errMsg406)
     case 409:
     case 411:
     case 414:
     case 416:
     case 427:
-      return toastr.error('Something is not right. Please contact your IT Team')
+      return toast.error('Something is not right. Please contact your IT Team')
     case 407:
-      return toastr.error('Proxy Authentication Error. Please contact your IT Team')
+      return toast.error('Proxy Authentication Error. Please contact your IT Team')
     case 408:
-      return toastr.error('Your request has timed out. Please try again after some time.')
+      return toast.error('Your request has timed out. Please try again after some time.')
     case 410:
-      return toastr.error('The resource you requested no longer exists.')
+      return toast.error('The resource you requested no longer exists.')
     case 412:
       const errMsg = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg)
+      return toast.error(errMsg)
     case 413:
-      return toastr.error("Server can't process such long request. Please contact your IT Team")
+      return toast.error("Server can't process such long request. Please contact your IT Team")
     case 415:
-      return toastr.error('This request is not supported by the server. Please contact your IT Team')
+      return toast.error('This request is not supported by the server. Please contact your IT Team')
     case 417:
 
       const errMsg417 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg417)
+      return toast.error(errMsg417)
     case 500:
-      return toastr.error('Internal server error. Please contact your IT Team')
+      return toast.error('Internal server error. Please contact your IT Team')
+
     case 501:
-      return toastr.error('Something is not right. Please contact your IT Team')
+      return toast.error('Something is not right. Please contact your IT Team')
     case 502:
-      return toastr.error('Server is unavailable or unreachable. Please contact your IT Team')
+      return toast.error('Server is unavailable or unreachable. Please contact your IT Team')
     case 503:
-      return toastr.error('Server is unavailable due to load or maintenance. Please contact your IT Team')
+      return toast.error('Server is unavailable due to load or maintenance. Please contact your IT Team')
     case 504:
-      return toastr.error('Server is unavailable due to timeout. Please contact your IT Team')
+      return toast.error('Server is unavailable due to timeout. Please contact your IT Team')
     default:
 
-      return toastr.error('Something is not right. Please contact your IT Team')
+      return toast.error('Something is not right. Please contact your IT Team')
 
   }
 }
@@ -260,7 +266,7 @@ export const displayValue = (value) => {
 function onLogout() {
   reactLocalStorage.setObject('isUserLoggedIn', false)
   reactLocalStorage.setObject('userDetail', {})
-  toastr.success(MESSAGES.LOGOUT_SUCCESS)
+  toast.success(MESSAGES.LOGOUT_SUCCESS)
   setTimeout(() => {
     window.location.assign('/login')
   }, 100)
