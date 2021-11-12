@@ -13,7 +13,6 @@ import {
 import { getConfigurationKey } from './auth'
 
 
-toast.configure();
 
 /**
  * @method  apiErrors
