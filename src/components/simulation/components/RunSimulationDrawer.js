@@ -399,7 +399,7 @@ function RunSimulationDrawer(props) {
                                                                             <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
                                                                                 <Switch
                                                                                     onChange={onChangeAdditionalDiscount}
-                                                                                    checked={toggleSwitchLabel}
+                                                                                    checked={toggleSwitchAdditionalDiscount}
                                                                                     id="normal-switch"
                                                                                     disabled={false}
                                                                                     background="#4DC771"
