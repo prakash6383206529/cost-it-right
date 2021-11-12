@@ -66,6 +66,7 @@ import {
   SET_CUTOFF_RMC,
   GET_COSTING_SPECIFIC_TECHNOLOGY,
   SET_PLASTIC_ARR,
+  SET_ASSEM_BOP_CHARGE,
 } from '../../../config/constants';
 
 const initialState = {
@@ -83,7 +84,8 @@ const initialState = {
   IsCostingDateDisabled: false,
   IsToolCostApplicable: false,
   SurfaceCostData: {},
-  RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' }
+  RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' },
+  getAssemBOPCharge:{},
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -275,14 +277,15 @@ export default function costingReducer(state = initialState, action) {
         rateCriteriaByCapacitySelectList: action.payload
       };
     case SET_RMCC_TAB_DATA:
+      const tempRMData = [...action.payload]
+      console.log(action.payload, "action.payloadaction.payload");
       return {
         ...state,
         loading: false,
-        RMCCTabData: action.payload
+        RMCCTabData: tempRMData
       };
     case SET_COSTING_DATALIST_BY_COSTINGID:
       const Costingdata1 = action.payload
-      console.log('Costingdata1: ', Costingdata1);
       return {
         ...state,
         loading: false,
@@ -544,6 +547,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         getPlasticData: action.payload
+      }
+    case SET_ASSEM_BOP_CHARGE:
+      return {
+        ...state,
+        loading:false,
+        getAssemBOPCharge:action.payload
       }
     default:
       return state

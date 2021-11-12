@@ -49,7 +49,7 @@ function Attachament(props) {
                     const fileURL = `${FILE_URL}${withOutTild}`
                     return (
                       <div className={"attachment-row"}>
-                        <a href={fileURL} target="_blank">
+                        <a href={fileURL} target="_blank" rel="noreferrer">
                           {f.OriginalFileName}
                         </a>
                       </div>

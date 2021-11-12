@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { saveComponentCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { saveAssemblyPartRowCostingCalculation, saveComponentCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -12,7 +12,6 @@ import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTw
 import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
 
 function SurfaceTreatment(props) {
-
   const { surfaceData, transportationData, item } = props;
 
   const { handleSubmit } = useForm({
@@ -23,8 +22,7 @@ function SurfaceTreatment(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate } = useSelector(state => state.costing)
-
+  const { ComponentItemDiscountData, CostingEffectiveDate,RMCCTabData,SurfaceTabData,OverheadProfitTabData,PackageAndFreightTabData,DiscountCostData } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
@@ -56,7 +54,11 @@ function SurfaceTreatment(props) {
   const saveData = () => {
 
     if (props.IsAssemblyCalculation) {
-
+      const tabData = RMCCTabData[0]
+      const surfaceTabData= SurfaceTabData[0]
+      const overHeadAndProfitTabData=OverheadProfitTabData[0]
+      const discountAndOtherTabData =DiscountCostData[0]
+      console.log('tabData: ', tabData);
       let requestData = {
         "CostingId": item.CostingId,
         "PartId": item.PartId,
@@ -80,6 +82,56 @@ function SurfaceTreatment(props) {
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
       }
+      let assemblyWorkingRow=[]
+      surfaceTabData && surfaceTabData.CostingChildPartDetails && surfaceTabData.CostingChildPartDetails.map((item)=>{
+        let subAssemblyObj ={
+        "CostingId":item.CostingId,
+        "CostingNumber": "", // Need to find out how to get it.
+        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +item.CostingPartDetails?.TotalBoughtOutPartCost+item.CostingPartDetails?.TotalConversionCost,
+        "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+        "SurfaceTreatmentCostPerAssembly":item.CostingPartDetails?.SurfaceTreatmentCost,
+        "TransportationCostPerAssembly": item.CostingPartDetails?.TransportationCost,
+        "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails?.NetSurfaceTreatmentCost,
+        "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity
+        }
+        assemblyWorkingRow.push(subAssemblyObj)
+        return assemblyWorkingRow
+      })
+      let assemblyRequestedData = {
+        
+          "TopRow": {
+            "CostingId":tabData.CostingId,
+            "CostingNumber": tabData.CostingNumber,
+            "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity+ tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+            "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+            "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+            "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+            "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
+            "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
+            "NetDiscounts":discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
+            "TotalCostINR": netPOPrice,
+            "TabId": 2
+          },
+           "WorkingRows": assemblyWorkingRow,
+          "LoggedInUserId": loggedInUserId()
+        
+      }
+      console.log(assemblyRequestedData,"assemblyRequestedData");
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);

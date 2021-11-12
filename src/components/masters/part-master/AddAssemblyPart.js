@@ -914,7 +914,7 @@ class AddAssemblyPart extends Component {
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
                                   <div className={"attachment images"}>
-                                    <a href={fileURL} target="_blank">
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
                                       {f.OriginalFileName}
                                     </a>
                                     {/* <a href={fileURL} target="_blank" download={f.FileName}>

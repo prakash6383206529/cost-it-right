@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -46,7 +46,8 @@ function TabDiscountOther(props) {
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate,RMCCTabData,SurfaceTabData,OverheadProfitTabData,PackageAndFreightTabData,ToolTabData } = useSelector(state => state.costing)
+  
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -424,6 +425,10 @@ function TabDiscountOther(props) {
   * @description Used to Submit the form
   */
   const onSubmit = (values) => {
+    const tabData = RMCCTabData[0]
+    const surfaceTabData= SurfaceTabData[0]
+    const overHeadAndProfitTabData=OverheadProfitTabData[0]
+    const discountAndOtherTabData =DiscountCostData
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: costData.CostingId }
     })
@@ -471,6 +476,40 @@ function TabDiscountOther(props) {
         }
       },
       "Attachements": updatedFiles
+    }
+    if(costData.IsAssemblyPart === true){
+
+      let assemblyRequestedData = {        
+        "TopRow": {
+          "CostingId":tabData.CostingId,
+          "CostingNumber": tabData.CostingNumber,
+          "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity+ tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+          "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+          "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+          "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+          "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
+          "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
+          "NetDiscounts":discountAndOtherTabData?.HundiOrDiscountValue,
+          "TotalCostINR": netPOPrice,
+          "TabId":6
+        },
+         "WorkingRows": [],
+        "LoggedInUserId": loggedInUserId()
+      
+    }
+    
+    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
     }
 
     dispatch(saveDiscountOtherCostTab(data, res => {
@@ -818,7 +857,7 @@ function TabDiscountOther(props) {
                             const fileURL = `${FILE_URL}${withOutTild}`;
                             return (
                               <div className={"attachment images"}>
-                                <a href={fileURL} target="_blank">
+                                <a href={fileURL} target="_blank" rel="noreferrer">
                                   {f.OriginalFileName}
                                 </a>
                                 <img
