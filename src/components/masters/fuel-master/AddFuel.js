@@ -170,7 +170,7 @@ class AddFuel extends Component {
       toastr.warning("Decimal value should not be more than 6")
       return false
     }
-    if (!this.checkForSpecialCharacter(Rate)) {
+    if (positiveAndDecimalNumber(Rate)) {
       toastr.warning("Enter valid value")
       return false
 

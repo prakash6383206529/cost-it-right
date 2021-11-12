@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, } from '../../../actions/Costing';
+import { getRMCCTabData, saveAssemblyBOPHandlingCharge, } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -29,8 +29,18 @@ function AssemblyPart(props) {
         PartId: item.PartId,
       }
       dispatch(getRMCCTabData(data, false, (res) => {
+        console.log("IN ASSEMBLY SERVER DATA");
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
+          if(Data.CostingPartDetails.IsApplyBOPHandlingCharges){
+            let obj={
+              IsApplyBOPHandlingCharges: true,
+              BOPHandlingPercentage: Data.CostingPartDetails.BOPHandlingPercentage,
+              BOPHandlingCharges:Data.CostingPartDetails.BOPHandlingCharges
+            }
+            dispatch(saveAssemblyBOPHandlingCharge(obj,()=>{
+          }))
+          }
           props.toggleAssembly(BOMLevel, PartNumber, Data)
         }
       }))
@@ -141,7 +151,8 @@ function AssemblyPart(props) {
           {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
           <td>{'-'}</td>
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
-          {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity + item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity + item.CostingPartDetails.TotalConversionCostWithQuantity + item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+          {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
+          {costData.IsAssemblyPart && <td>{checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalOperationCostPerAssembly), initialConfiguration.NoOfDecimalForPrice) * item.CostingPartDetails.Quantity}</td>}
         </div>
         <td>
           {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?

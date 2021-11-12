@@ -821,9 +821,7 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(((data.gWeight - data.fWeight).toFixed(9)) * (data.netRMCostView[0]?.ScrapRecoveryPercentage !== 1 ? calculatePercentage(data.netRMCostView[0]?.ScrapRecoveryPercentage) : 1), initialConfiguration.NoOfDecimalForInputOutput) : ''}
-
+                                {data.CostingHeading !== VARIANCE ?data.netRMCostView &&data.netRMCostView.length>0 ? checkForDecimalAndNull( data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput):0 : ''}
                               </span>
                             </td>
                           )
@@ -1240,7 +1238,7 @@ const CostingSummaryTable = (props) => {
                                         const fileURL = `${FILE_URL}${withOutTild}`
                                         return (
                                           <div className={"single-attachment images"}>
-                                            <a href={fileURL} target="_blank">
+                                            <a href={fileURL} target="_blank" rel="noreferrer">
                                               {f.OriginalFileName}
                                             </a>
                                           </div>

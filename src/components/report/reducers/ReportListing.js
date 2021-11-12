@@ -21,7 +21,7 @@ export default function ReportListingReducers(state = initialState, action) {
                 if (item.Status === CREATED_BY_ASSEMBLY) {
                     return false
                 } else {
-                    Arr.push(item)
+                    Arr.push(item) 
                     return Arr
                 }
             })

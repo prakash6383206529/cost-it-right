@@ -9,6 +9,7 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import OperationInsights from './OperationInsights';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
+import OperationApproval from './OperationApproval';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -88,6 +89,10 @@ class OperationsMaster extends Component {
                                         <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>Manage Operation</NavLink>
                                     </NavItem>
 
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>Approval Status</NavLink>
+                                    </NavItem>
+
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
@@ -106,6 +111,17 @@ class OperationsMaster extends Component {
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
+                                            />
+                                        </TabPane>}
+
+
+                                    {this.state.activeTab == 3 &&
+                                        <TabPane tabId="3">
+                                            <OperationApproval
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}

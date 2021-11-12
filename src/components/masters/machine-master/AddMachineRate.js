@@ -20,7 +20,7 @@ import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, user
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC, MACHINE_MASTER_ID } from '../../../config/constants';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -28,11 +28,14 @@ import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import moment from 'moment';
+import { CheckApprovalApplicableMaster } from '../../../helper'
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import attachClose from '../../../assests/images/red-cross.png'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import MasterSendForApproval from '../MasterSendForApproval'
 const selector = formValueSelector('AddMachineRate');
+
 
 class AddMachineRate extends Component {
   constructor(props) {
@@ -46,11 +49,14 @@ class AddMachineRate extends Component {
       IsCopied: false,
       IsDetailedEntry: false,
       isViewFlag: false,
+      approveDrawer: false,
 
       selectedTechnology: [],
       vendorName: [],
       selectedVendorPlants: [],
       selectedPlants: [],
+      isFinalApprovar: false,
+      approvalObj: {},
 
       machineType: [],
       isOpenMachineType: false,
@@ -175,6 +181,14 @@ class AddMachineRate extends Component {
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
   }
 
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.clearForm()
+      this.cancel()
+    }
+  }
   /**
   * @method getDetails
   * @description Used to get Details
@@ -886,13 +900,29 @@ class AddMachineRate extends Component {
         Attachements: files,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       }
-      this.props.reset()
-      this.props.createMachine(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.MACHINE_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+
+
+
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createMachine(formData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.MACHINE_ADD_SUCCESS)
+            //this.clearForm()
+            this.cancel()
+          }
+        })
+      }
+
+      // this.props.reset()
+      // this.props.createMachine(formData, (res) => {
+      //   if (res.data.Result) {
+      //     toastr.success(MESSAGES.MACHINE_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
     }
   }
@@ -1431,7 +1461,7 @@ class AddMachineRate extends Component {
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
                                   <div className={'attachment images'}>
-                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                    <a href={fileURL} target="_blank" rel="noreferrer">{f.OriginalFileName}</a>
                                     {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
@@ -1459,12 +1489,30 @@ class AddMachineRate extends Component {
                                 onClick={this.cancel} >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
-                              <button
-                                type="submit"
-                                className="user-btn mr5 save-btn" >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? 'Update' : 'Save'}
-                              </button>
+
+
+                              {
+                                (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                                  <button type="submit"
+                                    class="user-btn approval-btn save-btn mr5"
+
+                                    disabled={this.state.isFinalApprovar}
+                                  >
+                                    <div className="send-for-approval"></div>
+                                    {'Send For Approval'}
+                                  </button>
+                                  :
+
+                                  <button
+                                    type="submit"
+                                    className="user-btn mr5 save-btn"
+                                  >
+                                    <div className={"save-icon"}></div>
+                                    {isEditFlag ? "Update" : "Save"}
+                                  </button>
+                              }
+
+
                             </>
                             :
                             <button
@@ -1498,6 +1546,23 @@ class AddMachineRate extends Component {
           ID={''}
           anchor={'right'}
         />}
+
+
+        {
+          this.state.approveDrawer && (
+            <MasterSendForApproval
+              isOpen={this.state.approveDrawer}
+              closeDrawer={this.closeApprovalDrawer}
+              isEditFlag={false}
+              masterId={MACHINE_MASTER_ID}
+              type={'Sender'}
+              anchor={"right"}
+              approvalObj={this.state.approvalObj}
+              isBulkUpload={false}
+              IsImportEntery={false}
+            />
+          )
+        }
       </>
     );
   }

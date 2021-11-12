@@ -533,6 +533,7 @@ export const API = {
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
+  saveAssemblyPartRowCostingCalculation:`${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -867,6 +868,9 @@ export const API = {
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
+  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment`,
+  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-impacted-simulation-costings`,
+  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-surface-treatment-costing`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1216,6 +1220,7 @@ export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
+export const SET_ASSEM_BOP_CHARGE='SET_ASSEM_BOP_CHARGE'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1699,6 +1704,9 @@ export const VARIANCE = 'Variance'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
+export const BOP_MASTER_ID = 2
+export const OPERATIONS_ID = 3
+export const MACHINE_MASTER_ID = 4
 
 
 //approve reject drawer

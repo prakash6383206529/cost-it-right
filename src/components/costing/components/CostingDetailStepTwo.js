@@ -48,7 +48,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM RM+CC TAB 
    */
   const setHeaderCostRMCCTab = (data) => {
-    console.log("COMING IN RMCC TAB HEADER  ");
     if (!CostingViewMode) {
       const headerIndex = 0;
 
@@ -79,12 +78,9 @@ function CostingDetailStepTwo(props) {
         ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
         TotalCost: OverAllCost,
       }
-
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
-      console.log('tempArr: ', tempArr);
 
       dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {
-        console.log("SET COSTING FROM STEP TWO1");
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setRMCCBOPCostData(data, () => { }))

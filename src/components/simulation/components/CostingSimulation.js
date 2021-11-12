@@ -30,7 +30,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function CostingSimulation(props) {
-    const { simulationId, isFromApprovalListing, master } = props
+    const { simulationId, isFromApprovalListing, master, isSurfaceTreatment } = props
 
     const { register, control, formState: { errors }, getValues, setValue } = useForm({
         mode: 'onBlur',
@@ -421,6 +421,7 @@ function CostingSimulation(props) {
         temp = SimulationUtils(TempData)    // common function 
 
 
+
         return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
@@ -501,7 +502,7 @@ function CostingSimulation(props) {
     return (
         <>
             {
-                loader ? <LoaderCustom /> :
+                false ? <LoaderCustom /> :  //loader
 
                     !showApprovalHistory &&
 
@@ -567,14 +568,21 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                                     <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
-                                                    <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
-                                                    <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
+                                                    {/* {!isSurfaceTreatment && <><AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
+                                                        <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
+                                                    </>} */}
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                    {/* {isSurfaceTreatment && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                                    {isSurfaceTreatment && <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>}
+                                                    {isSurfaceTreatment && <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>}
+                                                    {isSurfaceTreatment && <AgGridColumn width={185} field="NewPO" headerName="New PO"></AgGridColumn>}
+                                                    {isSurfaceTreatment && <AgGridColumn width={185} field="OldPO" headerName="Old PO"></AgGridColumn>} */}
 
+                                                    {/* {!isSurfaceTreatment && <>     */}
                                                     <AgGridColumn width={130} field="RMSpec" headerName='RM Specs' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RMCode" headerName='RM Code.' cellRenderer='revisionFormatter'></AgGridColumn>
 
@@ -607,7 +615,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
 
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
-
+                                                    {/* </>} */}
                                                 </AgGridReact>
 
                                                 <div className="paging-container d-inline-block float-right">
@@ -694,7 +702,8 @@ function CostingSimulation(props) {
 
             {showApprovalHistory && <Redirect to='/simulation-history' />}
 
-            {CostingDetailDrawer &&
+            {
+                CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
@@ -706,7 +715,8 @@ function CostingSimulation(props) {
                     master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
-                />}
+                />
+            }
         </>
 
     );

@@ -19,6 +19,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
+import { VBC, ZBC } from '../../../../config/constants';
 
 const gridOptions = {
 
@@ -85,7 +86,7 @@ function RMSimulation(props) {
         let obj = {}
         obj.Technology = technology
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].CostingHead
+        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
@@ -98,7 +99,7 @@ function RMSimulation(props) {
         list && list.map(item => {
             if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
-                tempObj.CostingHead = item.CostingHead
+                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterial
                 tempObj.MaterialType = item.MaterialType
                 tempObj.RawMaterialGrade = item.RMGrade
@@ -353,7 +354,7 @@ function RMSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if(isImpactedMaster) {
+        if (isImpactedMaster) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
         params.api.paginationGoToPage(0);
@@ -543,7 +544,7 @@ function RMSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <VerifySimulation isSurfaceTreatment={false} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {

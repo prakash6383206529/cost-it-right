@@ -110,6 +110,7 @@ function ViewRM(props) {
                     <th>{`Scrap Recovery %`}</th>
                     <th>{`Gross Weight (Kg)`}</th>
                     <th>{`Finish Weight (Kg)`}</th>
+                    <th>{`Scrap Weight`}</th>
                     <th>{`Calculator`}</th>
                     <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th>
@@ -127,6 +128,7 @@ function ViewRM(props) {
                         <td>{item.ScrapRecoveryPercentage}</td>
                         <td>{item.GrossWeight}</td>
                         <td>{item.FinishWeight}</td>
+                        <td>{item.ScrapWeight}</td>
                         <td><button
                           className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                           type={"button"}

@@ -613,3 +613,56 @@ export function getImpactedMasterData(simulationId, callback) {
     };
 }
 
+export function runVerifySurfaceTreatmentSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftSurfaceTreatmentSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getVerifySurfaceTreatmentSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+
+
+
+
