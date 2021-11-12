@@ -12,6 +12,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import MachineApproval from './MachineApproval';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -207,16 +208,21 @@ class MachineMaster extends Component {
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                                            Approval Status
+                                        </NavLink>
+                                    </NavItem>
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
 
-                                        {this.state.activeTab == 1 &&
+                                    {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
-                                            <MachineInsights/>
+                                            <MachineInsights />
                                         </TabPane>}
 
-                                        {this.state.activeTab == 2 &&
+                                    {this.state.activeTab == 2 &&
                                         <TabPane tabId="2">
                                             <MachineRateListing
                                                 displayForm={this.displayForm}
@@ -229,9 +235,18 @@ class MachineMaster extends Component {
                                             />
                                         </TabPane>}
 
-                                        {this.state.activeTab == 3 &&
+                                    {this.state.activeTab == 3 &&
                                         <TabPane tabId="3">
                                             <ProcessListing
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
+                                            />
+                                        </TabPane>}
+                                    {this.state.activeTab == 4 &&
+                                        <TabPane tabId="4">
+                                            <MachineApproval
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}

@@ -18,7 +18,7 @@ import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -29,6 +29,8 @@ import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { CheckApprovalApplicableMaster } from '../../../helper'
+import MasterSendForApproval from '../MasterSendForApproval'
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -58,9 +60,12 @@ class AddBOPDomestic extends Component {
 
       UOM: [],
       isOpenUOM: false,
+      approveDrawer: false,
 
       effectiveDate: '',
       files: [],
+      isFinalApprovar: false,
+      approvalObj: {},
 
       NetLandedCost: '',
       DataToCheck: [],
@@ -130,6 +135,15 @@ class AddBOPDomestic extends Component {
     } else {
       this.setState({ BOPCategory: [], });
 
+    }
+  }
+
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.clearForm()
+      this.cancel()
     }
   }
 
@@ -424,7 +438,7 @@ class AddBOPDomestic extends Component {
     const { files, } = this.state;
 
     this.setState({ uploadAttachements: false })
-    
+
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -606,14 +620,33 @@ class AddBOPDomestic extends Component {
         Attachements: files,
       }
 
-      this.props.reset()
+      // this.props.reset()
+      // this.props.createBOPDomestic(formData, (res) => {
+      //   if (res.data.Result) {
+      //     toastr.success(MESSAGES.BOP_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
-      this.props.createBOPDomestic(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+
+
+
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createBOPDomestic(formData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.BOP_ADD_SUCCESS)
+            //this.clearForm()
+            this.cancel()
+          }
+        })
+      }
+
+
+
+
     }
   }
 
@@ -1099,13 +1132,29 @@ class AddBOPDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+
+                          {
+                            (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+
+                                disabled={this.state.isFinalApprovar}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                          }
+
+
                         </div>
                       </Row>
                     </form>
@@ -1140,6 +1189,22 @@ class AddBOPDomestic extends Component {
               anchor={"right"}
             />
           )}
+
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                masterId={BOP_MASTER_ID}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntery={false}
+              />
+            )
+          }
         </div>
       </>
     );
