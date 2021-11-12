@@ -1431,7 +1431,7 @@ class AddMachineRate extends Component {
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
                                   <div className={'attachment images'}>
-                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                    <a href={fileURL} target="_blank" rel="noreferrer">{f.OriginalFileName}</a>
                                     {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}

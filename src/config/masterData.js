@@ -2341,7 +2341,7 @@ export const CostingSimulationDownload = [
     { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
     { label: "OldOtherCost", value: "OldOtherCost" },
     { label: "NewOtherCost", value: "NewOtherCost" },
-    { label: "OldDiscountCost", value: "NOldDiscountCostewRMPrice" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
