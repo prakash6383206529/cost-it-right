@@ -421,6 +421,7 @@ function CostingSimulation(props) {
         temp = SimulationUtils(TempData)    // common function 
 
 
+
         return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);

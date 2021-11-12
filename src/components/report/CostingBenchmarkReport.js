@@ -21,7 +21,7 @@ import OperationInsights from '../masters/operation/OperationInsights';
 
 
 
-function NewReport(props) {
+function CostingBenchmarkReport(props) {
 
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -234,4 +234,4 @@ function NewReport(props) {
     );
 }
 
-export default NewReport;
+export default CostingBenchmarkReport;

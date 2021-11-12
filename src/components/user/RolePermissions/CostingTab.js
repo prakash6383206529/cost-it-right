@@ -69,20 +69,56 @@ class CostingTab extends Component {
   */
   renderActionHeads = (actionHeads) => {
     const { actionData } = this.state;
+    let count = 0;
+
     let actionNames = actionData && actionData.find(el => el.ModuleName === COSTING)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
         if (item.Value == 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
-          return (
-            <th className="crud-label">
-              <div className={item.Text}></div>
-              {item.Text}
-            </th>
-          )
+
+          if (item.Text == "Reject" || item.Text == "Bulk Upload") { return false }
+          else {
+            if (item.Text == 'SOB') { count++; }
+
+            if (count > 0) {
+              return (
+                <>
+                  <th className="crud-label">
+                    <div className={item.Text}></div>
+                    {item.Text}
+                  </th>
+
+                  <th className="crud-label">
+                    <div className='Bulk Upload'></div>
+                    Bulk Upload
+                  </th>
+
+                  <th className="crud-label">
+                    <div className='Reject'></div>
+                    Reject
+                  </th>
+                </>
+              )
+
+            }
+            else {
+              return (
+                <th className="crud-label">
+                  <div className={item.Text}></div>
+                  {item.Text}
+                </th>
+              )
+
+            }
+
+          }
         }
+
       })
+
     }
+
   }
 
   /**
@@ -200,10 +236,64 @@ class CostingTab extends Component {
   renderAction = (actions, parentIndex) => {
     const { actionSelectList } = this.state;
 
+
     return actionSelectList && actionSelectList.map((el, i) => {
       if (el.Value == 0) return false;
       return actions && actions.map((item, index) => {
         if (el.Value !== item.ActionId) return false;
+
+        if (item.ActionName == 'Reject') {
+
+          return (
+            <td colSpan='8' className="text-right">
+              {
+                <label htmlFor="normal-switch" className="normal-switch">
+                  <Switch
+                    onChange={() => this.actionCheckHandler(parentIndex, index)}
+                    checked={item.IsChecked}
+                    value={item.ActionId}
+                    id="normal-switch"
+                    onColor="#4DC771"
+                    onHandleColor="#ffffff"
+                    offColor="#959CB6"
+                    checkedIcon={false}
+                    uncheckedIcon={false}
+                    height={18}
+                    width={40}
+                  />
+                </label>
+              }
+            </td>
+          )
+
+        } if (item.ActionName == 'Bulk Upload') {
+
+          return (
+            <td colSpan='6' className="text-right">
+              {
+                <label htmlFor="normal-switch" className="normal-switch">
+                  <Switch
+                    onChange={() => this.actionCheckHandler(parentIndex, index)}
+                    checked={item.IsChecked}
+                    value={item.ActionId}
+                    id="normal-switch"
+                    onColor="#4DC771"
+                    onHandleColor="#ffffff"
+                    offColor="#959CB6"
+                    checkedIcon={false}
+                    uncheckedIcon={false}
+                    height={18}
+                    width={40}
+                  />
+                </label>
+              }
+            </td>
+          )
+
+        }
+
+
+
         return (
           <td className="text-center">
             {
@@ -225,6 +315,7 @@ class CostingTab extends Component {
             }
           </td>
         )
+
       })
     })
   }
@@ -309,6 +400,7 @@ class CostingTab extends Component {
                     </label>
                   </th>
                   {this.renderActionHeads(actionSelectList)}
+
                 </tr>
               </thead>
               <tbody>

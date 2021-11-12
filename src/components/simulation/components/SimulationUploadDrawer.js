@@ -10,7 +10,8 @@ import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
-import NewReport from '../../report/CostingBenchmarkReport';
+import CostingBenchmarkReport from '../../report/CostingBenchmarkReport';
+
 import TooltipCustom from '../../common/Tooltip';
 
 const ExcelFile = ReactExport.ExcelFile;

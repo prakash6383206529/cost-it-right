@@ -726,13 +726,16 @@ class AddVendorDrawer extends Component {
                                     <div className="col-sm-12 text-right px-3">
                                         <button
                                             type={'button'}
+                                            disabled={this.state.isLoader}
                                             className=" mr15 cancel-btn"
                                             onClick={this.cancel} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type="submit"
+                                            disabled={this.state.isLoader}
                                             className="user-btn save-btn">
+
                                             <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Save'}
                                         </button>
