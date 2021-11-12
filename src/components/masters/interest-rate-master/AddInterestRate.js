@@ -605,7 +605,7 @@ onPopupConfirm = ()=>{
             </div>
           </div>
           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} header={'Confirm'} message={'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'} firstButtonName={'OK'} secondButtonName={'Cancel'} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
         }
         </div>
        
