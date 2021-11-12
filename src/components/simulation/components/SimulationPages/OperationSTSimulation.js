@@ -26,7 +26,6 @@ const gridOptions = {
 };
 function OperationSTSimulation(props) {
     const { list, isbulkUpload, rowCount, isImpactedMaster, isOperation } = props
-    console.log(list, 'kkkkkkkkkk')
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -248,7 +247,6 @@ function OperationSTSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)
     }, 500);
 
     return (

@@ -273,10 +273,10 @@ function VerifySimulation(props) {
 
 
     const runSimulation = debounce(() => {
-        // if (selectedRowData.length === 0) {
-        //     toastr.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            toastr.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -376,7 +376,7 @@ function VerifySimulation(props) {
     };
 
 
-
+    console.log(isSurfaceTreatment, 'isSurfaceTreatmentisSurfaceTreatment')
     return (
         <>
             {
@@ -418,7 +418,7 @@ function VerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={[]}
+                                                rowData={verifyList}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -438,21 +438,22 @@ function VerifySimulation(props) {
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
-                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
+                                                {/* {isSurfaceTreatment && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>} */}
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
                                                 <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                {isSurfaceTreatment && <AgGridColumn width={185} field="UOM" headerName="UOM"></AgGridColumn>}
+                                                {/* {isSurfaceTreatment && <AgGridColumn width={185} field="UOM" headerName="UOM"></AgGridColumn>}
                                                 {isSurfaceTreatment && <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>}
                                                 {isSurfaceTreatment && <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>}
                                                 {isSurfaceTreatment && <AgGridColumn width={185} field="NewPO" headerName="New PO"></AgGridColumn>}
-                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OldPO" headerName="Old PO"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OldPO" headerName="Old PO"></AgGridColumn>} */}
                                                 {!isSurfaceTreatment &&
-                                                    <>  <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
+                                                    <>
+                                                        <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
                                                         <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
