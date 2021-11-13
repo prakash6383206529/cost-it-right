@@ -641,7 +641,7 @@ export function getCombinedProcessList(data, callback) {
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCombinedProcessList}?technologyId=${data.technologyId}&vendorId=${data.vendorId}`, headers)
             .then((response) => {
-                console.log(response.status, 'response.dataresponse.data')
+             
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
                         type: GET_COMBINED_PROCESS_LIST,
@@ -712,6 +712,7 @@ export function getFgWiseImpactData(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         })
     }
 }

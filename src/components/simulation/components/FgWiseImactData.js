@@ -24,7 +24,6 @@ export function Fgwiseimactdata(props) {
     const impactData = useSelector((state) => state.simulation.impactData)
 
 
-
     useEffect(() => {
 
         if (SimulationId) {

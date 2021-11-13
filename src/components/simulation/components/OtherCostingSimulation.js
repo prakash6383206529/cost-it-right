@@ -20,6 +20,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
+import { Errorbox } from '../../common/ErrorBox';
+import { SimulationUtils } from '../SimulationUtils'
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -56,6 +58,9 @@ function OtherCostingSimulation(props) {
     const [vendorIdState, setVendorIdState] = useState("")
     const [simulationTypeState, setSimulationTypeState] = useState("")
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
+    const [status, setStatus] = useState('')
+    const [noContent, setNoContent] = useState(false)
+    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
 
 
     const [hideDataColumn, setHideDataColumn] = useState({
@@ -109,7 +114,7 @@ function OtherCostingSimulation(props) {
         setVendorIdState(vendorId)
         setSimulationTechnologyIdState(SimulationTechnologyId)
         setSimulationTypeState(SimulationType)
-
+        setStatus(Data.SapMessage)
         Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
@@ -458,14 +463,7 @@ function OtherCostingSimulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
-            if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            }
-            return item
-        })
+        temp = SimulationUtils(TempData)
 
         return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -562,6 +560,12 @@ function OtherCostingSimulation(props) {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
+    const errorBoxClass = () => {
+        let temp
+        temp =status===(null && '') ?  'd-none':''
+        return temp
+    }
+
 
     const frameworkComponents = {
 
@@ -607,6 +611,11 @@ function OtherCostingSimulation(props) {
                             <div className={`ag-grid-react`}>
 
 
+                                <Row>
+                                    <Col sm="12">
+                                    <Errorbox customClass={errorBoxClass()} errorText={status} />
+                                    </Col>
+                                </Row>
                                 <Row>
                                     <Col sm="12">
                                         <h1 class="mb-0">Token No:{tokenNo}</h1>
