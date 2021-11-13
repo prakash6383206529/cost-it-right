@@ -15,11 +15,13 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import moment from 'moment';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval'
 
 const selector = formValueSelector('AddOperation');
 
@@ -41,6 +43,9 @@ class AddOperation extends Component {
       files: [],
       isVisible: false,
       imageURL: '',
+      isFinalApprovar: false,
+      approveDrawer: false,
+      approvalObj: {},
 
       isEditFlag: false,
       isShowForm: false,
@@ -204,6 +209,15 @@ class AddOperation extends Component {
     this.setState({ isOpenVendor: false }, () => {
       this.props.getVendorWithVendorCodeSelectList()
     })
+  }
+
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.clearForm()
+      this.cancel()
+    }
   }
 
   /**
@@ -540,13 +554,32 @@ class AddOperation extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
       }
-      this.props.reset()
-      this.props.createOperationsAPI(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+
+
+
+      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createOperationsAPI(formData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+            //this.clearForm()
+            this.cancel()
+          }
+        })
+      }
+
+
+      // this.props.reset()
+      // this.props.createOperationsAPI(formData, (res) => {
+      //   if (res.data.Result) {
+      //     toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
+
+
     }
 
   }
@@ -969,13 +1002,30 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      <button
-                        type="submit"
-                        className="user-btn mr5 save-btn"
-                      >
-                        <div className={"save-icon"}></div>
-                        {isEditFlag ? "Update" : "Save"}
-                      </button>
+
+
+
+                      {
+                        (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                          <button type="submit"
+                            class="user-btn approval-btn save-btn mr5"
+                            disabled={this.state.isFinalApprovar}
+                          >
+                            <div className="send-for-approval"></div>
+                            {'Send For Approval'}
+                          </button>
+                          :
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                          >
+                            <div className={"save-icon"}></div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                      }
+
+
+
                     </div>
                   </Row>
                 </form>
@@ -1001,6 +1051,22 @@ class AddOperation extends Component {
             anchor={"right"}
           />
         )}
+
+        {
+          this.state.approveDrawer && (
+            <MasterSendForApproval
+              isOpen={this.state.approveDrawer}
+              closeDrawer={this.closeApprovalDrawer}
+              isEditFlag={false}
+              masterId={OPERATIONS_ID}
+              type={'Sender'}
+              anchor={"right"}
+              approvalObj={this.state.approvalObj}
+              isBulkUpload={false}
+              IsImportEntery={false}
+            />
+          )
+        }
       </div>
     );
   }

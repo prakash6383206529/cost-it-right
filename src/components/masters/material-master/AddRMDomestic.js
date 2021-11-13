@@ -998,6 +998,7 @@ class AddRMDomestic extends Component {
     }
 
     else {
+
       let formData = {}
       // const formData = {
       formData.IsVendor = IsVendor

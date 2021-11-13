@@ -20,6 +20,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
+import LoaderCustom from '../../../common/LoaderCustom';
 
 
 function ApproveRejectDrawer(props) {
@@ -46,6 +47,7 @@ function ApproveRejectDrawer(props) {
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
+  const [loader, setLoader] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -250,7 +252,9 @@ function ApproveRejectDrawer(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
+          setLoader(true)
           toastr.success('Simulation has been saved successfully.')
+          setLoader(false)
         }
       }))
       // switch (Number(master)) {
@@ -669,8 +673,10 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
+          {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
+              
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>

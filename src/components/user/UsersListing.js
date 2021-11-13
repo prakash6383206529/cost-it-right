@@ -52,6 +52,7 @@ class UsersListing extends Component {
 		}
 	}
 
+
 	componentDidMount() {
 		this.getUsersListData(null, null);
 
@@ -70,7 +71,10 @@ class UsersListing extends Component {
 					ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
 				})
 			}
+
 		}
+
+
 
 		//Get Department Listing
 		this.props.getAllDepartmentAPI((res) => {
@@ -236,6 +240,7 @@ class UsersListing extends Component {
 	*/
 	hyphenFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
 		return cellValue != null ? cellValue : '-';
 	}
 
@@ -274,6 +279,8 @@ class UsersListing extends Component {
 			}
 		})
 	}
+
+
 
 	/**
 	* @method statusButtonFormatter
@@ -411,6 +418,7 @@ class UsersListing extends Component {
 
 	onFilterTextBoxChanged = (e) => {
 		this.state.gridApi.setQuickFilter(e.target.value);
+
 	}
 
 	resetState = () => {

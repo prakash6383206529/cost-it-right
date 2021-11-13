@@ -232,14 +232,11 @@ class MachineRateListing extends Component {
         const row = props?.data;
 
 
-
-
-
         const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
-
         return value
-
     }
+
+
 
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
