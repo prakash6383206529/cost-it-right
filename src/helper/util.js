@@ -34,10 +34,8 @@ export const apiErrors = (res) => {
  */
 const handleHTTPStatus = (response) => {
   const toastrOptions = {
-    timeOut: 0,
-    onCloseButtonClick: () => console.log('Close button was clicked'),
-    showCloseButton: true,
-    // closeOnToastrClick: true,
+    // draggable: true,
+    autoClose: false
   }
   switch (response.status) {
     case 202:
