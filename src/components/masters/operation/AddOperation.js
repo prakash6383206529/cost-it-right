@@ -537,6 +537,23 @@ class AddOperation extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
       }
+
+
+
+      // if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+      //   this.setState({ approveDrawer: true, approvalObj: formData })
+      // } else {
+      //   this.props.reset()
+      //   this.props.createOperationsAPI(formData, (res) => {
+      //     if (res.data.Result) {
+      //       toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+      //       //this.clearForm()
+      //       this.cancel()
+      //     }
+      //   })
+      // }
+
+
       this.props.reset()
       this.props.createOperationsAPI(formData, (res) => {
         if (res.data.Result) {
@@ -544,6 +561,8 @@ class AddOperation extends Component {
           this.cancel();
         }
       });
+
+
     }
 
   }
@@ -966,13 +985,30 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      <button
-                        type="submit"
-                        className="user-btn mr5 save-btn"
-                      >
-                        <div className={"save-icon"}></div>
-                        {isEditFlag ? "Update" : "Save"}
-                      </button>
+
+
+
+                      {
+                        // (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                        //   <button type="submit"
+                        //     class="user-btn approval-btn save-btn mr5"
+                        //     disabled={this.state.isFinalApprovar}
+                        //   >
+                        //     <div className="send-for-approval"></div>
+                        //     {'Send For Approval'}
+                        //   </button>
+                        //   :
+                        <button
+                          type="submit"
+                          className="user-btn mr5 save-btn"
+                        >
+                          <div className={"save-icon"}></div>
+                          {isEditFlag ? "Update" : "Save"}
+                        </button>
+                      }
+
+
+
                     </div>
                   </Row>
                 </form>
