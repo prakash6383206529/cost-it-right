@@ -557,27 +557,27 @@ class AddOperation extends Component {
 
 
 
-      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ approveDrawer: true, approvalObj: formData })
-      } else {
-        this.props.reset()
-        this.props.createOperationsAPI(formData, (res) => {
-          if (res.data.Result) {
-            toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
-            //this.clearForm()
-            this.cancel()
-          }
-        })
-      }
+      // if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+      //   this.setState({ approveDrawer: true, approvalObj: formData })
+      // } else {
+      //   this.props.reset()
+      //   this.props.createOperationsAPI(formData, (res) => {
+      //     if (res.data.Result) {
+      //       toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+      //       //this.clearForm()
+      //       this.cancel()
+      //     }
+      //   })
+      // }
 
 
-      // this.props.reset()
-      // this.props.createOperationsAPI(formData, (res) => {
-      //   if (res.data.Result) {
-      //     toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
-      //     this.cancel();
-      //   }
-      // });
+      this.props.reset()
+      this.props.createOperationsAPI(formData, (res) => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+          this.cancel();
+        }
+      });
 
 
     }
@@ -1006,22 +1006,22 @@ class AddOperation extends Component {
 
 
                       {
-                        (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                          <button type="submit"
-                            class="user-btn approval-btn save-btn mr5"
-                            disabled={this.state.isFinalApprovar}
-                          >
-                            <div className="send-for-approval"></div>
-                            {'Send For Approval'}
-                          </button>
-                          :
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+                        // (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                        //   <button type="submit"
+                        //     class="user-btn approval-btn save-btn mr5"
+                        //     disabled={this.state.isFinalApprovar}
+                        //   >
+                        //     <div className="send-for-approval"></div>
+                        //     {'Send For Approval'}
+                        //   </button>
+                        //   :
+                        <button
+                          type="submit"
+                          className="user-btn mr5 save-btn"
+                        >
+                          <div className={"save-icon"}></div>
+                          {isEditFlag ? "Update" : "Save"}
+                        </button>
                       }
 
 
