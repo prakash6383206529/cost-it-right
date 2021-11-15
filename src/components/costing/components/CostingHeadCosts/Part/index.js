@@ -61,9 +61,9 @@ function PartCompoment(props) {
   }, [CloseOpenAccordion])
 
   useEffect(() => {
+  
     // OBJECT FOR SENDING OBJECT TO API
     if (!CostingViewMode && IsOpen === false && Count > 0 && Object.keys(ComponentItemData).length > 0) {
-
       const tabData = RMCCTabData[0]
       const surfaceTabData= SurfaceTabData[0]
       const overHeadAndProfitTabData=OverheadProfitTabData[0]
@@ -205,7 +205,9 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         {costData.IsAssemblyPart   && <td>{ checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost) ) * item.CostingPartDetails.Quantity}</td>}
+     
         <td className="text-right"><div className={`${item.IsLocked ? 'lock_icon' : ''}`}>{''}</div></td>
+
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">
