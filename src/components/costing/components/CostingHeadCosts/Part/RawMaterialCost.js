@@ -174,10 +174,9 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
 
     if (technologyForDensity.includes(costData.ETechnologyType)) {
-      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
-        if (!CostingViewMode) {
-          toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
-        }
+      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0 || !CostingViewMode) {
+
+        toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
         return false
       }
     }
