@@ -27,17 +27,6 @@ function VerifyImpactDrawer(props) {
 
   const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
   useEffect(() => {
-
-    dispatch(getLastSimulationData(vendorIdState, EffectiveDate, res => {
-
-      const masterId = res.data.Data.SimulationTechnologyId;
-
-      if (res) {
-        setSimulationTechnologyIdOfRevisionData(masterId)
-        SetLastRevisionData(res.data.Data.ImpactedMasterDataList)
-      }
-
-    }))
     dispatch(getFgWiseImpactData(simulationId, () => { }))
 
   }, [])
@@ -65,7 +54,15 @@ function VerifyImpactDrawer(props) {
 
   useEffect(() => {
     if (vendorIdState && EffectiveDate && simulationId !== undefined) {
-      dispatch(getLastSimulationData(vendorIdState, EffectiveDate, () => { }))
+      dispatch(getLastSimulationData(vendorIdState, EffectiveDate, res => {
+        const masterId = res.data.Data.SimulationTechnologyId;
+
+        if (res) {
+          setSimulationTechnologyIdOfRevisionData(masterId)
+          SetLastRevisionData(res.data.Data.ImpactedMasterDataList)
+        }
+
+      }))
       dispatch(getImpactedMasterData(simulationId, () => { }))
     }
 

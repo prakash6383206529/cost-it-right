@@ -19,7 +19,7 @@ export function Fgwiseimactdata(props) {
     const [showTableData, setshowTableData] = useState(false)
     const { SimulationId } = props
     const dispatch = useDispatch()
-    const [loader, setLoader]= useState(false)
+    const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
 
@@ -29,15 +29,15 @@ export function Fgwiseimactdata(props) {
         if (SimulationId) {
             setLoader(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
-             
-                 if(res && res.data&&res.data.Result) {
-                     setshowTableData(true)
-                 }
-                 else if(res?.response?.status!=="200") {
-                     setshowTableData(false)
-                 }
-                 setLoader(false)
-                }))
+
+                if (res && res.data && res.data.Result) {
+                    setshowTableData(true)
+                }
+                else if (res?.response?.status !== "200") {
+                    setshowTableData(false)
+                }
+                setLoader(false)
+            }))
         }
 
 
@@ -56,14 +56,14 @@ export function Fgwiseimactdata(props) {
     return (
         <>
             {/* FG wise Impact section start */}
-         
+
             <Row className="mb-3">
                 <Col md="12">
-               
+
                     <div className={`table-responsive ${!showTableData ? 'fgwise-table' : ""}`}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
-                            {loader && <LoaderCustom /> }
+                                {loader && <LoaderCustom />}
                                 <tr>
                                     <th><span>Part Number</span></th>
                                     <th className="text-center"><span>Rev Number/ECN Number</span></th>
@@ -126,14 +126,14 @@ export function Fgwiseimactdata(props) {
                                 </>)
                             })
                             }
-                           
+
                         </table>
-                            {!showTableData ?
-                               
-                                    <Col md="12">
-                                        <NoContentFound title={EMPTY_DATA} />
-                                    </Col>
-                              : ""}
+                        {!loader && !showTableData &&
+
+                            <Col md="12">
+                                <NoContentFound title={EMPTY_DATA} />
+                            </Col>
+                        }
                     </div>
                 </Col>
             </Row>
