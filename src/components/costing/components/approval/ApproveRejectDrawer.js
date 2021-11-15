@@ -253,7 +253,7 @@ function ApproveRejectDrawer(props) {
           toastr.success('Simulation has been saved successfully')
           setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
-            const status = res && res?.response && res.response?.Result
+            const status = res && res?.response && res.response?.status
 
             if (status === 400) {
               setDisableSubmitbutton(true)
