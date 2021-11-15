@@ -59,6 +59,7 @@ import productMaster from './masters/product-master'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
 import CostingBenchmarkReport from './report/CostingBenchmarkReport'
+import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -417,18 +418,8 @@ class Main extends Component {
             progressBar
           />
 
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            transition={Slide}
-          />
+          <ToasterBoXWrapper />
+         
           {this.handleUserData()}
         </div>
       </Suspense>
