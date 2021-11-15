@@ -193,23 +193,19 @@ class MachineMaster extends Component {
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">
+
                                     <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                            Insights
-                                        </NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                             Machine Rate
                                         </NavLink>
                                     </NavItem>
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                             Approval Status
                                         </NavLink>
                                     </NavItem>
@@ -217,13 +213,10 @@ class MachineMaster extends Component {
 
                                 <TabContent activeTab={this.state.activeTab}>
 
+
+
                                     {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
-                                            <MachineInsights />
-                                        </TabPane>}
-
-                                    {this.state.activeTab == 2 &&
-                                        <TabPane tabId="2">
                                             <MachineRateListing
                                                 displayForm={this.displayForm}
                                                 getDetails={this.getDetails}
@@ -235,8 +228,8 @@ class MachineMaster extends Component {
                                             />
                                         </TabPane>}
 
-                                    {this.state.activeTab == 3 &&
-                                        <TabPane tabId="3">
+                                    {this.state.activeTab == 2 &&
+                                        <TabPane tabId="2">
                                             <ProcessListing
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
@@ -244,8 +237,8 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
-                                    {this.state.activeTab == 4 &&
-                                        <TabPane tabId="4">
+                                    {this.state.activeTab == 3 &&
+                                        <TabPane tabId="3">
                                             <MachineApproval
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
