@@ -442,7 +442,9 @@ function ReportListing(props) {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
 
-
+                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    {renderColumn(ReportMaster)}
+                                </ExcelFile>
 
                             </div>
                         </div>
