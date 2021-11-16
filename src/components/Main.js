@@ -55,7 +55,6 @@ import axios from 'axios';
 import CostingDetailReport from './report/components/CostingDetailReport'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
-import productMaster from './masters/product-master'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
 import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
@@ -420,7 +419,7 @@ class Main extends Component {
           />
 
           <ToasterBoXWrapper />
-         
+
           {this.handleUserData()}
         </div>
       </Suspense>
