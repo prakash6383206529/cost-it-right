@@ -122,8 +122,12 @@ class AssemblyPartListing extends Component {
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        //return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
-        return cellValue ? cellValue : ''
+        if (cellValue.includes("T")) {
+            return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        }
+        else {
+            return cellValue ? cellValue : ''
+        }
     }
 
     renderEffectiveDate = () => {
