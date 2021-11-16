@@ -843,7 +843,7 @@ function RMDomesticListing(props) {
 
                                 <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
 
-                                <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+                                <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
 
