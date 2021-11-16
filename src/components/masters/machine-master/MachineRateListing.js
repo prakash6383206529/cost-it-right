@@ -74,14 +74,7 @@ class MachineRateListing extends Component {
         }
         this.props.getMachineDataList(filterData, (res) => {
             this.setState({ isLoader: false })
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
-            } else {
-                this.setState({ tableData: [] })
-            }
+
         })
     }
 
@@ -458,7 +451,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -499,6 +492,7 @@ function mapStateToProps(state) {
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
     const { machineDatalist } = machine
+
     const { auth } = state;
     const { initialConfiguration } = auth;
 
