@@ -392,7 +392,8 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                        <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+                        
+                        {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}

@@ -80,7 +80,7 @@ function RawMaterialCost(props) {
       }
 
       if (!CostingViewMode) {
-        props.setRMCost(gridData, Params,item)
+        props.setRMCost(gridData, Params, item)
       }
       selectedIds(gridData)
 
@@ -174,7 +174,8 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
 
     if (technologyForDensity.includes(costData.ETechnologyType)) {
-      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
+      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0 || !CostingViewMode) {
+
         toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
         return false
       }
@@ -231,7 +232,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight:scrapWeight
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -251,7 +252,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
-            ScrapWeight:scrapWeight
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -278,7 +279,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight:scrapWeight
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -297,7 +298,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
-            ScrapWeight:scrapWeight
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -337,7 +338,7 @@ function RawMaterialCost(props) {
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
         CutOffRMC: CutOffRMC,
-        ScrapWeight:scrapWeight
+        ScrapWeight: scrapWeight
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -356,7 +357,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight:scrapWeight
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -385,7 +386,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight:scrapWeight
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -404,7 +405,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
-            ScrapWeight:scrapWeight
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -425,7 +426,7 @@ function RawMaterialCost(props) {
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           CutOffRMC: CutOffRMC,
-          ScrapWeight:scrapWeight
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -444,7 +445,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
-            ScrapWeight:scrapWeight
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -485,7 +486,7 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: ScrapRecoveryPercentage,
         IsScrapRecoveryPercentageApplied: true,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
-        ScrapWeight:recoveredScrapWeight
+        ScrapWeight: recoveredScrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -507,7 +508,7 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: ScrapRecoveryPercentage,
         IsScrapRecoveryPercentageApplied: true,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
-        ScrapWeight:scrapWeight
+        ScrapWeight: scrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })

@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Col, Row } from 'reactstrap';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
+import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
+import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
-import LoaderCustom from '../../common/LoaderCustom';
+import LoaderCustom from '../../../common/LoaderCustom'
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
-import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../config/constants';
-import { Costmovementgraph } from '../../dashboard/CostMovementGraph';
-import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../dashboard/ChartsDashboard';
-import { getBOPCategorySelectList } from '../actions/BoughtOutParts';
+import NoContentFound from '../../../common/NoContentFound'
+import { EMPTY_DATA } from '../../../../config/constants'
+import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
+import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../../dashboard/ChartsDashboard'
+import { getProcessesSelectList } from '../../../masters/actions/MachineMaster'
 
-function Insights(props) {
+function OperationInsights(props) {
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -21,7 +23,7 @@ function Insights(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showListing, setShowListing] = useState(false);
 
-    const [CategorySelected, setCategorySelected] = useState(false);
+    const [techSelected, setTechSelected] = useState(false);
 
     const [dynamicGrpahData, setDynamicGrpahData] = useState()
     const [averageGrpahData, setAverageGrpahData] = useState()
@@ -34,25 +36,25 @@ function Insights(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getBOPCategorySelectList(() => { }));
+        dispatch(getCostingTechnologySelectList(() => { }))
     }, []);
 
-    const CategorySelectList = useSelector(state => state.boughtOutparts.bopCategorySelectList)
-    // console.log(filterRMSelectList,'this is material')
+    const technologySelectList = useSelector(state => state.costing.technologySelectList)
+    // console.log(processSelectList,'this is material')
 
 
     const handleTechnologyChange = (value) => {
         // setTechnology(value)
         if (value && value !== '') {
-            setCategorySelected(true)
+            setTechSelected(true)
         }
         else {
-            setCategorySelected(false)
+            setTechSelected(false)
         }
     }
 
     const submitDropdown = () => {
-        if (CategorySelected) {
+        if (techSelected) {
             setShowListing(true)
             setDynamicGrpahData(rowData[0].graphData);
             setAverageGrpahData(rowData[0].averageData);
@@ -67,24 +69,24 @@ function Insights(props) {
 
     const rowData = [
         {
-            BopPartName: 'OP1', Minimum: '10', Maximum: '80', Average: '45', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
+            OperationName: 'OP1', Minimum: '10', Maximum: '80', Average: '45', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
             graphData: [20, 40, 50, 40, 60, 80, 60, 20], averageData: [12, 25, 45, 32, 51, 45, 36, 15], minimumData: [10, 10, 10, 10, 10, 10, 10, 10], maximumData: [80, 80, 80, 80, 80, 80, 80, 80],
         },
         {
-            BopPartName: 'OP2', Minimum: '40', Maximum: '160', Average: '100', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
+            OperationName: 'OP2', Minimum: '40', Maximum: '160', Average: '100', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
             graphData: [40, 80, 100, 80, 120, 160, 120, 40], averageData: [22, 45, 85, 62, 101, 85, 66, 25], minimumData: [40, 40, 40, 40, 40, 40, 40, 40], maximumData: [160, 160, 160, 160, 160, 160, 160, 160],
 
         },
         {
-            BopPartName: 'OP3', Minimum: '50', Maximum: '170', Average: '110', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
+            OperationName: 'OP3', Minimum: '50', Maximum: '170', Average: '110', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
             graphData: [50, 90, 110, 90, 130, 170, 130, 50], averageData: [12, 55, 65, 72, 111, 45, 76, 25], minimumData: [20, 20, 20, 20, 20, 20, 20, 20], maximumData: [170, 170, 170, 170, 170, 170, 170, 170],
         },
         {
-            BopPartName: 'OP4', Minimum: '20', Maximum: '80', Average: '500', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
+            OperationName: 'OP4', Minimum: '20', Maximum: '80', Average: '500', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
             graphData: [20, 40, 50, 40, 60, 80, 60, 20], averageData: [12, 25, 45, 32, 51, 45, 36, 15], minimumData: [20, 20, 20, 20, 20, 20, 20, 20], maximumData: [80, 80, 80, 80, 80, 80, 80, 80],
         },
         {
-            BopPartName: 'OP12', Minimum: '40', Maximum: '100', Average: '150', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
+            OperationName: 'OP12', Minimum: '40', Maximum: '100', Average: '150', Plant1: '15', Plant2: '22', Plant3: '18', Plant4: '24', Plant5: '8', Plant6: '27', Plant7: '15', Plant8: '38',
             graphData: [20, 40, 50, 40, 60, 80, 60, 20], averageData: [12, 25, 45, 32, 51, 45, 36, 15], minimumData: [10, 10, 10, 10, 10, 10, 10, 10], maximumData: [80, 80, 80, 80, 80, 80, 80, 80],
         },
     ];
@@ -105,14 +107,15 @@ function Insights(props) {
     const renderListing = (label) => {
         let temp = []
         if (label && label !== '') {
-            if (label === 'Category') {
-                CategorySelectList && CategorySelectList.map((item) => {
+            if (label === 'technology') {
+                technologySelectList && technologySelectList.map((item) => {
                     if (item.Value === '0') return false
                     temp.push({ label: item.Text, value: item.Value })
                     return null
                 })
                 return temp
             }
+
         }
         else {
             // console.log('genrated');
@@ -194,18 +197,18 @@ function Insights(props) {
                     <Row className="pt-4">
                         <Col md="12" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Bop Category:</div>
+                                <div className="flex-fills label">Technology:</div>
                                 <div className="hide-label flex-fills pl-0">
                                     <SearchableSelectHookForm
                                         label={''}
-                                        name={'Category'}
-                                        placeholder={'Category'}
+                                        name={'Technology'}
+                                        placeholder={'Technology'}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
                                         // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('Category')}
+                                        options={renderListing('technology')}
                                         mandatory={false}
                                         handleChange={handleTechnologyChange}
                                         errors={errors.Masters}
@@ -213,6 +216,7 @@ function Insights(props) {
                                     />
                                 </div>
                             </div>{/* d-inline-flex */}
+
                             <button title="Run" type="button" class="user-btn" onClick={submitDropdown}><div class="save-icon mr-0"></div></button>
                         </Col>
                     </Row>
@@ -242,7 +246,7 @@ function Insights(props) {
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                             >
-                                                <AgGridColumn pinned="left" width="150" field="BopPartName" headerName="BOP Part Name" />
+                                                <AgGridColumn pinned="left" width="160" field="OperationName" headerName="Operation Name" />
                                                 <AgGridColumn pinned="left" width="115" field="Minimum" />
                                                 <AgGridColumn pinned="left" width="115" field="Maximum" />
                                                 <AgGridColumn pinned="left" width="115" field="Average" />
@@ -287,4 +291,4 @@ function Insights(props) {
     )
 }
 
-export default Insights
+export default OperationInsights

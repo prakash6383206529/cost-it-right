@@ -6,7 +6,6 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import OperationInsights from './OperationInsights';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
 import OperationApproval from './OperationApproval';
@@ -82,28 +81,23 @@ class OperationsMaster extends Component {
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">
+
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>Insights</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>Manage Operation</NavLink>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>Manage Operation</NavLink>
                                     </NavItem>
 
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>Approval Status</NavLink>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>Approval Status</NavLink>
                                     </NavItem>
 
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
 
+
+
                                     {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
-                                            <OperationInsights />
-                                        </TabPane>}
-
-                                    {this.state.activeTab == 2 &&
-                                        <TabPane tabId="2">
                                             <OperationListing
                                                 formToggle={this.displayOperationForm}
                                                 getDetails={this.getDetails}
@@ -116,8 +110,8 @@ class OperationsMaster extends Component {
                                         </TabPane>}
 
 
-                                    {this.state.activeTab == 3 &&
-                                        <TabPane tabId="3">
+                                    {this.state.activeTab == 2 &&
+                                        <TabPane tabId="2">
                                             <OperationApproval
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}

@@ -72,7 +72,7 @@ function MasterSendForApproval(props) {
             ),
             )
         }))
-        console.log(approvalObj.MachineProcessRates, "ara")
+
     }, [])
 
 

@@ -3,19 +3,18 @@ import moment from 'moment'
 import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId, } from '../../helper/auth'
-import NoContentFound from '../common/NoContentFound'
-import { EMPTY_DATA } from '../../config/constants'
-import { REPORT_DOWNLOAD_EXCEl } from '../../config/masterData';
-import { GridTotalFormate } from '../common/TableGridFunctions'
-import { getReportListing } from './actions/ReportListing'
+import { loggedInUserId, } from '../../../helper/auth'
+import NoContentFound from '../../common/NoContentFound'
+import { REPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { GridTotalFormate } from '../../common/TableGridFunctions'
+import { getReportListing } from '.././actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
-import LoaderCustom from '../common/LoaderCustom';
-import WarningMessage from '../common/WarningMessage'
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster ,EMPTY_DATA} from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
+import WarningMessage from '../../common/WarningMessage'
 
 
 
@@ -442,7 +441,9 @@ function ReportListing(props) {
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
 
-
+                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                    {renderColumn(ReportMaster)}
+                                </ExcelFile>
 
                             </div>
                         </div>
