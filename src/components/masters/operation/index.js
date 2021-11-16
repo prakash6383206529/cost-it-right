@@ -6,7 +6,6 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import OperationInsights from './OperationInsights';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
 

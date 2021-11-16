@@ -50,6 +50,7 @@ function ViewToolCost(props) {
                 <Table className="table cr-brdr-main" size="sm" >
                   <thead>
                     <tr>
+                      <th>{`Part No`}</th>
                       <th>{`Tool Maintenance Cost`}</th>
                       <th>{`Tool Cost`}</th>
                       <th>{`Amortization Quantity (Tool Life)`}</th>
@@ -62,6 +63,7 @@ function ViewToolCost(props) {
                       viewToolCost.map((item, index) => {
                         return (
                           <tr key={index}>
+                            <td>{'-'}</td>
                             <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.Life ? item.Life : "-"}</td>
