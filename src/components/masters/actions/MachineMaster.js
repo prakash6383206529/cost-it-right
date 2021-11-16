@@ -175,7 +175,7 @@ export function getMachineDataList(data, callback) {
         axios.get(`${API.getMachineDataList}?${queryParams}`, headers)
             .then((response) => {
 
-                const value = response.data.DataList.filter((item) => item.Effective = item.EffectiveDate)
+                const value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
 
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
