@@ -16,6 +16,7 @@ import { getConfigurationKey } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
+import WarningMessage from '../../common/WarningMessage';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
@@ -34,6 +35,7 @@ function RunSimulationDrawer(props) {
 
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
+    const [warningMessage, setWarningMessage] = useState(false)
     const [selectedDate, setSelectedDate] = useState('')
     const [selectedData, setSelectedData] = useState([])
     const [provisionalCheck, setProvisionalCheck] = useState(false)
@@ -496,11 +498,19 @@ function RunSimulationDrawer(props) {
                                                         errors={errors.EffectiveDate}
                                                     />
                                                 </Col>
-                                            </Row>
 
+                                            </Row>
+                                            <Row>
+                                                <Col md="12">
+                                                    <div className="warning-text">
+                                                        <WarningMessage dClass="mr-3" message={"Unselected checkbox won't be applied in future"} />
+                                                    </div>
+                                                </Col>
+                                            </Row>
                                         </Col>
 
                                     </Row>
+
 
 
 
