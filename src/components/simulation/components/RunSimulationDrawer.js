@@ -288,7 +288,7 @@ function RunSimulationDrawer(props) {
                                                     if (el.Value === '0') return false;
                                                     return (
                                                         <Col md="12" className="mb-3 p-0">
-                                                            <div class={`custom-check1 d-inline-block ${el.Text === "Additional Discount" ? "drawer-side-input" : ''} ${el.Text === "Additional Other Cost" ? 'drawer-side-input-other' : ''}`}>
+                                                            <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                                 <label
                                                                     className="custom-checkbox mb-0"
                                                                     onChange={() => handleApplicabilityChange(el)}
@@ -359,7 +359,7 @@ function RunSimulationDrawer(props) {
                                                                             <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
                                                                                 <Switch
                                                                                     onChange={onChangeAdditionalDiscount}
-                                                                                    checked={toggleSwitchLabel}
+                                                                                    checked={toggleSwitchAdditionalDiscount}
                                                                                     id="normal-switch"
                                                                                     disabled={false}
                                                                                     background="#4DC771"
@@ -501,7 +501,7 @@ function RunSimulationDrawer(props) {
 
                                             </Row>
                                             <Row>
-                                                <Col md="12">
+                                                <Col md="12" className="mt-4 warning-text-container">
                                                     <div className="warning-text">
                                                         <WarningMessage dClass="mr-3" message={"Unselected checkbox won't be applied in future"} />
                                                     </div>
