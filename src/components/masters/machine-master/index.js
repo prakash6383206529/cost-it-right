@@ -11,6 +11,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import MachineApproval from './MachineApproval'
 
 class MachineMaster extends Component {
     constructor(props) {
