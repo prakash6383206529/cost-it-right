@@ -18,7 +18,6 @@ import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../conf
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -602,7 +601,6 @@ export default connect(mapStateToProps, {
   getVendorListByVendorType,
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
-  getLeftMenu,
   getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'InterestRateListing',

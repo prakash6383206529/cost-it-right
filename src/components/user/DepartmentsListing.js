@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import {
   Container, Row, Col, Button, Table
 } from 'reactstrap';
-import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../actions/auth/AuthActions';
+import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
@@ -338,6 +338,5 @@ export default connect(mapStateToProps,
   {
     getAllDepartmentAPI,
     deleteDepartmentAPI,
-    getLeftMenu,
   })(DepartmentsListing);
 
