@@ -632,12 +632,7 @@ class AddBOPDomestic extends Component {
 
 
 
-      this.props.createBOPDomestic(formData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.BOP_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+     
     }
   }
 
