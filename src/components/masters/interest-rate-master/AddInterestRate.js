@@ -17,6 +17,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { ZBC } from '../../../config/constants';
+import Toaster from '../../common/Toaster'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
@@ -35,7 +37,9 @@ class AddInterestRate extends Component {
       effectiveDate: '',
       Data: [],
       DropdownChanged: true,
-      plant: []
+      plant: [],
+      showPopup:false,
+      updatedObj:{}
     }
   }
   /**
@@ -245,6 +249,19 @@ class AddInterestRate extends Component {
     }
   };
 
+
+onPopupConfirm = ()=>{
+  
+  this.props.reset()
+  this.props.updateInterestRate(this.state.updatedObj, (res) => {
+    if (res.data.Result) {
+      toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+      this.setState({showPopup:false})
+      this.cancel()      
+    }
+  });
+}
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -288,12 +305,15 @@ class AddInterestRate extends Component {
         PlantId: plant.value
       }
       if (this.state.isEditFlag) {
+        this.setState({showPopup:true,updatedObj:updateData})
+
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateInterestRate(updateData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                this.setState({showPopup:false})
                 this.cancel()
               }
             });
@@ -301,7 +321,8 @@ class AddInterestRate extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+       
+        // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -325,13 +346,18 @@ class AddInterestRate extends Component {
       this.props.createInterestRate(formData, (res) => {
 
         if (res.data.Result) {
-          toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
+          // toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS)
           this.cancel();
 
         }
       });
     }
 
+  }
+
+  closePopUp= () =>{
+    this.setState({showPopup:false})
   }
 
   /**
@@ -626,7 +652,11 @@ class AddInterestRate extends Component {
               </div>
             </div>
           </div>
+          {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} header={'Confirm'} message={'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'} firstButtonName={'OK'} secondButtonName={'Cancel'} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
+        }
         </div>
+       
       </div>
     );
   }
