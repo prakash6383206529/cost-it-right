@@ -533,7 +533,7 @@ export const API = {
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
-  saveAssemblyPartRowCostingCalculation:`${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
+  saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1220,7 +1220,7 @@ export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
-export const SET_ASSEM_BOP_CHARGE='SET_ASSEM_BOP_CHARGE'
+export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1431,6 +1431,7 @@ export const SET_SELECTED_TECHNOLOGY_SIMULATION = 'SET_SELECTED_TECHNOLOGY_SIMUL
 export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_COSTING_SUMMARY'
 
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
+export const SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE = 'SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'

@@ -247,6 +247,7 @@ function OperationSTSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowVerifyPage(true)
     }, 500);
 
     return (
@@ -332,6 +333,9 @@ function OperationSTSimulation(props) {
                                                 onSelectionChanged={onRowSelect}
                                             >
                                                 <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
@@ -345,13 +349,13 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 {/* {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>} */}
-                                                {
+                                                {/* {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
                                                         <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
                                                         <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewRate + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                     </AgGridColumn>
-                                                }
+                                                } */}
 
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}

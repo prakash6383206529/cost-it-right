@@ -14,7 +14,6 @@ import AddReason from './AddReason';
 import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -518,7 +517,6 @@ export default connect(mapStateToProps, {
   getAllReasonAPI,
   deleteReasonAPI,
   activeInactiveReasonStatus,
-  getLeftMenu,
 })(
   reduxForm({
     form: 'ReasonListing',

@@ -10,7 +10,6 @@ import { TAX } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import AddTaxDetails from './AddTaxDetails';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -46,23 +45,28 @@ class TaxListing extends Component {
    */
   componentDidMount() {
     let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === TAX)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          })
+    const { topAndLeftMenuData } = this.props;
+    let leftMenuFromAPI = []
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleId === ModuleId) {
+          leftMenuFromAPI = el.Pages
         }
+        return null;
+      })
+    if (topAndLeftMenuData !== undefined) {
+      const accessData = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === TAX)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+        })
       }
-    })
+    }
 
     this.getTableListData()
   }
@@ -344,6 +348,5 @@ export default connect(mapStateToProps,
   {
     getTaxDetailsDataList,
     deleteTaxDetails,
-    getLeftMenu,
   })(TaxListing);
 

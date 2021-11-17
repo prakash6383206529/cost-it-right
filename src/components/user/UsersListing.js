@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser, getLeftMenu, } from '../../actions/auth/AuthActions';
+import { getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser, } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
@@ -696,7 +696,6 @@ export default connect(mapStateToProps, {
 	getAllDepartmentAPI,
 	getAllRoleAPI,
 	activeInactiveUser,
-	getLeftMenu,
 })(reduxForm({
 	form: 'UsersListing',
 	onSubmitFail: errors => {

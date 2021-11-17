@@ -18,7 +18,8 @@ import {
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
-    SET_ATTACHMENT_FILE_DATA
+    SET_ATTACHMENT_FILE_DATA,
+    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -597,7 +598,6 @@ export function getImpactedMasterData(simulationId, callback) {
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
         request.then((response) => {
-            console.log(response.data.Data.ImpactedMasterDataList, 'lllkokl')
             if (response.data.Result) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,
@@ -661,8 +661,15 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
     };
 }
 
-
-
+export function setSelectedRowCountForSimulationMessage(selectedMaster) {
+    console.log(selectedMaster, 'kkkkkkkk')
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+            payload: selectedMaster,
+        });
+    }
+}
 
 
 

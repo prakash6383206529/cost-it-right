@@ -1776,8 +1776,8 @@ export const RMDomesticSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpecs", value: "RMSpec" },
-    { label: "RMCode", value: "RawMaterialCode", },
+    { label: "RMSpec", value: "RMSpec" },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "VendorName", value: "VendorName" },
@@ -1804,8 +1804,8 @@ export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpecs", value: "RMSpec" },
-    { label: "RMCode", value: "RawMaterialCode", },
+    { label: "RMSpec", value: "RMSpec" },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     //{ label: "Plant", value: "Plant" },
@@ -1823,6 +1823,32 @@ export const RMImportSimulation = [
     { label: "PlantId", value: "PlantId" },
     { label: "RMCode", value: "RawMaterialCode", },
 
+]
+
+export const SurfaceTreatmentSimulation = [
+    { label: "Technology", value: "Technology" },
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "VendorName", value: "VendorName", },
+    { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
+    { label: "Rate", value: "Rate" },
+    { label: "NewRate", value: "NewRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
+]
+
+export const OperationSimulation = [
+    { label: "Technology", value: "Technology" },
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "VendorName", value: "VendorName", },
+    { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
+    { label: "Rate", value: "Rate" },
+    { label: "NewRate", value: "NewRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
 ]
 
 // Purchasing Group

@@ -20,7 +20,6 @@ import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -30,6 +29,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -125,6 +125,9 @@ class OperationListing extends Component {
                 this.setState({
                     tableData: Data,
                 })
+                if (this.props.isSimulation) {
+                    this.props.apply(Data)
+                }
             } else {
 
             }
@@ -381,7 +384,6 @@ class OperationListing extends Component {
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log(rowData, 'rowDatarowData')
         let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
         return data;
@@ -512,7 +514,7 @@ class OperationListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (isSimulation) {
                 let len = this.state.gridApi.getSelectedRows().length
-                this.props.isRowSelected(len)
+                this.props.setSelectedRowCountForSimulationMessage(len, res => { })
                 this.props.apply(selectedRows)
             }
             // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
@@ -727,7 +729,7 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getLeftMenu,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {
