@@ -4,12 +4,12 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setSelectedRowCountForSimulationMessage, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
@@ -37,7 +37,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -50,7 +50,6 @@ function Simulation(props) {
     const [editWarning, setEditWarning] = useState(true)
     const [onLoad, setOnLoad] = useState(false)
     const [filterStatus, setFilterStatus] = useState('')
-    const [isRowSelected, setIsRowSelected] = useState(0)
 
     const dispatch = useDispatch()
 
@@ -102,6 +101,7 @@ function Simulation(props) {
         setShowMasterList(false)
         setTimeout(() => {
             dispatch(setTechnologyForSimulation(value))
+            dispatch(setSelectedRowCountForSimulationMessage(0))
             if (value !== '' && Object.keys(master).length > 0) {
                 setShowMasterList(true)
             }
@@ -125,6 +125,17 @@ function Simulation(props) {
 
         // }
 
+        switch (Number(master.value)) {
+            case Number(SURFACETREATMENT):
+                temp = TempData
+                break;
+            case Number(OPERATIONS):
+                temp = TempData
+                break;
+            default:
+                break;
+        }
+
         return (<ExcelSheet data={temp} name={master.label}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
@@ -133,9 +144,9 @@ function Simulation(props) {
     const renderModule = (value) => {
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case MACHINERATE:
                 return (<MachineRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case BOPDOMESTIC:
@@ -145,9 +156,9 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isRowSelected={rowSelected} />)
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -159,6 +170,10 @@ function Simulation(props) {
                 return returnExcelColumn(RMDomesticSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
             case RMIMPORT:
                 return returnExcelColumn(RMImportSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
+            case SURFACETREATMENT:
+                return returnExcelColumn(SurfaceTreatmentSimulation, tableData && tableData.length > 0 ? tableData : [])
+            case OPERATIONS:
+                return returnExcelColumn(OperationSimulation, tableData && tableData.length > 0 ? tableData : [])
             default:
                 return 'foo';
         }
@@ -207,11 +222,6 @@ function Simulation(props) {
             setIsBulkUpload(true)
         }
     }
-    let selectedRowCount = 0
-    const rowSelected = (value) => {
-        selectedRowCount = value
-        setIsRowSelected(value)
-    }
 
     const editTable = (Data) => {
         setTableData(Data)
@@ -220,7 +230,7 @@ function Simulation(props) {
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
-        if (isRowSelected === 0) {
+        if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
         switch (master.value) {
@@ -251,7 +261,7 @@ function Simulation(props) {
                             return false
                         }
                         if (element.PlantId !== Data[index - 1].PlantId) {
-                         
+
                             setEditWarning(true);
                             plantFlag = false
                             // return false
@@ -259,7 +269,7 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
@@ -297,7 +307,7 @@ function Simulation(props) {
                     }
                 })
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
@@ -337,14 +347,14 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (isRowSelected !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 }
                 //  else {
                 //     setEditWarning(true)
@@ -356,7 +366,6 @@ function Simulation(props) {
                     return false
                 }
                 Data && Data.forEach((element, index) => {
-                    console.log(element, 'elementttt')
                     if (index !== 0) {
                         if (element.CostingHead !== Data[index - 1].CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
@@ -380,14 +389,14 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (isRowSelected !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (isRowSelected !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (isRowSelected !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 }
                 //  else {
                 //     setEditWarning(true)
@@ -398,7 +407,7 @@ function Simulation(props) {
             default:
                 break;
         }
-        if (isRowSelected === 0) {
+        if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
 
@@ -530,6 +539,7 @@ function Simulation(props) {
                             isOpen={showUploadDrawer}
                             closeDrawer={closeDrawer}
                             anchor={"right"}
+                            master={master}
                         />}
                 </div>
             }

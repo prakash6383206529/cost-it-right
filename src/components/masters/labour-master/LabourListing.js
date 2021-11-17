@@ -17,7 +17,6 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -632,7 +631,6 @@ export default connect(mapStateToProps, {
   getStateSelectList,
   getMachineTypeSelectList,
   getLabourTypeByPlantSelectList,
-  getLeftMenu,
 })(
   reduxForm({
     form: 'LabourListing',

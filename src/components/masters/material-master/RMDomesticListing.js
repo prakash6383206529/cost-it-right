@@ -30,6 +30,7 @@ import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData }
 import { func } from 'prop-types';
 //import {  Controller, useWatch } from 'react-hook-form'
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -548,7 +549,8 @@ function RMDomesticListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         if (isSimulation) {
             let len = gridApi.getSelectedRows().length
-            props.isRowSelected(len)
+            dispatch(setSelectedRowCountForSimulationMessage(len, res => { }))
+
             apply(selectedRows)
         }
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false

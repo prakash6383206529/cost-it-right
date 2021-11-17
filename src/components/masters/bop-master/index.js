@@ -12,7 +12,6 @@ import { BOP, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import SOBListing from './SOBListing';
 
 class BOPMaster extends Component {
@@ -271,9 +270,5 @@ function mapStateToProps({ boughtOutparts, auth }) {
 }
 
 
-export default connect(mapStateToProps,
-  {
-    getLeftMenu,
-  }
-)(BOPMaster);
+export default connect(mapStateToProps, {})(BOPMaster);
 
