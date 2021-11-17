@@ -1,7 +1,7 @@
 import React, { Component, useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from "react-redux";
-import { getMenuByUser, getLeftMenu } from "../../actions/auth/AuthActions";
+import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from "../../helper";
 import { Col, Container, Row } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
@@ -47,21 +47,6 @@ function Dashboard(props) {
 
 
   }, [isOpenRMApprovalDashboard]);
-
-
-
-  // useEffect(() => {
-  //   props.getMenuByUser(loggedInUserId(), () => {
-  //     if (menusData !== undefined) {
-  //       reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
-  //       props.getLeftMenu(
-  //         menusData[0].ModuleId,
-  //         loggedInUserId(),
-  //         (res) => { }
-  //       );
-  //     }
-  //   });
-  // })
 
   const closeDashboard = () => {
     setShowHideDash(true)
@@ -182,7 +167,6 @@ function mapStateToProps({ auth }) {
 
 export default connect(mapStateToProps, {
   getMenuByUser,
-  getLeftMenu,
 })(reduxForm({
   form: 'Dashboard',
   enableReinitialize: true,

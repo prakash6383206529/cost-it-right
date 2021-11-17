@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAllLevelAPI, deleteUserLevelAPI, getLeftMenu, getUsersByTechnologyAndLevel } from '../../actions/auth/AuthActions';
+import { getAllLevelAPI, deleteUserLevelAPI, getUsersByTechnologyAndLevel } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
@@ -521,7 +521,6 @@ export default connect(mapStateToProps,
 	{
 		getAllLevelAPI,
 		deleteUserLevelAPI,
-		getLeftMenu,
 		getUsersByTechnologyAndLevel
 	})(reduxForm({
 		form: 'LevelsListing',
