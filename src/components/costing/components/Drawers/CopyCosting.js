@@ -101,7 +101,7 @@ function CopyCosting(props) {
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
     const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    setMinDate(date[0].EffectiveDate)
+    setMinDate(date[0].EffectiveDate ?? "")
   }, [])
 
 
@@ -531,7 +531,7 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
-                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
@@ -700,7 +700,7 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
-                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
