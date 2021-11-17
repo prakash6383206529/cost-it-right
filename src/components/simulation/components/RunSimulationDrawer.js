@@ -507,13 +507,13 @@ function RunSimulationDrawer(props) {
                                                     />
                                                 </Col>
 
-                                            </Row>
-                                            <Row>
+                                         
                                                 <Col md="12" className="mt-4 warning-text-container">
                                                     <div className="warning-text">
                                                         <WarningMessage dClass="mr-3" message={"Unselected checkbox won't be applied in future"} />
                                                     </div>
                                                 </Col>
+                                            
                                             </Row>
                                         </Col>
 

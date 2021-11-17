@@ -86,6 +86,8 @@ function OtherCostingSimulation(props) {
         switch (Number(selectedMasterForSimulation?.value)) {
             case Number(EXCHNAGERATE):
                 dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                    console.log('res: ', res);
+                    console.log(res && res?.response && res.response?.status,"Status handling");
                     if (res.data.Result) {
                         dataSet(res)
                     }

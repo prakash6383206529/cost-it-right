@@ -286,16 +286,16 @@ function Simulation(props) {
                             vendorFlag = false
                             // return false
                         }
-                        if (element.PlantId !== Data[index - 1].PlantId) {
-                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
-                            setEditWarning(true);
-                            plantFlag = false
-                            // return false
-                        }
+                        // if (element.PlantId !== Data[index - 1].PlantId) {
+                        //     (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                        //     setEditWarning(true);
+                        //     plantFlag = false
+                        //     // return false
+                        // }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (selectedRowCount !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (selectedRowCount !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
