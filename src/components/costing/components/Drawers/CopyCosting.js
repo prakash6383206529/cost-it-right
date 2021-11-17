@@ -101,7 +101,7 @@ function CopyCosting(props) {
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
     const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    setMinDate(date[0].EffectiveDate ?? "")
+    setMinDate(date[0]?.EffectiveDate ?? "")
   }, [])
 
 
