@@ -146,20 +146,25 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
-        dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-            const Data = res.data.Data.ImpactedMasterDataList
-            const masterId = res.data.Data.SimulationTechnologyId;
-
-            if (res) {
-                setImpactedMasterDataListForLastRevisionData(Data)
-                setShowLastRevisionData(true)
-                setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
-
-            }
-        }))
-        // }
-        // if (simulationDetail.SimulationId) {
-        dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+            
+                if(costingList && costingList.length >0 && effectiveDate && Object.keys('simulationDetail'.length>0)){
+                    dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                        const Data = res.data.Data.ImpactedMasterDataList
+                        const masterId = res.data.Data.SimulationTechnologyId;
+            
+                        if (res) {
+                            setImpactedMasterDataListForLastRevisionData(Data)
+                            setShowLastRevisionData(true)
+                            setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+            
+                        }
+                    }))
+                    // }
+                    // if (simulationDetail.SimulationId) {
+                    dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                }
+            
+     
         // }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])

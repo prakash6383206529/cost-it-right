@@ -65,9 +65,9 @@ export function Fgwiseimactdata(props) {
                             <thead>
                                 {loader && <LoaderCustom />}
                                 <tr>
-                                    <th><span>Part Number</span></th>
-                                    <th className="text-center"><span>Rev Number/ECN Number</span></th>
-                                    <th><span>Part Name</span></th>
+                                    <th><span></span></th>
+                                    <th className="text-center"><span>Revision No.</span></th>
+                                    <th><span>Name</span></th>
                                     <th><span>Old Cost/Pc</span></th>
                                     <th><span>New Cost/pc</span></th>
                                     <th><span>Quantity</span></th>
@@ -88,11 +88,11 @@ export function Fgwiseimactdata(props) {
                                     <tbody>
                                         <tr className="accordian-with-arrow">
                                             <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
-                                            <td><span>{item.ECNNumber}</span></td>
+                                            <td><span>{'-'}</span></td>
                                             <td><span>{item.PartName}</span></td>
-                                            <td><span>{item.OldCost}</span></td>
-                                            <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                            <td><span>{item.Quantity}</span></td>
+                                            <td><span>{'-'}</span></td>
+                                            <td><span>{'-'}</span></td>
+                                            <td><span>{'-'}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
 
                                             <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
