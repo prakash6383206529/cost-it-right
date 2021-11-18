@@ -625,7 +625,7 @@ class AddIndivisualPart extends Component {
                                 //onSubmit={this.handleSubmit}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={3}
+                                maxFiles={isEditFlag ? 3 - (this.state.files.length) : 3}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
