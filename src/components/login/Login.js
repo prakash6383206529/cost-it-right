@@ -93,7 +93,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img className="logo-first" src={logo} alt="Minda" /></a>
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={logo} alt="Royal Enfield" /></a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
