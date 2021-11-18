@@ -201,7 +201,7 @@ function SimulationApprovalListing(props) {
 
     const viewDetails = (rowObj) => {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
-        if (rowObj.DisplayStatus === 'Draft' || rowObj.SimulationType === 'Provisional') {
+        if (rowObj.Status === 'Draft' || rowObj.SimulationType === 'Provisional') {
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
             setRedirectCostingSimulation(true)
         } else {
@@ -242,7 +242,7 @@ function SimulationApprovalListing(props) {
 
         // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        const status = props.node.data.DisplayStatus;
+        const status = props.node.data.Status;
 
         if (status === DRAFT) {
             return `Y`;
@@ -309,7 +309,7 @@ function SimulationApprovalListing(props) {
         // }
     }
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.DisplayStatus === APPROVED || rowNode.data.DisplayStatus === REJECTED || rowNode.data.DisplayStatus === WAITING_FOR_APPROVAL || rowNode.data.DisplayStatus === PUSHED || rowNode.data.DisplayStatus === ERROR) {
+        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === ERROR) {
             return false;
         } else {
             return true
