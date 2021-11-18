@@ -258,7 +258,6 @@ function ApproveRejectDrawer(props) {
 
                status = res && res?.response?.status
             }
-            console.log('status: ', status);
 
             if (status!==undefined && status === 400) {
               setDisableSubmitbutton(true)
