@@ -790,7 +790,7 @@ export function sapPushedInitialMoment(simulationId, callback) {
             //     })
             // }
             callback(response)
-            apiErrors(response)
+            // apiErrors(response)
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error)

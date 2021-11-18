@@ -253,8 +253,11 @@ function ApproveRejectDrawer(props) {
           toastr.success('Simulation has been saved successfully')
           setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
-         
-            const status = res && res.response !== undefined ?res?.response?.status:200
+            let status = 200
+            if('response' in res){
+
+               status = res && res?.response?.status
+            }
             console.log('status: ', status);
 
             if (status!==undefined && status === 400) {
