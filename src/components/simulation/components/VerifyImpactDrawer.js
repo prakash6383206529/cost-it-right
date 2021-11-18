@@ -27,7 +27,7 @@ function VerifyImpactDrawer(props) {
 
   const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
   useEffect(() => {
-    dispatch(getFgWiseImpactData(simulationId, () => { }))
+    // dispatch(getFgWiseImpactData(simulationId, () => { }))
 
   }, [])
 
@@ -138,7 +138,7 @@ function VerifyImpactDrawer(props) {
               </Row>
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
-                  <Fgwiseimactdata />
+                  <Fgwiseimactdata SimulationId={simulationId} />
                 </Col>
               </Row>
 

@@ -26,7 +26,7 @@ export function Fgwiseimactdata(props) {
 
     useEffect(() => {
 
-        if (SimulationId) {
+        if (SimulationId) {      
             setLoader(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
 
