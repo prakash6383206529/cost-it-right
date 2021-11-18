@@ -6,7 +6,7 @@ import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
@@ -134,7 +134,7 @@ function SurfaceTreatment(props) {
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+          Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
           InjectDiscountAPICall()
         }
         props.closeDrawer('')
@@ -163,7 +163,7 @@ function SurfaceTreatment(props) {
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+          Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
           InjectDiscountAPICall()
         }
         props.closeDrawer('')

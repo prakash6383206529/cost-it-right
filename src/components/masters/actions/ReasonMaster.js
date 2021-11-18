@@ -11,7 +11,7 @@ import {
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 
 const headers = config;
 
@@ -30,7 +30,7 @@ export function createReasonAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {

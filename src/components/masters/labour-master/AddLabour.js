@@ -7,7 +7,7 @@ import { renderText, searchableSelect } from '../../layout/FormInputs'
 import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
@@ -316,21 +316,21 @@ class AddLabour extends Component {
     const { fieldsObj, error } = this.props
 
     if ((IsEmployeContractual ? vendorName.length == 0 : false) || selectedPlants.length == 0 || StateName == 0) {
-      toastr.warning('First fill upper detail')
+      Toaster.warning('First fill upper detail')
       return false
     }
 
     if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
-      toastr.warning('Fields should not be empty')
+      Toaster.warning('Fields should not be empty')
       return false
     }
     if (Number(fieldsObj) === 0 || Number(fieldsObj) === '') {
-      toastr.warning('Please enter value.')
+      Toaster.warning('Please enter value.')
       return false;
     }
 
     if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
-      toastr.warning('Please enter valid value.')
+      Toaster.warning('Please enter valid value.')
       return false;
     }
     if (maxLength10(fieldsObj)) {
@@ -338,12 +338,12 @@ class AddLabour extends Component {
     }
 
     if (decimalLengthsix(Number(fieldsObj))) {
-      toastr.warning('Decimal value should not be more than 6')
+      Toaster.warning('Decimal value should not be more than 6')
       return false;
     }
 
     // if ((machineType.length >= 11) || (labourType.length > 11)) {
-    //   toastr.warning('Please enter qo')
+    //   Toaster.warning('Please enter qo')
     //   return false;
     // }
 
@@ -353,7 +353,7 @@ class AddLabour extends Component {
       el.LabourTypeId === labourType.value,
     )
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false
     }
 
@@ -407,7 +407,7 @@ class AddLabour extends Component {
         el.LabourTypeId === labourType.value,
     )
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false
     }
 
@@ -536,7 +536,7 @@ class AddLabour extends Component {
     const userDetail = userDetails()
 
     if (gridTable && gridTable.length === 0) {
-      toastr.warning('Labour Rate entry required.')
+      Toaster.warning('Labour Rate entry required.')
       return false
     }
 
@@ -565,7 +565,7 @@ class AddLabour extends Component {
       this.props.reset()
       this.props.updateLabour(updateData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
+          Toaster.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
           this.cancel()
         }
       })
@@ -588,7 +588,7 @@ class AddLabour extends Component {
       this.props.reset()
       this.props.createLabour(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS)
+          Toaster.success(MESSAGES.LABOUR_ADDED_SUCCESS)
           this.cancel()
         }
       })

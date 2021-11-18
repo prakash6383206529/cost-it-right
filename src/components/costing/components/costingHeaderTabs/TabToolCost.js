@@ -10,7 +10,7 @@ import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -265,7 +265,7 @@ function TabToolCost(props) {
 
     dispatch(saveToolTab(data, res => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
+        Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
         dispatch(setComponentToolItemData({}, () => { }))
         InjectDiscountAPICall()
       }

@@ -9,7 +9,7 @@ import {
 import { renderText, renderEmailInputField, searchableSelect, } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import ClientListing from './ClientListing';
@@ -223,7 +223,7 @@ class AddClient extends Component {
             this.props.reset()
             this.props.updateClient(updateData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
+                    Toaster.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
                     this.clearForm()
                     this.child.getUpdatedData();
                 }
@@ -245,7 +245,7 @@ class AddClient extends Component {
             this.props.reset()
             this.props.createClient(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.CLIENT_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.CLIENT_ADD_SUCCESS);
                     this.clearForm();
                     this.child.getUpdatedData();
                 }

@@ -9,7 +9,7 @@ import { getVerifyExchangeSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { EXCHNAGERATE, ZBC } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
@@ -61,7 +61,7 @@ function OtherVerifySimulation(props) {
                 if (res.data.Result) {
                     const data = res.data.Data
                     if (data.SimulationExchangeRateImpactedCostings.length === 0) {
-                        toastr.warning('No approved costing exist for this exchange rate.')
+                        Toaster.warning('No approved costing exist for this exchange rate.')
                         setHideRunButton(true)
                         return false
                     }
@@ -135,7 +135,7 @@ function OtherVerifySimulation(props) {
 
     const runSimulation = debounce(() => {
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
+            Toaster.warning('Please select atleast one costing.')
             return false
         }
 

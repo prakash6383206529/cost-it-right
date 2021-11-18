@@ -7,7 +7,6 @@ import { renderDatePicker, renderText, searchableSelect, } from "../../layout/Fo
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
-import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -232,7 +231,7 @@ onPopupConfirm = ()=>{
   this.props.reset()
   this.props.updateInterestRate(this.state.updatedObj, (res) => {
     if (res.data.Result) {
-      toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+      Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
       this.setState({showPopup:false})
       this.cancel()      
     }

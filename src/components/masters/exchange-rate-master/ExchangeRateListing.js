@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -14,6 +14,8 @@ import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../conf
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
+import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import moment from 'moment';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -49,6 +51,8 @@ class ExchangeRateListing extends Component {
             gridColumnApi: null,
             rowData: null,
             isLoader: true,
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -135,6 +139,7 @@ class ExchangeRateListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -142,9 +147,10 @@ class ExchangeRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
+        // return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
     }
-
+ 
+   
     /**
     * @method confirmDeleteItem
     * @description confirm delete item
@@ -152,11 +158,20 @@ class ExchangeRateListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteExchangeRate(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
                 this.getTableListData()
             }
         });
+        this.setState({showPopup:false})
     }
+
+    onPopupConfirm =() => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+    }
+
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
@@ -419,6 +434,9 @@ class ExchangeRateListing extends Component {
                         </div>
                     </div>
                 </div>
+                {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
+                }
             </ >
         );
     }

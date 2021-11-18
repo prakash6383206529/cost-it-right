@@ -13,7 +13,7 @@ import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFi
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
 import { ViewCostingContext } from '../CostingDetails';
@@ -217,7 +217,7 @@ function TabDiscountOther(props) {
         props.setHeaderCost(topHeaderData)
 
       } else {
-        toastr.warning('Please enter valid number.')
+        Toaster.warning('Please enter valid number.')
       }
     }
   }
@@ -238,7 +238,7 @@ function TabDiscountOther(props) {
         props.setHeaderCost(topHeaderData)
 
       } else {
-        toastr.warning('Please enter valid number.')
+        Toaster.warning('Please enter valid number.')
       }
     }
   }
@@ -285,7 +285,7 @@ function TabDiscountOther(props) {
         props.setHeaderCost(topHeaderData)
 
       } else {
-        toastr.warning('Please enter valid number.')
+        Toaster.warning('Please enter valid number.')
       }
     }
   }
@@ -387,7 +387,7 @@ function TabDiscountOther(props) {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -398,7 +398,7 @@ function TabDiscountOther(props) {
         DeletedBy: loggedInUserId(),
       }
       dispatch(fileDeleteCosting(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = files && files.filter(item => item.FileId !== FileId)
         setFiles(tempArr)
         setIsOpen(!IsOpen)
@@ -514,7 +514,7 @@ function TabDiscountOther(props) {
 
     dispatch(saveDiscountOtherCostTab(data, res => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+        Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
         if (GoToNext) {
           props.toggle('2')

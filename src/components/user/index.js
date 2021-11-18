@@ -172,7 +172,7 @@ class User extends Component {
               </TabPane>}
           </TabContent>
         </div>
-      </Container >
+      </Container>
     );
   }
 }

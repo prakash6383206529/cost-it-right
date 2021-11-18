@@ -9,7 +9,7 @@ import {
     setUserAdditionalPermission, getActionHeadsSelectList, revertDefaultPermission,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
 import { EAccessType } from "../../config/masterData";
 import NoContentFound from '../common/NoContentFound';
@@ -564,7 +564,7 @@ class PermissionsUserWise extends Component {
 
         this.props.setUserAdditionalPermission(formData, (res) => {
             if (res && res.data && res.data.Result) {
-                toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+                Toaster.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
             }
             reset();
             this.setState({

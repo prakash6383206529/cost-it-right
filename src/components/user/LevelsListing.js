@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAllLevelAPI, deleteUserLevelAPI, getUsersByTechnologyAndLevel } from '../../actions/auth/AuthActions';
-import { toastr } from 'react-redux-toastr';
+import { getAllLevelAPI, deleteUserLevelAPI, getLeftMenu, getUsersByTechnologyAndLevel } from '../../actions/auth/AuthActions';
+import Toaster from '../common/Toaster';
 import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
@@ -24,6 +24,7 @@ import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
 
 const gridOptions = {};
 
@@ -49,7 +50,12 @@ class LevelsListing extends Component {
 			gridColumnApi: null,
 			rowData: null,
 			sideBar: { toolPanels: ['columns'] },
-			showData: false
+			showData: false,
+			showPopup:false,
+            deletedId:'',
+			cellData:{},
+            cellValue:'',
+            showPopupToggle:false
 
 		}
 	}
@@ -191,6 +197,7 @@ class LevelsListing extends Component {
 	* @description confirm delete level
 	*/
 	deleteItem = (Id) => {
+		this.setState({showPopup:true, deletedId:Id })
 		const toastrConfirmOptions = {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
@@ -198,7 +205,7 @@ class LevelsListing extends Component {
 			onCancel: () => { },
 			component: () => <ConfirmComponent />
 		};
-		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
+		// return Toaster.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -208,12 +215,19 @@ class LevelsListing extends Component {
 	confirmDeleteItem = (LevelId) => {
 		this.props.deleteUserLevelAPI(LevelId, (res) => {
 			if (res.data.Result === true) {
-				toastr.success(MESSAGES.DELETE_LEVEL_SUCCESSFULLY);
+				Toaster.success(MESSAGES.DELETE_LEVEL_SUCCESSFULLY);
 				this.getLevelsListData()
 			}
 		});
+		this.setState({showPopup:false})
 	}
-
+	onPopupConfirm =() => {
+		this.confirmDeleteItem(this.state.deletedId);
+	   
+	}
+	closePopUp= () =>{
+		this.setState({showPopup:false})
+	  }
 	renderPaginationShowsTotal(start, to, total) {
 		return <GridTotalFormate start={start} to={to} total={total} />
 	}
@@ -249,23 +263,23 @@ class LevelsListing extends Component {
 			onCancel: () => { },
 			component: () => <ConfirmComponent />,
 		};
-		return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
+		// return Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
 	}
 
 	confirmDeactivateItem = (data, cell) => {
 		//   this.props.activeInactiveStatus(data, res => {
 		//     if (res && res.data && res.data.Result) {
 		//         // if (cell == true) {
-		//         //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+		//         //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
 		//         // } else {
-		//         //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+		//         //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
 		//         // }
 		//         // this.getTableListData()
 		//         this.filterList()
 		//     }
 		// })
 	}
-
+ 
 	/**
 	 * @method statusButtonFormatter
 	 * @description Renders buttons
@@ -500,6 +514,9 @@ class LevelsListing extends Component {
 						</form>
 					</>
 				</div>
+				{
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`}  />
+                }
 			</div>
 		);
 	}
