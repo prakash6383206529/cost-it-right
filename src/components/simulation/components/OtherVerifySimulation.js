@@ -215,6 +215,8 @@ function OtherVerifySimulation(props) {
             toastr.warning('Please select atleast one costing.')
             return false
         }
+
+
         let obj = {};
         obj.SimulationId = simulationId                   //for condition
         obj.LoggedInUserId = loggedInUserId()

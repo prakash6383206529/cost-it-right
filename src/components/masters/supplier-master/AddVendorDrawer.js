@@ -27,7 +27,7 @@ class AddVendorDrawer extends Component {
             country: [],
             state: [],
             city: [],
-
+            isLoader: false,
             isOpenFuel: false,
             isOpenPlant: false,
 
@@ -723,12 +723,14 @@ class AddVendorDrawer extends Component {
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
                                     <div className="col-sm-12 text-right px-3">
                                         <button
+                                            disabled={this.state.isLoader}
                                             type={'button'}
                                             className=" mr15 cancel-btn"
                                             onClick={this.cancel} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
+                                            disabled={this.state.isLoader}
                                             type="submit"
                                             className="user-btn save-btn">
                                             <div className={"save-icon"}></div>
