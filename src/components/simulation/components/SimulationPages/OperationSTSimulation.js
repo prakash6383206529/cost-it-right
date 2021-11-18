@@ -5,7 +5,7 @@ import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { toastr } from 'react-redux-toastr';
-import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
+// import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
@@ -18,12 +18,14 @@ import OtherVerifySimulation from '../OtherVerifySimulation';
 import debounce from 'lodash.debounce';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { VBC, ZBC } from '../../../../config/constants';
+import { runVerifySurfaceTreatmentSimulation } from '../../actions/Simulation';
+import VerifySimulation from '../VerifySimulation';
 
 const gridOptions = {
 
 };
-function CPSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster } = props
+function OperationSTSimulation(props) {
+    const { list, isbulkUpload, rowCount, isImpactedMaster, isOperation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -76,7 +78,7 @@ function CPSimulation(props) {
         )
     }
 
-    const newCPFormatter = (props) => {
+    const newRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -84,8 +86,8 @@ function CPSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewNetCC :
-                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        row.NewRate :
+                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
             </>
@@ -168,11 +170,11 @@ function CPSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewCC || Number(row.ConversionCost) === Number(row.NewCC) || row.NewCC === '') return ''
-        const NewCC = Number(row.NewCC) + checkForNull(row.RemainingTotal)
+        if (!row.NewRate || Number(row.ConversionCost) === Number(row.NewRate) || row.NewRate === '') return ''
+        const NewRate = Number(row.NewRate) + checkForNull(row.RemainingTotal)
         const NetCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
-        const classGreen = (NewCC > NetCost) ? 'red-value form-control' : (NewCC < NetCost) ? 'green-value form-control' : 'form-class'
-        return row.NewCC != null ? <span className={classGreen}>{checkForDecimalAndNull(NewCC, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        const classGreen = (NewRate > NetCost) ? 'red-value form-control' : (NewRate < NetCost) ? 'green-value form-control' : 'form-class'
+        return row.NewRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const OldcostFormatter = (props) => {
@@ -185,7 +187,7 @@ function CPSimulation(props) {
         effectiveDateRenderer: effectiveDateFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newCPFormatter: newCPFormatter,
+        newRateFormatter: newRateFormatter,
         oldCPFormatter: oldCPFormatter,
         statusFormatter: statusFormatter,
         NewcostFormatter: NewcostFormatter,
@@ -205,11 +207,11 @@ function CPSimulation(props) {
         let arr = []
         tempData && tempData.map((li, index) => {
 
-            if (Number(li.ConversionCost) === Number(li.NewCC) || li?.NewCC === undefined) {
+            if (Number(li.Rate) === Number(li.NewRate) || li?.NewRate === undefined) {
                 ccCount = ccCount + 1
             } else {
 
-                li.NewTotal = Number(li.NewCC ? li.NewCC : li.ConversionCost) + checkForNull(li.RemainingTotal)
+                li.NewTotal = Number(li.NewRate ? li.NewRate : li.Rate) + checkForNull(li.RemainingTotal)
 
                 arr.push(li)
             }
@@ -231,7 +233,7 @@ function CPSimulation(props) {
             let tempObj = {}
             tempObj.CostingId = item.CostingId
             tempObj.OldNetCC = item.ConversionCost
-            tempObj.NewNetCC = item.NewCC
+            tempObj.NewNetCC = item.NewRate
             tempObj.RemainingTotal = item.RemainingTotal
             tempObj.OldTotalCost = item.TotalCost
             tempObj.NewTotalCost = item.NewTotal
@@ -239,14 +241,12 @@ function CPSimulation(props) {
             return null
         })
         obj.SimulationCombinedProcess = tempArr
-
-        dispatch(runVerifyCombinedProcessSimulation(obj, res => {
+        dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)
     }, 500);
 
     return (
@@ -331,28 +331,27 @@ function CPSimulation(props) {
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
                                             >
-                                                <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                {!isImpactedMaster && <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>}
-                                                <AgGridColumn field="PartNumber" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
                                                     <>
-                                                        <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                        <AgGridColumn field="DestinationPlant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
 
                                                     </>
                                                 }
-                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net CC" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="ConversionCost" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="ConversionCost"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newCPFormatter' editable={true} field="NewCC" headerName="New" colId='NewCC'></AgGridColumn>
+                                                <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
+                                                    <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>}
+                                                {/* {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>} */}
                                                 {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
                                                         <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
-                                                        <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
+                                                        <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewRate + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                     </AgGridColumn>
-                                                } 
+                                                }
 
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
@@ -401,7 +400,7 @@ function CPSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <OtherVerifySimulation isCombinedProcess={true} master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
+                    <VerifySimulation isSurfaceTreatment={true} master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
                 }
 
                 {
@@ -413,7 +412,7 @@ function CPSimulation(props) {
                         isOpen={showRunSimulationDrawer}
                         closeDrawer={closeDrawer}
                         anchor={"right"}
-                        masterId={selectedMasterForSimulation}
+                        masterId={selectedMasterForSimulation.value}
                     />
                 }
             </div>
@@ -422,4 +421,4 @@ function CPSimulation(props) {
     );
 }
 
-export default CPSimulation;
+export default OperationSTSimulation;

@@ -15,13 +15,14 @@ import {
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_SELECTED_COSTING_STATUS,
     GET_AMMENDENT_STATUS_COSTING,
-    SET_ATTACHMENT_FILE_DATA,
     GET_FG_WISE_IMPACT_DATA,
     GET_COMBINED_PROCESS_LIST,
     SET_SELECTED_VENDOR_SIMULATION,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
+    SET_ATTACHMENT_FILE_DATA,
+    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -817,5 +818,37 @@ export function getImpactedMasterData(simulationId, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function setSelectedRowCountForSimulationMessage(selectedMaster) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+            payload: selectedMaster,
+        });
+    }
+}
+
+export function getVerifySurfaceTreatmentSimulationList(token, callback) {
+    return (dispatch) => {
+
+        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+
+        request.then((response) => {
+
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+
+        })
+    }
 }
 
