@@ -370,7 +370,7 @@ function VerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={[]}
+                                                rowData={verifyList}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
