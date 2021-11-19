@@ -5,8 +5,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting } from '../actions/Simulation';
+import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import moment from 'moment';
 // import { EXCHNAGERATE } from '../../../config/constants';
@@ -20,7 +20,6 @@ import WarningMessage from '../../common/WarningMessage';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
-   
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -159,7 +158,6 @@ function RunSimulationDrawer(props) {
     const IsAvailable = (id) => { }
 
     const SimulationRun = debounce(handleSubmit(() => {
-
         let obj = {}
 
 
@@ -201,7 +199,7 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(COMBINED_PROCESS):
                 dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                
+
                     if (res.data.Result) {
                         toastr.success('Simulation process has been run successfully.')
                         runSimulationCosting()
@@ -223,6 +221,26 @@ function RunSimulationDrawer(props) {
                         runSimulationCosting()
                     }
                 }))
+                break;
+            case Number(SURFACETREATMENT):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            case Number(OPERATIONS):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+
+                    if (res.data.Result) {
+                        toastr.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
                 break;
             default:
                 break;
@@ -290,7 +308,7 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="ml-0 pt-3">
                                         <Col md="12" className="mb-3">
-                                         
+
                                             {
                                                 masterId !== EXCHNAGERATE && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                     if (el.Value === '0') return false;
@@ -507,13 +525,13 @@ function RunSimulationDrawer(props) {
                                                     />
                                                 </Col>
 
-                                         
+
                                                 <Col md="12" className="mt-4 warning-text-container">
                                                     <div className="warning-text">
                                                         <WarningMessage dClass="mr-3" message={"Unselected checkbox won't be applied in future"} />
                                                     </div>
                                                 </Col>
-                                            
+
                                             </Row>
                                         </Col>
 

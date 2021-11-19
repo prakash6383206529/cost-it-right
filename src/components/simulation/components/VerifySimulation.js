@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import { getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
@@ -42,6 +41,8 @@ function VerifySimulation(props) {
     const [rowData, setRowData] = useState(null);
     const { filteredRMData } = useSelector(state => state.material)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const [isSurfaceTreatmentOrOperattion, setFalsetIsSurfaceTreatmentOrOperation] = useState(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(selectedMasterForSimulation.value) === Number(OPERATIONS)));
+    const [isRMDomesticOrRMImport, setIsRMDomesticOrRMImport] = useState((Number(selectedMasterForSimulation.value) === (Number(RMDOMESTIC) || Number(selectedMasterForSimulation.value) === Number(RMIMPORT))));
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -60,7 +61,7 @@ function VerifySimulation(props) {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
         // if (props.token) {
         switch (Number(selectedMasterForSimulation.value)) {
-            case Number(RMDOMESTIC || RMIMPORT):
+            case (Number(RMDOMESTIC) || Number(RMIMPORT)):
                 dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
@@ -78,13 +79,13 @@ function VerifySimulation(props) {
                     }
                 }))
                 break;
-            case Number(SURFACETREATMENT):
+            case (Number(SURFACETREATMENT) || Number(SURFACETREATMENT)):
 
                 dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
                         if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                            toastr.warning('No approved costing exist for this exchange rate.')
+                            toastr.warning('No approved costing exist for this surface treatment.')
                             setHideRunButton(true)
                             return false
                         }
@@ -328,7 +329,6 @@ function VerifySimulation(props) {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
     };
-
     return (
         <>
             {
@@ -370,7 +370,7 @@ function VerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={verifyList}
+                                                rowData={[]}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -390,19 +390,19 @@ function VerifySimulation(props) {
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                {(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(OPERATIONS))) && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
-                                                {(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(OPERATIONS))) && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
                                                 <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                {(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(OPERATIONS))) && <AgGridColumn width={185} field="UOM" headerName="UOM"></AgGridColumn>}
-                                                {(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(OPERATIONS))) && <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>}
-                                                {(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(OPERATIONS))) && <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>}
-                                                {(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(OPERATIONS))) && <AgGridColumn width={185} field="NewPO" headerName="New PO"></AgGridColumn>}
-                                                {(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(OPERATIONS))) && <AgGridColumn width={185} field="OldPO" headerName="Old PO"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="UOM" headerName="UOM"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="NewPO" headerName="New PO"></AgGridColumn>}
+                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OldPO" headerName="Old PO"></AgGridColumn>}
                                                 {(Number(selectedMasterForSimulation.value) === (Number(RMDOMESTIC) || Number(RMIMPORT))) &&
                                                     <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
                                                 }
@@ -413,7 +413,7 @@ function VerifySimulation(props) {
                                                     <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
                                                     <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
                                                 </>
-                                                {(Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC) || Number(RMIMPORT)) &&
+                                                {(Number(selectedMasterForSimulation.value) === (Number(RMDOMESTIC) || Number(RMIMPORT))) &&
                                                     <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
                                                 }
                                             </AgGridReact>
@@ -456,7 +456,7 @@ function VerifySimulation(props) {
                 simulationDrawer &&
                 <RunSimulationDrawer
                     tokenNo={tokenNo}
-                    masterId={simulationTechnologyId}
+                    masterId={selectedMasterForSimulation.value}
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
