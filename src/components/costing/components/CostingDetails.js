@@ -97,10 +97,11 @@ function CostingDetails(props) {
 
   const fieldValues = IsolateReRender(control);
   const [showPopup, setShowPopup] = useState(false)
-  const [updatedItem, setupdatedItem] = useState({})
-  const [updatedType, setupdatedType] = useState('')
-  const [updatedIndex, setupdatedIndex] = useState([])
-
+  const [costingObj, setCostingObj ] = useState({
+    item:{},
+    type:'',
+    index:[]
+  })
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -956,10 +957,7 @@ function CostingDetails(props) {
   */
   const deleteItem = (Item, index, type) => {
      setShowPopup(true)
-     setupdatedIndex(index)
-     setupdatedItem(Item)
-     setupdatedType(type)
-
+      setCostingObj({item:Item, type:type,index:index})
     const toastrConfirmOptions = {
       onOk: () => {
         deleteCosting(Item, index, type);
@@ -1400,10 +1398,8 @@ function CostingDetails(props) {
   }
  
   const onPopupConfirm = () => {
-    deleteCosting(updatedItem, updatedIndex, updatedType);
-    console.log(updatedIndex, "index")
-    console.log(updatedItem, "item")
-    console.log(updatedType, "type")
+    const {item, type,  index} =costingObj;
+    deleteCosting(item, index, type);
   }
 
   const closePopUp= () =>{
