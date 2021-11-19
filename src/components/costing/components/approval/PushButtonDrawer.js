@@ -10,7 +10,7 @@ import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 import { useState } from 'react'
 import { INR } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 
 function PushButtonDrawer(props) {
 
@@ -86,7 +86,7 @@ function PushButtonDrawer(props) {
 
 
     let pushdata = {
-      effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
+      effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
       vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
       materialNumber: dataSend[1].PartNumber,
       netPrice: dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : '',

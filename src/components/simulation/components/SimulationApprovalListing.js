@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
@@ -48,8 +48,8 @@ function SimulationApprovalListing(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
     const userList = useSelector(state => state.auth.userList)
-    const [deletedId, setDeletedId] =useState('')
-    const [showPopup, setShowPopup]=useState(false)
+    const [deletedId, setDeletedId] = useState('')
+    const [showPopup, setShowPopup] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -152,7 +152,7 @@ function SimulationApprovalListing(props) {
 
     const createdOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '-';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
     const priceFormatter = (props) => {
@@ -177,7 +177,7 @@ function SimulationApprovalListing(props) {
 
     const requestedOnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
     const reasonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -218,8 +218,8 @@ function SimulationApprovalListing(props) {
             simulationId: rowData.SimulationId
         }
 
-      setShowPopup(true)
-      setDeletedId(data)
+        setShowPopup(true)
+        setDeletedId(data)
         const toastrConfirmOptions = {
             onOk: () => {
                 dispatch(deleteDraftSimulation(data, res => {
@@ -235,7 +235,7 @@ function SimulationApprovalListing(props) {
         // return Toaster.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
 
     }
-    const onPopupConfirm =() => {
+    const onPopupConfirm = () => {
         dispatch(deleteDraftSimulation(deletedId, res => {
             if (res.data.Result) {
                 Toaster.success("Simulation token deleted successfully.")
@@ -244,10 +244,10 @@ function SimulationApprovalListing(props) {
         }))
         setShowPopup(false)
 
-     }
-     const closePopUp= () =>{
-       setShowPopup(false)
-       }
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
     const requestedByFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
@@ -609,7 +609,7 @@ function SimulationApprovalListing(props) {
                             </div>
                         </div>
                     </div>
-                   
+
                 </div>
                 // :
                 // <SimulationApprovalSummary
@@ -617,9 +617,9 @@ function SimulationApprovalListing(props) {
                 //     approvalId={approvalData.approvalProcessId}
                 // /> //TODO list
             }
-                   {
-            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`}  />
-         }
+            {
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`} />
+            }
         </Fragment>
     )
 }

@@ -16,7 +16,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -51,8 +51,8 @@ class ExchangeRateListing extends Component {
             gridColumnApi: null,
             rowData: null,
             isLoader: true,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -139,7 +139,7 @@ class ExchangeRateListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -149,8 +149,8 @@ class ExchangeRateListing extends Component {
         };
         // return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
     }
- 
-   
+
+
     /**
     * @method confirmDeleteItem
     * @description confirm delete item
@@ -162,14 +162,14 @@ class ExchangeRateListing extends Component {
                 this.getTableListData()
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
 
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
+    closePopUp = () => {
+        this.setState({ showPopup: false })
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
@@ -186,7 +186,7 @@ class ExchangeRateListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -435,7 +435,7 @@ class ExchangeRateListing extends Component {
                     </div>
                 </div>
                 {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
                 }
             </ >
         );
