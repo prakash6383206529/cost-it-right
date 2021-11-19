@@ -9,7 +9,7 @@ import {
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -101,7 +101,7 @@ class AddVendorDrawer extends Component {
             if (removedVendorTypeIds.length === 0) {
                 this.setState({ selectedVendorType: e });
             } else {
-                toastr.warning("You can not remove existing Vendor Type.");
+                Toaster.warning("You can not remove existing Vendor Type.");
                 return false;
             }
 
@@ -412,7 +412,7 @@ class AddVendorDrawer extends Component {
             this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
+                    Toaster.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
                     this.cancel(formData)
                 }
             });
@@ -437,7 +437,7 @@ class AddVendorDrawer extends Component {
             this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
+                    Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
                     this.cancel(formData);
                 }
             });

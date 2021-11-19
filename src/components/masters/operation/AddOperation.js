@@ -7,7 +7,7 @@ import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaFie
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -22,6 +22,7 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddOperation');
 
@@ -57,7 +58,9 @@ class AddOperation extends Component {
       changeValue: true,
       dataToChange: '',
       uploadAttachements: true,
-      isDisableCode: false
+      isDisableCode: false,
+      showPopup:false,
+      updatedObj:{}
     }
   }
 
@@ -347,7 +350,7 @@ class AddOperation extends Component {
   checkUniqCode = (e) => {
     this.props.checkAndGetOperationCode(e.target.value, '', res => {
       if (res && res.data && res.data.Result === false) {
-        toastr.warning(res.data.Message);
+        Toaster.warning(res.data.Message);
       }
     })
   }
@@ -355,7 +358,7 @@ class AddOperation extends Component {
     this.props.checkAndGetOperationCode('', e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
 
-        toastr.warning(res.data.Message);
+        Toaster.warning(res.data.Message);
       } else {
         this.setState({ isDisableCode: res.data.DynamicData.IsExist }, () => {
           this.props.change('OperationCode', res.data.DynamicData.OperationCode ? res.data.DynamicData.OperationCode : '')
@@ -394,7 +397,7 @@ class AddOperation extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -420,7 +423,7 @@ class AddOperation extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteOperation(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -514,12 +517,13 @@ class AddOperation extends Component {
           this.cancel()
           return false
         }
+        this.setState({showPopup:true, updatedObj:updateData})
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateOperationAPI(updateData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
                 this.cancel()
               }
             });
@@ -527,7 +531,7 @@ class AddOperation extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />,
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -563,7 +567,7 @@ class AddOperation extends Component {
       //   this.props.reset()
       //   this.props.createOperationsAPI(formData, (res) => {
       //     if (res.data.Result) {
-      //       toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+      //       Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
       //       //this.clearForm()
       //       this.cancel()
       //     }
@@ -574,7 +578,7 @@ class AddOperation extends Component {
       this.props.reset()
       this.props.createOperationsAPI(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
+          Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
           this.cancel();
         }
       });
@@ -583,7 +587,19 @@ class AddOperation extends Component {
     }
 
   }
-
+  
+  onPopupConfirm = ()=>{ 
+    this.props.reset()
+            this.props.updateOperationAPI(this.state.updatedObj, (res) => {
+              if (res.data.Result) {
+                Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                this.cancel()
+              }
+            });
+  }
+  closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
   * @method render
   * @description Renders the component
@@ -1066,6 +1082,9 @@ class AddOperation extends Component {
               IsImportEntery={false}
             />
           )
+        }
+         {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
         }
       </div>
     );

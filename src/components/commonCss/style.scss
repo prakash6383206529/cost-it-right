@@ -4229,7 +4229,7 @@ body{
   color: #4DC771;
   line-height: initial;
   min-width: 70px;
-  max-width: 70px !important;
+  // max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -6368,4 +6368,13 @@ left: 17rem;
     left: 1rem;
     top: 1rem;
   }
+}
+// <------START popup CSS-------->
+.popup-container {
+  height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+}
+.main-modal-container {
+  z-index: 1040 !important;
 }

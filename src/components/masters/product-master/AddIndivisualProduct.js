@@ -4,8 +4,8 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, } from "../../layout/FormInputs";
-import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList } from '../actions/Part';
+import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -17,9 +17,8 @@ import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from "../../../assests/images/red-cross.png";
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
-class AddIndivisualPart extends Component {
+class AddIndivisualProduct extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
@@ -30,16 +29,12 @@ class AddIndivisualPart extends Component {
 
       selectedPlants: [],
       effectiveDate: '',
-      ProductGroup: [],
-      oldProductGroup: [],
 
       files: [],
       DataToCheck: [],
       DropdownChanged: true,
-      uploadAttachements: true,
       showPopup:false,
       updatedObj:{}
-
     }
   }
 
@@ -49,7 +44,6 @@ class AddIndivisualPart extends Component {
   */
   componentDidMount() {
     this.props.getPlantSelectList(() => { })
-    this.props.getProductGroupSelectList(() => { })
     this.getDetails()
   }
 
@@ -67,13 +61,8 @@ class AddIndivisualPart extends Component {
       })
       this.props.getPartData(data.Id, res => {
         if (res && res.data && res.data.Result) {
-          const Data = res.data.Data;
-          let productArray = []
 
-          Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
-            return productArray
-          })
+          const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
@@ -82,8 +71,6 @@ class AddIndivisualPart extends Component {
               // isLoader: false,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
-              ProductGroup: productArray,
-              oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -104,11 +91,6 @@ class AddIndivisualPart extends Component {
     this.setState({ selectedPlants: e })
   }
 
-
-  handleProductGroup = (e) => {
-    this.setState({ ProductGroup: e })
-  }
-
   /**
   * @method handleChange
   * @description Handle Effective Date
@@ -123,20 +105,13 @@ class AddIndivisualPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList } = this.props;
+    const { plantSelectList } = this.props;
     const temp = [];
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ Text: item.Text, Value: item.Value })
       });
-      return temp;
-    }
-    if (label === 'ProductGroup') {
-      productGroupSelectList && productGroupSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-      })
       return temp;
     }
 
@@ -152,8 +127,6 @@ class AddIndivisualPart extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
-
-    this.setState({ uploadAttachements: false })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -239,19 +212,16 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
-    const { initialConfiguration } = this.props;
+    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
-    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
     if (isEditFlag) {
 
 
       if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
         DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber && oldProductGroup === ProductGroup
-        && uploadAttachements) {
+        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
         this.cancel()
         return false;
       }
@@ -272,8 +242,7 @@ class AddIndivisualPart extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         // Plants: [],
         Attachements: updatedFiles,
-        IsForcefulUpdated: true,
-        GroupCodeList: productArray
+        IsForcefulUpdated: true
       }
 
       if (isEditFlag) {
@@ -312,8 +281,7 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         // Plants: [],
-        Attachements: files,
-        GroupCodeList: productArray
+        Attachements: files
       }
 
       this.props.reset()
@@ -325,6 +293,7 @@ class AddIndivisualPart extends Component {
       });
     }
   }
+  
   onPopupConfirm = ()=>{ 
     this.props.reset()
     this.props.updatePart(this.state.updatedObj, (res) => {
@@ -364,8 +333,8 @@ class AddIndivisualPart extends Component {
                         <div className="form-heading mb-0">
                           <h1>
                             {this.state.isEditFlag
-                              ? "Update Component/ Part"
-                              : "Add  Component/ Part"}
+                              ? "Update Component/ Product"
+                              : "Add  Component/ Product"}
                           </h1>
                         </div>
                       </Col>
@@ -435,44 +404,24 @@ class AddIndivisualPart extends Component {
                               customClassName={"withBorder"}
                             />
                           </Col>
-                          {initialConfiguration?.IsProductMasterConfigurable ? (
-                            // initialConfiguration.IsGroupCodeDisplay && (
-                            <Col md="3">
-                              <Field
-                                label="Group Code"
-                                name="ProductGroup"
-                                type="text"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
-                                options={this.renderListing("ProductGroup")}
-                                selectionChanged={this.handleProductGroup}
-                                validate={
-                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
-                                required={true}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                              />
-                            </Col>
-                          ) :
-                            <Col md="3">
-                              <Field
-                                label={`Group Code`}
-                                name={"GroupCode"}
-                                type="text"
-                                placeholder={""}
-                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={"withBorder"}
-                              />
-                            </Col>
-                          }
+
+                          {initialConfiguration &&
+                            initialConfiguration.IsGroupCodeDisplay && (
+                              <Col md="3">
+                                <Field
+                                  label={`Group Code`}
+                                  name={"GroupCode"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                  component={renderText}
+                                  //required={true}
+                                  className=""
+                                  customClassName={"withBorder"}
+                                />
+                              </Col>
+                            )}
+
                         </Row>
 
                         <Row>
@@ -611,7 +560,7 @@ class AddIndivisualPart extends Component {
                           <Col md="3">
                             <label>
                               Upload Files (upload up to 3 files)
-                            </label>
+                                </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
@@ -625,7 +574,7 @@ class AddIndivisualPart extends Component {
                                 //onSubmit={this.handleSubmit}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={isEditFlag ? 3 - (this.state.files.length) : 3}
+                                maxFiles={3}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
@@ -637,10 +586,10 @@ class AddIndivisualPart extends Component {
                                         Drag and Drop or{" "}
                                         <span className="text-primary">
                                           Browse
-                                        </span>
+                                            </span>
                                         <br />
-                                        file to upload
-                                      </span>
+                                            file to upload
+                                          </span>
                                     </div>
                                   )
                                 }
@@ -722,8 +671,8 @@ class AddIndivisualPart extends Component {
             </div>
           </div>
           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
-        }
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
+                }
         </div>
       </>
     );
@@ -737,17 +686,17 @@ class AddIndivisualPart extends Component {
 */
 function mapStateToProps({ comman, part, auth }) {
   const { plantSelectList, } = comman;
-  const { partData, productGroupSelectList } = part;
+  const { partData } = part;
   const { initialConfiguration } = auth;
 
   let initialValues = {};
-  if (partData && Object.keys(partData).length > 0) {
+  if (partData && partData !== undefined) {
     initialValues = {
       PartNumber: partData.PartNumber,
       PartName: partData.PartName,
       BOMNumber: partData.BOMNumber,
       Description: partData.Description,
-      GroupCode: partData !== null && partData.GroupCodeList[0]?.GroupCode,
+      GroupCode: partData.GroupCode,
       ECNNumber: partData.ECNNumber,
       DrawingNumber: partData.DrawingNumber,
       RevisionNumber: partData.RevisionNumber,
@@ -755,7 +704,7 @@ function mapStateToProps({ comman, part, auth }) {
     }
   }
 
-  return { plantSelectList, partData, initialValues, initialConfiguration, productGroupSelectList }
+  return { plantSelectList, partData, initialValues, initialConfiguration, }
 }
 
 /**
@@ -771,8 +720,7 @@ export default connect(mapStateToProps, {
   getPartData,
   fileUploadPart,
   fileDeletePart,
-  getProductGroupSelectList
 })(reduxForm({
-  form: 'AddIndivisualPart',
+  form: 'AddIndivisualProduct',
   enableReinitialize: true,
-})(AddIndivisualPart));
+})(AddIndivisualProduct));

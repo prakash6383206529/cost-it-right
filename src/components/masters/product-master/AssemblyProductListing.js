@@ -11,17 +11,17 @@ import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 import { AssemblyPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { ASSEMBLYPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import BOMViewerProduct from './BOMViewerProduct';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -33,7 +33,7 @@ function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
 }
 
-class AssemblyPartListing extends Component {
+class AssemblyProductListing extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -121,6 +121,7 @@ class AssemblyPartListing extends Component {
     }
     onPopupConfirm =() => {
         this.confirmDeleteItem(this.state.deletedId);
+       
     }
     closePopUp= () =>{
         this.setState({showPopup:false})
@@ -131,13 +132,7 @@ class AssemblyPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        if (cellValue.includes("T")) {
-            return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
-        }
-        else {
-            return cellValue ? cellValue : ''
-        }
+        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -219,7 +214,16 @@ class AssemblyPartListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-
+        // this.props.activeInactiveStatus(data, res => {
+        //     if (res && res.data && res.data.Result) {
+        //         if (cell == true) {
+        //             Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+        //         } else {
+        //             Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+        //         }
+        //         this.getTableListData()
+        //     }
+        // })
     }
 
     /**
@@ -305,12 +309,12 @@ class AssemblyPartListing extends Component {
             tempArr.push(item.data)
         }))
 
-        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, this.props.partsListing)
+        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData && TempData.map((item) => {
+        temp = TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -322,11 +326,9 @@ class AssemblyPartListing extends Component {
             } else {
                 return false
             }
-
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
             }
-
 
 
             return item
@@ -345,7 +347,6 @@ class AssemblyPartListing extends Component {
 
     resetState() {
         gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
     }
 
 
@@ -356,7 +357,20 @@ class AssemblyPartListing extends Component {
     render() {
         const { isOpenVisualDrawer, isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const options = {
+            clearSearch: true,
+            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
+            //exportCSVText: 'Download Excel',
+            //onExportToCSV: this.onExportToCSV,
+            //paginationShowsTotal: true,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
+            exportCSVBtn: this.createCustomExportCSVButton,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
 
+        };
 
         const defaultColDef = {
             resizable: true,
@@ -429,6 +443,34 @@ class AssemblyPartListing extends Component {
                     </Col>
                 </Row>
 
+                {/* <BootstrapTable
+                    data={this.props.partsListing}
+                    striped={false}
+                    bordered={false}
+                    hover={false}
+                    options={options}
+                    search
+                    exportCSV={DownloadAccessibility}
+                    csvFileName={`${AssemblyPart}.csv`}
+                    //ignoreSinglePage
+                    ref={'table'}
+                    trClassName={'userlisting-row'}
+                    tableHeaderClass='my-custom-header'
+                    pagination>
+                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMNumber" width={'100'} >BOM NO.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" width={'100'} >Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn> */}
+                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
+                {/* <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} export={false} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
+                    <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                </BootstrapTable> */}
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                     <div className="ag-grid-header">
@@ -440,7 +482,6 @@ class AssemblyPartListing extends Component {
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
@@ -466,7 +507,7 @@ class AssemblyPartListing extends Component {
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -477,8 +518,10 @@ class AssemblyPartListing extends Component {
                         </div>
                     </div>
                 </div>
-
-                {isOpenVisualDrawer && <BOMViewer
+                {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`}  />
+                }
+                {isOpenVisualDrawer && <BOMViewerProduct
                     isOpen={isOpenVisualDrawer}
                     closeDrawer={this.closeVisualDrawer}
                     isEditFlag={true}
@@ -495,9 +538,6 @@ class AssemblyPartListing extends Component {
                     messageLabel={'BOM'}
                     anchor={'right'}
                 />}
-                {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`}  />
-         }
             </div >
         );
     }
@@ -526,4 +566,4 @@ export default connect(mapStateToProps,
     {
         getAssemblyPartDataList,
         deleteAssemblyPart,
-    })(AssemblyPartListing);
+    })(AssemblyProductListing);

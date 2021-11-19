@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
-import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -21,7 +20,7 @@ import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
-
+import Toaster from '../../../common/Toaster'
 
 function ApproveRejectDrawer(props) {
 
@@ -188,7 +187,7 @@ function ApproveRejectDrawer(props) {
             count = count + 1;
             if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
 
-              toastr.warning('User does not exist on next level for selected simulation.')
+              Toaster.warning('User does not exist on next level for selected simulation.')
               setApprovalDropDown([])
               return false
             }
@@ -227,7 +226,7 @@ function ApproveRejectDrawer(props) {
           setApprovalDropDown(tempDropdownList)
           if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
 
-            toastr.warning('User does not exist on next level for selected simulation.')
+            Toaster.warning('User does not exist on next level for selected simulation.')
             setApprovalDropDown([])
             return false
           }
@@ -253,7 +252,7 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
           setLoader(true)
-          toastr.success('Simulation has been saved successfully.')
+          Toaster.success('Simulation has been saved successfully.')
           setLoader(false)
         }
       }))
@@ -264,7 +263,7 @@ function ApproveRejectDrawer(props) {
       //   case Number(RMIMPORT):
       //     dispatch(saveSimulationForRawMaterial(simObj, res => {
       //       if (res.data.Result) {
-      //         toastr.success('Simulation has been saved successfully.')
+      //         Toaster.success('Simulation has been saved successfully.')
       //       }
       //     }))
       //   case 
@@ -345,11 +344,11 @@ function ApproveRejectDrawer(props) {
         dispatch(approvalRequestByApprove(Data, res => {
           if (res.data.Result) {
             if (IsPushDrawer) {
-              toastr.success('The costing has been approved')
+              Toaster.success('The costing has been approved')
               setOpenPushButton(true)
 
             } else {
-              toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              Toaster.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -358,7 +357,7 @@ function ApproveRejectDrawer(props) {
         // REJECT CONDITION
         dispatch(rejectRequestByApprove(Data, res => {
           if (res.data.Result) {
-            toastr.success('Costing Rejected')
+            Toaster.success('Costing Rejected')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -459,7 +458,7 @@ function ApproveRejectDrawer(props) {
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
-            toastr.success('Simulation token has been sent for approval.')
+            Toaster.success('Simulation token has been sent for approval.')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -469,11 +468,11 @@ function ApproveRejectDrawer(props) {
         dispatch(simulationApprovalRequestByApprove(approverObject, res => {
           if (res.data.Result) {
             if (IsPushDrawer) {
-              toastr.success('The simulation token has been approved')
+              Toaster.success('The simulation token has been approved')
               setOpenPushButton(true)
 
             } else {
-              toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+              Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -482,7 +481,7 @@ function ApproveRejectDrawer(props) {
         //SIMULATION REJECT CONDITION
         dispatch(simulationRejectRequestByApprove(approverObject, res => {
           if (res.data.Result) {
-            toastr.success('The simulation token has been rejected')
+            Toaster.success('The simulation token has been rejected')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -625,9 +624,9 @@ function ApproveRejectDrawer(props) {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
-      toastr.warning("File size greater than 5mb not allowed")
+      Toaster.warning("File size greater than 5mb not allowed")
     }
   }
 
@@ -650,7 +649,7 @@ function ApproveRejectDrawer(props) {
         DeletedBy: loggedInUserId(),
       }
       // dispatch(fileDeleteCosting(deleteData, (res) => {
-      //     toastr.success('File has been deleted successfully.')
+      //     Toaster.success('File has been deleted successfully.')
       //   }))
       let tempArr = files && files.filter(item => item.FileId !== FileId)
       setFiles(tempArr)

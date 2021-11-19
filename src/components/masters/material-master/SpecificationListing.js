@@ -12,7 +12,7 @@ import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import AddSpecification from './AddSpecification';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -24,6 +24,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -47,6 +48,9 @@ class SpecificationListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
+            showPopup:false,
+            showPopup2:false,
+            deletedId:''
 
         }
     }
@@ -135,6 +139,7 @@ class SpecificationListing extends Component {
     * @description confirm delete RM Specification
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -142,7 +147,7 @@ class SpecificationListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -152,15 +157,21 @@ class SpecificationListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteRMSpecificationAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                //toastr.warning(res.data.Message)
-                toastr.warning('The specification is associated in the system. Please remove the association to delete')
+                //Toaster.warning(res.data.Message)
+                Toaster.warning('The specification is associated in the system. Please remove the association to delete')
             } else if (res && res.data && res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
                 this.getSpecificationListData('', '');
             }
+            this.setState({showPopup:false})
         });
     }
-
+    onPopupConfirm =() => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -232,13 +243,14 @@ class SpecificationListing extends Component {
     * @description confirm Redirection to Material tab.
     */
     densityAlert = () => {
+        this.setState({showPopup2:true})
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDensity()
             },
             onCancel: () => { }
         };
-        return toastr.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
+        // return Toaster.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
 
     /**
@@ -248,7 +260,12 @@ class SpecificationListing extends Component {
     confirmDensity = () => {
         this.props.toggle('4')
     }
-
+    onPopupConfirm2 =() => {
+        this.confirmDensity(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup2:false})
+      }
     /**
     * @name onSubmit
     * @param values
@@ -480,6 +497,12 @@ class SpecificationListing extends Component {
                     messageLabel={'RM Specification'}
                     anchor={'right'}
                 />}
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.SPECIFICATION_DELETE_ALERT}`}  />
+         }
+                {
+            this.state.showPopup2 && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`Recently Created Material Density is not created, Do you want to create?`}  />
+         }
             </div>
         );
     }

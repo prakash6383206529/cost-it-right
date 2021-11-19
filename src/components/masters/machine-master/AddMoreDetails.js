@@ -16,7 +16,7 @@ import {
 } from '../actions/MachineMaster';
 import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from "../../../helper/auth";
@@ -38,6 +38,7 @@ import { AcceptableMachineUOM } from '../../../config/masterData'
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 
@@ -101,7 +102,9 @@ class AddMoreDetails extends Component {
       isLabourOpen: false,
       isProcessOpen: false,
       UOM: [],
-      effectiveDate: ''
+      effectiveDate: '',
+      showPopup:false,
+      updatedObj:{}
     }
   }
 
@@ -348,7 +351,18 @@ class AddMoreDetails extends Component {
       return temp;
     }
   }
-
+  onPopupConfirm = ()=>{ 
+    this.props.reset()
+    this.props.updateExchangeRate(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+        this.cancel()
+      }
+    });
+  }
+  closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
   * @method handlePlants
   * @description called
@@ -361,7 +375,7 @@ class AddMoreDetails extends Component {
       this.props.getPowerCostUnit(newValue.value, res => {
         let Data = res.data.DynamicData;
         if (res && res.data && res.data.Message !== '') {
-          toastr.warning(res.data.Message)
+          Toaster.warning(res.data.Message)
           machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
           this.setState({
             machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
@@ -484,7 +498,7 @@ class AddMoreDetails extends Component {
           this.props.getFuelUnitCost(data, res => {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
-              toastr.warning(res.data.Message)
+              Toaster.warning(res.data.Message)
               machineFullValue.FuelCostPerUnit = Data.FuelRatePerUnit
               this.setState({
                 machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit }
@@ -500,7 +514,7 @@ class AddMoreDetails extends Component {
           })
 
         } else {
-          toastr.warning('Please select plant.')
+          Toaster.warning('Please select plant.')
         }
 
       });
@@ -635,7 +649,7 @@ class AddMoreDetails extends Component {
         this.props.getPowerCostUnit(selectedPlants.value, res => {
           let Data = res.data.DynamicData;
           if (res && res.data && res.data.Message !== '') {
-            toastr.warning(res.data.Message)
+            Toaster.warning(res.data.Message)
             // this.setState
             machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
             this.setState({
@@ -651,7 +665,7 @@ class AddMoreDetails extends Component {
           }
         })
       } else {
-        toastr.warning('Please select plant.')
+        Toaster.warning('Please select plant.')
         this.setState({ IsUsesSolarPower: false, })
       }
       // } else {
@@ -672,7 +686,7 @@ class AddMoreDetails extends Component {
         this.props.getLabourCost(data, res => {
           let Data = res.data.DynamicData;
           if (res && res.data && res.data.Message !== '') {
-            toastr.warning(res.data.Message)
+            Toaster.warning(res.data.Message)
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
           } else {
             this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
@@ -985,14 +999,14 @@ class AddMoreDetails extends Component {
     const { fieldsObj } = this.props
 
     if (labourType.length === 0) {
-      toastr.warning('Fields should not be empty');
+      Toaster.warning('Fields should not be empty');
       return false;
     }
 
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = labourGrid.findIndex(el => (el.labourTypeId === labourType.value))
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false;
     }
 
@@ -1036,7 +1050,7 @@ class AddMoreDetails extends Component {
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(el => (el.labourTypeId === labourType.value))
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false;
     }
 
@@ -1141,14 +1155,14 @@ class AddMoreDetails extends Component {
     const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
 
     if (processName.length === 0 || UOM.length === 0 || fieldsObj.OutputPerHours === '') {
-      toastr.warning('Fields should not be empty');
+      Toaster.warning('Fields should not be empty');
       return false;
     }
 
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false;
     }
 
@@ -1160,7 +1174,7 @@ class AddMoreDetails extends Component {
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
     if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
-      toastr.warning('Machine Rate can not be negative')
+      Toaster.warning('Machine Rate can not be negative')
       return false;
     }
 
@@ -1212,7 +1226,7 @@ class AddMoreDetails extends Component {
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(el => (el.processId === processName.value && el.UnitOfMeasurementId === UOM.value))
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false;
     }
 
@@ -1226,7 +1240,7 @@ class AddMoreDetails extends Component {
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
     if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
-      toastr.warning('Machine rate can not be negative.')
+      Toaster.warning('Machine rate can not be negative.')
       return false;
     }
 
@@ -1360,7 +1374,7 @@ class AddMoreDetails extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -1386,7 +1400,7 @@ class AddMoreDetails extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteMachine(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -1446,7 +1460,7 @@ class AddMoreDetails extends Component {
 
     if (this.state.processGrid.length === 0) {
 
-      toastr.warning('Please add atleast one process')
+      Toaster.warning('Please add atleast one process')
       return false
     }
 
@@ -1539,7 +1553,7 @@ class AddMoreDetails extends Component {
       this.props.reset()
       this.props.updateMachineDetails(MachineData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+          Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
           MachineData.isViewFlag = true
           this.props.hideMoreDetailsForm(MachineData)
           // this.cancel();
@@ -1555,7 +1569,7 @@ class AddMoreDetails extends Component {
             this.props.reset()
             // this.props.updateMachineDetails(requestData, (res) => {
             //   if (res.data.Result) {
-            //     toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+            //     Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
             //     requestData.isViewFlag = true
             //     this.props.hideMoreDetailsForm(requestData)
             //     // this.cancel();
@@ -1564,7 +1578,7 @@ class AddMoreDetails extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -1648,7 +1662,7 @@ class AddMoreDetails extends Component {
         if (res.data.Result) {
           formData.isViewFlag = true
           this.props.hideMoreDetailsForm(formData)
-          toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+          Toaster.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
           // this.cancel()
         }
       });

@@ -10,7 +10,7 @@ import { getVendorListByVendorType } from "../actions/Material";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
 } from "../actions/Freight";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -309,7 +309,7 @@ class AddFreight extends Component {
     } = this.state;
     const { fieldsObj } = this.props;
     if (FullTruckCapacity.length === 0 || RateCriteria.length === 0) {
-      toastr.warning("Fields should not be empty");
+      Toaster.warning("Fields should not be empty");
       return false;
     }
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
@@ -319,7 +319,7 @@ class AddFreight extends Component {
         el.RateCriteriaId === RateCriteria.value
     );
     if (isExist !== -1) {
-      toastr.warning("Already added, Please check the values.");
+      Toaster.warning("Already added, Please check the values.");
       return false;
     }
     const Rate =
@@ -364,7 +364,7 @@ class AddFreight extends Component {
         el.RateCriteria === RateCriteria.value
     );
     if (isExist !== -1) {
-      toastr.warning("Already added, Please check the values.");
+      Toaster.warning("Already added, Please check the values.");
       return false;
     }
     let tempArray = [];
@@ -492,7 +492,7 @@ class AddFreight extends Component {
       this.props.reset()
       this.props.updateFright(requestData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
+          Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
           this.cancel();
         }
       });
@@ -514,7 +514,7 @@ class AddFreight extends Component {
       this.props.reset()
       this.props.createFreight(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
+          Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
           this.cancel();
         }
       });

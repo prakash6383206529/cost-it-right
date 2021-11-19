@@ -12,7 +12,7 @@ import moment from 'moment'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
 import imgArrowUP from "../../../../assests/images/arrow-up.svg";
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -253,7 +253,7 @@ function ApprovalListing(props) {
 
   const sendForApproval = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select atleast one approval to send for approval.')
+      Toaster.warning('Please select atleast one approval to send for approval.')
       return false
     }
     let count = 0
@@ -281,10 +281,10 @@ function ApprovalListing(props) {
       }
     })
     if (technologyCount > 0) {
-      return toastr.warning("Technology should be same for sending multiple costing for approval")
+      return Toaster.warning("Technology should be same for sending multiple costing for approval")
     }
     if (count > 0) {
-      return toastr.warning("Reason should be same for sending multiple costing for approval")
+      return Toaster.warning("Reason should be same for sending multiple costing for approval")
     } else {
       setReasonId(selectedRowData[0].ReasonId)
     }

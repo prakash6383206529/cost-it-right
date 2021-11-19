@@ -13,7 +13,6 @@ import {
 
 } from '../actions/BoughtOutParts';
 
-import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 

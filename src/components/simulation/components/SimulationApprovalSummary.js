@@ -12,7 +12,7 @@ import { getPlantSelectListByType, getTechnologySelectList } from '../../../acti
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment } from '../actions/Simulation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -252,7 +252,7 @@ function SimulationApprovalSummary(props) {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
     const DisplayCompareCosting = (el, data) => {
@@ -531,7 +531,7 @@ function SimulationApprovalSummary(props) {
                 DeletedBy: loggedInUserId(),
             }
             // dispatch(fileDeleteCosting(deleteData, (res) => {
-            //     toastr.success('File has been deleted successfully.')
+            //     Toaster.success('File has been deleted successfully.')
             //   }))
             let tempArr = files && files.filter(item => item.FileId !== FileId)
             setFiles(tempArr)

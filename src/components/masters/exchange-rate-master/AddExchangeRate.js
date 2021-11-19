@@ -4,7 +4,8 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthsix, decimalLengthThree, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
@@ -26,7 +27,9 @@ class AddExchangeRate extends Component {
       effectiveDate: '',
       ExchangeRateId: '',
       DropdownChanged: true,
-      DataToChange: []
+      DataToChange: [],
+      showPopup:false,
+      updatedObj:{}
     }
   }
 
@@ -139,6 +142,8 @@ class AddExchangeRate extends Component {
   * @method cancel
   * @description used to Reset form
   */
+
+
   cancel = () => {
 
     const { reset } = this.props;
@@ -183,12 +188,13 @@ class AddExchangeRate extends Component {
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
+        this.setState({showPopup:true, updatedObj:updateData})
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateExchangeRate(updateData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+                Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
                 this.cancel()
               }
             });
@@ -196,7 +202,7 @@ class AddExchangeRate extends Component {
           onCancel: () => { },
           component:() => <ConfirmComponent/>,
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -216,14 +222,26 @@ class AddExchangeRate extends Component {
       this.props.createExchangeRate(formData, (res) => {
         if (res.data.Result) {
 
-          toastr.success(MESSAGES.EXCHANGE_ADD_SUCCESS);
+          Toaster.success(MESSAGES.EXCHANGE_ADD_SUCCESS);
           this.cancel();
         }
       });
     }
 
   }
-
+ 
+  onPopupConfirm = ()=>{ 
+    this.props.reset()
+    this.props.updateExchangeRate(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+        this.cancel()
+      }
+    });
+  }
+  closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -410,6 +428,9 @@ class AddExchangeRate extends Component {
               </div>
             </div>
           </div>
+          {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
+        }
         </div>
       </div>
     );
