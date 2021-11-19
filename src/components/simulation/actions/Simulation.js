@@ -642,7 +642,7 @@ export function getCombinedProcessList(data, callback) {
         dispatch({ type: API_REQUEST });
         axios.get(`${API.getCombinedProcessList}?technologyId=${data.technologyId}&vendorId=${data.vendorId}`, headers)
             .then((response) => {
-             
+
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
                         type: GET_COMBINED_PROCESS_LIST,
@@ -851,4 +851,37 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
         })
     }
 }
+
+export function runVerifySurfaceTreatmentSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftSurfaceTreatmentSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+
+export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+
 

@@ -546,8 +546,8 @@ function RMDomesticListing(props) {
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         if (isSimulation) {
-            let len = gridApi.getSelectedRows().length
-            dispatch(setSelectedRowCountForSimulationMessage(len, res => { }))
+            let length = gridApi.getSelectedRows().length
+            dispatch(setSelectedRowCountForSimulationMessage(length, res => { }))
 
             apply(selectedRows)
         }

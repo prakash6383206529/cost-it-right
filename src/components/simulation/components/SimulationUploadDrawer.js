@@ -171,7 +171,7 @@ class SimulationUploadDrawer extends Component {
                             })
                             break;
 
-                        case Number(RMDOMESTIC) || Number(RMIMPORT):
+                        case (Number(RMDOMESTIC) || Number(RMIMPORT)):
                             resp.rows.map((val, index) => {
                                 console.log(val, 'valval')
                                 if (index > 0) {

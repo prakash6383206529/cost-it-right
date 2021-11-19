@@ -509,7 +509,7 @@ class OperationListing extends Component {
             )
         }
         const onRowSelect = () => {
-            const {isSimulation} =this.props
+            const { isSimulation } = this.props
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (isSimulation) {
                 let len = this.state.gridApi.getSelectedRows().length
@@ -526,7 +526,7 @@ class OperationListing extends Component {
         }
 
         const isFirstColumn = (params) => {
-            const {isSimulation} =this.props
+            const { isSimulation } = this.props
             if (isSimulation) {
 
 
@@ -552,7 +552,9 @@ class OperationListing extends Component {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -666,6 +668,9 @@ class OperationListing extends Component {
                                     imagClass: 'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
+                                rowSelection={'multiple'}
+                                onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>

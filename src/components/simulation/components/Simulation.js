@@ -4,12 +4,12 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation,setTechnologyForSimulation, setVendorForSimulation , setSelectedRowCountForSimulationMessage } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, setSelectedRowCountForSimulationMessage } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation,getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation } from '../../../config/masterData';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
@@ -28,6 +28,7 @@ import CPSimulation from './SimulationPages/CPSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import TooltipCustom from '../../common/Tooltip';
+import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -40,7 +41,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation,selectedVendorForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedVendorForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -305,7 +306,7 @@ function Simulation(props) {
                             vendorFlag = false
                             return false
                         }
-                     
+
                     }
                 });
                 if (flag === true && vendorFlag === true) {
@@ -313,9 +314,7 @@ function Simulation(props) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-                } if (vendorFlag === false) {
-                    setFilterStatus(`Please select one Vendor at a time.`)
-                } 
+                }
                 //  else {
                 //     setEditWarning(true)
                 // }
@@ -343,7 +342,7 @@ function Simulation(props) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-                } 
+                }
                 break;
 
             case SURFACETREATMENT:
@@ -365,7 +364,7 @@ function Simulation(props) {
                             setEditWarning(true);
                             vendorFlag = false
                             // return false
-                        }                      
+                        }
                     }
                 });
                 if (flag === true && vendorFlag === true) {
@@ -410,7 +409,7 @@ function Simulation(props) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-                } 
+                }
                 break;
 
             // case COMBINED_PROCESS:
@@ -468,6 +467,17 @@ function Simulation(props) {
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.value} />
             case COMBINED_PROCESS:
                 return <CPSimulation cancelEditPage={cancelEditPage} list={isbulkUpload ? tableData : processCostingList} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            case OPERATIONS:
+                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            case SURFACETREATMENT:
+                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+
+            // case SURFACETREATMENT:
+            //     return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            // case OPERATIONS:
+            //     return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+
+
             default:
                 break;
         }
