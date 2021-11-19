@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { getVerifySimulationList,getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -99,7 +99,7 @@ function VerifySimulation(props) {
             default:
                 break;
         }
-}
+    }
 
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
@@ -109,7 +109,7 @@ function VerifySimulation(props) {
     const { rawMaterialNameSelectList } = useSelector(state => state.material)
 
 
-   
+
 
     const renderOldSR = () => {
         return <>Old <br />Scrap Rate</>
@@ -227,10 +227,10 @@ function VerifySimulation(props) {
 
 
     const runSimulation = debounce(() => {
-        // if (selectedRowData.length === 0) {
-        //     toastr.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            toastr.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
