@@ -6,7 +6,7 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
 } from '../../actions/Costing';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
 function TabToolCost(props) {
 
-  const { handleSubmit, } = useForm();
+  const { handleSubmit, setValue,getValues,formState:{errors}} = useForm();
 
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
@@ -40,6 +40,7 @@ function TabToolCost(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -258,8 +259,7 @@ function TabToolCost(props) {
          "WorkingRows": [],
         "LoggedInUserId": loggedInUserId()
       
-    }
-    console.log(assemblyRequestedData,"assemblyRequestedData");
+    };
     dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
     }
 
@@ -315,6 +315,11 @@ function TabToolCost(props) {
     var value = document.getElementById('page-size').value;
     gridApi.paginationSetPageSize(Number(value));
   };
+
+
+
+
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
