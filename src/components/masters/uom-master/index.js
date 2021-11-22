@@ -13,7 +13,6 @@ import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { applySuperScript } from '../../../helper/validation';
 import ReactExport from 'react-export-excel';
@@ -463,7 +462,6 @@ export default connect(
   getUnitOfMeasurementAPI,
   deleteUnitOfMeasurementAPI,
   activeInactiveUOM,
-  getLeftMenu,
 }
 )(UOMMaster);
 

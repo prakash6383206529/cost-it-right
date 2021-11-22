@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAllRoleAPI, deleteRoleAPI, getLeftMenu } from '../../../actions/auth/AuthActions';
+import { getAllRoleAPI, deleteRoleAPI, } from '../../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { Loader } from '../../common/Loader';
@@ -304,6 +304,5 @@ export default connect(mapStateToProps,
   {
     getAllRoleAPI,
     deleteRoleAPI,
-    getLeftMenu,
   })(RolesListing);
 

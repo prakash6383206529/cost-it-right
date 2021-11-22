@@ -6,7 +6,7 @@ import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
   getTopAndLeftMenuData, ApprovalDashboard,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
@@ -29,8 +29,6 @@ import activeUser from '../../assests/images/user-active.svg'
 import activeAudit from '../../assests/images/audit-active.svg'
 import Logo from '../../assests/images/logo/company-logo.png'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
-import userPic from '../../assests/images/user-pic.png'
-import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 
@@ -184,13 +182,6 @@ class SideBar extends Component {
    */
   setLeftMenu = (ModuleId) => {
     reactLocalStorage.set("ModuleId", ModuleId);
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { location } = this.props;
-      this.setState({ isLeftMenuRendered: true });
-      // if (location && location.state) {
-      //   this.setState({ activeURL: location.pathname })
-      // }
-    });
   };
 
 
@@ -710,11 +701,11 @@ class SideBar extends Component {
                           <DropdownToggle caret>
                             {isLoggedIn ? (
                               <>
-                                  {/* <img
+                                {/* <img
                                   className="img-xs rounded-circle"
                                   alt={""}
                                   src={UserImg}
-                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */} 
+                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */}
                                 {userData.Name}
                               </>
                             ) : (
@@ -802,7 +793,6 @@ export default connect(mapStateToProps, {
   logoutUserAPI,
   getMenuByUser,
   getModuleSelectList,
-  getLeftMenu,
   getPermissionByUser,
   getModuleIdByPathName,
   getMenu,

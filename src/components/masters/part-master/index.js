@@ -10,7 +10,6 @@ import { MASTERS, PART } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
 import { getConfigurationKey } from '../../../helper/auth'
@@ -164,12 +163,12 @@ class PartMaster extends Component {
                                     </NavLink>
                                 </NavItem>
                                 {/* {getConfigurationKey().IsVendorPlantConfigurable && <NavItem> */}
-                                {initialConfiguration?.IsProductMasterConfigurable && <NavItem>
+                                <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                         Manage Products
                                 </NavLink>
                                 </NavItem>
-                                }
+
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 {this.state.activeTab === '1' &&
@@ -230,7 +229,6 @@ function mapStateToProps({ auth }) {
 
 export default connect(mapStateToProps,
     {
-        getLeftMenu
     }
 )(PartMaster);
 

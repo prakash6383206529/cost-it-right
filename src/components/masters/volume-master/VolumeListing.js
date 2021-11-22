@@ -16,9 +16,6 @@ import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
-import { reactLocalStorage } from 'reactjs-localstorage'
-import { loggedInUserId } from '../../../helper/auth'
-import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -647,7 +644,6 @@ export default connect(mapStateToProps, {
   getVolumeDataList,
   deleteVolume,
   getFinancialYearSelectList,
-  getLeftMenu,
   getVendorWithVendorCodeSelectList
 })(
   reduxForm({

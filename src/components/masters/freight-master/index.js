@@ -10,7 +10,6 @@ import { ADDITIONAL_MASTERS, FREIGHT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 
 class FreightMaster extends Component {
     constructor(props) {
@@ -206,9 +205,5 @@ function mapStateToProps({ boughtOutparts, auth }) {
 }
 
 
-export default connect(mapStateToProps,
-    {
-        getLeftMenu
-    }
-)(FreightMaster);
+export default connect(mapStateToProps, {})(FreightMaster);
 

@@ -20,7 +20,6 @@ import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -710,7 +709,6 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getLeftMenu,
     setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OperationListing',

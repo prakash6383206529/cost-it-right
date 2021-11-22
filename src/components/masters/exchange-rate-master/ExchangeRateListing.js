@@ -14,7 +14,6 @@ import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../conf
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import moment from 'moment';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -446,7 +445,6 @@ export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
     getCurrencySelectList,
-    getLeftMenu,
     getExchangeRateData
 })(reduxForm({
     form: 'ExchangeRateListing',

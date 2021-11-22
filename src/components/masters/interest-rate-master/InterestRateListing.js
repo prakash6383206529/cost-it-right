@@ -17,7 +17,6 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -594,7 +593,6 @@ export default connect(mapStateToProps, {
   getVendorListByVendorType,
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
-  getLeftMenu,
   getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'InterestRateListing',

@@ -11,7 +11,6 @@ import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
 import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -473,7 +472,6 @@ function mapStateToProps({ comman, auth, client }) {
 export default connect(mapStateToProps, {
     getClientDataList,
     deleteClient,
-    getLeftMenu,
 })(reduxForm({
     form: 'ClientListing',
     onSubmitFail: errors => {

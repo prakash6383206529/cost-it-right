@@ -21,7 +21,6 @@ import AddVendorDrawer from './AddVendorDrawer';
 import { checkPermission } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
@@ -804,6 +803,7 @@ class VendorListing extends Component {
                                 title: EMPTY_DATA,
                             }}
                             frameworkComponents={frameworkComponents}
+                            enablePivot={true}
                         >
                             <AgGridColumn field="VendorType" headerName="Vendor Type"></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
@@ -889,7 +889,6 @@ export default connect(mapStateToProps, {
     getVendorTypesSelectList,
     fetchCountryDataAPI,
     getVendorsByVendorTypeID,
-    getLeftMenu,
     getAllVendorSelectList,
     getVendorTypeByVendorSelectList
 })(reduxForm({

@@ -20,19 +20,6 @@ export function Dashboardwithgraph(props) {
     const [acc1, setAcc1] = useState(true)
     const [acc2, setAcc2] = useState(false)
 
-    // useEffect(() => {
-    //     // props.getMenuByUser(loggedInUserId(), () => {
-    //     //     if (menusData !== undefined) {
-    //     //         reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
-    //     //         // props.getLeftMenu(
-    //     //         //   menusData[0].ModuleId,
-    //     //         //   loggedInUserId(),
-    //     //         //   (res) => {}
-    //     //         // );
-    //     //     }
-    //     // });
-    // })
-
     return (
         <>
             <Container fluid className="dashboard-page">
