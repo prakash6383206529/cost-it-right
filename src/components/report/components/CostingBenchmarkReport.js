@@ -14,10 +14,10 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing'
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing'
 import OperationListing from '../../masters/operation/OperationListing'
 import { setFilterForRM } from '../../masters/actions/Material'
-import Insights from '../../report/components/BenchMarkReportPages/RMInsights'
-import MachineInsights from '../../report/components/BenchMarkReportPages/MachineInsights'
-import InsightsBop from '../../report/components/BenchMarkReportPages/InsightsBop'
-import OperationInsights from '../../report/components/BenchMarkReportPages/OperationInsights'
+import Insights from './benchmarkReportPages/RMInsights'
+import MachineInsights from './benchmarkReportPages/MachineInsights'
+import InsightsBop from './benchmarkReportPages/InsightsBop'
+import OperationInsights from './benchmarkReportPages/OperationInsights'
 
 
 
