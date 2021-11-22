@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -218,8 +218,6 @@ const CostingSummaryTable = (props) => {
 
 
   const viewAttachmentData = (index) => {
-    console.log('index: ', index);
-    console.log(viewCostingData, "viewCostingData");
     let data = viewCostingData[index].attachment
     setAttachment(true)
     setViewAttachment(index)
@@ -821,7 +819,9 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+
+                              {data.CostingHeading !== VARIANCE ?data.netRMCostView &&data.netRMCostView.length>0 ? checkForDecimalAndNull( data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput):0 : ''}
+
                               </span>
                             </td>
                           )
@@ -914,7 +914,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
                                 data.CostingHeading !== VARIANCE &&
                                 <button
@@ -1219,7 +1219,7 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>Attachment</td>
                       {viewCostingData &&
-                        viewCostingData.map((data, index) => {                    
+                        viewCostingData.map((data, index) => {
                           return (
 
                             <td>

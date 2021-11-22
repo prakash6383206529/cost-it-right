@@ -93,7 +93,7 @@ export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (isEditFlag) {
-            axios.get(`${API.getSupplierAPI} /${supplierId}`, headers)
+            axios.get(`${API.getSupplierAPI}/${supplierId}`, headers)
                 .then((response) => {
                     if (response.data.Result) {
                         dispatch({

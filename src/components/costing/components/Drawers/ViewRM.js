@@ -104,6 +104,7 @@ function ViewRM(props) {
               <Table className="table cr-brdr-main" size="sm">
                 <thead>
                   <tr>
+                    <th>{`Part No`}</th>
                     <th>{`RM Name -Grade`}</th>
                     <th>{`RM Rate`}</th>
                     <th>{`Scrap Rate`}</th>
@@ -121,6 +122,7 @@ function ViewRM(props) {
                   {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
                     return (
                       <tr key={index}>
+                        <td>{'-'}</td>
                         <td>{item.RMName}</td>
                         <td>{item.RMRate}</td>
                         <td>{item.ScrapRate}</td>

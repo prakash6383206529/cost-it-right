@@ -18,7 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { node } from 'prop-types';
+import { debounce } from 'lodash'
 const gridOptions = {};
 
 function VerifySimulation(props) {
@@ -39,6 +39,7 @@ function VerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    
     const { filteredRMData } = useSelector(state => state.material)
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -236,7 +237,7 @@ function VerifySimulation(props) {
 
 
 
-    const runSimulation = () => {
+    const runSimulation = debounce(() => {
         if (selectedRowData.length === 0) {
             toastr.warning('Please select atleast one costing.')
             return false
@@ -259,7 +260,7 @@ function VerifySimulation(props) {
         setObj(obj)
         setSimulationDrawer(true)
 
-    }
+    }, 500)
 
     const closeDrawer = (e = '', mode) => {
         if (mode === true) {
@@ -340,7 +341,6 @@ function VerifySimulation(props) {
     };
 
 
-
     return (
         <>
             {
@@ -402,6 +402,8 @@ function VerifySimulation(props) {
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
+                                                {/* {isSurfaceTreatment && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
+                                                {isSurfaceTreatment && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>} */}
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
                                                 <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>

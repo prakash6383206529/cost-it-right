@@ -20,6 +20,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
+import LoaderCustom from '../../../common/LoaderCustom';
 
 
 function ApproveRejectDrawer(props) {
@@ -48,6 +49,7 @@ function ApproveRejectDrawer(props) {
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
+  const [loader, setLoader] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -214,7 +216,7 @@ function ApproveRejectDrawer(props) {
       dispatch(
         getAllSimulationApprovalList(obj, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+          // setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
           let tempDropdownList = []
           res.data.DataList && res.data.DataList.map((item) => {
@@ -228,6 +230,12 @@ function ApproveRejectDrawer(props) {
             return null
           })
           setApprovalDropDown(tempDropdownList)
+          if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
+
+            toastr.warning('User does not exist on next level for selected simulation.')
+            setApprovalDropDown([])
+            return false
+          }
         },
         ),
       )
@@ -249,7 +257,9 @@ function ApproveRejectDrawer(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
+          setLoader(true)
           toastr.success('Simulation has been saved successfully.')
+          setLoader(false)
         }
       }))
       // switch (Number(master)) {
@@ -740,8 +750,10 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
+          {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
+              
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
@@ -978,7 +990,7 @@ function ApproveRejectDrawer(props) {
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
                 {
-                  isSimulation &&
+                  isSimulation && type==='Sender' &&
                   <div className="col-md-12 drawer-attachment">
                     <div className="d-flex w-100 flex-wrap">
                       <Col md="8" className="p-0"><h6 className="mb-0">Attachment</h6></Col>
@@ -999,7 +1011,7 @@ function ApproveRejectDrawer(props) {
                               // onSubmit={handleImapctSubmit}
                               accept="*"
                               initialFiles={initialFiles}
-                              maxFiles={4}
+                              maxFiles={2}
                               maxSizeBytes={5000000}
                               inputContent={(files, extra) =>
                                 extra.reject ? (
@@ -1044,8 +1056,7 @@ function ApproveRejectDrawer(props) {
 
                                       alt={""}
                                       className="float-right"
-                                      onClick={() => props.isOpen ? "" : deleteFile(f.FileId, f.FileName)}
-                                      src={redcrossImg}
+                                      onClick={() => deleteFile(f.FileId, f.FileName)} src={redcrossImg}
                                     ></img>
                                   </div>
                                 );

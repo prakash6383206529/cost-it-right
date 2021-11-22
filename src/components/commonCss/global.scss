@@ -2385,7 +2385,7 @@ body {
 
 .dash.phoneNumber.col-md-1 {
   float: left;
-}
+} 
 
 .Ext.phoneNumber.col-md-3 {
   float: left;
@@ -2409,6 +2409,13 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 5px 0;
+  >a{
+    padding-right: 10px;
+    word-break: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 .attachment-row{
   border-bottom: 1px solid #e6e3e3;
@@ -3040,3 +3047,53 @@ body {
     background: #888;
   }
 }
+
+// <-------------START toaster style--------------->
+.Toastify__close-button {
+  opacity: 0.6;
+}
+.Toastify__progress-bar {
+  height: 3px;
+}
+//<---------Toaster style for error-------------->
+.Toastify__toast--error {
+  color: #fe002d;
+  background-color: #fcf8f9;
+}
+.Toastify__progress-bar--error {
+  background-color:#fe002d;
+}
+
+.Toastify__toast--error { 
+  .Toastify__close-button {
+    color: #fe002d;
+  }
+  .Toastify__toast-icon svg {
+    fill: #fe002d;
+  }
+}
+//<----------Toaster style for Success----------->
+.Toastify__toast--success {
+  color: #1fc24f;
+  background-color: #f5fff8;
+}
+.Toastify__toast--success { 
+  .Toastify__close-button {
+    color: #1fc24f;
+  }
+  .Toastify__toast-icon svg {
+    fill: #1fc24f;
+  }
+}
+//<----------Toaster style for Warning----------->
+.Toastify__toast--warning {
+  color: #e6b800;
+  background-color: #ffffff;
+}
+.Toastify__toast--warning { 
+  .Toastify__close-button {
+    color: #e6b800;
+  }
+}
+// <-------------END toaster style--------------->
+//#fe002d  1 color

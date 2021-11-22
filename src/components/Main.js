@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import SideBar from './nav/NavBar'
 import { Route, Switch } from 'react-router-dom'
 import ReduxToastr from 'react-redux-toastr'
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Footer from './common/Footer'
 import Login from './login/Login'
 import NotFoundPage from './common/NotFoundPage'
@@ -36,10 +38,10 @@ import { showUserData, TokenAPI, AutoSignin } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
-  OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
-  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
-  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster
+  OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR, SIMULATION_APPROVAL_SUM,
+  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, APPROVAL_APP,
+  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
+  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster, SHEET_METAL
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -50,13 +52,14 @@ import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
 import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
-import ReportListing from './report/ReportListing'
+import CostingDetailReport from './report/components/CostingDetailReport'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 import CostingSimulation from './simulation/components/CostingSimulation'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
-import NewReport from './report/NewReport'
+import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
+import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -323,7 +326,7 @@ class Main extends Component {
 
                     <Route path="/dashboard" component={AuthMiddleware(Dashboard, DASHBOARD)} />
 
-                    <Route path="/dashboardWithGraph" component={(DashboardWithGraph)} />
+                    <Route path="/dashboardWithGraph" component={AuthMiddleware(DashboardWithGraph, DASHBOARD)} />
 
                     <Route path="/part-master" component={AuthMiddleware(PartMaster, PART)} />
 
@@ -355,15 +358,16 @@ class Main extends Component {
 
                     <Route path="/costing" component={CostingRoutes} exact={true} />
 
-                    <Route path="/costing-summary" component={CostingRoutes} />
+                    <Route path="/costing-summary" component={AuthMiddleware(CostingRoutes, COSTING_SUMMARY_)} />
 
                     {/* <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} /> */}
-                    <Route path="/approval-summary" component={ApprovalSummary} />
+                    <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, APPROVAL_APP)} />
 
-                    <Route path="/approval-listing" component={ApprovalListing} />
+
+                    <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing, APPROVAL_APP)} />
                     {/* <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} /> */}
 
-                    <Route path="/costing-bulkUpload" component={CostingSummaryBulkUpload} />
+                    <Route path="/costing-bulkUpload" component={AuthMiddleware(CostingSummaryBulkUpload, SHEET_METAL)} />
 
                     <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
 
@@ -378,20 +382,21 @@ class Main extends Component {
                     {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
                     {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
-                    <Route path="/simulation-history" component={SimulationApprovalListing} />
+                    <Route path="/simulation-history" component={AuthMiddleware(SimulationApprovalListing, Simulation_History)} />
 
-                    <Route path='/simulation-approval-summary' component={SimulationApprovalSummary} />
+                    <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_History)} />
 
-                    <Route path="/simulation" component={Simulation} />
+                    <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
 
-                    <Route path="/simulation-upload" component={SimulationUpload} />
-
-                    <Route path="/costing-breakup-details" component={NewReport} />
+                    <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
 
 
-                    <Route path="/costing-detail-report" component={ReportListing} />
+                    <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
+                    <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
+
+                    {/* <Route path="/product-master" component={productMaster} /> */}
 
                     <Route
                       render={(props) => (
@@ -425,6 +430,9 @@ class Main extends Component {
             // transitionOut="bounceOut"
             progressBar
           />
+
+          <ToasterBoXWrapper />
+         
           {this.handleUserData()}
         </div>
       </Suspense>

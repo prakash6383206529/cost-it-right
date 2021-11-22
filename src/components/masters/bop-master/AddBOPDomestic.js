@@ -29,7 +29,7 @@ import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
-import imgRedcross from '../../../assests/images/red-cross.png';
+import attachClose from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 
@@ -1079,7 +1079,7 @@ class AddBOPDomestic extends Component {
                                             f.FileName
                                           )
                                         }
-                                        src={require("../../../assests/images/red-cross.png")}
+                                        src={attachClose}
                                       ></img>
                                     </div>
                                   );
@@ -1098,13 +1098,29 @@ class AddBOPDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+
+                          {
+                            // (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                            //   <button type="submit"
+                            //     class="user-btn approval-btn save-btn mr5"
+
+                            //     disabled={this.state.isFinalApprovar}
+                            //   >
+                            //     <div className="send-for-approval"></div>
+                            //     {'Send For Approval'}
+                            //   </button>
+                            //   :
+
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                            >
+                              <div className={"save-icon"}></div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          }
+
+
                         </div>
                       </Row>
                     </form>

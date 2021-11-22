@@ -290,9 +290,10 @@ function CostingDetails(props) {
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
-              setValue('ShareOfBusiness', Data?.Price ? Data.Price : '')
+              setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
               setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
               setShowNextBtn(true)
+
             }),
             )
           } else {
@@ -497,7 +498,7 @@ function CostingDetails(props) {
    * @description HIDE COPY COSTING DRAWER
    */
   const closeCopyCostingDrawer = (e = '', costingId = '', type = '') => {
-    nextToggle()
+    //nextToggle()
     setIsCopyCostingDrawer(false)
     dispatch(getZBCCostingByCostingId('', (res) => { }))
     if (type === ZBC) {
@@ -855,6 +856,8 @@ function CostingDetails(props) {
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+
           resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
@@ -886,6 +889,8 @@ function CostingDetails(props) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+
+
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1054,6 +1059,8 @@ function CostingDetails(props) {
    */
   const backToFirstStep = () => {
     dispatch(getZBCCostingByCostingId('', (res) => {
+
+
     }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER

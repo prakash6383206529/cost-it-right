@@ -18,6 +18,7 @@ import { FILE_URL } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import imgRedcross from '../../../assests/images/red-cross.png'
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -65,7 +66,6 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           let productArray = []
-          console.log(Data, "new")
           Data && Data.GroupCodeList.map((item) => {
             productArray.push({ Text: item.GroupCode, Value: "", })
             return productArray
@@ -668,7 +668,7 @@ class AddIndivisualPart extends Component {
                                             f.FileName
                                           )
                                         }
-                                        src={require("../../../assests/images/red-cross.png")}
+                                        src={imgRedcross}
                                       ></img>
                                     </div>
                                   );

@@ -366,7 +366,6 @@ class MachineRateListing extends Component {
 
     renderPlantFormatter = (props) => {
         const row = props?.data;
-        console.log('row: ', row);
         return row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
     }
 
