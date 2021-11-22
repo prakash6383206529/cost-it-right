@@ -11,6 +11,7 @@ import { sortedLastIndex } from 'lodash-es'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
+import {Link} from 'react-scroll';
 
 
 
@@ -118,7 +119,7 @@ export function Fgwiseimactdata(props) {
                                                     <td><span></span></td>
                                                     <td><span></span></td>
                                                     <td><span></span></td>
-                                                    <td><span> <button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></span></td>
+                                                    <td><span> <Link to="fg-compare-costing" spy={true} smooth ={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
 
                                                 </tr>)
                                         })}

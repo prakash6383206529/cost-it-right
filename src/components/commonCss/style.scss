@@ -6369,3 +6369,17 @@ left: 17rem;
     top: 1rem;
   }
 }
+.costing-table-container {
+  @media screen and (max-width:$miniDesktop) {
+    overflow-y: auto;
+    .costing-table-next {
+      min-width: 1366px;
+    }
+  }
+
+}
+.re-summary-table {
+  .red-value {
+    max-width: 70px !important;
+  }
+}
