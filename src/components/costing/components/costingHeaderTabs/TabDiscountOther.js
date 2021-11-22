@@ -307,7 +307,7 @@ function TabDiscountOther(props) {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
       //let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
-      dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
@@ -323,7 +323,7 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     if (Object.keys(currency).length > 0) {
-      dispatch(getExchangeRateByCurrency(currency.label, DayTime(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(currency.label, DayTime(CostingEffectiveDate).format('YYYY-MM-DD'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');

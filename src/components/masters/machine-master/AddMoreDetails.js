@@ -1543,7 +1543,7 @@ class AddMoreDetails extends Component {
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
-      EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
     }
 
     if (editDetails.isIncompleteMachine) {
@@ -1653,7 +1653,7 @@ class AddMoreDetails extends Component {
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         Attachements: files,
         VendorPlant: [],
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       }
 
 
