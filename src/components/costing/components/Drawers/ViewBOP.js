@@ -73,7 +73,7 @@ function ViewBOP(props) {
                       viewBOPCost.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{"-"}</td>
+                            <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                             <td>{item.BOPPartNumber}</td>
                             <td>{item.BOPPartName}</td>
                             <td>{item.Currency}</td>

@@ -122,7 +122,7 @@ function ViewRM(props) {
                   {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td>{'-'}</td>
+                        <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                         <td>{item.RMName}</td>
                         <td>{item.RMRate}</td>
                         <td>{item.ScrapRate}</td>
