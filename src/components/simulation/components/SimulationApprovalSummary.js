@@ -147,7 +147,7 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
             
-                if(costingList && costingList.length >0 && effectiveDate && Object.keys('simulationDetail'.length>0)){
+                if(costingList && costingList.length >0 && effectiveDate && Object.keys(simulationDetail).length >0){
                     dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                         const Data = res.data.Data.ImpactedMasterDataList
                         const masterId = res.data.Data.SimulationTechnologyId;
