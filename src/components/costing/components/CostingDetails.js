@@ -97,7 +97,11 @@ function CostingDetails(props) {
 
   const fieldValues = IsolateReRender(control);
   const [showPopup, setShowPopup] = useState(false)
-
+  const [costingObj, setCostingObj ] = useState({
+    item:{},
+    type:'',
+    index:[]
+  })
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -809,6 +813,7 @@ function CostingDetails(props) {
    * @description CONFIRM EDIT COSTING FOR SOB CHANGE CONFIRMATION
    */
   const editCostingAlert = (index, type) => {
+
     const toastrConfirmOptions = {
       onOk: () => {
         confirmUpdateCosting(index, type)
@@ -952,6 +957,7 @@ function CostingDetails(props) {
   */
   const deleteItem = (Item, index, type) => {
      setShowPopup(true)
+      setCostingObj({item:Item, type:type,index:index})
     const toastrConfirmOptions = {
       onOk: () => {
         deleteCosting(Item, index, type);
@@ -1006,6 +1012,7 @@ function CostingDetails(props) {
         setValue(`vbcGridFields.${index}.CostingVersion`, '')
       }
     }))
+    setShowPopup(false)
   }
 
   /**
@@ -1391,7 +1398,8 @@ function CostingDetails(props) {
   }
  
   const onPopupConfirm = () => {
-
+    const {item, type,  index} =costingObj;
+    deleteCosting(item, index, type);
   }
 
   const closePopUp= () =>{
