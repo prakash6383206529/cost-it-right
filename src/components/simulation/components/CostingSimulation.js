@@ -12,7 +12,7 @@ import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, ZBC } from '../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
@@ -204,11 +204,11 @@ function CostingSimulation(props) {
 
         if (temp.length > 1) {
             setSelectedRowData([])
-            toastr.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
+            Toaster.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            toastr.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
+            Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             gridApi.deselectAll()
             return false
         } else {

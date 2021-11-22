@@ -7,7 +7,7 @@ import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -144,7 +144,7 @@ class AddIndivisualProduct extends Component {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
 
@@ -170,7 +170,7 @@ class AddIndivisualProduct extends Component {
                 DeletedBy: loggedInUserId(),
             }
             this.props.fileDeletePart(deleteData, (res) => {
-                toastr.success('File has been deleted successfully.')
+                Toaster.success('File has been deleted successfully.')
                 let tempArr = this.state.files.filter(item => item.FileId !== FileId)
                 this.setState({ files: tempArr })
             })
@@ -245,7 +245,7 @@ class AddIndivisualProduct extends Component {
                 this.props.reset()
                 this.props.updateProduct(updateData, (res) => {
                     if (res.data.Result) {
-                        toastr.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
+                        Toaster.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
                         this.cancel()
                     }
                 });
@@ -281,7 +281,7 @@ class AddIndivisualProduct extends Component {
             this.props.reset()
             this.props.createProduct(formData, (res) => {
                 if (res.data.Result === true) {
-                    toastr.success(MESSAGES.PRODUCT_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()
                 }
             });

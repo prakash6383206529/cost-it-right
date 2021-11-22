@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover, } from '../../actions/Approval'
@@ -282,7 +282,7 @@ const SendForApproval = (props) => {
       }
     })
     if (count != 0) {
-      toastr.warning('Please select effective date for all the costing')
+      Toaster.warning('Please select effective date for all the costing')
       return
     }
     let obj = {
@@ -335,10 +335,10 @@ const SendForApproval = (props) => {
     if (viewApprovalData.length > 1) {
 
       if (plantCount > 0) {
-        return toastr.warning('Costings with same plant cannot be sent for approval')
+        return Toaster.warning('Costings with same plant cannot be sent for approval')
       }
       if (venderCount > 0) {
-        return toastr.warning('Costings with same vendor cannot be sent for approval')
+        return Toaster.warning('Costings with same vendor cannot be sent for approval')
       }
     }
 
@@ -409,7 +409,7 @@ const SendForApproval = (props) => {
     // props.closeDrawer()
     dispatch(
       sendForApprovalBySender(obj, (res) => {
-        toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
+        Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
         dispatch(setCostingViewData([]))

@@ -9,7 +9,7 @@ import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
@@ -26,6 +26,8 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import TooltipCustom from '../../common/Tooltip';
+import { toastr } from 'react-redux-toastr';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 export const ViewCostingContext = React.createContext()
 
@@ -93,6 +95,7 @@ function CostingDetails(props) {
 
 
   const fieldValues = IsolateReRender(control);
+  const [showPopup, setShowPopup] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -359,7 +362,7 @@ function CostingDetails(props) {
 
       setIsOpenVendorSOBDetails(true)
     } else {
-      toastr.warning('Please select Technology or Part.')
+      Toaster.warning('Please select Technology or Part.')
     }
   }
 
@@ -482,7 +485,7 @@ function CostingDetails(props) {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = vbcVendorGrid.findIndex(el => (el.VendorId === vendorData.VendorId && el.DestinationPlantId === vendorData.DestinationPlantId))
       if (isExist !== -1) {
-        toastr.warning('Already added, Please select another plant.')
+        Toaster.warning('Already added, Please select another plant.')
         return false;
       }
       let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
@@ -617,19 +620,19 @@ function CostingDetails(props) {
   const warningMessageHandle = (warningType) => {
     switch (warningType) {
       case 'SOB_WARNING':
-        toastr.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB Should not be greater than 100.')
         break
       case 'SOB_SAVED_WARNING':
-        toastr.warning('Please save SOB percentage.')
+        Toaster.warning('Please save SOB percentage.')
         break
       case 'COSTING_VERSION_WARNING':
-        toastr.warning('Please select a costing version.')
+        Toaster.warning('Please select a costing version.')
         break
       case 'VALID_NUMBER_WARNING':
-        toastr.warning('Please enter a valid number.')
+        Toaster.warning('Please enter a valid number.')
         break
       case 'ERROR_WARNING':
-        toastr.warning('Please enter a valid number.')
+        Toaster.warning('Please enter a valid number.')
         break
       default:
         break
@@ -734,7 +737,7 @@ function CostingDetails(props) {
       }),
       )
     } else {
-      toastr.warning('SOB Should not be greater than 100.')
+      Toaster.warning('SOB Should not be greater than 100.')
     }
   }
 
@@ -813,7 +816,7 @@ function CostingDetails(props) {
       onCancel: () => { },
       component: () => <ConfirmComponent />
     }
-    return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+    // return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -948,6 +951,7 @@ function CostingDetails(props) {
   * @description CONFIRM DELETE COSTINGS
   */
   const deleteItem = (Item, index, type) => {
+     setShowPopup(true)
     const toastrConfirmOptions = {
       onOk: () => {
         deleteCosting(Item, index, type);
@@ -955,7 +959,7 @@ function CostingDetails(props) {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
-    return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
+    // return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -1127,7 +1131,7 @@ function CostingDetails(props) {
     if (isZBCSOBEnabled && zbcPlantGrid.length > 0) {
 
       if (!checkSOBTotal()) {
-        toastr.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB Should not be greater than 100.')
       } else if (CheckIsCostingAvailable() === false) {
         let tempArr = []
         //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -1173,7 +1177,7 @@ function CostingDetails(props) {
     //   onCancel: () => { setPreviousSOBValue() },
     //   component: () => <ConfirmComponent />
     // }
-    // return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+    // return Toaster.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -1273,7 +1277,7 @@ function CostingDetails(props) {
     if (isVBCSOBEnabled && vbcVendorGrid.length > 0) {
 
       if (!checkSOBTotal()) {
-        toastr.warning('SOB Should not be greater than 100.')
+        Toaster.warning('SOB Should not be greater than 100.')
       } else if (CheckIsCostingAvailable() === false) {
 
         let tempArr = []
@@ -1363,7 +1367,7 @@ function CostingDetails(props) {
   const updateZBCState = () => {
     let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
     if (findIndex !== -1) {
-      toastr.warning('SOB could not be empty.')
+      Toaster.warning('SOB could not be empty.')
       return false;
     } else {
       setZBCEnableSOBField(!isZBCSOBEnabled)
@@ -1377,11 +1381,19 @@ function CostingDetails(props) {
   const updateVBCState = () => {
     let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
     if (findIndex !== -1) {
-      toastr.warning('SOB could not be empty.')
+      Toaster.warning('SOB could not be empty.')
       return false;
     } else {
       setVBCEnableSOBField(!isVBCSOBEnabled)
     }
+  }
+ 
+  const onPopupConfirm = () => {
+
+  }
+
+  const closePopUp= () =>{
+   setShowPopup(false)
   }
 
   /**
@@ -1948,6 +1960,9 @@ function CostingDetails(props) {
                 )}
               </form>
             </div>
+            {
+              showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`}  />
+              }
           </Col>
         </Row>
       </div>

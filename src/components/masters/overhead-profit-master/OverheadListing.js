@@ -10,7 +10,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -22,6 +22,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -42,6 +43,8 @@ class OverheadListing extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -99,6 +102,7 @@ class OverheadListing extends Component {
     * @description confirm delete
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -106,7 +110,7 @@ class OverheadListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(`${MESSAGES.OVERHEAD_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.OVERHEAD_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -116,12 +120,18 @@ class OverheadListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteOverhead(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
                 this.getDataList(null, null, null, null)
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -231,9 +241,9 @@ class OverheadListing extends Component {
         this.props.activeInactiveOverhead(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell === true) {
-                    toastr.success(MESSAGES.OVERHEAD_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.OVERHEAD_INACTIVE_SUCCESSFULLY)
                 } else {
-                    toastr.success(MESSAGES.OVERHEAD_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.OVERHEAD_ACTIVE_SUCCESSFULLY)
                 }
                 this.getDataList(null, null, null, null)
             }
@@ -473,6 +483,9 @@ class OverheadListing extends Component {
 
                     </Col>
                 </Row>
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`}  />
+         }
             </div >
         );
     }

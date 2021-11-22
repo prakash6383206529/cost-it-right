@@ -2,36 +2,34 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
-  getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList
+  getBOMViewerTreeDataByPartIdAndLevel,
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
-import AddChildDrawer from './AddChildDrawer';
+import AddChildDrawerProduct from './AddChildDrawerProduct';
 import moment from 'moment';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import BOMViewer from './BOMViewer';
+import BOMViewerProduct from './BOMViewerProduct';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from "../../../assests/images/red-cross.png";
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { updateAdditionalFreightByIdAPI } from '../actions/Freight';
 
 const selector = formValueSelector('AddAssemblyPart')
 
-class AddAssemblyPart extends Component {
+class AddAssemblyProduct extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
@@ -43,8 +41,6 @@ class AddAssemblyPart extends Component {
       selectedPlants: [],
       effectiveDate: '',
       files: [],
-      ProductGroup: [],
-      oldProductGroup: [],
 
       isOpenChildDrawer: false,
       isOpenBOMViewerDrawer: false,
@@ -54,13 +50,10 @@ class AddAssemblyPart extends Component {
       avoidAPICall: false,
       DataToCheck: [],
       DropdownChanged: true,
-      BOMChanged: true,
-      GroupCode: '',
       showPopup:false,
-      showPopupDraft:false,
       updatedObj:{},
-      updatedObjDraft:{},
-
+			updatedObjBom:{},
+      showPopupBom:false
     }
   }
 
@@ -70,7 +63,6 @@ class AddAssemblyPart extends Component {
   */
   componentDidMount() {
     this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getProductGroupSelectList(() => { })
     this.getDetails()
   }
 
@@ -89,11 +81,6 @@ class AddAssemblyPart extends Component {
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          let productArray = []
-          Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: "", })
-            return productArray
-          })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
 
           this.setState({ DataToCheck: Data })
@@ -105,8 +92,6 @@ class AddAssemblyPart extends Component {
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
-              ProductGroup: productArray,
-              oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
           }, 200)
         }
@@ -126,11 +111,6 @@ class AddAssemblyPart extends Component {
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
   }
-
-  handleProductGroup = (e) => {
-    this.setState({ ProductGroup: e })
-  }
-
 
   /**
   * @method handleChange
@@ -237,7 +217,7 @@ class AddAssemblyPart extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { plantSelectList, productGroupSelectList } = this.props;
+    const { plantSelectList } = this.props;
     const temp = [];
 
     if (label === 'plant') {
@@ -248,16 +228,6 @@ class AddAssemblyPart extends Component {
       });
       return temp;
     }
-
-    if (label === 'ProductGroup') {
-      productGroupSelectList && productGroupSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
-      })
-      return temp;
-    }
-
-
   }
 
   /**
@@ -266,7 +236,9 @@ class AddAssemblyPart extends Component {
   */
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
-    if (fieldsObj.BOMNumber === undefined || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined) {
+    if (fieldsObj.BOMNumber === undefined ||
+      fieldsObj.AssemblyPartNumber === undefined ||
+      fieldsObj.AssemblyPartName === undefined) {
       return false;
     } else {
       return true;
@@ -304,7 +276,6 @@ class AddAssemblyPart extends Component {
     //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
     let isAvailable = BOMViewerData && BOMViewerData.findIndex(el => el.Level === 'L0')
 
-    //BELOW CONDITION WILL PASS WHEN L0 LEVEL IS NOT AVAILABLE
     if (isAvailable === -1) {
       tempArray.push(...BOMViewerData, {
         PartType: ASSEMBLY,
@@ -435,6 +406,7 @@ class AddAssemblyPart extends Component {
   * @description CONFIRM BOM DRAFT
   */
   confirmBOMDraft = (updateData) => {
+    this.setState({showPopup:true, updatedObj:updateData })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDraftItem(updateData)
@@ -457,20 +429,27 @@ class AddAssemblyPart extends Component {
         this.cancel()
       }
     });
-    this.setState({showPopupDraft:false})
+    this.setState({showPopup:false})
   }
-
+  
+  onPopupConfirm =() => {
+    updatedObj=this.state
+		this.confirmDeleteItem(updatedObj);
+	   
+	}
+	closePopUp= () =>{
+		this.setState({showPopup:false})
+		this.setState({showPopupBom:false})
+	  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
-    const { initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
-    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
     let childPartArray = [];
 
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
@@ -523,7 +502,7 @@ class AddAssemblyPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Remark: values.Remark,
         Plants: plantArray,
         Attachements: updatedFiles,
@@ -531,7 +510,6 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
         IsForcefulUpdated: true,
         BOMLevelCount: BOMLevelCount,
-        GroupCodeList: productArray
       }
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
@@ -542,7 +520,7 @@ class AddAssemblyPart extends Component {
       }
 
       if (isEditFlag) {
-        this.setState({showPopup:true, updatedObj:updateData})
+
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -556,7 +534,7 @@ class AddAssemblyPart extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />,
         }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -572,7 +550,7 @@ class AddAssemblyPart extends Component {
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -580,7 +558,6 @@ class AddAssemblyPart extends Component {
         Attachements: files,
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
         BOMLevelCount: BOMLevelCount,
-        GroupCodeList: productArray
       }
 
       this.props.reset()
@@ -598,21 +575,14 @@ class AddAssemblyPart extends Component {
       e.preventDefault();
     }
   };
-  onPopupConfirm = ()=>{ 
+  onPopupConfirmBom = ()=> {
     this.props.reset()
-    this.props.updateAssemblyPart(this.state.updatedObj, (res) => {
+    this.props.updateAssemblyPart(this.state.updatedObjBom, (res) => {
       if (res.data.Result) {
         Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
         this.cancel()
       }
     });
-  }
-  onPopupConfirmDraft = ()=>{ 
-    this.confirmDraftItem(this.state.updatedObjDraft)
-  }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
-    this.setState({showPopupDraft:false})
   }
   /**
   * @method render
@@ -634,8 +604,8 @@ class AddAssemblyPart extends Component {
                       <div className="form-heading mb-0">
                         <h1>
                           {isEditFlag
-                            ? "Update Assembly Part"
-                            : "Add  Assembly Part"}
+                            ? "Update Assembly Product"
+                            : "Add  Assembly Product"}
                         </h1>
                       </div>
                     </Col>
@@ -749,47 +719,25 @@ class AddAssemblyPart extends Component {
                             customClassName={"withBorder"}
                           />
                         </Col>
+                        {initialConfiguration &&
+                          initialConfiguration.IsGroupCodeDisplay && (
+                            <Col md="3">
+                              <Field
+                                label={`Group Code`}
+                                name={"GroupCode"}
+                                type="text"
+                                placeholder={""}
+                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                component={renderText}
+                                //required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                          )}
                       </Row>
 
                       <Row>
-                        {initialConfiguration?.IsProductMasterConfigurable ? (
-                          // initialConfiguration.IsGroupCodeDisplay && (
-                          <Col md="3">
-                            <Field
-                              label="Group Code"
-                              name="ProductGroup"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
-                              options={this.renderListing("ProductGroup")}
-                              selectionChanged={this.handleProductGroup}
-                              validate={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
-                              required={true}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                            />
-                          </Col>
-                        ) :
-                          <Col md="3">
-                            <Field
-                              label={`Group Code`}
-                              name={"GroupCode"}
-                              type="text"
-                              placeholder={""}
-                              validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
-                              component={renderText}
-                              //required={true}
-                              className=""
-                              customClassName={"withBorder"}
-                            />
-                          </Col>
-                        }
-
                         {/* <Col md="3">
                           <Field
                             label="Plant"
@@ -855,7 +803,7 @@ class AddAssemblyPart extends Component {
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
-                          </button>
+                              </button>
                         </Col>
                       </Row>
 
@@ -905,10 +853,10 @@ class AddAssemblyPart extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                      </span>
+                                          </span>
                                       <br />
-                                      file to upload
-                                    </span>
+                                          file to upload
+                                        </span>
                                   </div>
                                 )
                               }
@@ -936,7 +884,7 @@ class AddAssemblyPart extends Component {
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
                                   <div className={"attachment images"}>
-                                    <a href={fileURL} target="_blank">
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
                                       {f.OriginalFileName}
                                     </a>
                                     {/* <a href={fileURL} target="_blank" download={f.FileName}>
@@ -991,7 +939,7 @@ class AddAssemblyPart extends Component {
           </div>
 
           {isOpenChildDrawer && (
-            <AddChildDrawer
+            <AddChildDrawerProduct
               isOpen={isOpenChildDrawer}
               closeDrawer={this.closeChildDrawer}
               isEditFlag={false}
@@ -1003,7 +951,7 @@ class AddAssemblyPart extends Component {
           )}
 
           {isOpenBOMViewerDrawer && (
-            <BOMViewer
+            <BOMViewerProduct
               isOpen={isOpenBOMViewerDrawer}
               closeDrawer={this.closeBOMViewerDrawer}
               isEditFlag={this.state.isEditFlag}
@@ -1015,12 +963,12 @@ class AddAssemblyPart extends Component {
               avoidAPICall={this.state.avoidAPICall}
             />
           )}
-           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
-        }
-           {
-          this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`}  />
-        }
+          	{
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`}  />
+                }
+          	{
+                this.state.showPopupBom && <PopupMsgWrapper isOpen={this.state.showPopupBom} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmBom} message={`You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?`}  />
+                }
         </div>
       </>
     );
@@ -1037,10 +985,11 @@ function mapStateToProps(state) {
     'Description', 'DrawingNumber', 'GroupCode', 'Remark')
   const { comman, part, auth } = state;
   const { plantSelectList } = comman;
-  const { partData, actualBOMTreeData, productGroupSelectList } = part;
+  const { partData, actualBOMTreeData } = part;
   const { initialConfiguration } = auth;
+
   let initialValues = {};
-  if (partData && Object.keys(partData).length > 0) {
+  if (partData && partData !== undefined) {
     initialValues = {
       BOMNumber: partData.BOMNumber,
       AssemblyPartNumber: partData.AssemblyPartNumber,
@@ -1049,12 +998,12 @@ function mapStateToProps(state) {
       ECNNumber: partData.ECNNumber,
       RevisionNumber: partData.RevisionNumber,
       DrawingNumber: partData.DrawingNumber,
-      GroupCode: partData !== null && partData.GroupCodeList[0]?.GroupCode,
+      GroupCode: partData.GroupCode,
       Remark: partData.Remark,
     }
   }
 
-  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, productGroupSelectList }
+  return { plantSelectList, partData, actualBOMTreeData, fieldsObj, initialValues, initialConfiguration, }
 
 }
 
@@ -1072,12 +1021,11 @@ export default connect(mapStateToProps, {
   updateAssemblyPart,
   getAssemblyPartDetail,
   getBOMViewerTreeDataByPartIdAndLevel,
-  getProductGroupSelectList
 })(reduxForm({
-  form: 'AddAssemblyPart',
+  form: 'AddAssemblyProduct',
   onSubmitFail: errors => {
 
     focusOnError(errors);
   },
   enableReinitialize: true,
-})(AddAssemblyPart));
+})(AddAssemblyProduct));

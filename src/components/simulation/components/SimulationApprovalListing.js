@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../config/constants'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED } from '../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -20,6 +20,7 @@ import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const gridOptions = {};
 
@@ -47,7 +48,8 @@ function SimulationApprovalListing(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
     const userList = useSelector(state => state.auth.userList)
-
+    const [deletedId, setDeletedId] =useState('')
+    const [showPopup, setShowPopup]=useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -216,12 +218,13 @@ function SimulationApprovalListing(props) {
             simulationId: rowData.SimulationId
         }
 
-
+      setShowPopup(true)
+      setDeletedId(data)
         const toastrConfirmOptions = {
             onOk: () => {
                 dispatch(deleteDraftSimulation(data, res => {
                     if (res.data.Result) {
-                        toastr.success("Simulation token deleted successfully.")
+                        Toaster.success("Simulation token deleted successfully.")
                         getTableData()
                     }
                 }))
@@ -229,10 +232,22 @@ function SimulationApprovalListing(props) {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
 
     }
+    const onPopupConfirm =() => {
+        dispatch(deleteDraftSimulation(deletedId, res => {
+            if (res.data.Result) {
+                Toaster.success("Simulation token deleted successfully.")
+                getTableData()
+            }
+        }))
+        setShowPopup(false)
 
+     }
+     const closePopUp= () =>{
+       setShowPopup(false)
+       }
     const requestedByFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
@@ -290,7 +305,7 @@ function SimulationApprovalListing(props) {
         })
 
         if (!allEqual(arr)) {
-            toastr.warning('Please select token of similar Status.')
+            Toaster.warning('Please select costing of similar Status.')
             gridApi.deselectAll()
         }
 
@@ -351,7 +366,7 @@ function SimulationApprovalListing(props) {
         let technologyCount = 0
 
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one token to send for approval.')
+            Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
 
@@ -380,12 +395,12 @@ function SimulationApprovalListing(props) {
         // })
 
         // if (technologyCount > 0) {
-        //     return toastr.warning("Technology should be same for sending multiple costing for approval")
+        //     return Toaster.warning("Technology should be same for sending multiple costing for approval")
         // }
 
         if (count > 0) {
-             toastr.warning("Reason should be same for sending multiple token for approval")
-             return false
+            Toaster.warning("Reason should be same for sending multiple costing for approval")
+            return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
             setApproveDrawer(true)
@@ -593,6 +608,7 @@ function SimulationApprovalListing(props) {
                             </div>
                         </div>
                     </div>
+                   
                 </div>
                 // :
                 // <SimulationApprovalSummary
@@ -600,6 +616,9 @@ function SimulationApprovalListing(props) {
                 //     approvalId={approvalData.approvalProcessId}
                 // /> //TODO list
             }
+                   {
+            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`}  />
+         }
         </Fragment>
     )
 }

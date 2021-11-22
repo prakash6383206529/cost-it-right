@@ -7,7 +7,7 @@ import { renderText, renderMultiSelectField, renderDatePicker } from '../../layo
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
 import { getPlantSelectList } from '../../../actions/Common'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
@@ -173,7 +173,7 @@ class AddProcessDrawer extends Component {
       this.props.reset()
       this.props.updateProcess(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
+          Toaster.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
           this.toggleDrawer('', formData)
         }
       })
@@ -190,7 +190,7 @@ class AddProcessDrawer extends Component {
       this.props.reset()
       this.props.createProcess(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.PROCESS_ADD_SUCCESS)
+          Toaster.success(MESSAGES.PROCESS_ADD_SUCCESS)
           this.toggleDrawer('', formData)
         }
       })

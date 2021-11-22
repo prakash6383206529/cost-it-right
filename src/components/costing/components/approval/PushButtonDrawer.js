@@ -9,7 +9,7 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/Hoo
 import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 import { useState } from 'react'
 import { INR } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import moment from 'moment'
 import { useEffect } from 'react'
 
@@ -104,7 +104,7 @@ function PushButtonDrawer(props) {
       }
       dispatch(approvalPushedOnSap(simObj, res => {
         if (res && res.status && (res.status === 200 || res.status === 204)) {
-          toastr.success('Approval pushed successfully.')
+          Toaster.success('Approval pushed successfully.')
         }
         props.closeDrawer('', 'Push')
       }))
@@ -143,12 +143,11 @@ function PushButtonDrawer(props) {
       }
       dispatch(approvalPushedOnSap(obj, res => {
         if (res && res.status && (res.status === 200 || res.status === 204)) {
-          toastr.success('Approval pushed successfully.')
+          Toaster.success('Approval pushed successfully.')
         }
         props.closeDrawer('', 'Push')
       }))
     }
-
 
 
 

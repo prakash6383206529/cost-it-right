@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import BOMViewerProduct from './BOMViewerProduct';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -45,6 +46,8 @@ class AssemblyProductListing extends Component {
             visualAdId: '',
             BOMId: '',
             isBulkUpload: false,
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -93,6 +96,7 @@ class AssemblyProductListing extends Component {
     * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -100,7 +104,7 @@ class AssemblyProductListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -110,12 +114,19 @@ class AssemblyProductListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteAssemblyPart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_BOM_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDeleteItem(this.state.deletedId);
+       
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -207,9 +218,9 @@ class AssemblyProductListing extends Component {
         // this.props.activeInactiveStatus(data, res => {
         //     if (res && res.data && res.data.Result) {
         //         if (cell == true) {
-        //             toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+        //             Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
         //         } else {
-        //             toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+        //             Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
         //         }
         //         this.getTableListData()
         //     }
@@ -468,11 +479,10 @@ class AssemblyProductListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
@@ -509,7 +519,9 @@ class AssemblyProductListing extends Component {
                         </div>
                     </div>
                 </div>
-
+                {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`}  />
+                }
                 {isOpenVisualDrawer && <BOMViewerProduct
                     isOpen={isOpenVisualDrawer}
                     closeDrawer={this.closeVisualDrawer}

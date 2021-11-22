@@ -10,7 +10,7 @@ import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT,SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation } from '../../../config/masterData';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';

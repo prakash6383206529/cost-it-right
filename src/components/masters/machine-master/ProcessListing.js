@@ -13,7 +13,7 @@ import {
 } from '../actions/Process';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster'
 import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -25,6 +25,7 @@ import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,6 +47,8 @@ class ProcessListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      showPopup:false,
+      deletedId:''
     }
   }
 
@@ -115,35 +118,7 @@ class ProcessListing extends Component {
   editItemDetails = (Id) => {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: true, Id: Id, })
   }
-
-  /**
-  * @method deleteItem
-  * @description CONFIRM DELETE ITEM
-  */
-  deleteItem = (Id) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDelete(Id);
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    return toastr.confirm(`${MESSAGES.PROCESS_DELETE_ALERT}`, toastrConfirmOptions);
-  }
-
-  /**
-  * @method confirmDelete
-  * @description DELETE PROCESS
-  */
-  confirmDelete = (ID) => {
-    this.props.deleteProcess(ID, (res) => {
-      if (res.data.Result === true) {
-        toastr.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
-        this.getDataList()
-      }
-    });
-  }
-
+  
   /**
   * @method renderPaginationShowsTotal
   * @description Pagination
@@ -240,6 +215,7 @@ class ProcessListing extends Component {
    * @description CONFIRM DELETE ITEM
    */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id)
@@ -247,10 +223,10 @@ class ProcessListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     }
-    return toastr.confirm(
-      `${MESSAGES.PROCESS_DELETE_ALERT}`,
-      toastrConfirmOptions,
-    )
+    // return Toaster.confirm(
+    //   `${MESSAGES.PROCESS_DELETE_ALERT}`,
+    //   toastrConfirmOptions,
+    // )
   }
 
   /**
@@ -260,12 +236,18 @@ class ProcessListing extends Component {
   confirmDelete = (ID) => {
     this.props.deleteProcess(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
+        Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
         this.getDataList()
       }
     })
+    this.setState({showPopup:false})
   }
-
+  onPopupConfirm =() => {
+    this.confirmDelete(this.state.deletedId);
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
 
   /**
 * @method buttonFormatter
@@ -680,6 +662,9 @@ class ProcessListing extends Component {
             anchor={'right'}
           />
         )}
+         {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROCESS_DELETE_ALERT}`}  />
+         }
       </div>
     )
   }

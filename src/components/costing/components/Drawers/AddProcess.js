@@ -6,7 +6,7 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -142,7 +142,7 @@ function AddProcess(props) {
   */
   const addRow = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')

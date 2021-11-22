@@ -10,7 +10,7 @@ import { getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { ZBC } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
@@ -66,7 +66,7 @@ function VerifySimulation(props) {
                     if (res.data.Result) {
                         const data = res.data.Data
                         if (data.SimulationImpactedCostings.length === 0) {
-                            toastr.warning('No approved costing exist for this raw material.')
+                            Toaster.warning('No approved costing exist for this raw material.')
                             setHideRunButton(true)
                             return false
                         }
@@ -85,7 +85,7 @@ function VerifySimulation(props) {
                     if (res.data.Result) {
                         const data = res.data.Data
                         if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                            toastr.warning('No approved costing exist for this exchange rate.')
+                            Toaster.warning('No approved costing exist for this exchange rate.')
                             setHideRunButton(true)
                             return false
                         }
@@ -272,7 +272,7 @@ function VerifySimulation(props) {
 
     const runSimulation = debounce(() => {
         // if (selectedRowData.length === 0) {
-        //     toastr.warning('Please select atleast one costing.')
+        //     Toaster.warning('Please select atleast one costing.')
         //     return false
         // }
 
