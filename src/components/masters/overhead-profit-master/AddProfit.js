@@ -583,7 +583,7 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
@@ -625,7 +625,7 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       }
 
       this.props.reset()

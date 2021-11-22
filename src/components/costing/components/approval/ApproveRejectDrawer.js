@@ -437,7 +437,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
-        senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         let temp = []
         if (isSimulationApprovalListing === true) {
