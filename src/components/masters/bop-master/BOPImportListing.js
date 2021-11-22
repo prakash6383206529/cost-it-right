@@ -11,7 +11,7 @@ import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
@@ -50,8 +50,8 @@ class BOPImportListing extends Component {
             sideBar: { toolPanels: ['columns'] },
             showData: false,
             loader: true,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
 
         }
     }
@@ -110,7 +110,7 @@ class BOPImportListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id);
@@ -133,15 +133,15 @@ class BOPImportListing extends Component {
                 this.getDataList()
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDelete(this.state.deletedId);
-       
+
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
@@ -267,7 +267,7 @@ class BOPImportListing extends Component {
             }
 
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })
@@ -457,7 +457,7 @@ class BOPImportListing extends Component {
                             </div>
                         </div>
                         {
-                        this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`}  />
+                            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                         }
                     </Col>
                 </Row>

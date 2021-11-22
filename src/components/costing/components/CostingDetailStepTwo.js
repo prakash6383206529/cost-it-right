@@ -6,7 +6,7 @@ import {
   setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index'
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
@@ -118,7 +118,6 @@ function CostingDetailStepTwo(props) {
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
       dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
-        console.log("SET COSTING FROM STEP TW02");
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setSurfaceCostData(data, () => { }))
@@ -157,7 +156,6 @@ function CostingDetailStepTwo(props) {
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
       dispatch(setCostingDataList('setHeaderOverheadProfitCostTab', tempArr, () => {
-        console.log("SET COSTING FROM STEP TWO3");
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setOverheadProfitCostData(data, () => { }))
@@ -195,7 +193,6 @@ function CostingDetailStepTwo(props) {
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
       dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => {
-        console.log("SET COSTING FROM STEP TWO4");
       }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
     }
@@ -236,7 +233,6 @@ function CostingDetailStepTwo(props) {
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
         dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => {
-          console.log("SET COSTING FROM STEP TWO5");
         }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
@@ -270,7 +266,7 @@ function CostingDetailStepTwo(props) {
           data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
         }
 
-        const discountedCost = checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice);
+        const discountedCost =data.DiscountCostType==='Percentage'? checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice):data.DiscountsAndOtherCost;
         const discountValues = {
           NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
           HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
@@ -296,7 +292,6 @@ function CostingDetailStepTwo(props) {
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
         dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
-          console.log("SET COSTING FROM STEP TWO5");
         }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
@@ -345,7 +340,7 @@ function CostingDetailStepTwo(props) {
                       {costingData.IsVendor && initialConfiguration?.IsDestinationPlantConfigure && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Destination Plant:</span><span className="dark-blue pl-1"> {costingData.DestinationPlantName}</span></p></div></td>}
                       {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>
                   </Table>
 

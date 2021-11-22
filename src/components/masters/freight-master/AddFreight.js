@@ -17,7 +17,7 @@ import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
-import moment from "moment";
+import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
@@ -119,7 +119,7 @@ class AddFreight extends Component {
                   FreightId: item.FreightId,
                   Capacity: item.Capacity,
                   RateCriteria: item.RateCriteria,
-                  EffectiveDate: moment(item.EffectiveDate)._d,
+                  EffectiveDate: DayTime(item.EffectiveDate)._d,
                   Rate: item.Rate,
                 };
               });
@@ -902,7 +902,7 @@ class AddFreight extends Component {
                                         <td>{item.RateCriteria}</td>
                                         <td>{checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                         <td>
-                                          {item.EffectiveDate ? moment(item.EffectiveDate).format("DD/MM/YYYY") : '-'}
+                                          {item.EffectiveDate ? DayTime(item.EffectiveDate).format("DD/MM/YYYY") : '-'}
                                         </td>
                                         <td>
                                           <button className="Edit mr-2" type={"button"} onClick={() => this.editGridItemDetails(index)} />

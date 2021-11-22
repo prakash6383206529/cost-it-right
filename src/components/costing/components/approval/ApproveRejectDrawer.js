@@ -9,7 +9,7 @@ import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDeta
 import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
@@ -437,7 +437,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
-        senderObj.EffectiveDate = moment(simulationDetail?.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         let temp = []
         if (isSimulationApprovalListing === true) {
@@ -672,10 +672,10 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-          {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
+            {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
-              
+
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
@@ -819,7 +819,7 @@ function ApproveRejectDrawer(props) {
                             <div className="inputbox date-section">
                               <DatePicker
                                 name="EffectiveDate"
-                                selected={simulationDetail?.EffectiveDate && moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
+                                selected={simulationDetail?.EffectiveDate && DayTime(simulationDetail.EffectiveDate).isValid ? DayTime(simulationDetail.EffectiveDate)._d : ''}
                                 // onChange={handleEffectiveDateChange}
                                 showMonthDropdown
                                 showYearDropdown

@@ -8,7 +8,7 @@ import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
@@ -173,7 +173,7 @@ function ApprovalListing(props) {
 
   const createdOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
   }
 
   const priceFormatter = (props) => {
@@ -199,7 +199,7 @@ function ApprovalListing(props) {
 
   const requestedOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
   }
 
   const statusFormatter = (props) => {

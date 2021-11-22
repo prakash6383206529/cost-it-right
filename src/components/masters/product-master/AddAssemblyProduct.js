@@ -17,7 +17,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
 import AddChildDrawerProduct from './AddChildDrawerProduct';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import BOMViewerProduct from './BOMViewerProduct';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
@@ -50,10 +50,10 @@ class AddAssemblyProduct extends Component {
       avoidAPICall: false,
       DataToCheck: [],
       DropdownChanged: true,
-      showPopup:false,
-      updatedObj:{},
-			updatedObjBom:{},
-      showPopupBom:false
+      showPopup: false,
+      updatedObj: {},
+      updatedObjBom: {},
+      showPopupBom: false
     }
   }
 
@@ -81,14 +81,14 @@ class AddAssemblyProduct extends Component {
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
           this.setState({ DataToCheck: Data })
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
@@ -406,7 +406,7 @@ class AddAssemblyProduct extends Component {
   * @description CONFIRM BOM DRAFT
   */
   confirmBOMDraft = (updateData) => {
-    this.setState({showPopup:true, updatedObj:updateData })
+    this.setState({ showPopup: true, updatedObj: updateData })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDraftItem(updateData)
@@ -429,18 +429,18 @@ class AddAssemblyProduct extends Component {
         this.cancel()
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
-  
-  onPopupConfirm =() => {
-    updatedObj=this.state
-		this.confirmDeleteItem(updatedObj);
-	   
-	}
-	closePopUp= () =>{
-		this.setState({showPopup:false})
-		this.setState({showPopupBom:false})
-	  }
+
+  onPopupConfirm = () => {
+    updatedObj = this.state
+    this.confirmDeleteItem(updatedObj);
+
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+    this.setState({ showPopupBom: false })
+  }
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -502,7 +502,7 @@ class AddAssemblyProduct extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Remark: values.Remark,
         Plants: plantArray,
         Attachements: updatedFiles,
@@ -550,7 +550,7 @@ class AddAssemblyProduct extends Component {
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -575,7 +575,7 @@ class AddAssemblyProduct extends Component {
       e.preventDefault();
     }
   };
-  onPopupConfirmBom = ()=> {
+  onPopupConfirmBom = () => {
     this.props.reset()
     this.props.updateAssemblyPart(this.state.updatedObjBom, (res) => {
       if (res.data.Result) {
@@ -803,7 +803,7 @@ class AddAssemblyProduct extends Component {
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
-                              </button>
+                          </button>
                         </Col>
                       </Row>
 
@@ -853,10 +853,10 @@ class AddAssemblyProduct extends Component {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">
                                         Browse
-                                          </span>
+                                      </span>
                                       <br />
-                                          file to upload
-                                        </span>
+                                      file to upload
+                                    </span>
                                   </div>
                                 )
                               }
@@ -963,12 +963,12 @@ class AddAssemblyProduct extends Component {
               avoidAPICall={this.state.avoidAPICall}
             />
           )}
-          	{
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`}  />
-                }
-          	{
-                this.state.showPopupBom && <PopupMsgWrapper isOpen={this.state.showPopupBom} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmBom} message={`You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?`}  />
-                }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
+          }
+          {
+            this.state.showPopupBom && <PopupMsgWrapper isOpen={this.state.showPopupBom} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmBom} message={`You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?`} />
+          }
         </div>
       </>
     );

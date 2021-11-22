@@ -10,8 +10,9 @@ import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepart
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import moment from "moment";
+import DayTime from "../common/DayTimeWrapper"
 import { getConfigurationKey, userDetails } from "../../helper";
+
 
 class Department extends Component {
 	constructor(props) {
@@ -85,7 +86,7 @@ class Department extends Component {
 			let formReq = {
 				DepartmentId: DepartmentId,
 				IsActive: true,
-				CreatedDate: moment(new Date()).format('YYYY/MM/dd HH:mm:ss'),
+				CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : '',
 				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : ''
@@ -96,7 +97,7 @@ class Department extends Component {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ''
 			}
-			this.setState({isLoader:true})
+			this.setState({ isLoader: true })
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				// IF COMPANY CONFIGURABLE IS TRUE
 				if (res && res.data && res.data.Result) {
@@ -246,8 +247,8 @@ class Department extends Component {
 													type="submit"
 													disabled={isSubmitted ? true : false}
 													className="user-btn save-btn"
-												>	
-												<div className={"save-icon"}></div>
+												>
+													<div className={"save-icon"}></div>
 													{isEditFlag ? 'Update' : 'Save'}
 												</button>
 											</div>

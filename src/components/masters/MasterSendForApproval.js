@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../layout/HookFormInputs'
 import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
-import moment from 'moment'
+import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
 import PushSection from '../common/PushSection';
@@ -154,7 +154,7 @@ function MasterSendForApproval(props) {
             senderObj.SenderRemark = remark
             senderObj.LoggedInUserId = loggedInUserId()
             senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
-            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : moment(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
+            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             let tempArray = []
@@ -313,7 +313,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={moment(approvalObj.EffectiveDate).isValid ? moment(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
@@ -417,7 +417,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={moment(approvalObj.EffectiveDate).isValid ? moment(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
@@ -480,7 +480,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={moment(approvalObj.EffectiveDate).isValid ? moment(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
@@ -525,7 +525,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={moment(approvalObj.EffectiveDate).isValid ? moment(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown

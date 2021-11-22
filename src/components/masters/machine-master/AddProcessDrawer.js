@@ -11,7 +11,7 @@ import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
@@ -52,7 +52,7 @@ class AddProcessDrawer extends Component {
         let Data = res.data.Data
         this.setState({
           ProcessId: Data.ProcessId,
-          effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : ''
+          effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate)._d : ''
         })
         this.setState({ isLoader: false })
       })
@@ -185,7 +185,7 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY/MM/DD'),
         LoggedInUserId: loggedInUserId(),
       }
 

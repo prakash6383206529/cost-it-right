@@ -16,7 +16,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -51,8 +51,8 @@ class PowerListing extends Component {
       plant: [],
       vendorName: [],
       vendorPlant: [],
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -125,7 +125,7 @@ class PowerListing extends Component {
   * @description confirm delete Raw Material details
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id);
@@ -155,14 +155,14 @@ class PowerListing extends Component {
           this.getDataList()
         }
       });
-      this.setState({showPopup:false})
+      this.setState({ showPopup: false })
     }
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDelete(this.state.deletedId);
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
   * @method renderPaginationShowsTotal
@@ -236,7 +236,7 @@ closePopUp= () =>{
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
@@ -511,8 +511,8 @@ closePopUp= () =>{
           </Col>
         </Row>
         {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.POWER_DELETE_ALERT}`}  />
-         }
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.POWER_DELETE_ALERT}`} />
+        }
       </div >
     );
   }

@@ -19,7 +19,7 @@ import { costingHeadObj, PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterDat
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { ProfitMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -47,8 +47,8 @@ class ProfitListing extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -105,7 +105,7 @@ class ProfitListing extends Component {
     * @description confirm delete
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -127,15 +127,15 @@ class ProfitListing extends Component {
                 this.getDataList()
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-     
-    onPopupConfirm =() => {
+
+    onPopupConfirm = () => {
         this.confirmDelete(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -202,7 +202,7 @@ class ProfitListing extends Component {
   */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -337,7 +337,7 @@ class ProfitListing extends Component {
                 return false
             }
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
 
             }
 
@@ -503,8 +503,8 @@ class ProfitListing extends Component {
                     </Col>
                 </Row>
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`} />
+                }
             </div >
         );
     }
