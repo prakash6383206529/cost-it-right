@@ -69,7 +69,6 @@ function ProcessCost(props) {
       PartNumber: props.item.PartNumber,
     }
     if (!CostingViewMode) {
-      console.log("HOW MANY TIME COMING HER");
       selectedIds(gridData)
       props.setProcessCost(tabData, Params,item)
     }
@@ -469,7 +468,7 @@ function ProcessCost(props) {
 
     let tempArr = {
       ...tabData,
-      NetConversionCost: OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
+      NetConversionCost: (OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,)).toFixed(10),
       OtherOperationCostTotal: OtherOperationCostTotal,
       CostingOtherOperationCostResponse: otherOperationGrid,
     }
