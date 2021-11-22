@@ -90,6 +90,7 @@ function ViewOverheadProfit(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Part No`}</th>
                         <th>{`Overhead On`}</th>
                         <th>{`Percentage(%)`}</th>
                         <th>{`Cost (Applicability)`}</th>
@@ -101,6 +102,7 @@ function ViewOverheadProfit(props) {
                         <>
                           {viewOverheadData.IsOverheadFixedApplicable && (
                             <tr>
+                              <td>{'-'}</td>
                               <td>{`Fixed`}</td>
                               <td>
                                 {viewOverheadData.OverheadFixedPercentage ? viewOverheadData.OverheadFixedPercentage : "-"}
@@ -197,6 +199,7 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Profits (Fixed)`}</th>
                           <th>{`Percentage(%)`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -208,6 +211,7 @@ function ViewOverheadProfit(props) {
                           <>
                             {viewProfitData.IsProfitFixedApplicable && (
                               <tr>
+                                <td>{'-'}</td>
                                 <td>{`Fixed`}</td>
                                 <td>
                                   {viewProfitData.ProfitFixedPercentage ? viewProfitData.ProfitFixedPercentage : "-"}
@@ -308,6 +312,7 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main " size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Applicability`}</th>
                           <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -323,6 +328,7 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr> :
                             <tr>
+                              <td>{'-'}</td>
                               <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
                               <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
                               <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>

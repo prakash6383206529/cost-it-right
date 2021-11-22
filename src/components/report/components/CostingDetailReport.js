@@ -3,19 +3,18 @@ import moment from 'moment'
 import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId, } from '../../helper/auth'
-import NoContentFound from '../common/NoContentFound'
-import { EMPTY_DATA } from '../../config/constants'
-import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
-import { GridTotalFormate } from '../common/TableGridFunctions'
-import { getReportListing } from './actions/ReportListing'
+import { loggedInUserId, } from '../../../helper/auth'
+import NoContentFound from '../../common/NoContentFound'
+import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
+import { GridTotalFormate } from '../../common/TableGridFunctions'
+import { getReportListing } from '.././actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster } from '../../config/constants';
-import LoaderCustom from '../common/LoaderCustom';
-import WarningMessage from '../common/WarningMessage'
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster ,EMPTY_DATA} from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
+import WarningMessage from '../../common/WarningMessage'
 
 
 
@@ -592,7 +591,7 @@ function ReportListing(props) {
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
+                        {/* <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn> */}
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
                         <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>

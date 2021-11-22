@@ -537,7 +537,7 @@ function RMSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <VerifySimulation isSurfaceTreatment={false} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {

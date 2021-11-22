@@ -59,6 +59,7 @@ function ViewBOP(props) {
                 <Table className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
+                      <th>{`Part No.`}</th>
                       <th>{`Insert Part No.`}</th>
                       <th>{`Insert Part Name`}</th>
                       <th>{`Currency`}</th>
@@ -72,6 +73,7 @@ function ViewBOP(props) {
                       viewBOPCost.map((item, index) => {
                         return (
                           <tr key={index}>
+                            <td>{"-"}</td>
                             <td>{item.BOPPartNumber}</td>
                             <td>{item.BOPPartName}</td>
                             <td>{item.Currency}</td>

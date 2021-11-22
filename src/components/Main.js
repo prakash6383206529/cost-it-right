@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import SideBar from './nav/NavBar'
 import { Route, Switch } from 'react-router-dom'
 import ReduxToastr from 'react-redux-toastr'
+import { ToastContainer, toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Footer from './common/Footer'
 import Login from './login/Login'
 import NotFoundPage from './common/NotFoundPage'
@@ -50,13 +52,14 @@ import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
 import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
-import CostingDetailReport from './report/CostingDetailReport'
+import CostingDetailReport from './report/components/CostingDetailReport'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 import CostingSimulation from './simulation/components/CostingSimulation'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
-import NewReport from './report/NewReport'
+import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
+import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -382,13 +385,14 @@ class Main extends Component {
                     <Route path="/simulation-history" component={AuthMiddleware(SimulationApprovalListing, Simulation_History)} />
 
                     <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_History)} />
-                    AuthMiddleware
+
                     <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
 
                     <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
 
 
                     <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
+                    <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
@@ -425,6 +429,9 @@ class Main extends Component {
             // transitionOut="bounceOut"
             progressBar
           />
+
+          <ToasterBoXWrapper />
+         
           {this.handleUserData()}
         </div>
       </Suspense>

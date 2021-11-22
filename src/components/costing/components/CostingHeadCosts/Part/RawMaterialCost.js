@@ -80,7 +80,7 @@ function RawMaterialCost(props) {
       }
 
       if (!CostingViewMode) {
-        props.setRMCost(gridData, Params)
+        props.setRMCost(gridData, Params, item)
       }
       selectedIds(gridData)
 
@@ -89,7 +89,7 @@ function RawMaterialCost(props) {
         dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
       }
 
-    }, 100)
+    }, 500)
   }, [gridData]);
 
   /**
@@ -174,7 +174,8 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
 
     if (technologyForDensity.includes(costData.ETechnologyType)) {
-      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
+      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0 || !CostingViewMode) {
+
         toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
         return false
       }
@@ -231,6 +232,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -250,6 +252,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -276,6 +279,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -294,6 +298,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -333,6 +338,7 @@ function RawMaterialCost(props) {
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
         CutOffRMC: CutOffRMC,
+        ScrapWeight: scrapWeight
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -351,6 +357,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -379,6 +386,7 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -397,6 +405,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -417,6 +426,7 @@ function RawMaterialCost(props) {
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           CutOffRMC: CutOffRMC,
+          ScrapWeight: scrapWeight
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -435,6 +445,7 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
+            ScrapWeight: scrapWeight
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -475,6 +486,7 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: ScrapRecoveryPercentage,
         IsScrapRecoveryPercentageApplied: true,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+        ScrapWeight: recoveredScrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -496,6 +508,7 @@ function RawMaterialCost(props) {
         ScrapRecoveryPercentage: ScrapRecoveryPercentage,
         IsScrapRecoveryPercentageApplied: true,
         NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
+        ScrapWeight: scrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -619,7 +632,7 @@ function RawMaterialCost(props) {
       const ApplicableFinishWeight = (checkForNull(tempData?.FinishWeight) !== 0) ? (GrossWeight - FinishWeight) * tempData?.ScrapRate : 0;
       const NetLandedCost = (GrossWeight * tempData?.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
-      tempArr = Object.assign([...gridData], { [0]: tempData })
+      tempArr = Object.assign([...gridData], { 0: tempData })
       setGridData(tempArr)
       setValue(`${rmGridFields}.${0}.GrossWeight`, GrossWeight)
       setValue(`${rmGridFields}.${0}.FinishWeight`, checkForNull(tempData?.FinishWeight))
@@ -707,7 +720,7 @@ function RawMaterialCost(props) {
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
 
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
-      let tempArr = Object.assign([...gridData], { [0]: tempData })
+      let tempArr = Object.assign([...gridData], { 0: tempData })
       setGridData(tempArr)
 
       setTimeout(() => {
@@ -733,7 +746,7 @@ function RawMaterialCost(props) {
       const ApplicableFinishWeight = (tempData.FinishWeight !== 0) ? (tempData.GrossWeight - tempData.FinishWeight) * tempData.ScrapRate : 0;
       const NetLandedCost = (tempData.GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost, }
-      let tempArr = Object.assign([...gridData], { [0]: tempData })
+      let tempArr = Object.assign([...gridData], { 0: tempData })
       setValue('RMTotal', checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice))
       setGridData(tempArr)
 
@@ -935,7 +948,7 @@ function RawMaterialCost(props) {
                                 />
                               </td>
                             }
-                            <td>{checkForDecimalAndNull(item.FinishWeight ? ((item.GrossWeight - item.FinishWeight).toFixed(9)) * (item.ScrapRecoveryPercentage ? calculatePercentage(item.ScrapRecoveryPercentage) : 1) : 0, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>

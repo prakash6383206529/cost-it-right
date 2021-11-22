@@ -239,7 +239,9 @@ class BOPImportListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+
+        return cellValue
+        //!= null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
