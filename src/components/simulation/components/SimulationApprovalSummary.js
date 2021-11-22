@@ -29,6 +29,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import redcrossImg from '../../../assests/images/red-cross.png'
+import {Link } from 'react-scroll'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -398,7 +399,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+               <Link  to="campare-costing" spy={true} smooth ={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>  
             </>
         )
     }
@@ -805,7 +806,7 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mt-3">
                             <Col md="10">
-                                <div className="left-border">{'Compare Costing:'}</div>
+                                <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
