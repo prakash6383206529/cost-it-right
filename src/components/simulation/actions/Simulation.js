@@ -638,8 +638,6 @@ export function getImpactedMasterData(simulationId, callback) {
     };
 }
 
-<<<<<<< HEAD
-=======
 export function runVerifySurfaceTreatmentSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
@@ -700,4 +698,3 @@ export function setSelectedRowCountForSimulationMessage(selectedMaster) {
 
 
 
->>>>>>> 093d3225f (Surface treatment simulation WIP)

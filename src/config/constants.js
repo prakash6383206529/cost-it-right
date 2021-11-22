@@ -534,10 +534,7 @@ export const API = {
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
-<<<<<<< HEAD
-=======
   saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
->>>>>>> 326421344 (surface treatment simulation remaining constants file WIP)
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1222,10 +1219,7 @@ export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
-<<<<<<< HEAD
-=======
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
->>>>>>> 326421344 (surface treatment simulation remaining constants file WIP)
 
 //WEIGHT CALCULATION COSTING
 
