@@ -454,6 +454,7 @@ function Simulation(props) {
                             isOpen={showUploadDrawer}
                             closeDrawer={closeDrawer}
                             anchor={"right"}
+                            master={master}
                         />}
                 </div>
             }
