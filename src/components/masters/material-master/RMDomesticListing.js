@@ -24,12 +24,13 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } from '../../../helper';
+import { SearchableSelectHookForm ,TextFieldHookForm} from '../../layout/HookFormInputs';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -672,7 +673,8 @@ function RMDomesticListing(props) {
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         if (isSimulation) {
             let len = gridApi.getSelectedRows().length
-            props.isRowSelected(len)
+            dispatch(setSelectedRowCountForSimulationMessage(len, res => { }))
+
             apply(selectedRows)
         }
         setSelectedRowData(selectedRows)

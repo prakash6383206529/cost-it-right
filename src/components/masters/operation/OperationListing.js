@@ -30,6 +30,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -124,6 +125,9 @@ class OperationListing extends Component {
                 this.setState({
                     tableData: Data,
                 })
+                if (this.props.isSimulation) {
+                    this.props.apply(Data)
+                }
             } else {
 
             }
@@ -380,7 +384,6 @@ class OperationListing extends Component {
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
         return data;
@@ -503,6 +506,22 @@ class OperationListing extends Component {
                     data={data}
                 />
             )
+        }
+        const onRowSelect = () => {
+            const {isSimulation} = this.props
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (isSimulation) {
+                let len = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(len, res => { })
+                this.props.apply(selectedRows)
+            }
+            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
         }
 
 
@@ -692,6 +711,7 @@ export default connect(mapStateToProps, {
     getTechnologyListByVendor,
     getOperationListByVendor,
     getLeftMenu,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

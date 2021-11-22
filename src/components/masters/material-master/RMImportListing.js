@@ -30,6 +30,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -675,9 +676,13 @@ function RMImportListing(props) {
     var selectedRows = gridApi.getSelectedRows();
     // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
     setSelectedRowData(selectedRows)
-    props.apply(selectedRows)
+    if (isSimulation) {
+      let len = gridApi.getSelectedRows().length
+      dispatch(setSelectedRowCountForSimulationMessage(len, res => { }))
+      props.apply(selectedRows)
 
   }
+}
 
   const defaultColDef = {
     resizable: true,

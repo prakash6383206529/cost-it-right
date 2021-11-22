@@ -11,6 +11,7 @@ import {
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     GET_AMMENDENT_STATUS_COSTING,
     GET_SELECTLIST_SIMULATION_TOKENS,
+    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
 } from '../../../config/constants';
 
 const initialState = {
@@ -85,6 +86,15 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 TokensList: action.payload
             }
+
+        case SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE:
+            return {
+                ...state,
+                loading: false,
+                selectedRowCountForSimulationMessage: action.payload
+            }
+
+
 
         default:
             return state;
