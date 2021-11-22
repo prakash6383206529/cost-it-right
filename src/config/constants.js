@@ -486,6 +486,8 @@ export const API = {
   saveComponentCostingSurfaceTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-surface-treatment`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
   getSurfaceTreatmentDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-surface-treatment-operation-list`,
+  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment`,
+  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-surface-treatment-costing`,
 
   getOverheadProfitTabData: `${BASE_URL}/costing/get-costing-detail-for-overhead-and-profit`,
   getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
@@ -871,11 +873,11 @@ export const API = {
   draftCombinedProcessSimulation: `${BASE_URL}/simulation/draft-simulation-combined-process`,
   getverifyCombinedProcessSimulationList: `${BASE_URL}/simulation/get-all-combined-process-impacted-simulation-costings`,
   runSimulationOnSelectedCombinedProcessCosting: `${BASE_URL}/simulation/run-simulation-on-selected-combined-process-costing`,
-  getverifySurfaceTreatmentSimulationList:`${BASE_URL}/`,
+  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-verify-surface-treatment-simulation-list`,
   getCombinedProcessCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-combined-process-costings`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   getFgWiseImpactData: `${BASE_URL}/sap-integration/get-fg-wise-impact-data`,
-  sapPushedInitialMoment:`${BASE_URL}/sap-integration/sap-pushed-initial-moment`,
+  sapPushedInitialMoment: `${BASE_URL}/sap-integration/sap-pushed-initial-moment`,
 
 
   //SIMULATION APPROVAL 
@@ -1440,7 +1442,7 @@ export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
 export const GET_COMBINED_PROCESS_LIST = 'GET_COMBINED_PROCESS_LIST'
 export const GET_FG_WISE_IMPACT_DATA = ' GET_FG_WISE_IMPACT_DATA'
 export const SET_SELECTED_VENDOR_SIMULATION = 'SET_SELECTED_VENDOR_SIMULATION'
-export const SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE='SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE'
+export const SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE = 'SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE'
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
 export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
@@ -1448,7 +1450,7 @@ export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
 
-export const RM_APPROVAL_DASHBOARD='RM_APPROVAL_DASHBOARD'
+export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 
 
 //COSTING STATUS

@@ -12,7 +12,7 @@ import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import NewReport from '../../report/CostingBenchmarkReport';
 import TooltipCustom from '../../common/Tooltip';
-import {COMBINED_PROCESS, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { COMBINED_PROCESS, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -134,7 +134,7 @@ class SimulationUploadDrawer extends Component {
                     let scrapRateCount = 0
                     let correctRowCount = 0
                     let NoOfRowsWithoutChange = 0
-
+                    console.log(this.props.master.value, 'this.props.master.valuethis.props.master.value')
                     switch (Number(this.props.master.value)) {
                         // case Number(EXCHNAGERATE):
                         //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
@@ -171,13 +171,14 @@ class SimulationUploadDrawer extends Component {
                             })
                             break;
 
-                        case Number(RMIMPORT || RMDOMESTIC):
+                        case (Number(RMDOMESTIC) || Number(RMIMPORT)):
                             resp.rows.map((val, index) => {
+                                console.log(val, 'valval')
                                 if (index > 0) {
                                     if (val[11] !== '' && val[11] !== undefined) {
                                         basicRateCount = 1
                                     }
-                                    if (val[11] === '' && val[13] === '') {
+                                    if (val[11] === '' && val[15] === '') {
                                         NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                         return false
                                     }
