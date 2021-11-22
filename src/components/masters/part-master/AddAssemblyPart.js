@@ -17,7 +17,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
 import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
@@ -54,10 +54,10 @@ class AddAssemblyPart extends Component {
       DropdownChanged: true,
       BOMChanged: true,
       GroupCode: '',
-      showPopup:false,
-      showPopupDraft:false,
-      updatedObj:{},
-      updatedObjDraft:{},
+      showPopup: false,
+      showPopupDraft: false,
+      updatedObj: {},
+      updatedObjDraft: {},
 
     }
   }
@@ -92,14 +92,14 @@ class AddAssemblyPart extends Component {
             productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
             return productArray
           })
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
           this.setState({ DataToCheck: Data })
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
@@ -457,7 +457,7 @@ class AddAssemblyPart extends Component {
         this.cancel()
       }
     });
-    this.setState({showPopupDraft:false})
+    this.setState({ showPopupDraft: false })
   }
 
   /**
@@ -523,7 +523,7 @@ class AddAssemblyPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Remark: values.Remark,
         Plants: plantArray,
         Attachements: updatedFiles,
@@ -542,7 +542,7 @@ class AddAssemblyPart extends Component {
       }
 
       if (isEditFlag) {
-        this.setState({showPopup:true, updatedObj:updateData})
+        this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -572,7 +572,7 @@ class AddAssemblyPart extends Component {
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -598,7 +598,7 @@ class AddAssemblyPart extends Component {
       e.preventDefault();
     }
   };
-  onPopupConfirm = ()=>{ 
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updateAssemblyPart(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -607,12 +607,12 @@ class AddAssemblyPart extends Component {
       }
     });
   }
-  onPopupConfirmDraft = ()=>{ 
+  onPopupConfirmDraft = () => {
     this.confirmDraftItem(this.state.updatedObjDraft)
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
-    this.setState({showPopupDraft:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+    this.setState({ showPopupDraft: false })
   }
   /**
   * @method render
@@ -844,7 +844,7 @@ class AddAssemblyPart extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
-                              //minDate={moment()} 
+
                               />
                             </div>
                           </div>
@@ -1015,12 +1015,12 @@ class AddAssemblyPart extends Component {
               avoidAPICall={this.state.avoidAPICall}
             />
           )}
-           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
-        }
-           {
-          this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`}  />
-        }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
+          {
+            this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
+          }
         </div>
       </>
     );

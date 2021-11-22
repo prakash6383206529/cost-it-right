@@ -11,7 +11,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
 import {
@@ -181,7 +181,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
           }),
         )
@@ -295,7 +295,7 @@ function CostingDetails(props) {
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+              setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
               setShowNextBtn(true)
 
             }),
@@ -1102,7 +1102,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+      setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
     }))
 
   }
@@ -1116,14 +1116,14 @@ function CostingDetails(props) {
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
     zbcPlantGrid && zbcPlantGrid.map((el, index) => {
       setValue(`${zbcPlantGridFields}.${index}.CostingVersion`, '')
-      setValue('ShareOfBusinessPercent','')
+      setValue('ShareOfBusinessPercent', '')
       return null;
     })
 
     // BELOW CODE IS USED TO REMOVE COSTING VERSION FROM GRIDS
     vbcVendorGrid && vbcVendorGrid.map((el, index) => {
       setValue(`${vbcGridFields}.${index}.CostingVersion`, '')
-      setValue('ShareOfBusinessPercent','')
+      setValue('ShareOfBusinessPercent', '')
       return null;
     })
   }
@@ -1396,14 +1396,14 @@ function CostingDetails(props) {
       setVBCEnableSOBField(!isVBCSOBEnabled)
     }
   }
- 
+
   const onPopupConfirm = () => {
     const {item, type,  index} =costingObj;
     deleteCosting(item, index, type);
   }
 
-  const closePopUp= () =>{
-   setShowPopup(false)
+  const closePopUp = () => {
+    setShowPopup(false)
   }
 
   /**
@@ -1946,8 +1946,8 @@ function CostingDetails(props) {
               </form>
             </div>
             {
-              showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`}  />
-              }
+              showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
+            }
           </Col>
         </Row>
       </div>

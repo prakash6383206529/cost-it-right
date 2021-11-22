@@ -10,7 +10,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -28,8 +28,8 @@ class AddExchangeRate extends Component {
       ExchangeRateId: '',
       DropdownChanged: true,
       DataToChange: [],
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
     }
   }
 
@@ -119,7 +119,7 @@ class AddExchangeRate extends Component {
               isEditFlag: true,
               // isLoader: false,
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -182,13 +182,13 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
-        this.setState({showPopup:true, updatedObj:updateData})
+        this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -200,7 +200,7 @@ class AddExchangeRate extends Component {
             });
           },
           onCancel: () => { },
-          component:() => <ConfirmComponent/>,
+          component: () => <ConfirmComponent />,
         }
         // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
@@ -214,7 +214,7 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         LoggedInUserId: loggedInUserId(),
       }
 
@@ -229,8 +229,8 @@ class AddExchangeRate extends Component {
     }
 
   }
- 
-  onPopupConfirm = ()=>{ 
+
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updateExchangeRate(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -239,8 +239,8 @@ class AddExchangeRate extends Component {
       }
     });
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -362,7 +362,7 @@ class AddExchangeRate extends Component {
                         <div className="form-group">
                           <label>
                             Effective Date
-                              <span className="asterisk-required">*</span>
+                            <span className="asterisk-required">*</span>
                           </label>
                           <div className="inputbox date-section">
                             <DatePicker
@@ -429,8 +429,8 @@ class AddExchangeRate extends Component {
             </div>
           </div>
           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
-        }
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </div>
     );
@@ -455,7 +455,7 @@ function mapStateToProps(state) {
       BankCommissionPercentage: exchangeRateData.BankCommissionPercentage ? exchangeRateData.BankCommissionPercentage : '',
       CustomRate: exchangeRateData.CustomRate ? exchangeRateData.CustomRate : '',
       // EffectiveDate: exchangeRateData.EffectiveDate ? exchangeRateData.EffectiveDate : ''
-      EffectiveDate: moment(exchangeRateData.EffectiveDate).utc._isValid ? moment(exchangeRateData.EffectiveDate) : ''
+      EffectiveDate: DayTime(exchangeRateData.EffectiveDate).utc._isValid ? DayTime(exchangeRateData.EffectiveDate) : ''
       // effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
 
     }

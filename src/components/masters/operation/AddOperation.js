@@ -17,7 +17,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC, OPERATIONS_ID } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { CheckApprovalApplicableMaster } from '../../../helper';
@@ -59,8 +59,8 @@ class AddOperation extends Component {
       dataToChange: '',
       uploadAttachements: true,
       isDisableCode: false,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
     }
   }
 
@@ -297,7 +297,7 @@ class AddOperation extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
           let plantArray = [];
           Data && Data.Plant.map((item) => {
@@ -517,7 +517,7 @@ class AddOperation extends Component {
           this.cancel()
           return false
         }
-        this.setState({showPopup:true, updatedObj:updateData})
+        this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -555,7 +555,7 @@ class AddOperation extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlants : []) : [],
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
       }
 
@@ -587,18 +587,18 @@ class AddOperation extends Component {
     }
 
   }
-  
-  onPopupConfirm = ()=>{ 
+
+  onPopupConfirm = () => {
     this.props.reset()
-            this.props.updateOperationAPI(this.state.updatedObj, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                this.cancel()
-              }
-            });
+    this.props.updateOperationAPI(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+        this.cancel()
+      }
+    });
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
   * @method render
@@ -1083,8 +1083,8 @@ class AddOperation extends Component {
             />
           )
         }
-         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
         }
       </div>
     );

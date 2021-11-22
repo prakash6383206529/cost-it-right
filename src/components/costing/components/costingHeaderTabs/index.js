@@ -21,7 +21,7 @@ import { LEVEL1 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
@@ -33,7 +33,7 @@ function CostingHeaderTabs(props) {
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
-  const [effectiveDate, setEffectiveDate] = useState(moment(costingData.EffectiveDate)._isValid ? moment(costingData.EffectiveDate)._d : '');
+  const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate)._isValid ? DayTime(costingData.EffectiveDate)._d : '');
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -206,11 +206,11 @@ function CostingHeaderTabs(props) {
    */
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
-    dispatch(setCostingEffectiveDate(moment(date).local().format('YYYY-MM-DD')))
+    dispatch(setCostingEffectiveDate(DayTime(date).local().format('YYYY-MM-DD')))
   }
 
   useEffect(() => {
-    dispatch(setCostingEffectiveDate(moment(effectiveDate).local().format('YYYY-MM-DD')))
+    dispatch(setCostingEffectiveDate(DayTime(effectiveDate).local().format('YYYY-MM-DD')))
   }, [effectiveDate])
 
   /**
