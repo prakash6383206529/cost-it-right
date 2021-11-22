@@ -132,7 +132,7 @@ function ViewOverheadProfit(props) {
                           )}
                           {viewOverheadData.IsOverheadBOPApplicable && (
                             <tr>
-                              <td>{`BOP`}</td>
+                              <td>{`Insert`}</td>
                               <td>
                                 {viewOverheadData.OverheadBOPPercentage ? viewOverheadData.OverheadBOPPercentage : "-"}
                               </td>
@@ -241,7 +241,7 @@ function ViewOverheadProfit(props) {
                             )}
                             {viewProfitData.IsProfitBOPApplicable && (
                               <tr>
-                                <td>{`BOP`}</td>
+                                <td>{`Insert`}</td>
                                 <td>
                                   {viewProfitData.ProfitBOPPercentage ? viewProfitData.ProfitBOPPercentage : "-"}
                                 </td>
