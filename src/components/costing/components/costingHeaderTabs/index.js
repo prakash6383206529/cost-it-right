@@ -266,11 +266,11 @@ function CostingHeaderTabs(props) {
    */
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
-    dispatch(setCostingEffectiveDate(DayTime(date).local().format('YYYY-MM-DD')))
+    dispatch(setCostingEffectiveDate(DayTime(date).format('YYYY-MM-DD')))
   }
 
   useEffect(() => {
-    dispatch(setCostingEffectiveDate(DayTime(effectiveDate).local().format('YYYY-MM-DD')))
+    dispatch(setCostingEffectiveDate(DayTime(effectiveDate).format('YYYY-MM-DD')))
   }, [effectiveDate])
 
   /**
