@@ -1666,7 +1666,7 @@ function CostingDetails(props) {
 
                         {/* ZBC PLANT GRID FOR COSTING */}
                         <Row>
-                          <Col md="12">
+                          <Col md="12" className={"costing-table-container"}>
                             <Table
                               className="table cr-brdr-main costing-table-next costing-table-zbc"
                               size="sm"
@@ -1675,10 +1675,10 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Plant`}</th>
                                   <th style={{}}>{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
-                                  <th style={{}}>{`Costing Version`}</th>
-                                  <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
-                                  <th style={{ minWidth: "115px" }}>{`Price`}</th>
-                                  <th style={{ minWidth: "280px" }}>{`Actions`}</th>
+                                  <th className="costing-version" >{`Costing Version`}</th>
+                                  <th className="text-center costing-status" >{`Status`}</th>
+                                  <th className="costing-price">{`Price`}</th>
+                                  <th className="costing-action">{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1804,7 +1804,7 @@ function CostingDetails(props) {
 
                         {/* VBC PLANT GRID FOR COSTING */}
                         <Row>
-                          <Col md="12">
+                          <Col md="12" className={"costing-table-container"}>
                             <Table
                               className="table cr-brdr-main costing-table-next costing-table-vbc"
                               size="sm"
@@ -1814,8 +1814,8 @@ function CostingDetails(props) {
                                   <th style={{}}>{`Vendor`}</th>
                                   {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
                                   <th style={{}}>{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
-                                  <th style={{}}>{`Costing Version`}</th>
-                                  <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
+                                  <th className="costing-version">{`Costing Version`}</th>
+                                  <th className="text-center" style={{ minWidth: "230px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "115px" }}>{`Price`}</th>
                                   <th style={{ minWidth: "280px" }}>{`Actions`}</th>
                                 </tr>
