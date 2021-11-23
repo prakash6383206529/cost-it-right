@@ -7,8 +7,9 @@ import {
   checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
-import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
+import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
+import { updateExchangeRate } from '../actions/ExchangeRateMaster';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
   checkAndGetMachineNumber, getMachineData,
@@ -936,7 +937,7 @@ class AddMachineRate extends Component {
       if (res.data.Result) {
         Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
         this.cancel()
-        console.log("called")
+
       }
     });
   }
@@ -1643,6 +1644,7 @@ export default connect(mapStateToProps, {
   fileDeleteMachine,
   checkAndGetMachineNumber,
   createMachine,
+  updateExchangeRate,
   updateMachine,
   updateMachineDetails,
   getMachineData,
