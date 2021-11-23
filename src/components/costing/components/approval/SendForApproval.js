@@ -527,7 +527,7 @@ const SendForApproval = (props) => {
                                     <div className={'form-group inputbox withBorder'}>
                                       <label>Effective Date</label>
                                       <DatePicker
-                                        selected={DayTime(data.effectiveDate).isValid ? DayTime(data.effectiveDate)._d : ''}
+                                        selected={DayTime(data.effectiveDate).isValid() ? DayTime(data.effectiveDate) : ''}
                                         dateFormat="dd/MM/yyyy"
                                         showMonthDropdown
                                         showYearDropdown
@@ -543,7 +543,7 @@ const SendForApproval = (props) => {
                                     <DatePickerHookForm
                                       name={`${dateField}EffectiveDate.${index}`}
                                       label={'Effective Date'}
-                                      selected={data.effectiveDate != "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                      selected={data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                       handleChange={(date) => {
                                         handleEffectiveDateChange(date, index);
                                       }}
