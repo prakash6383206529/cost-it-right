@@ -185,7 +185,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
 
           }),
         )
@@ -299,7 +299,7 @@ function CostingDetails(props) {
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(DayTime(Data.EffectiveDate).isValid? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+              setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
 
@@ -1106,7 +1106,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+      setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
     }))
 
   }
@@ -1437,7 +1437,7 @@ function CostingDetails(props) {
       resolve(filterList(inputValue));
     });
 
-    console.log(effectiveDate,"EFFECTIVE DATE");
+
 
   return (
     <>
@@ -1625,7 +1625,7 @@ function CostingDetails(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate ? new Date(effectiveDate):''}
+                              selected={effectiveDate ? new Date(effectiveDate):null}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
