@@ -3073,8 +3073,18 @@ body {
     color: #fe002d;
   }
   .Toastify__toast-icon svg {
-    fill: #fe002d;
+    visibility: hidden;
   }
+  .Toastify__toast-icon {
+     width: 23px;
+    &::before {
+      content: '';
+
+      height: 22px;
+    }
+   background-image: url('../../assests/images/toaster-error.svg');
+  }
+ 
 }
 //<----------Toaster style for Success----------->
 .Toastify__toast--success {
@@ -3095,9 +3105,24 @@ body {
   background-color: #ffffff;
 }
 .Toastify__toast--warning { 
+  .Toastify__toast-icon svg {
+    visibility: hidden;
+  }
+  .Toastify__toast-icon {
+     width: 23px;
+    &::before {
+      content: '';
+      height: 22px;
+    }
+   background-image: url('../../assests/images/toaster-warning.svg');
+  }
   .Toastify__close-button {
     color: #e6b800;
   }
+}
+.height-width-wrapper {
+  height: 100%;
+  width: 100%;
 }
 // <-------------END toaster style--------------->
 //#fe002d  1 color

@@ -7,16 +7,17 @@ import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from "../../../assests/images/red-cross.png";
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -35,7 +36,9 @@ class AddIndivisualPart extends Component {
       files: [],
       DataToCheck: [],
       DropdownChanged: true,
-      uploadAttachements: true
+      uploadAttachements: true,
+      showPopup: false,
+      updatedObj: {}
 
     }
   }
@@ -72,12 +75,12 @@ class AddIndivisualPart extends Component {
             return productArray
           })
           this.setState({ DataToCheck: Data })
-          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               ProductGroup: productArray,
               oldProductGroup: productArray
@@ -111,7 +114,7 @@ class AddIndivisualPart extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+    this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
     this.setState({ DropdownChanged: false })
   };
 
@@ -170,7 +173,7 @@ class AddIndivisualPart extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -196,7 +199,7 @@ class AddIndivisualPart extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeletePart(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -266,7 +269,7 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         Remark: values.Remark,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true,
@@ -274,13 +277,13 @@ class AddIndivisualPart extends Component {
       }
 
       if (isEditFlag) {
-
+        this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updatePart(updateData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.UPDATE_PART_SUCESS);
+                Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
                 this.cancel()
               }
             });
@@ -288,7 +291,7 @@ class AddIndivisualPart extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />,
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -304,7 +307,7 @@ class AddIndivisualPart extends Component {
         PartName: values.PartName,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -316,13 +319,24 @@ class AddIndivisualPart extends Component {
       this.props.reset()
       this.props.createPart(formData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.PART_ADD_SUCCESS);
+          Toaster.success(MESSAGES.PART_ADD_SUCCESS);
           this.cancel()
         }
       });
     }
   }
-
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updatePart(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
+        this.cancel()
+      }
+    });
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -540,7 +554,7 @@ class AddIndivisualPart extends Component {
                                   component={renderDatePicker}
                                   className="form-control"
                                   disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
-                                //minDate={moment()}
+
                                 />
 
                               </div>
@@ -707,6 +721,9 @@ class AddIndivisualPart extends Component {
               </Row>
             </div>
           </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );

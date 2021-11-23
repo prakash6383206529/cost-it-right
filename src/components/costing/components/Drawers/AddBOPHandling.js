@@ -8,7 +8,7 @@ import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { useDispatch } from 'react-redux';
 import { saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
 import { NetPOPriceContext } from '../CostingDetailStepTwo';
@@ -68,7 +68,7 @@ function AddBOPHandling(props) {
         } else {
           setValue('BOPHandlingCharges', 0)
           setValue('BOPHandlingPercentage', 0)
-          toastr.warning('Please enter valid number.')
+          Toaster.warning('Please enter valid number.')
         }
       }
 

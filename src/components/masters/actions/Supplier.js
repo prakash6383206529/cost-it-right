@@ -16,7 +16,7 @@ import {
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 
 const headers = config
@@ -41,7 +41,7 @@ export function createSupplierAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_SUPPLIER_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -102,7 +102,7 @@ export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
                         });
                         callback(response);
                     } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
+                        Toaster.error(MESSAGES.SOME_ERROR);
                     }
                     callback(response);
                 }).catch((error) => {

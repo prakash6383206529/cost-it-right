@@ -9,7 +9,7 @@ import {
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 
@@ -200,7 +200,7 @@ dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{    
 
     dispatch(saveCostingPackageFreightTab(data, res => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+        Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
         dispatch(setComponentPackageFreightItemData({}, () => { }))
         InjectDiscountAPICall()
       }

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
@@ -12,7 +12,7 @@ import { getPlantSelectListByType, getTechnologySelectList } from '../../../acti
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment } from '../actions/Simulation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -29,6 +29,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import redcrossImg from '../../../assests/images/red-cross.png'
+import {Link } from 'react-scroll'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -126,21 +127,22 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
-        dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-            const Data = res.data.Data.ImpactedMasterDataList
-            const masterId = res.data.Data.SimulationTechnologyId;
+        if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
+            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                const Data = res.data.Data.ImpactedMasterDataList
+                const masterId = res.data.Data.SimulationTechnologyId;
 
-            if (res) {
-                setImpactedMasterDataListForLastRevisionData(Data)
-                setShowLastRevisionData(true)
-                setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+                if (res) {
+                    setImpactedMasterDataListForLastRevisionData(Data)
+                    setShowLastRevisionData(true)
+                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
 
-            }
-        }))
-        // }
-        // if (simulationDetail.SimulationId) {
-        dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
-        // }
+                }
+            }))
+            // }
+            // if (simulationDetail.SimulationId) {
+            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+        }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
 
@@ -252,7 +254,7 @@ function SimulationApprovalSummary(props) {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
     const DisplayCompareCosting = (el, data) => {
@@ -397,7 +399,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+               <Link  to="campare-costing" spy={true} smooth ={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>  
             </>
         )
     }
@@ -452,7 +454,7 @@ function SimulationApprovalSummary(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
 
@@ -531,7 +533,7 @@ function SimulationApprovalSummary(props) {
                 DeletedBy: loggedInUserId(),
             }
             // dispatch(fileDeleteCosting(deleteData, (res) => {
-            //     toastr.success('File has been deleted successfully.')
+            //     Toaster.success('File has been deleted successfully.')
             //   }))
             let tempArr = files && files.filter(item => item.FileId !== FileId)
             setFiles(tempArr)
@@ -635,7 +637,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
+                                                <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
@@ -713,7 +715,7 @@ function SimulationApprovalSummary(props) {
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                    <div className="ag-grid-wrapper height-width-wrapper">
                                                         <div className="ag-grid-header">
                                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -804,7 +806,7 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mt-3">
                             <Col md="10">
-                                <div className="left-border">{'Compare Costing:'}</div>
+                                <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
@@ -920,7 +922,7 @@ function SimulationApprovalSummary(props) {
                                 <div className="accordian-content w-100">
                                     <div className={`ag-grid-react`}>
                                         <Col md="12" className="mb-3">
-                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                            <div className="ag-grid-wrapper height-width-wrapper">
                                                 <div className="ag-grid-header">
                                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 </div>

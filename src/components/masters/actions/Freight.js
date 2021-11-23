@@ -17,7 +17,7 @@ import {
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 
 const headers = config;
@@ -247,7 +247,7 @@ export function getAdditionalFreightByIdAPI(Id, isEditFlag, callback) {
                     });
                     callback(response);
                 } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
+                    Toaster.error(MESSAGES.SOME_ERROR);
                 }
                 callback(response);
             }).catch((error) => {
@@ -309,7 +309,7 @@ export function getAdditionalFreightBySupplier(sourceSupplierId, callback) {
             } else {
                 dispatch({ type: CREATE_FREIGHT_FAILURE });
                 if (response.data.Message) {
-                    toastr.warning(response.data.Message);
+                    Toaster.warning(response.data.Message);
                 }
             }
         }).catch((error) => {

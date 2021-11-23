@@ -15,7 +15,7 @@ import {
   getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
   masterFinalLevelUser
 } from '../actions/Material'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId, getConfigurationKey, userDetails, } from '../../../helper/auth'
 import Switch from 'react-switch'
@@ -28,13 +28,16 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
 import { EMPTY_GUID, FILE_URL, ZBC, RM_MASTER_ID } from '../../../config/constants'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
+import { toast } from 'react-toastify';
+import { toastr } from 'react-redux-toastr';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 const selector = formValueSelector('AddRMDomestic')
@@ -93,7 +96,9 @@ class AddRMDomestic extends Component {
       approveDrawer: false,
       approvalObj: {},
       uploadAttachements: true,
-      isFinalApprovar: false
+      isFinalApprovar: false,
+      showPopup: false,
+      updatedObj: {}
     }
   }
   /**
@@ -318,10 +323,10 @@ class AddRMDomestic extends Component {
 
   handleScrapRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
-    console.log('newValue: ', newValue.target.value);
-    console.log(fieldsObj.BasicRate, "fieldsObj.BasicRate");
+
+
     if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
-      toastr.warning("Scrap rate should not be greater than basic rate")
+      Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
   }
@@ -425,7 +430,8 @@ class AddRMDomestic extends Component {
 
                 const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
                 const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
-                this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
+
                 this.setState({
                   isEditFlag: true,
                   // isLoader: false,
@@ -442,7 +448,7 @@ class AddRMDomestic extends Component {
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+                  effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
@@ -785,6 +791,8 @@ class AddRMDomestic extends Component {
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
+      showPopup: false,
+      updatedObj: {}
     })
     this.props.getRawMaterialDetailsAPI('', false, (res) => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
@@ -839,7 +847,7 @@ class AddRMDomestic extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -866,7 +874,7 @@ class AddRMDomestic extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteRMDomestic(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -934,7 +942,7 @@ class AddRMDomestic extends Component {
       ScrapRate: values.ScrapRate,
       NetLandedCost: netLandedCost,
       LoggedInUserId: loggedInUserId(),
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       Attachements: updatedFiles,
       IsConvertIntoCopy: isDateChange ? true : false,
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
@@ -943,14 +951,16 @@ class AddRMDomestic extends Component {
       RawMaterialCode: values.Code
     }
     if (isEditFlag) {
-
+      this.setState({ showPopup: true, updatedObj: requestData })
       if (isSourceChange) {
+
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
             // this.cancel()
+
           }
         })
       }
@@ -959,7 +969,7 @@ class AddRMDomestic extends Component {
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
             // this.cancel()
           }
@@ -977,22 +987,25 @@ class AddRMDomestic extends Component {
         if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
           Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
             values.cutOffPrice === undefined) || uploadAttachements === false)) {
+          if (!isEditFlag) {
 
-          const toastrConfirmOptions = {
-            onOk: () => {
-              this.props.reset()
-              this.props.updateRMDomesticAPI(requestData, (res) => {
-                if (res.data.Result) {
-                  toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-                  this.clearForm()
-                  // this.cancel()
-                }
-              })
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
+
+            const ToasterConfirmOptions = {
+              onOk: () => {
+                this.props.reset()
+                this.props.updateRMDomesticAPI(requestData, (res) => {
+                  if (res.data.Result) {
+                    Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                    this.clearForm()
+                    // this.cancel()
+                  }
+                })
+              },
+              onCancel: () => { },
+              component: () => <ConfirmComponent />,
+            }
+            // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, ToasterConfirmOptions,)
           }
-          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
       }
     }
@@ -1017,7 +1030,7 @@ class AddRMDomestic extends Component {
       formData.RMShearingCost = values.ShearingCost
       formData.ScrapRate = values.ScrapRate
       formData.NetLandedCost = netLandedCost
-      formData.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+      formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       formData.Remark = remarks
       formData.LoggedInUserId = loggedInUserId()
       formData.Plant = IsVendor === false ? plantArray : []
@@ -1044,7 +1057,7 @@ class AddRMDomestic extends Component {
         this.props.reset()
         this.props.createRMDomestic(formData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS)
+            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
             this.clearForm()
             this.cancel()
           }
@@ -1053,7 +1066,19 @@ class AddRMDomestic extends Component {
 
     }
   }
-
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+        this.clearForm()
+        // this.cancel()
+      }
+    })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1791,7 +1816,9 @@ class AddRMDomestic extends Component {
               />
             )
           }
-
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
           {/* {isVisible && (
             <ImageModel
               onOk={this.onOk}

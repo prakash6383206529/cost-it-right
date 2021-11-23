@@ -5,7 +5,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
 
 
@@ -96,7 +96,7 @@ function VerifyImpactDrawer(props) {
 
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Effective Date:</span>
-                    <span>{moment(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
+                    <span>{DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                   </span>
 
                 </Col>

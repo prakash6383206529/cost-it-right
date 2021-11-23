@@ -13,13 +13,13 @@ import ViewOverheadProfit from './Drawers/ViewOverheadProfit'
 import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval'
 import { isSafeInteger } from 'lodash'
@@ -571,7 +571,7 @@ const CostingSummaryTable = (props) => {
 
   const checkCostings = () => {
     if (multipleCostings.length === 0) {
-      toastr.warning('Please select at least one costing to send for approval')
+      Toaster.warning('Please select at least one costing to send for approval')
       return
     } else {
       sendForApprovalData(multipleCostings)
@@ -753,7 +753,7 @@ const CostingSummaryTable = (props) => {
                               return (
                                 <td>
                                   <span class="d-flex justify-content-between bg-grey">
-                                    {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                    {`${DayTime(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
                                     {
                                       !viewMode &&
                                       <a

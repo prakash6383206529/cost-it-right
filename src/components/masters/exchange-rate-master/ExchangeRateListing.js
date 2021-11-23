@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -14,7 +14,9 @@ import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../conf
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import moment from 'moment';
+import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import DayTime from '../../common/DayTimeWrapper'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -49,6 +51,8 @@ class ExchangeRateListing extends Component {
             gridColumnApi: null,
             rowData: null,
             isLoader: true,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -135,6 +139,7 @@ class ExchangeRateListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -142,8 +147,9 @@ class ExchangeRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
+        // return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
     }
+
 
     /**
     * @method confirmDeleteItem
@@ -152,11 +158,20 @@ class ExchangeRateListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteExchangeRate(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
                 this.getTableListData()
             }
         });
+        this.setState({ showPopup: false })
     }
+
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
+
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
@@ -171,7 +186,7 @@ class ExchangeRateListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -377,7 +392,7 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -419,6 +434,9 @@ class ExchangeRateListing extends Component {
                         </div>
                     </div>
                 </div>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+                }
             </ >
         );
     }

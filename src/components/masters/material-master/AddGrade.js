@@ -6,7 +6,7 @@ import { required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces } fro
 import { renderText, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -72,7 +72,7 @@ class AddGrade extends Component {
       this.props.reset()
       this.props.updateRMGradeAPI(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
+          Toaster.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
           this.toggleDrawer('', formData)
         }
       })
@@ -84,7 +84,7 @@ class AddGrade extends Component {
       this.props.reset()
       this.props.createRMGradeAPI(values, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
+          Toaster.success(MESSAGES.GRADE_ADD_SUCCESS);
           this.toggleDrawer('', values)
         }
       });

@@ -29,7 +29,6 @@ function AssemblyPart(props) {
         PartId: item.PartId,
       }
       dispatch(getRMCCTabData(data, false, (res) => {
-        console.log("IN ASSEMBLY SERVER DATA");
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
           if(Data.CostingPartDetails.IsApplyBOPHandlingCharges){

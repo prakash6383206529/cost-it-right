@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,7 +12,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster ,EMPTY_DATA} from '../../../config/constants';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, EMPTY_DATA } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 
@@ -27,7 +27,7 @@ const gridOptions = {};
 
 var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         if (dateAsString == null) return -1;
         var dateParts = dateAsString.split('/');
         var cellDate = new Date(
@@ -142,14 +142,14 @@ function ReportListing(props) {
     const linkableFormatter = (props) => {
         let tempDate = props.data.CreatedDate
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let temp = `${moment(tempDate).format('DD/MM/YYYY')}-${cellValue}`
+        let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
         setCostingVersion(temp);
         return temp
     }
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let temp = moment(cellValue).format('DD/MM/YYYY h:m:s')
+        let temp = DayTime(cellValue).format('DD/MM/YYYY h:m:s')
         return temp
     }
 
@@ -434,14 +434,14 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before">
+                <Row className="pt-4 blue-before btn-index">
 
 
                     <Col md="6" lg="6" className="search-user-block mb-3">
-                        <div className="d-flex justify-content-end bd-highlight w100">
+                        <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
 
-                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
 
@@ -465,7 +465,7 @@ function ReportListing(props) {
             </div>
 
 
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>

@@ -8,15 +8,15 @@ import {
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity } from '../../../actions/Common';
 import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
-import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
+import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddFuelNameDrawer from './AddFuelNameDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableFuelUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddFuel');
@@ -91,7 +91,7 @@ class AddFuel extends Component {
                 StateLabel: item.StateName,
                 StateId: item.StateId,
                 //effectiveDate: moment(item.EffectiveDate).format('DD/MM/YYYY'),
-                effectiveDate: moment(item.EffectiveDate)._d,
+                effectiveDate: DayTime(item.EffectiveDate),
                 Rate: item.Rate,
               }
             })
@@ -167,16 +167,16 @@ class AddFuel extends Component {
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     const tempArray = [];
     if (decimalLengthsix(Rate)) {
-      toastr.warning("Decimal value should not be more than 6")
+      Toaster.warning("Decimal value should not be more than 6")
       return false
     }
     if (positiveAndDecimalNumber(Rate)) {
-      toastr.warning("Enter valid value")
+      Toaster.warning("Enter valid value")
       return false
 
     } else {
       if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
-        toastr.warning('Fields should not be empty');
+        Toaster.warning('Fields should not be empty');
         return false;
       }
     }
@@ -369,7 +369,7 @@ class AddFuel extends Component {
     const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, AddUpdate, RateChange, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
-      toastr.warning('Rate should not be empty.');
+      Toaster.warning('Rate should not be empty.');
       return false;
     }
 
@@ -428,7 +428,7 @@ class AddFuel extends Component {
       this.props.reset()
       this.props.updateFuelDetail(requestData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
+          Toaster.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
           this.cancel();
         }
       })
@@ -445,7 +445,7 @@ class AddFuel extends Component {
       this.props.reset()
       this.props.createFuelDetail(formData, (res) => {
         if (res && res.data && res.data.Result) {
-          toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
+          Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
           this.cancel();
         }
       });
@@ -653,7 +653,7 @@ class AddFuel extends Component {
                                         <td>{checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                         {/* <td>{item.effectiveDate}</td> */}
                                         <td>
-                                          {moment(item.effectiveDate).format(
+                                          {DayTime(item.effectiveDate).format(
                                             "DD/MM/YYYY"
                                           )}
                                         </td>

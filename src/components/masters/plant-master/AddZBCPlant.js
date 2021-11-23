@@ -10,7 +10,7 @@ import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
   getCityByCountry,
 } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -259,7 +259,7 @@ class AddZBCPlant extends Component {
       this.props.reset()
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_PLANT_SUCESS);
+          Toaster.success(MESSAGES.UPDATE_PLANT_SUCESS);
           this.cancel()
         }
       });
@@ -285,7 +285,7 @@ class AddZBCPlant extends Component {
       this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.PLANT_ADDED_SUCCESS);
           this.cancel()
         }
       });

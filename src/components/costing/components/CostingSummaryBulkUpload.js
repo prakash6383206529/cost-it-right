@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { loggedInUserId } from '../../../helper';
 import { APPROVED, PENDING } from '../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
@@ -151,7 +151,7 @@ class CostingSummaryBulkUpload extends Component {
         obj.LoggedInUserId = loggedInUserId()
         this.props.sendForApprovalFromBulkUpload(obj, res => {
             if (res.data.Result) {
-                toastr.success(res.data.Message)
+                Toaster.success(res.data.Message)
                 this.props.getCostingBulkUploadList(() => { })
             } else {
                 this.props.getCostingBulkUploadList(() => { })
@@ -248,7 +248,7 @@ class CostingSummaryBulkUpload extends Component {
                     </BootstrapTable> */}
                     {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                     <div className="ag-grid-react">
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>

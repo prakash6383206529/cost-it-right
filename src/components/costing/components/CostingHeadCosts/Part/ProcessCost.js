@@ -10,7 +10,7 @@ import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
@@ -69,7 +69,6 @@ function ProcessCost(props) {
       PartNumber: props.item.PartNumber,
     }
     if (!CostingViewMode) {
-      console.log("HOW MANY TIME COMING HER");
       selectedIds(gridData)
       props.setProcessCost(tabData, Params,item)
     }
@@ -314,7 +313,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -335,7 +334,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -358,7 +357,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -436,7 +435,7 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${index}.Quantity`, 0)
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, 0)
       }, 200)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -469,7 +468,7 @@ function ProcessCost(props) {
 
     let tempArr = {
       ...tabData,
-      NetConversionCost: OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
+      NetConversionCost: (OtherOperationCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0,) + checkForNull(tabData && tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,)).toFixed(10),
       OtherOperationCostTotal: OtherOperationCostTotal,
       CostingOtherOperationCostResponse: otherOperationGrid,
     }

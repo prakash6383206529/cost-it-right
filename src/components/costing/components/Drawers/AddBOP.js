@@ -9,7 +9,7 @@ import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
@@ -145,7 +145,7 @@ function AddBOP(props) {
   */
   const addRow = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')
@@ -382,7 +382,7 @@ function AddBOP(props) {
                   <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCostConversion" dataFormat={netLandedFormat} searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
                   <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" dataFormat={netLandedConversionFormat} searchable={false} >{renderNetLandedConversionRate()}</TableHeaderColumn>
                 </BootstrapTable> */}
-                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>

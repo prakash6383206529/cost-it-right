@@ -6,7 +6,7 @@ import { required, } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, } from "../../layout/FormInputs";
 import { createMachineType } from '../actions/MachineMaster';
 import { getLabourTypeSelectList } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -102,7 +102,7 @@ class AddMachineTypeDrawer extends Component {
       this.props.reset()
       this.props.createMachineType(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
+          Toaster.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
           this.toggleDrawer('', formData)
         }
       });

@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { EMPTY_DATA } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
@@ -42,7 +42,7 @@ function RMApproval(props) {
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
-            var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
             if (dateAsString == null) return -1;
             var dateParts = dateAsString.split('/');
             var cellDate = new Date(
@@ -147,7 +147,7 @@ function RMApproval(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/yyyy') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/yyyy') : '';
     }
 
     /**
@@ -325,7 +325,7 @@ function RMApproval(props) {
                 <Col>
                     {loader && <LoaderCustom />}
                     <div className={`ag-grid-react`}>
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>

@@ -6,11 +6,11 @@ import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
   setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
 } from '../../actions/Costing';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
 function TabToolCost(props) {
 
-  const { handleSubmit, } = useForm();
+  const { handleSubmit, setValue,getValues,formState:{errors}} = useForm();
 
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
@@ -40,6 +40,7 @@ function TabToolCost(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -258,14 +259,13 @@ function TabToolCost(props) {
          "WorkingRows": [],
         "LoggedInUserId": loggedInUserId()
       
-    }
-    console.log(assemblyRequestedData,"assemblyRequestedData");
+    };
     dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
     }
 
     dispatch(saveToolTab(data, res => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
+        Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
         dispatch(setComponentToolItemData({}, () => { }))
         InjectDiscountAPICall()
       }
@@ -315,6 +315,11 @@ function TabToolCost(props) {
     var value = document.getElementById('page-size').value;
     gridApi.paginationSetPageSize(Number(value));
   };
+
+
+
+
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -437,7 +442,7 @@ function TabToolCost(props) {
                       </BootstrapTable> */}
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                           <div className="ag-grid-header">
                             {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
                           </div>

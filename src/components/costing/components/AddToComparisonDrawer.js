@@ -8,7 +8,7 @@ import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
 import { APPROVED, REJECTED, HISTORY, ZBC } from '../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 
 function AddToComparisonDrawer(props) {
@@ -370,7 +370,7 @@ function AddToComparisonDrawer(props) {
               setIsZbcSelected(false)
               setisCbcSelected(true)
 
-              toastr.warning('This costing is already present for comparison.')
+              Toaster.warning('This costing is already present for comparison.')
               return
             }
           }

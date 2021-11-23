@@ -10,18 +10,19 @@ import {
   createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit,
 } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { FILE_URL } from '../../../config/constants';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import attachClose from '../../../assests/images/red-cross.png'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddProfit');
 
@@ -57,7 +58,9 @@ class AddProfit extends Component {
       effectiveDate: '',
       DropdownChanged: true,
       DataToChange: [],
-      uploadAttachements: true
+      uploadAttachements: true,
+      showPopup: false,
+      updatedObj: {}
 
     }
   }
@@ -126,7 +129,7 @@ class AddProfit extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
 
@@ -155,7 +158,7 @@ class AddProfit extends Component {
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
@@ -310,7 +313,7 @@ class AddProfit extends Component {
 
   handlePercent = (e) => {
     if (e.target.value > 100) {
-      toastr.warning('Profit Percent can not be greater than 100.')
+      Toaster.warning('Profit Percent can not be greater than 100.')
     }
   }
 
@@ -455,7 +458,7 @@ class AddProfit extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -481,7 +484,7 @@ class AddProfit extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteProfit(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -580,16 +583,17 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
+        this.setState({ showPopup: true, updatedObj: requestData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateProfit(requestData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
+                Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
                 this.cancel()
               }
             })
@@ -597,7 +601,7 @@ class AddProfit extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -621,19 +625,30 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       }
 
       this.props.reset()
       this.props.createProfit(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.PROFIT_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
           this.cancel()
         }
       });
     }
   }
-
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateProfit(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
+        this.cancel()
+      }
+    });
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1042,6 +1057,9 @@ class AddProfit extends Component {
               </div>
             </div>
           </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );
