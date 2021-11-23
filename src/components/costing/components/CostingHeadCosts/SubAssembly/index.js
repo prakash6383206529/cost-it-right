@@ -133,15 +133,17 @@ function AssemblyPart(props) {
           <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
-            {(item?.CostingPartDetails?.TotalConversionCostWithQuantity || item?.CostingPartDetails?.TotalOperationCostPerAssembly) ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalOperationCostPerAssembly), initialConfiguration.NoOfDecimalForPrice) : 0}
+            {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {
-              item?.CostingPartDetails?.TotalOperationCostPerAssembly ?
+              (item?.CostingPartDetails?.TotalOperationCostPerAssembly || item.CostingPartDetails?.TotalOperationCostSubAssembly) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
                     {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
+                    {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails?.TotalOperationCostSubAssembly,initialConfiguration.NoOfDecimalForPrice)}`}
+                    <br></br>
                     {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost - item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
-                    {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice)}`}
+                    {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
                   </span>
                 </div> : ''
             }
@@ -151,7 +153,7 @@ function AssemblyPart(props) {
           <td>{'-'}</td>
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
           {/* {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>} */}
-          {costData.IsAssemblyPart && <td>{checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalOperationCostPerAssembly), initialConfiguration.NoOfDecimalForPrice) * item.CostingPartDetails.Quantity}</td>}
+          {costData.IsAssemblyPart && <td>{checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) * item.CostingPartDetails.Quantity}</td>}
        
          </div>
         <td>
