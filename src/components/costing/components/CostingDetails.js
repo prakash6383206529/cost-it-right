@@ -181,7 +181,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('DD/MM/YYYY') : '')
 
           }),
         )
@@ -296,7 +296,7 @@ function CostingDetails(props) {
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+              setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('DD/MM/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
 
@@ -1104,7 +1104,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('DD/MM/YYYY') : '')
     }))
 
   }
@@ -1436,7 +1436,6 @@ function CostingDetails(props) {
     });
 
 
-
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
@@ -1621,9 +1620,10 @@ function CostingDetails(props) {
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
+
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate ? new Date(effectiveDate):null}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
