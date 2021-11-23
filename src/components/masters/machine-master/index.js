@@ -16,7 +16,7 @@ class MachineMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '2',
+            activeTab: '1',
             isMachineRateForm: false,
             isAddMoreDetails: false,
             isProcessForm: false,
@@ -202,11 +202,11 @@ class MachineMaster extends Component {
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                             Approval Status
                                         </NavLink>
-                                    </NavItem>
+                                    </NavItem> */}
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>

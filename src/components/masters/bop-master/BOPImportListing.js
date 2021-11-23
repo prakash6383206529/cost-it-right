@@ -454,7 +454,7 @@ class BOPImportListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.props.loading && <Loader />}
+                {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
@@ -617,7 +617,7 @@ class BOPImportListing extends Component {
                                 className="ag-theme-material"
                                 style={{ height: '100%', width: '100%' }}
                             >
-                                {this.state.loader && <LoaderCustom />}
+                                {/* {this.state.loader && <LoaderCustom />} */}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
 
