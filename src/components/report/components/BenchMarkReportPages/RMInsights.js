@@ -306,7 +306,7 @@ function Insights(props) {
                         <Row>
                             <Col md="12">
                                 <div className={`ag-grid-react`}>
-                                    <div className="ag-grid-wrapper rminsights_table" style={{ width: '100%', height: '100%' }}>
+                                    <div className="ag-grid-wrapper rminsights_table">
                                         <div className="ag-theme-material">
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}

@@ -6383,3 +6383,33 @@ left: 17rem;
     max-width: 1140px;
   }
 }
+.report-listing-page {
+  .loader_container {
+    z-index: 99;
+  }
+}
+.costing-table-container {
+  table {
+    .costing-version { min-width: 200px;}
+    .costing-status {min-width: 230px;}
+    .costing-price {min-width: 115px;}
+    .costing-action {min-width: 280px;}
+  }
+  @media screen and (max-width:$miniDesktop) {
+    overflow-y: auto;
+    .costing-table-next {
+      min-width: 1399px;
+    }
+  }
+
+}
+
+
+  .update-vendor-loader {
+    min-height: calc(100vh + 11rem);
+  }
+ 
+
+// .update-vendor-loader {
+//   height: calc(100vh + 10%);
+// }

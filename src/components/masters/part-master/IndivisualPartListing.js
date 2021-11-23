@@ -585,7 +585,7 @@ class IndivisualPartListing extends Component {
 
 
 
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-wrapper height-width-wrapper">
                         <div className="ag-grid-header">
                             <Row className="pt-5 no-filter-row">
                             </Row>

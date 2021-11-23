@@ -434,11 +434,11 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before">
+                <Row className="pt-4 blue-before btn-index">
 
 
                     <Col md="6" lg="6" className="search-user-block mb-3">
-                        <div className="d-flex justify-content-end bd-highlight w100">
+                        <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
 
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
@@ -465,7 +465,7 @@ function ReportListing(props) {
             </div>
 
 
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>
