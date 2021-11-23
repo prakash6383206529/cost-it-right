@@ -453,7 +453,7 @@ class ProfitListing extends Component {
                     <Col>
 
 
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
