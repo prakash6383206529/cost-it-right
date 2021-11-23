@@ -406,7 +406,7 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ showCurrency: true }, () => {
           if (this.state.effectiveDate) {
-            this.props.getExchangeRateByCurrency(newValue.label, DayTime(this.state.effectiveDate).local().format('YYYY-MM-DD'), res => {
+            this.props.getExchangeRateByCurrency(newValue.label, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), res => {
               //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
               if (Object.keys(res.data.Data).length === 0) {
@@ -460,7 +460,7 @@ class AddBOPImport extends Component {
       })
 
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, DayTime(date).local().format('YYYY-MM-DD'), res => {
+      this.props.getExchangeRateByCurrency(currency.label, DayTime(date).format('YYYY-MM-DD'), res => {
         //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
         if (Object.keys(res.data.Data).length === 0) {
@@ -657,7 +657,7 @@ class AddBOPImport extends Component {
         Vendor: vendorName.value,
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.netLandedcost,

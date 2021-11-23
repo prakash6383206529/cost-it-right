@@ -188,7 +188,9 @@ class OverheadListing extends Component {
     * @description Renders buttons
     */
     effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
+
+        let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';
+        return value
     }
 
 

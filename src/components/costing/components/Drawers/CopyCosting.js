@@ -350,7 +350,7 @@ function CopyCosting(props) {
     obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
     obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
     obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
-    obj.EffectiveDate = DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+    obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {

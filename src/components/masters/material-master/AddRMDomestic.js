@@ -945,7 +945,7 @@ class AddRMDomestic extends Component {
       ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
       NetLandedCost: netLandedCost,
       LoggedInUserId: loggedInUserId(),
-      EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
       Attachements: updatedFiles,
       IsConvertIntoCopy: isDateChange ? true : false,
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
@@ -1024,7 +1024,7 @@ class AddRMDomestic extends Component {
       formData.RMShearingCost = values.ShearingCost
       formData.ScrapRate = this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
       formData.NetLandedCost = netLandedCost
-      formData.EffectiveDate = DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+      formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       formData.Remark = remarks
       formData.LoggedInUserId = loggedInUserId()
       formData.Plant = IsVendor === false ? plantArray : []

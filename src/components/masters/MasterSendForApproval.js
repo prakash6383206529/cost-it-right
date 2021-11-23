@@ -154,7 +154,7 @@ function MasterSendForApproval(props) {
             senderObj.SenderRemark = remark
             senderObj.LoggedInUserId = loggedInUserId()
             senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
-            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
+            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             let tempArray = []

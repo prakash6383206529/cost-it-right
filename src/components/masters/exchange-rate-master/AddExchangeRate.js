@@ -182,7 +182,7 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         IsForcefulUpdated: true
@@ -214,7 +214,7 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         LoggedInUserId: loggedInUserId(),
       }
 

@@ -353,7 +353,7 @@ function ApproveRejectDrawer(props) {
               Toaster.success('The costing has been approved')
               // const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
               let pushdata = {
-                effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
+                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/yyyy') : '',
                 vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
                 materialNumber: dataSend[1].PartNumber,
                 netPrice: dataSend[0].NewPOPrice,
@@ -482,7 +482,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
-        senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         let temp = []
         if (isSimulationApprovalListing === true) {
@@ -521,7 +521,7 @@ function ApproveRejectDrawer(props) {
                 const vendor = item.VendorName.split('(')[1]
                 temp.push({
                   CostingId: item.CostingId,
-                  effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'),
+                  effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/yyyy'),
                   vendorCode: vendor.split(')')[0],
                   materialNumber: item.PartNo,
                   netPrice: item.NewPOPrice,
