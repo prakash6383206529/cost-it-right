@@ -122,7 +122,7 @@ function AssemblyOverheadProfit(props) {
           "LoggedInUserId": loggedInUserId()
         
       }
-      console.log(assemblyRequestedData,"assemblyRequestedData");
+  
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
     dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
       if (res.data.Result) {
