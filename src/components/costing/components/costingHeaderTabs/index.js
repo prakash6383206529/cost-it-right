@@ -296,7 +296,8 @@ function CostingHeaderTabs(props) {
               <div className="inputbox date-section">
                 <DatePicker
                   name="EffectiveDate"
-                  selected={effectiveDate}
+                  //selected={effectiveDate}
+                  selected={effectiveDate ? new Date(effectiveDate) : ''}
                   onChange={handleEffectiveDateChange}
                   showMonthDropdown
                   showYearDropdown
