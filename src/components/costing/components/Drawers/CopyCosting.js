@@ -651,7 +651,9 @@ function CopyCosting(props) {
                     <div className="inputbox date-section">
                       <DatePicker
                         name="EffectiveDate"
-                        selected={effectiveDate}
+                        //selected={effectiveDate}
+                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                         onChange={handleEffectiveDateChange}
                         showMonthDropdown
                         showYearDropdown
@@ -749,7 +751,9 @@ function CopyCosting(props) {
                     <div className="inputbox date-section">
                       <DatePicker
                         name="EffectiveDate"
-                        selected={effectiveDate}
+                        //selected={effectiveDate}
+                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                         onChange={handleEffectiveDateChange}
                         showMonthDropdown
                         showYearDropdown

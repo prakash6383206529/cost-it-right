@@ -1437,7 +1437,10 @@ function CostingDetails(props) {
       resolve(filterList(inputValue));
     });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2551917b3 (effective date picker issue handled)
 
   return (
     <>
@@ -1623,9 +1626,10 @@ function CostingDetails(props) {
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
+
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate ? new Date(effectiveDate):null}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown

@@ -520,7 +520,8 @@ function CostingSummary(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate ? new Date(effectiveDate):''}
+                              //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
