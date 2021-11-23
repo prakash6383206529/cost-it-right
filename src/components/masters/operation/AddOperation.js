@@ -297,7 +297,7 @@ class AddOperation extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           let plantArray = [];
           Data && Data.Plant.map((item) => {

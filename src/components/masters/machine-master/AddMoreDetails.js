@@ -199,7 +199,7 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
 
@@ -245,7 +245,7 @@ class AddMoreDetails extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              DateOfPurchase: DayTime(Data.DateOfPurchase).isValid === true ? DayTime(Data.DateOfPurchase) : '',
+              DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? DayTime(Data.DateOfPurchase) : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
               IsAnnualConsumableFixed: Data.IsConsumableFixed,
               IsInsuranceFixed: Data.IsInsuranceFixed,
@@ -256,7 +256,7 @@ class AddMoreDetails extends Component {
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : ''
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
             })
           }, 500)
         }
