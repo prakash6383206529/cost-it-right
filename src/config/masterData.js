@@ -1851,6 +1851,20 @@ export const OperationSimulation = [
     { label: "EffectiveDate", value: "EffectiveDate" }
 ]
 
+export const MachineRateSimulation = [
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "Technologies", value: "Technologies" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "MachineNumber", value: "MachineNumber", },
+    { label: "MachineTypeName", value: "MachineTypeName" },
+    { label: "MachineTonnage", value: "MachineTonnage" },
+    { label: "ProcessName", value: "ProcessName" },
+    { label: "MachineRate", value: "MachineRate" },
+    { label: "NewMachineRate", value: "NewMachineRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
+]
+
 // Purchasing Group
 export const purchasingGroup = [
     { label: 'A01', value: '1001-Domestic PGrp' },
