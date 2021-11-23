@@ -8,7 +8,7 @@ import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -58,8 +58,8 @@ class IndivisualPartListing extends Component {
             isBulkUpload: false,
             ActivateAccessibility: true,
             loader: true,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -234,7 +234,7 @@ class IndivisualPartListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -256,15 +256,15 @@ class IndivisualPartListing extends Component {
                 this.getTableListData();
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
- 
-    onPopupConfirm =() => {
+
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -375,7 +375,7 @@ class IndivisualPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -652,8 +652,8 @@ class IndivisualPartListing extends Component {
                         anchor={'right'}
                     />}
                     {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`}  />
-         }
+                        this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
+                    }
                 </div >
             </>
         );

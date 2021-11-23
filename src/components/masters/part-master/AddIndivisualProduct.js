@@ -11,7 +11,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -62,12 +62,12 @@ class AddIndivisualProduct extends Component {
 
                     const Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
-                            effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+                            effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
                             files: Data.Attachements,
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
@@ -94,7 +94,7 @@ class AddIndivisualProduct extends Component {
     * @description Handle Effective Date
     */
     handleEffectiveDateChange = (date) => {
-        this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+        this.setState({ effectiveDate: DayTime(date)._isValid ? DayTime(date)._d : '', });
         this.setState({ DropdownChanged: false })
     };
 
@@ -235,7 +235,7 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
-                EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+                EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
                 IsForcefulUpdated: true
@@ -270,7 +270,7 @@ class AddIndivisualProduct extends Component {
                 ProductName: values.ProductName,
                 Description: values.Description,
                 ECNNumber: values.ECNNumber,
-                EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+                EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,

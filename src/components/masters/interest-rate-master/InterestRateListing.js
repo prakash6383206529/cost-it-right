@@ -11,7 +11,7 @@ import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
@@ -59,8 +59,8 @@ class InterestRateListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       isLoader: true,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -151,7 +151,7 @@ class InterestRateListing extends Component {
   * @description confirm delete Item.
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
@@ -167,20 +167,20 @@ class InterestRateListing extends Component {
   * @description confirm delete item
   */
   confirmDeleteItem = (ID) => {
-    
+
     this.props.deleteInterestRate(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
         this.getTableListData()
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDeleteItem(this.state.deletedId);
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
   * @method effectiveDateFormatter
@@ -188,7 +188,7 @@ closePopUp= () =>{
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
 
 
@@ -574,8 +574,8 @@ closePopUp= () =>{
             />
           }
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`}  />
-         }
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />
+          }
         </div >
       </ >
     );

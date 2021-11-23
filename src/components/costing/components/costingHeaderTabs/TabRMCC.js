@@ -14,7 +14,7 @@ import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 
 function TabRMCC(props) {
 
@@ -1233,7 +1233,7 @@ function TabRMCC(props) {
                       type={'button'}
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
-                      disabled={Object.keys(ComponentItemData).length === 0 || (moment(CostingEffectiveDate)._isValid === false) ? true : false}
+                      disabled={Object.keys(ComponentItemData).length === 0 || (DayTime(CostingEffectiveDate)._isValid === false) ? true : false}
                     >
                       <div className={'save-icon'}></div>
                       {'Save'}

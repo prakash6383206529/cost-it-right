@@ -6327,3 +6327,8 @@ left: 17rem;
 .main-modal-container {
   z-index: 1040 !important;
 }
+.view-conversion-cost-drawer {
+  @media screen and (max-width:$miniDesktop) {
+    max-width: 1140px;
+  }
+}

@@ -20,7 +20,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import moment from 'moment';
+
 
 class AddPackaging extends Component {
     constructor(props) {

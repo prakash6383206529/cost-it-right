@@ -6,7 +6,7 @@ import {
   setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index'
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
@@ -341,7 +341,7 @@ function CostingDetailStepTwo(props) {
                       {costingData.IsVendor && initialConfiguration?.IsDestinationPlantConfigure && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Destination Plant:</span><span className="dark-blue pl-1"> {costingData.DestinationPlantName}</span></p></div></td>}
                       {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>
                   </Table>
 

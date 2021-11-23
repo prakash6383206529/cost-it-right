@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
@@ -160,7 +160,7 @@ function RMSimulation(props) {
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
 

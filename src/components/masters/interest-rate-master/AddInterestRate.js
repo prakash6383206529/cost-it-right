@@ -10,7 +10,7 @@ import { getVendorListByVendorType, } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
@@ -175,7 +175,7 @@ class AddInterestRate extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+    this.setState({ effectiveDate: DayTime(date)._isValid ? DayTime(date)._d : '', });
     this.setState({ DropdownChanged: false })
   };
 
@@ -195,7 +195,7 @@ class AddInterestRate extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           this.setState({ Data: Data })
-          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
 
@@ -211,7 +211,7 @@ class AddInterestRate extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
@@ -249,17 +249,17 @@ class AddInterestRate extends Component {
   };
 
 
-onPopupConfirm = ()=>{
-  
-  this.props.reset()
-  this.props.updateInterestRate(this.state.updatedObj, (res) => {
-    if (res.data.Result) {
-      Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-      this.setState({showPopup:false})
-      this.cancel()      
-    }
-  });
-}
+  onPopupConfirm = () => {
+
+    this.props.reset()
+    this.props.updateInterestRate(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+        this.setState({ showPopup: false })
+        this.cancel()
+      }
+    });
+  }
 
   /**
   * @method onSubmit
@@ -297,14 +297,14 @@ onPopupConfirm = ()=>{
         ICCPercent: values.ICCPercent,
         PaymentTermPercent: values.PaymentTermPercent,
         RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         PlantId: plant.value
       }
       if (this.state.isEditFlag) {
-        this.setState({showPopup:true,updatedObj:updateData})
+        this.setState({ showPopup: true, updatedObj: updateData })
 
         const toastrConfirmOptions = {
           onOk: () => {
@@ -312,7 +312,7 @@ onPopupConfirm = ()=>{
             this.props.updateInterestRate(updateData, (res) => {
               if (res.data.Result) {
                 Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-                this.setState({showPopup:false})
+                this.setState({ showPopup: false })
                 this.cancel()
               }
             });
@@ -320,7 +320,7 @@ onPopupConfirm = ()=>{
           onCancel: () => { },
           component: () => <ConfirmComponent />
         }
-       
+
         // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
@@ -335,7 +335,7 @@ onPopupConfirm = ()=>{
         PaymentTermApplicability: PaymentTermsApplicability.label,
         PaymentTermPercent: values.PaymentTermPercent,
         RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
@@ -355,8 +355,8 @@ onPopupConfirm = ()=>{
 
   }
 
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
 
   /**
@@ -652,10 +652,10 @@ onPopupConfirm = ()=>{
             </div>
           </div>
           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
-        }
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
-       
+
       </div>
     );
   }

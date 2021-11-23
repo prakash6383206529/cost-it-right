@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -46,8 +46,8 @@ class AssemblyProductListing extends Component {
             visualAdId: '',
             BOMId: '',
             isBulkUpload: false,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -96,7 +96,7 @@ class AssemblyProductListing extends Component {
     * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -118,22 +118,22 @@ class AssemblyProductListing extends Component {
                 this.getTableListData();
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
-       
+
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -328,7 +328,7 @@ class AssemblyProductListing extends Component {
                 return false
             }
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
 
@@ -520,7 +520,7 @@ class AssemblyProductListing extends Component {
                     </div>
                 </div>
                 {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`}  />
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`} />
                 }
                 {isOpenVisualDrawer && <BOMViewerProduct
                     isOpen={isOpenVisualDrawer}

@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
@@ -45,8 +45,8 @@ class AssemblyPartListing extends Component {
             visualAdId: '',
             BOMId: '',
             isBulkUpload: false,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -95,7 +95,7 @@ class AssemblyPartListing extends Component {
     * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -117,14 +117,14 @@ class AssemblyPartListing extends Component {
                 this.getTableListData();
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -133,7 +133,7 @@ class AssemblyPartListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
         if (cellValue.includes("T")) {
-            return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         }
         else {
             return cellValue ? cellValue : ''
@@ -324,7 +324,7 @@ class AssemblyPartListing extends Component {
             }
 
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
 
@@ -497,8 +497,8 @@ class AssemblyPartListing extends Component {
                     anchor={'right'}
                 />}
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`} />
+                }
             </div >
         );
     }

@@ -8,7 +8,7 @@ import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -42,8 +42,8 @@ class IndivisualProductListing extends Component {
 
             isBulkUpload: false,
             ActivateAccessibility: true,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -95,7 +95,7 @@ class IndivisualProductListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -121,14 +121,14 @@ class IndivisualProductListing extends Component {
             //     this.getTableListData();
             // }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -239,7 +239,7 @@ class IndivisualProductListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -318,7 +318,7 @@ class IndivisualProductListing extends Component {
                 return false
             }
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })
@@ -497,8 +497,8 @@ class IndivisualProductListing extends Component {
                     anchor={'right'}
                 />}
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
+                }
             </div >
         );
     }

@@ -9,9 +9,8 @@ import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilter
 import { getConfigurationKey, userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
-
 import { checkForDecimalAndNull, checkForNull, getPOPriceAfterDecimal } from '../../../../helper'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import { renderDatePicker } from '../../../layout/FormInputs'
 import DatePicker from "react-datepicker";
@@ -361,7 +360,7 @@ const SendForApproval = (props) => {
       tempObj.Reason = data.reason
       tempObj.ECNNumber = ''
       // tempObj.ECNNumber = 1;
-      tempObj.EffectiveDate = moment(data.effectiveDate).local().format('YYYY-MM-DD')
+      tempObj.EffectiveDate = DayTime(data.effectiveDate).local().format('YYYY-MM-DD')
       tempObj.RevisionNumber = partNo.revisionNumber
       tempObj.PartName = partNo.partName
       // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
@@ -536,7 +535,7 @@ const SendForApproval = (props) => {
                                     <div className={'form-group inputbox withBorder'}>
                                       <label>Effective Date</label>
                                       <DatePicker
-                                        selected={moment(data.effectiveDate).isValid ? moment(data.effectiveDate)._d : ''}
+                                        selected={DayTime(data.effectiveDate).isValid ? DayTime(data.effectiveDate)._d : ''}
                                         dateFormat="dd/MM/yyyy"
                                         showMonthDropdown
                                         showYearDropdown
@@ -552,7 +551,7 @@ const SendForApproval = (props) => {
                                     <DatePickerHookForm
                                       name={`${dateField}EffectiveDate.${index}`}
                                       label={'Effective Date'}
-                                      selected={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                      selected={data.effectiveDate != "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                       handleChange={(date) => {
                                         handleEffectiveDateChange(date, index);
                                       }}

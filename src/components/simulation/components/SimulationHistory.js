@@ -8,7 +8,7 @@ import { Badge } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getSimulationHistory } from '../actions/History'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';

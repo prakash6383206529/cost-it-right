@@ -8,8 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
-import moment from 'moment';
-// import { EXCHNAGERATE } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper'
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
@@ -193,7 +192,7 @@ function RunSimulationDrawer(props) {
         temp.push(obj)
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
-                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
@@ -202,7 +201,7 @@ function RunSimulationDrawer(props) {
                 break;
            
             case Number(RMDOMESTIC):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
@@ -210,7 +209,7 @@ function RunSimulationDrawer(props) {
                 }))
                 break;
             case Number(RMIMPORT):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
@@ -218,7 +217,7 @@ function RunSimulationDrawer(props) {
                 }))
                 break;
             case Number(SURFACETREATMENT):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
                         Toaster.success('Simulation process has been run successfully.')
@@ -228,7 +227,7 @@ function RunSimulationDrawer(props) {
                 runSimulationCosting()
                 break;
             case Number(OPERATIONS):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
                         Toaster.success('Simulation process has been run successfully.')
@@ -542,7 +541,7 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
                                             </Row>
-                                            
+
                                         </Col>
 
                                     </Row>

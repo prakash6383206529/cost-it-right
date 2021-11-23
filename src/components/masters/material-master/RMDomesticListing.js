@@ -12,8 +12,8 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import InputRange from 'react-input-range';
-import 'react-input-range/lib/css/index.css';
-import moment from 'moment';
+import 'react-input-range/lib/css/index.css'
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -40,7 +40,7 @@ const gridOptions = {};
 
 var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         if (dateAsString == null) return -1;
         var dateParts = dateAsString.split('/');
         var cellDate = new Date(
@@ -88,9 +88,9 @@ function RMDomesticListing(props) {
     const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [showPopup, setShowPopup]=useState(false)
-    const [deletedId, setDeletedId] =useState('')
-    const [showPopupBulk, setShowPopupBulk]= useState(false)
+    const [showPopup, setShowPopup] = useState(false)
+    const [deletedId, setDeletedId] = useState('')
+    const [showPopupBulk, setShowPopupBulk] = useState(false)
 
 
     /**
@@ -280,17 +280,17 @@ function RMDomesticListing(props) {
         }));
         setShowPopup(false)
     }
-  
-    const onPopupConfirm =() => {
-       confirmDelete(deletedId);
+
+    const onPopupConfirm = () => {
+        confirmDelete(deletedId);
     }
-    const onPopupConfirmBulk =() => {
+    const onPopupConfirmBulk = () => {
         confirmDensity()
     }
-    const closePopUp= () =>{
-      setShowPopup(false)
-      setShowPopupBulk(false)
-      }
+    const closePopUp = () => {
+        setShowPopup(false)
+        setShowPopupBulk(false)
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -358,7 +358,7 @@ function RMDomesticListing(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     const hyphenFormatter = (props) => {
@@ -568,7 +568,7 @@ function RMDomesticListing(props) {
     * @description confirm Redirection to Material tab.
     */
     const densityAlert = () => {
-        
+
         const toastrConfirmOptions = {
             onOk: () => {
                 confirmDensity()
@@ -901,11 +901,11 @@ function RMDomesticListing(props) {
                 )
             }
             {
-            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`}  />
-         }
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+            }
             {
-            showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`}  />
-         }
+                showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
+            }
         </div >
     );
 }

@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
@@ -88,7 +88,7 @@ function CostingSummary(props) {
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', Data.Price)
           setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-          setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId
           newValue.technologyName = costingData.TechnologyName
@@ -200,7 +200,7 @@ function CostingSummary(props) {
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
                   setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-                  setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                  setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value
                   newValue.technologyName = technology.label
@@ -395,7 +395,7 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                        
+
                         {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}

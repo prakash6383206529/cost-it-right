@@ -18,7 +18,7 @@ import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { ProcessMaster } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
@@ -47,8 +47,8 @@ class ProcessListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -118,7 +118,7 @@ class ProcessListing extends Component {
   editItemDetails = (Id) => {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: true, Id: Id, })
   }
-  
+
   /**
   * @method renderPaginationShowsTotal
   * @description Pagination
@@ -215,7 +215,7 @@ class ProcessListing extends Component {
    * @description CONFIRM DELETE ITEM
    */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id)
@@ -240,13 +240,13 @@ class ProcessListing extends Component {
         this.getDataList()
       }
     })
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDelete(this.state.deletedId);
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
 
   /**
@@ -282,7 +282,7 @@ closePopUp= () =>{
 */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
   /**
    * @method indexFormatter
@@ -662,9 +662,9 @@ closePopUp= () =>{
             anchor={'right'}
           />
         )}
-         {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROCESS_DELETE_ALERT}`}  />
-         }
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROCESS_DELETE_ALERT}`} />
+        }
       </div>
     )
   }

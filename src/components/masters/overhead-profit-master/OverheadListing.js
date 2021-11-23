@@ -16,7 +16,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { OverheadMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -43,8 +43,8 @@ class OverheadListing extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -102,7 +102,7 @@ class OverheadListing extends Component {
     * @description confirm delete
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -124,14 +124,14 @@ class OverheadListing extends Component {
                 this.getDataList(null, null, null, null)
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDelete(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -187,9 +187,8 @@ class OverheadListing extends Component {
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-    effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
 
@@ -312,7 +311,7 @@ class OverheadListing extends Component {
                 return false
             }
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
 
             }
 
@@ -484,8 +483,8 @@ class OverheadListing extends Component {
                     </Col>
                 </Row>
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OVERHEAD_DELETE_ALERT}`} />
+                }
             </div >
         );
     }

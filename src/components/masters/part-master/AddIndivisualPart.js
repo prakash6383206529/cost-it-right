@@ -11,8 +11,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import moment from 'moment';
-import DatePicker from "react-datepicker";
+import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -39,8 +38,8 @@ class AddIndivisualPart extends Component {
       DataToCheck: [],
       DropdownChanged: true,
       uploadAttachements: true,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
 
     }
   }
@@ -76,12 +75,12 @@ class AddIndivisualPart extends Component {
             return productArray
           })
           this.setState({ DataToCheck: Data })
-          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               ProductGroup: productArray,
               oldProductGroup: productArray
@@ -115,7 +114,7 @@ class AddIndivisualPart extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+    this.setState({ effectiveDate: DayTime(date)._isValid ? DayTime(date)._d : '', });
     this.setState({ DropdownChanged: false })
   };
 
@@ -267,7 +266,7 @@ class AddIndivisualPart extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         Remark: values.Remark,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true,
@@ -275,7 +274,7 @@ class AddIndivisualPart extends Component {
       }
 
       if (isEditFlag) {
-        this.setState({showPopup:true, updatedObj:updateData})
+        this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -305,7 +304,7 @@ class AddIndivisualPart extends Component {
         PartName: values.PartName,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -323,7 +322,7 @@ class AddIndivisualPart extends Component {
       });
     }
   }
-  onPopupConfirm = ()=>{ 
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updatePart(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -332,8 +331,8 @@ class AddIndivisualPart extends Component {
       }
     });
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -552,7 +551,7 @@ class AddIndivisualPart extends Component {
                                   component={renderDatePicker}
                                   className="form-control"
                                   disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
-                                //minDate={moment()}
+
                                 />
 
                               </div>
@@ -720,8 +719,8 @@ class AddIndivisualPart extends Component {
             </div>
           </div>
           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
-        }
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );

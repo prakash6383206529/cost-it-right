@@ -24,7 +24,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -59,8 +59,8 @@ class OperationListing extends Component {
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
             selectedRowData: [],
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -201,7 +201,7 @@ class OperationListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -223,14 +223,14 @@ class OperationListing extends Component {
                 this.getTableListData(null, null, null, null)
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -388,7 +388,7 @@ class OperationListing extends Component {
  */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -687,8 +687,8 @@ class OperationListing extends Component {
                     />}
                 </div>
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
+                }
             </div>
         );
     }

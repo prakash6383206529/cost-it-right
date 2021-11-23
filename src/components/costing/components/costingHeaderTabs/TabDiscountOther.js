@@ -15,7 +15,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
 
@@ -143,7 +143,7 @@ function TabDiscountOther(props) {
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
-            setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate)._isValid ? DayTime(OtherCostDetails.EffectiveDate)._d : '')
             setCurrency(OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setOtherCostType(OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : [])
 
@@ -158,7 +158,7 @@ function TabDiscountOther(props) {
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
-            setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate)._isValid ? DayTime(OtherCostDetails.EffectiveDate)._d : '')
             setValue('SANumber', OtherCostDetails.SANumber !== null ? OtherCostDetails.SANumber : '')
             setValue('LineNumber', OtherCostDetails.LineNumber !== null ? OtherCostDetails.LineNumber : '')
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
@@ -308,7 +308,7 @@ function TabDiscountOther(props) {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
       //let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
-      dispatch(getExchangeRateByCurrency(newValue.label, moment(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, DayTime(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
@@ -324,7 +324,7 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     if (Object.keys(currency).length > 0) {
-      dispatch(getExchangeRateByCurrency(currency.label, moment(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(currency.label, DayTime(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');

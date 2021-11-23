@@ -20,7 +20,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { calculatePercentageValue } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -356,7 +356,7 @@ class AddPower extends Component {
               isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
               selectedPlants: plantArray,
               StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
-              effectiveDate: moment(Data.SEBChargesDetails[0].EffectiveDate)._d,
+              effectiveDate: DayTime(Data.SEBChargesDetails[0].EffectiveDate)._d,
               powerGrid: tempArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -1121,7 +1121,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+              EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
             }
           ],
           SGChargesDetails: selfGridDataArray,
