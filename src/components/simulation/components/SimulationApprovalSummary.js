@@ -31,6 +31,7 @@ import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
+import { Link } from 'react-scroll';
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -410,7 +411,7 @@ function SimulationApprovalSummary(props) {
 
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+               <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} /></Link> 
             </>
         )
     }
@@ -734,7 +735,7 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <div className={`ag-grid-react`}>
+                                <div className={`ag-grid-react re-summary-table`}>
                                     <Row className="pb-2">
                                         <Col md="12">
                                             <Row>
@@ -837,7 +838,7 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mt-3">
                             <Col md="10">
-                                <div className="left-border">{'Compare Costing:'}</div>
+                                <div id="fg-compare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
