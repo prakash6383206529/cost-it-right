@@ -52,7 +52,7 @@ class AddProcessDrawer extends Component {
         let Data = res.data.Data
         this.setState({
           ProcessId: Data.ProcessId,
-          effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate)._d : ''
+          effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : ''
         })
         this.setState({ isLoader: false })
       })

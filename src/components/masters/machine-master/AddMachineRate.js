@@ -213,7 +213,7 @@ class AddMachineRate extends Component {
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Description', Data.Description)
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
@@ -253,7 +253,7 @@ class AddMachineRate extends Component {
               remarks: Data.Remark,
               // Description: Data.Description,
               files: Data.Attachements,
-              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : ''
             }, () => this.setState({ isLoader: false }))
           }, 100)
         }
@@ -956,7 +956,7 @@ class AddMachineRate extends Component {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
 
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate)._isValid ? DayTime(data.EffectiveDate)._d : '')
+    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid ? DayTime(data.EffectiveDate) : '')
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
