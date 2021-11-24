@@ -38,7 +38,7 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import { toast } from 'react-toastify';
 import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { animateScroll as scroll} from 'react-scroll';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -1686,10 +1686,11 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {
+                           {
                             (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                              <button type="submit"
+                              <button type="submit" 
                                 class="user-btn approval-btn save-btn mr5"
+                                onClick={()=>scroll.scrollToTop()}
                                 // onClick={this.sendForMasterApproval}
                                 disabled={this.state.isFinalApprovar}
                               >
