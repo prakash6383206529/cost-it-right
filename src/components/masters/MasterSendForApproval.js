@@ -171,7 +171,7 @@ function MasterSendForApproval(props) {
             //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
             dispatch(masterApprovalRequestBySender(senderObj, res => {
                 if (res.data.Result) {
-                    Toaster.success('Token has been sent for approval.')
+                    Toaster.success('Raw Material has been sent for approval.')
                     props.closeDrawer('', 'submit')
                 }
             }))
