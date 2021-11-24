@@ -934,7 +934,7 @@ class AddMachineRate extends Component {
     this.props.reset()
     this.props.updateMachine(this.state.updatedObj, (res) => {
       if (res.data.Result) {
-        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+        Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
         this.cancel()
 
       }
