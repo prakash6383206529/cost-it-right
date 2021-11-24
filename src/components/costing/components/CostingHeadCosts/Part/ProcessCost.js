@@ -21,7 +21,7 @@ import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 
 let counter = 0;
 function ProcessCost(props) {
-  const { data,item } = props
+  const { data, item } = props
 
   const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange',
@@ -70,7 +70,7 @@ function ProcessCost(props) {
     }
     if (!CostingViewMode) {
       selectedIds(gridData)
-      props.setProcessCost(tabData, Params,item)
+      props.setProcessCost(tabData, Params, item)
     }
   }, [tabData]);
 
@@ -405,7 +405,7 @@ function ProcessCost(props) {
 
       setTabData(tempArr)
       setGridData(gridTempArr)
-      setValue(`${ProcessGridFields}.${index}.ProcessCost`, ProcessCost)
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
       const ProcessCost = tempData.MHR * 0
@@ -457,7 +457,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOperationCost(tempArr, props.index,item)
+    props.setOperationCost(tempArr, props.index, item)
   }
 
   const setOtherOperationCost = (otherOperationGrid, index) => {
@@ -474,7 +474,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOtherOperationCost(tempArr, props.index,item)
+    props.setOtherOperationCost(tempArr, props.index, item)
   }
 
   /**
@@ -618,7 +618,7 @@ function ProcessCost(props) {
                                 control={control}
                                 register={register}
                                 mandatory={false}
-                                defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost,) : '0.00'}
+                                defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost) : '0.00'}
                                 className=""
                                 customClassName={'withBorder'}
                                 handleChange={(e) => {
