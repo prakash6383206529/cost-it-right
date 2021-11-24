@@ -103,7 +103,7 @@ function ViewOverheadProfit(props) {
                         <>
                           {viewOverheadData.IsOverheadFixedApplicable && (
                             <tr>
-                              <td>{'-'}</td>
+                              <td>{viewOverheadData.PartNumber !== null || viewOverheadData.PartNumber !== "" ? viewOverheadData.PartNumber : ""}</td>
                               <td>{`Fixed`}</td>
                               <td>
                                 {viewOverheadData.OverheadFixedPercentage ? viewOverheadData.OverheadFixedPercentage : "-"}
@@ -132,7 +132,7 @@ function ViewOverheadProfit(props) {
                           )}
                           {viewOverheadData.IsOverheadBOPApplicable && (
                             <tr>
-                              <td>{`BOP`}</td>
+                              <td>{`Insert`}</td>
                               <td>
                                 {viewOverheadData.OverheadBOPPercentage ? viewOverheadData.OverheadBOPPercentage : "-"}
                               </td>
@@ -212,7 +212,7 @@ function ViewOverheadProfit(props) {
                           <>
                             {viewProfitData.IsProfitFixedApplicable && (
                               <tr>
-                                <td>{'-'}</td>
+                                <td>{viewProfitData.PartNumber !== null || viewProfitData.PartNumber !== "" ? viewProfitData.PartNumber : ""}</td>
                                 <td>{`Fixed`}</td>
                                 <td>
                                   {viewProfitData.ProfitFixedPercentage ? viewProfitData.ProfitFixedPercentage : "-"}
@@ -241,7 +241,7 @@ function ViewOverheadProfit(props) {
                             )}
                             {viewProfitData.IsProfitBOPApplicable && (
                               <tr>
-                                <td>{`BOP`}</td>
+                                <td>{`Insert`}</td>
                                 <td>
                                   {viewProfitData.ProfitBOPPercentage ? viewProfitData.ProfitBOPPercentage : "-"}
                                 </td>
@@ -329,7 +329,7 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr> :
                             <tr>
-                              <td>{'-'}</td>
+                              <td>{rejectData.PartNumber !== null || rejectData.PartNumber !== "" ? rejectData.PartNumber : ""}</td>
                               <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
                               <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
                               <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>

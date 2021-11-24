@@ -80,7 +80,7 @@ function ViewPackagingAndFreight(props) {
                         viewPackaging.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>{'-'}</td>
+                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                               <td>
                                 {item.PackagingDescription ? item.PackagingDescription : '-'}
                               </td>
@@ -132,7 +132,7 @@ function ViewPackagingAndFreight(props) {
                           viewFrieght.map((item, index) => {
                             return (
                               <tr key={index}>
-                                <td>{'-'}</td>
+                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                                 <td>{item.FreightType ? item.FreightType : '-'}</td>
                                 <td>{item.Criteria ? item.Criteria : '-'}</td>
                                 <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>

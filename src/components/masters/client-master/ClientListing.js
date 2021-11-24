@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -11,7 +11,6 @@ import { getClientDataList, deleteClient } from '../actions/Client';
 import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
 import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -20,6 +19,7 @@ import { CLIENT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,7 +48,9 @@ class ClientListing extends Component {
             gridColumnApi: null,
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
-            showData: false
+            showData: false,
+            showPopup:false,
+            deletedId:''
 
         }
     }
@@ -132,6 +134,7 @@ class ClientListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -139,7 +142,7 @@ class ClientListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(MESSAGES.CLIENT_DELETE_ALERT, toastrConfirmOptions);
+        // return Toaster.confirm(MESSAGES.CLIENT_DELETE_ALERT, toastrConfirmOptions);
     }
 
     /**
@@ -149,12 +152,18 @@ class ClientListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteClient(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_CLIENT_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_CLIENT_SUCCESS);
                 this.getTableListData(null, null)
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -447,6 +456,9 @@ class ClientListing extends Component {
                         />
                     }
                 </div >
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CLIENT_DELETE_ALERT}`}  />
+         }
             </div >
         );
     }
@@ -473,7 +485,6 @@ function mapStateToProps({ comman, auth, client }) {
 export default connect(mapStateToProps, {
     getClientDataList,
     deleteClient,
-    getLeftMenu,
 })(reduxForm({
     form: 'ClientListing',
     onSubmitFail: errors => {

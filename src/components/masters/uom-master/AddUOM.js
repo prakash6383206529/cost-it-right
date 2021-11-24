@@ -8,7 +8,7 @@ import {
   createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
   getUnitOfMeasurementAPI, getUnitTypeListAPI
 } from '../actions/unitOfMeasurment';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -122,12 +122,12 @@ class AddUOM extends Component {
       this.props.reset()
       this.props.updateUnitOfMeasurementAPI(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
+          Toaster.success(MESSAGES.UPDATE_UOM_SUCESS);
           //this.toggleModel();
           this.toggleDrawer('');
           this.props.getUnitOfMeasurementAPI(res => { });
         } else {
-          toastr.error(MESSAGES.SOME_ERROR);
+          Toaster.error(MESSAGES.SOME_ERROR);
         }
       });
     } else {
@@ -140,12 +140,12 @@ class AddUOM extends Component {
       this.props.reset()
       this.props.createUnitOfMeasurementAPI(reqData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.UOM_ADD_SUCCESS);
+          Toaster.success(MESSAGES.UOM_ADD_SUCCESS);
           //this.toggleModel();
           this.toggleDrawer('');
           this.props.getUnitOfMeasurementAPI(res => { });
         } else {
-          toastr.error(res.data.message);
+          Toaster.error(res.data.message);
         }
       });
     }

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
@@ -13,7 +13,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmm
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,FILE_URL } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -153,7 +153,8 @@ function SimulationApprovalSummary(props) {
 
 
     useEffect(() => {
-        if (costingList.length > 0 && effectiveDate) {
+        // if (costingList.length > 0 && effectiveDate) {
+        if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
             dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                 const Data = res.data.Data.ImpactedMasterDataList
                 const masterId = res.data.Data.SimulationTechnologyId;
@@ -165,8 +166,8 @@ function SimulationApprovalSummary(props) {
 
                 }
             }))
-        }
-        if (simulationDetail.SimulationId) {
+            // }
+            // if (simulationDetail.SimulationId) {
             dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
         }
 
@@ -292,7 +293,7 @@ function SimulationApprovalSummary(props) {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
     const DisplayCompareCosting = (el, data) => {
@@ -492,7 +493,7 @@ function SimulationApprovalSummary(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
 
@@ -587,7 +588,7 @@ function SimulationApprovalSummary(props) {
                 DeletedBy: loggedInUserId(),
             }
             // dispatch(fileDeleteCosting(deleteData, (res) => {
-            //     toastr.success('File has been deleted successfully.')
+            //     Toaster.success('File has been deleted successfully.')
             //   }))
             let tempArr = files && files.filter(item => item.FileId !== FileId)
             setFiles(tempArr)
@@ -691,7 +692,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
+                                                <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>

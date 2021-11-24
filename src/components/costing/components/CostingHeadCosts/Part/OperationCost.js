@@ -6,7 +6,7 @@ import { Col, Row, Table } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
@@ -158,7 +158,7 @@ function OperationCost(props) {
       tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.Quantity`, 0)
       }, 200)
@@ -185,7 +185,7 @@ function OperationCost(props) {
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
       }, 200)

@@ -5,7 +5,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
@@ -42,7 +42,7 @@ function ViewRM(props) {
   const getWeightData = (index) => {
     setIndex(index)
     if (viewRM[index].WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
-      toastr.warning('Data is not avaliabe for calculator')
+      Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
     const tempData = viewCostingData[props.index]
@@ -122,7 +122,7 @@ function ViewRM(props) {
                   {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td>{'-'}</td>
+                        <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                         <td>{item.RMName}</td>
                         <td>{item.RMRate}</td>
                         <td>{item.ScrapRate}</td>

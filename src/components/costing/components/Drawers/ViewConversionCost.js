@@ -94,7 +94,7 @@ function ViewConversionCost(props) {
                         costingProcessCost.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>{'-'}</td>
+                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                               <td>{item.ProcessName ? item.ProcessName : '-'}</td>
                               <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
                               <td>{item.MachineName ? item.MachineName : '-'}</td>
@@ -153,7 +153,7 @@ function ViewConversionCost(props) {
                           costingOperationCost.map((item, index) => {
                             return (
                               <tr key={index}>
-                                <td>{'-'}</td>
+                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                                 <td>
                                   {item.OperationName ? item.OperationName : '-'}
                                 </td>
@@ -224,7 +224,7 @@ function ViewConversionCost(props) {
                           othercostingOperationCost.map((item, index) => {
                             return (
                               <tr key={index}>
-                                <td>{'-'}</td>
+                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                                 <td>
                                   {item.OtherOperationName ? item.OtherOperationName : '-'}
                                 </td>
@@ -341,7 +341,7 @@ function ViewConversionCost(props) {
                         surfaceTreatmentDetails.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>{'-'}</td>
+                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                               <td>{item.OperationName ? item.OperationName : '-'}</td>
                               <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                               <td>{item.UOM ? item.UOM : '-'}</td>
@@ -389,7 +389,7 @@ function ViewConversionCost(props) {
                           </td>
                         </tr> :
                         <tr>
-                          <td>{'-'}</td>
+                          <td>{netTransportationCostView.PartNumber !== null || netTransportationCostView.PartNumber !== "" ? netTransportationCostView.PartNumber : ""}</td>
                           <td>{netTransportationCostView && netTransportationCostView.UOM ? netTransportationCostView.UOM : '-'}</td>
                           <td>{netTransportationCostView && netTransportationCostView.Rate ? checkForDecimalAndNull(netTransportationCostView.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                           <td>{netTransportationCostView && netTransportationCostView.Quantity ? checkForDecimalAndNull(netTransportationCostView.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>

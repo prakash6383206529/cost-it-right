@@ -8,16 +8,17 @@ import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } fro
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOverhead, updateOverhead, getOverheadData, fileUploadOverHead, fileDeleteOverhead, } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL,ZBC } from '../../../config/constants';
-import moment from 'moment';
+import { FILE_URL ,ZBC} from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -53,7 +54,10 @@ class AddOverhead extends Component {
       DropdownChanged: true,
       DataToChange: [],
       effectiveDate: '',
-      plant: []
+      uploadAttachements: true,
+      showPopup: false,
+      updatedObj: {}
+
     }
   }
 
@@ -122,7 +126,7 @@ class AddOverhead extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
@@ -151,7 +155,7 @@ class AddOverhead extends Component {
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
@@ -325,7 +329,7 @@ class AddOverhead extends Component {
 
   handlePercent = (e) => {
     // if (e.target.value > 100) {
-    //   toastr.warning('Overhead Percent can not be greater than 100.')
+    //   Toaster.warning('Overhead Percent can not be greater than 100.')
     //   $('input[name="OverheadPercentage"]').focus()
     // }
   }
@@ -461,7 +465,7 @@ class AddOverhead extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -487,7 +491,7 @@ class AddOverhead extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteOverhead(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -600,17 +604,18 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         IsForcefulUpdated: true,
         PlantId: plant.value
       }
       if (isEditFlag) {
+        this.setState({ showPopup: true, updatedObj: requestData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateOverhead(requestData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
+                Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
                 this.cancel();
               }
             })
@@ -618,7 +623,7 @@ class AddOverhead extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />,
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -642,20 +647,31 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         PlantId: plant.value
       }
 
       this.props.reset()
       this.props.createOverhead(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.OVERHEAD_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.OVERHEAD_ADDED_SUCCESS);
           this.cancel();
         }
       });
     }
   }
-
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateOverhead(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
+        this.cancel()
+      }
+    });
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1083,6 +1099,9 @@ class AddOverhead extends Component {
               </div>
             </div>
           </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );

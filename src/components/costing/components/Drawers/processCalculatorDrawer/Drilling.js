@@ -7,7 +7,7 @@ import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { clampingTime, feedByMin, totalMachineTime } from './CommonFormula'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 
 function Drilling(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -115,7 +115,7 @@ function Drilling(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))

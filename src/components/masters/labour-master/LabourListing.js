@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -17,8 +17,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -27,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,7 +57,9 @@ class LabourListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
-      isLoader: true
+      isLoader: true,
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -148,6 +150,7 @@ class LabourListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
@@ -155,7 +158,7 @@ class LabourListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />
     };
-    return toastr.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
+    // return Toaster.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
   }
 
   /**
@@ -165,13 +168,24 @@ class LabourListing extends Component {
   confirmDeleteItem = (ID) => {
     this.props.deleteLabour(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_LABOUR_SUCCESS)
+        Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
+        console.log("deleted");
         //this.getTableListData(null, null, null, null)
         this.filterList()
       }
+      else {
+        console.log("not deleted");
+      }
     })
+    this.setState({ showPopup: false })
   }
 
+  onPopupConfirm = () => {
+    this.confirmDeleteItem(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -199,9 +213,9 @@ class LabourListing extends Component {
     // this.props.activeInactiveVendorStatus(data, res => {
     //     if (res && res.data && res.data.Result) {
     //         if (cell == true) {
-    //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
+    //             Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
     //         } else {
-    //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
+    //             Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
     //         }
     //         this.getTableListData(null, null, null, null)
     //     }
@@ -280,7 +294,7 @@ class LabourListing extends Component {
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
 
 
@@ -589,6 +603,9 @@ class LabourListing extends Component {
               anchor={'right'}
             />
           )}
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`} />
+          }
         </div>
       </>
     )
@@ -632,7 +649,6 @@ export default connect(mapStateToProps, {
   getStateSelectList,
   getMachineTypeSelectList,
   getLabourTypeByPlantSelectList,
-  getLeftMenu,
 })(
   reduxForm({
     form: 'LabourListing',

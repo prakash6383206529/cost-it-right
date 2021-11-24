@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -20,17 +20,17 @@ import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -58,6 +58,9 @@ class OperationListing extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
+            selectedRowData: [],
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -124,6 +127,9 @@ class OperationListing extends Component {
                 this.setState({
                     tableData: Data,
                 })
+                if (this.props.isSimulation) {
+                    this.props.apply(Data)
+                }
             } else {
 
             }
@@ -195,6 +201,7 @@ class OperationListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -202,7 +209,7 @@ class OperationListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(MESSAGES.OPERATION_DELETE_ALERT, toastrConfirmOptions);
+        // return Toaster.confirm(MESSAGES.OPERATION_DELETE_ALERT, toastrConfirmOptions);
     }
 
     /**
@@ -212,10 +219,17 @@ class OperationListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteOperationAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_OPERATION_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.getTableListData(null, null, null, null)
             }
         });
+        this.setState({ showPopup: false })
+    }
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
     }
     /**
     * @method buttonFormatter
@@ -374,13 +388,12 @@ class OperationListing extends Component {
  */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
         return data;
@@ -503,6 +516,22 @@ class OperationListing extends Component {
                     data={data}
                 />
             )
+        }
+        const onRowSelect = () => {
+            const {isSimulation} = this.props
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (isSimulation) {
+                let len = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(len, res => { })
+                this.props.apply(selectedRows)
+            }
+            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
         }
 
 
@@ -657,7 +686,10 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </div >
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
+                }
+            </div>
         );
     }
 }
@@ -691,7 +723,7 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getLeftMenu,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

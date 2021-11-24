@@ -8,7 +8,7 @@ import { searchableSelect } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
@@ -326,12 +326,12 @@ class AddVolume extends Component {
     const cellValue = props
     if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
       if (cellValue.length > 8) {
-        toastr.warning("Value should not be more than 8")
+        Toaster.warning("Value should not be more than 8")
         return false
       }
       return true
     } else if (!/^\+?(0|[0-9]\d*)$/.test(cellValue)) {
-      toastr.warning('Please enter a valid positive numbers.')
+      Toaster.warning('Please enter a valid positive numbers.')
       return false
     }
   }
@@ -498,7 +498,7 @@ class AddVolume extends Component {
     // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
     const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
     if (filteredArray.length === 12) {
-      toastr.warning("Please fill atleast one entry")
+      Toaster.warning("Please fill atleast one entry")
       return false
     }
 
@@ -561,7 +561,7 @@ class AddVolume extends Component {
       this.props.reset()
       this.props.updateVolume(updateData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
+          Toaster.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
           this.cancel()
         }
       })
@@ -595,7 +595,7 @@ class AddVolume extends Component {
       this.props.reset()
       this.props.createVolume(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.VOLUME_ADD_SUCCESS)
+          Toaster.success(MESSAGES.VOLUME_ADD_SUCCESS)
           this.cancel()
         }
       })

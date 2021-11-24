@@ -7,7 +7,7 @@ import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costi
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -163,7 +163,7 @@ function AddRM(props) {
   */
   const addRow = () => {
     if (Object.keys(selectedRowData).length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')

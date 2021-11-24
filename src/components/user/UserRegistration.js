@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { langs } from "../../config/localization";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
@@ -26,6 +26,7 @@ import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import ConfirmComponent from "../../helper/ConfirmComponent";
 import { EMPTY_GUID } from "../../config/constants";
+import PopupMsgWrapper from "../common/PopupMsgWrapper";
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -79,6 +80,8 @@ class UserRegistration extends Component {
       oldMasterLevelGrid: [],
       masterLevelEditIndex: '',
       isMasterEditIndex: false,
+      showPopup:false,
+      updatedObj :{}
     };
   }
 
@@ -460,7 +463,7 @@ class UserRegistration extends Component {
         this.getRoleDetail(role.value);
       });
     } else {
-      toastr.warning('Please select role.')
+      Toaster.warning('Please select role.')
     }
   }
 
@@ -614,7 +617,7 @@ class UserRegistration extends Component {
     const tempArray = [];
 
     if (technology.length === 0 || level.length === 0) {
-      toastr.warning('Please select technology and level')
+      Toaster.warning('Please select technology and level')
       return false;
     }
     const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
@@ -623,8 +626,8 @@ class UserRegistration extends Component {
     })
 
     if (isExistTechnology !== -1) {
-      // toastr.warning('Technology and Level already allowed.')
-      toastr.warning('Technology cannot have multiple level.')
+      // Toaster.warning('Technology and Level already allowed.')
+      Toaster.warning('Technology cannot have multiple level.')
       return false;
     }
 
@@ -692,7 +695,7 @@ class UserRegistration extends Component {
     const tempArray = [];
 
     if (simulationHeads.length === 0 || simualtionLevel.length === 0) {
-      toastr.warning('Please select technology and level')
+      Toaster.warning('Please select technology and level')
       return false;
     }
 
@@ -703,8 +706,8 @@ class UserRegistration extends Component {
 
 
     if (isExistTechnology !== -1) {
-      // toastr.warning('Technology and Level already allowed.')
-      toastr.warning('Head cannot have multiple level.')
+      // Toaster.warning('Technology and Level already allowed.')
+      Toaster.warning('Head cannot have multiple level.')
       return false;
     }
 
@@ -843,7 +846,7 @@ class UserRegistration extends Component {
     const tempArray = [];
 
     if (master.length === 0 || masterLevel.length === 0) {
-      toastr.warning('Please select master and level')
+      Toaster.warning('Please select master and level')
       return false;
     }
 
@@ -853,8 +856,8 @@ class UserRegistration extends Component {
 
 
     if (isExistTechnology !== -1) {
-      // toastr.warning('Technology and Level already allowed.')
-      toastr.warning('A master cannot have multiple level.')
+      // Toaster.warning('Technology and Level already allowed.')
+      Toaster.warning('A master cannot have multiple level.')
       return false;
     }
 
@@ -987,7 +990,7 @@ class UserRegistration extends Component {
       if (res && res.data && res.data.Result) {
         //set state false
         this.setState({ isLoader: false })
-        toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+        Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
       this.cancel();
     })
@@ -1014,7 +1017,7 @@ class UserRegistration extends Component {
     const userDetails = reactLocalStorage.getObject("userDetail")
 
     if (TechnologyLevelGrid && TechnologyLevelGrid.length === 0) {
-      toastr.warning('Users technology level should not be empty.')
+      Toaster.warning('Users technology level should not be empty.')
       return false;
     }
 
@@ -1129,7 +1132,7 @@ class UserRegistration extends Component {
       //
 
       if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
-
+        this.setState({showPopup:true,updatedObj: updatedData})
         const toastrConfirmOptions = {
           onOk: () => {
             this.confirmUpdateUser(updatedData, true)
@@ -1137,14 +1140,14 @@ class UserRegistration extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
 
       } else {
 
         reset();
         this.props.updateUserAPI(updatedData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+            Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
           }
           this.cancel();
         })
@@ -1188,13 +1191,19 @@ class UserRegistration extends Component {
 
         if (res && res.data && res.data.Result) {
           this.setState({ isLoader: false })
-          toastr.success(MESSAGES.ADD_USER_SUCCESSFULLY)
+          Toaster.success(MESSAGES.ADD_USER_SUCCESSFULLY)
           this.cancel();
         }
       })
     }
   }
-
+  
+  onPopupConfirm = ()=>{ 
+    this.confirmUpdateUser(this.state.updatedObj, true)
+  }
+  closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   handleKeyDown = function (e, cb) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1911,7 +1920,9 @@ class UserRegistration extends Component {
             </div>
           </div>
         </div>
-
+        {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`}  />
+                }
       </div>
     );
   }

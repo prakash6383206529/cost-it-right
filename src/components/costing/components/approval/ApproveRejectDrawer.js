@@ -6,11 +6,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap, } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
-import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import {EMPTY_GUID, INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
@@ -21,7 +20,7 @@ import redcrossImg from '../../../../assests/images/red-cross.png'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
-
+import Toaster from '../../../common/Toaster'
 
 function ApproveRejectDrawer(props) {
 
@@ -193,7 +192,7 @@ function ApproveRejectDrawer(props) {
             count = count + 1;
             if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
 
-              toastr.warning('User does not exist on next level for selected simulation.')
+              Toaster.warning('User does not exist on next level for selected simulation.')
               setApprovalDropDown([])
               return false
             }
@@ -232,7 +231,7 @@ function ApproveRejectDrawer(props) {
           setApprovalDropDown(tempDropdownList)
           if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
 
-            toastr.warning('User does not exist on next level for selected simulation.')
+            Toaster.warning('User does not exist on next level for selected simulation.')
             setApprovalDropDown([])
             return false
           }
@@ -258,7 +257,7 @@ function ApproveRejectDrawer(props) {
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
           setLoader(true)
-          toastr.success('Simulation has been saved successfully.')
+          Toaster.success('Simulation has been saved successfully.')
           setLoader(false)
         }
       }))
@@ -269,7 +268,7 @@ function ApproveRejectDrawer(props) {
       //   case Number(RMIMPORT):
       //     dispatch(saveSimulationForRawMaterial(simObj, res => {
       //       if (res.data.Result) {
-      //         toastr.success('Simulation has been saved successfully.')
+      //         Toaster.success('Simulation has been saved successfully.')
       //       }
       //     }))
       //   case 
@@ -351,10 +350,10 @@ function ApproveRejectDrawer(props) {
         dispatch(approvalRequestByApprove(Data, res => {
           if (res.data.Result) {
             if (showFinalLevelButtons) {
-              toastr.success('The costing has been approved')
+              Toaster.success('The costing has been approved')
               // const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
               let pushdata = {
-                effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
+                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/yyyy') : '',
                 vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
                 materialNumber: dataSend[1].PartNumber,
                 netPrice: dataSend[0].NewPOPrice,
@@ -387,14 +386,14 @@ function ApproveRejectDrawer(props) {
               }
               dispatch(approvalPushedOnSap(obj, res => {
                 if (res && res.status && (res.status === 200 || res.status === 204)) {
-                  toastr.success('Approval pushed successfully.')
+                  Toaster.success('Approval pushed successfully.')
                 }
                 props.closeDrawer('', 'Push')
               }))
               // setOpenPushButton(true)
 
             } else {
-              toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              Toaster.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -403,7 +402,7 @@ function ApproveRejectDrawer(props) {
         // REJECT CONDITION
         dispatch(rejectRequestByApprove(Data, res => {
           if (res.data.Result) {
-            toastr.success('Costing Rejected')
+            Toaster.success('Costing Rejected')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -483,7 +482,7 @@ function ApproveRejectDrawer(props) {
         senderObj.SenderId = userLoggedIn
         senderObj.SenderLevel = userData.LoggedInSimulationLevel
         senderObj.SenderRemark = remark
-        senderObj.EffectiveDate = moment(simulationDetail?.EffectiveDate).local().format('YYYY/MM/DD HH:mm')
+        senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm')
         senderObj.LoggedInUserId = userLoggedIn
         let temp = []
         if (isSimulationApprovalListing === true) {
@@ -506,7 +505,7 @@ function ApproveRejectDrawer(props) {
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
-            toastr.success('Simulation token has been sent for approval.')
+            Toaster.success('Simulation token has been sent for approval.')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -516,13 +515,13 @@ function ApproveRejectDrawer(props) {
         dispatch(simulationApprovalRequestByApprove(approverObject, res => {
           if (res.data.Result) {
             if (showFinalLevelButtons) {
-              toastr.success('The simulation token has been approved')
+              Toaster.success('The simulation token has been approved')
               let temp = []
               costingList && costingList.map(item => {
                 const vendor = item.VendorName.split('(')[1]
                 temp.push({
                   CostingId: item.CostingId,
-                  effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'),
+                  effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/yyyy'),
                   vendorCode: vendor.split(')')[0],
                   materialNumber: item.PartNo,
                   netPrice: item.NewPOPrice,
@@ -543,13 +542,13 @@ function ApproveRejectDrawer(props) {
               }
               dispatch(approvalPushedOnSap(simObj, res => {
                 if (res && res.status && (res.status === 200 || res.status === 204)) {
-                  toastr.success('Approval pushed successfully.')
+                  Toaster.success('Approval pushed successfully.')
                 }
                 props.closeDrawer('', 'Push')
               }))
 
             } else {
-              toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+              Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -558,7 +557,7 @@ function ApproveRejectDrawer(props) {
         //SIMULATION REJECT CONDITION
         dispatch(simulationRejectRequestByApprove(approverObject, res => {
           if (res.data.Result) {
-            toastr.success('The simulation token has been rejected')
+            Toaster.success('The simulation token has been rejected')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -702,9 +701,9 @@ function ApproveRejectDrawer(props) {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
-      toastr.warning("File size greater than 5mb not allowed")
+      Toaster.warning("File size greater than 5mb not allowed")
     }
   }
 
@@ -727,7 +726,7 @@ function ApproveRejectDrawer(props) {
         DeletedBy: loggedInUserId(),
       }
       // dispatch(fileDeleteCosting(deleteData, (res) => {
-      //     toastr.success('File has been deleted successfully.')
+      //     Toaster.success('File has been deleted successfully.')
       //   }))
       let tempArr = files && files.filter(item => item.FileId !== FileId)
       setFiles(tempArr)
@@ -750,10 +749,10 @@ function ApproveRejectDrawer(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-          {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
+            {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
-              
+
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
@@ -899,7 +898,7 @@ function ApproveRejectDrawer(props) {
                             <div className="inputbox date-section">
                               <DatePicker
                                 name="EffectiveDate"
-                                selected={simulationDetail?.EffectiveDate && moment(simulationDetail.EffectiveDate).isValid ? moment(simulationDetail.EffectiveDate)._d : ''}
+                                selected={simulationDetail?.EffectiveDate && DayTime(simulationDetail.EffectiveDate).isValid ? DayTime(simulationDetail.EffectiveDate)._d : ''}
                                 // onChange={handleEffectiveDateChange}
                                 showMonthDropdown
                                 showYearDropdown

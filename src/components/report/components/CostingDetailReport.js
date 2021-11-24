@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,7 +27,7 @@ const gridOptions = {};
 
 var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         if (dateAsString == null) return -1;
         var dateParts = dateAsString.split('/');
         var cellDate = new Date(
@@ -142,14 +142,14 @@ function ReportListing(props) {
     const linkableFormatter = (props) => {
         let tempDate = props.data.CreatedDate
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let temp = `${moment(tempDate).format('DD/MM/YYYY')}-${cellValue}`
+        let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
         setCostingVersion(temp);
         return temp
     }
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let temp = moment(cellValue).format('DD/MM/YYYY h:m:s')
+        let temp = DayTime(cellValue).format('DD/MM/YYYY h:m:s')
         return temp
     }
 
@@ -591,7 +591,7 @@ function ReportListing(props) {
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
+                        {/* <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn> */}
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
                         <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>

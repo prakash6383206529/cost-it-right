@@ -10,14 +10,13 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import MachineApproval from './MachineApproval'
+import MachineApproval from './MachineApproval';
 
 class MachineMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '2',
+            activeTab: '1',
             isMachineRateForm: false,
             isAddMoreDetails: false,
             isProcessForm: false,
@@ -203,11 +202,11 @@ class MachineMaster extends Component {
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                             Approval Status
                                         </NavLink>
-                                    </NavItem>
+                                    </NavItem> */}
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
@@ -268,6 +267,6 @@ function mapStateToProps({ auth }) {
 
 
 export default connect(mapStateToProps,
-    { getLeftMenu, }
+    {}
 )(MachineMaster);
 

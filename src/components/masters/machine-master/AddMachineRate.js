@@ -13,7 +13,7 @@ import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
   checkAndGetMachineNumber, getMachineData,
 } from '../actions/MachineMaster';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants'
 import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
@@ -27,11 +27,14 @@ import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
+import { CheckApprovalApplicableMaster } from '../../../helper'
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import attachClose from '../../../assests/images/red-cross.png'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import MasterSendForApproval from '../MasterSendForApproval'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -69,7 +72,10 @@ class AddMachineRate extends Component {
       machineFullValue: {},
       DataToChange: [],
       DropdownChange: true,
-      effectiveDate: ''
+      effectiveDate: '',
+      uploadAttachements: true,
+      showPopup: false,
+      updatedObj: {}
 
     }
   }
@@ -195,7 +201,7 @@ class AddMachineRate extends Component {
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           this.props.change('Description', Data.Description)
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
@@ -235,7 +241,7 @@ class AddMachineRate extends Component {
               remarks: Data.Remark,
               // Description: Data.Description,
               files: Data.Attachements,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
             }, () => this.setState({ isLoader: false }))
           }, 100)
         }
@@ -438,7 +444,7 @@ class AddMachineRate extends Component {
   moreDetailsToggler = (Id, editFlag) => {
     const { selectedTechnology } = this.state;
     if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
-      toastr.warning('Technology should not be empty.')
+      Toaster.warning('Technology should not be empty.')
       return false;
     }
 
@@ -515,14 +521,14 @@ class AddMachineRate extends Component {
     const tempArray = [];
 
     if (processName.length === 0 || UOM === undefined || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
-      toastr.warning('Fields should not be empty');
+      Toaster.warning('Fields should not be empty');
       return false;
     }
 
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false;
     }
 
@@ -569,7 +575,7 @@ class AddMachineRate extends Component {
     //CONDITION TO CHECK DUPLICATE ENTRY EXCEPT EDITED RECORD
     const isExist = skipEditedItem.findIndex(el => (el.ProcessId === processName.value && el.UnitOfMeasurementId === UOM.value))
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false;
     }
 
@@ -677,7 +683,7 @@ class AddMachineRate extends Component {
   checkUniqNumber = (e) => {
     this.props.checkAndGetMachineNumber(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
-        toastr.warning(res.data.Message);
+        Toaster.warning(res.data.Message);
       }
     })
   }
@@ -726,7 +732,7 @@ class AddMachineRate extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -752,7 +758,7 @@ class AddMachineRate extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteMachine(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -791,7 +797,7 @@ class AddMachineRate extends Component {
     const userDetail = userDetails()
 
     if (processGrid && processGrid.length === 0) {
-      toastr.warning('Process Rate entry required.');
+      Toaster.warning('Process Rate entry required.');
       return false;
     }
 
@@ -810,7 +816,7 @@ class AddMachineRate extends Component {
         this.props.reset()
         this.props.updateMachineDetails(detailedRequestData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+            Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
             this.cancel();
           }
         })
@@ -836,19 +842,20 @@ class AddMachineRate extends Component {
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
-          EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         }
         if (isEditFlag) {
           if (DropdownChange) {
             this.cancel();
             return false
           }
+          this.setState({ showPopup: true, updatedObj: requestData })
           const toastrConfirmOptions = {
             onOk: () => {
               this.props.reset()
               this.props.updateMachine(requestData, (res) => {
                 if (res.data.Result) {
-                  toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+                  Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
                   this.cancel();
                 }
               })
@@ -857,7 +864,7 @@ class AddMachineRate extends Component {
             component: () => <ConfirmComponent />,
 
           }
-          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+          // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
 
 
@@ -882,7 +889,7 @@ class AddMachineRate extends Component {
         VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       }
 
 
@@ -903,12 +910,25 @@ class AddMachineRate extends Component {
       this.props.reset()
       this.props.createMachine(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.MACHINE_ADD_SUCCESS);
+          Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS);
           this.cancel();
         }
       });
 
     }
+  }
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateExchangeRate(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+        this.cancel()
+        console.log("called")
+      }
+    });
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
 
   /**
@@ -923,7 +943,7 @@ class AddMachineRate extends Component {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
 
-    this.props.change('EffectiveDate', moment(data.EffectiveDate)._isValid ? moment(data.EffectiveDate)._d : '')
+    this.props.change('EffectiveDate', DayTime(data.EffectiveDate)._isValid ? DayTime(data.EffectiveDate)._d : '')
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
@@ -1508,6 +1528,7 @@ class AddMachineRate extends Component {
                             </button>
                         }
                       </div>
+
                     </Row>
                   </form>
                 </div>
@@ -1530,6 +1551,26 @@ class AddMachineRate extends Component {
           ID={''}
           anchor={'right'}
         />}
+
+
+        {
+          this.state.approveDrawer && (
+            <MasterSendForApproval
+              isOpen={this.state.approveDrawer}
+              closeDrawer={this.closeApprovalDrawer}
+              isEditFlag={false}
+              // masterId={MACHINE_MASTER_ID}
+              type={'Sender'}
+              anchor={"right"}
+              approvalObj={this.state.approvalObj}
+              isBulkUpload={false}
+              IsImportEntery={false}
+            />
+          )
+        }
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+        }
       </>
     );
   }

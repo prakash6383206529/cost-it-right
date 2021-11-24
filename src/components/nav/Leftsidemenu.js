@@ -1,12 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { getLeftMenu, getModuleIdByPathName } from '../../actions/auth/AuthActions';
-import { loggedInUserId } from '../../helper/auth';
+import { getModuleIdByPathName } from '../../actions/auth/AuthActions';
 import { Link } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import "./LeftMenu.scss";
 import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
-import LoaderCustom from "../common/LoaderCustom";
+import { getTopAndLeftMenuData } from '../../actions/auth/AuthActions';
 
 class Leftmenu extends Component {
 	constructor(props) {
@@ -17,20 +16,6 @@ class Leftmenu extends Component {
 	}
 
 	UNSAFE_componentWillMount() {
-
-		//COMMENTED FOR USE BELOW CONDITION
-		// const ModuleId = reactLocalStorage.get('ModuleId')
-		// this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { })
-
-		//07-10-2020 COMMENTED, FOR LEFT MENU RENDER WHEN DIRECT URL HIT
-		const { location } = this.props;
-		if (location && location !== undefined) {
-
-			this.props.getModuleIdByPathName(location.pathname, res => {
-				// this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
-			})
-		}
-
 	}
 
 	setModuleId = (ModuleId) => {
@@ -38,9 +23,17 @@ class Leftmenu extends Component {
 	}
 
 	render() {
-		const { leftMenuData, location } = this.props;
+		const { location, topAndLeftMenuData } = this.props;
 		const activeURL = location && location.pathname ? location.pathname : null;
 		const ModuleId = reactLocalStorage.get('ModuleId')
+		let leftMenuFromAPI = []
+		topAndLeftMenuData &&
+			topAndLeftMenuData.map((el, i) => {
+				if (el.ModuleId === ModuleId) {
+					leftMenuFromAPI = el.Pages
+				}
+				return null;
+			})
 		return (
 			<>
 				{/* {leftMenuData && leftMenuData.length === 0 && <LoaderCustom />} */}
@@ -48,7 +41,7 @@ class Leftmenu extends Component {
 					<div className="h-100 menuitem-active">
 						<ul>
 							{
-								leftMenuData && leftMenuData.map((item, i) => {
+								leftMenuFromAPI && leftMenuFromAPI.map((item, i) => {
 									if (
 										item.PageName === 'Raw Material Name and Grade' ||
 										item.PageName === 'Role' ||
@@ -87,8 +80,8 @@ class Leftmenu extends Component {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-	const { menusData, leftMenuData } = auth
-	return { menusData, leftMenuData }
+	const { menusData, leftMenuData, topAndLeftMenuData } = auth
+	return { menusData, leftMenuData, topAndLeftMenuData }
 }
 
 /**
@@ -99,6 +92,6 @@ function mapStateToProps({ auth }) {
 */
 export default connect(mapStateToProps,
 	{
-		getLeftMenu,
 		getModuleIdByPathName,
+		getTopAndLeftMenuData
 	})(Leftmenu);

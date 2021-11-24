@@ -12,18 +12,19 @@ import { getMachineDataList, deleteMachine, copyMachine, } from '../actions/Mach
 import { getTechnologySelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { MachineRate } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,7 +47,9 @@ class MachineRateListing extends Component {
             machineType: [],
 
             isBulkUpload: false,
-            isLoader: false
+            isLoader: false,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -74,14 +77,7 @@ class MachineRateListing extends Component {
         }
         this.props.getMachineDataList(filterData, (res) => {
             this.setState({ isLoader: false })
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
-            } else {
-                this.setState({ tableData: [] })
-            }
+
         })
     }
 
@@ -249,7 +245,7 @@ class MachineRateListing extends Component {
     copyItem = (Id) => {
         this.props.copyMachine(Id, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.COPY_MACHINE_SUCCESS);
+                Toaster.success(MESSAGES.COPY_MACHINE_SUCCESS);
                 this.getDataList()
             }
         });
@@ -260,6 +256,7 @@ class MachineRateListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id);
@@ -267,7 +264,7 @@ class MachineRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
+        // return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -277,12 +274,17 @@ class MachineRateListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMachine(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
                 this.getDataList()
             }
         });
     }
-
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -360,7 +362,7 @@ class MachineRateListing extends Component {
   */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -453,7 +455,7 @@ class MachineRateListing extends Component {
                 return false
             }
             if (item.EffectiveDate !== null) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
             return item
@@ -726,7 +728,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -751,6 +753,9 @@ class MachineRateListing extends Component {
                     messageLabel={'Machine'}
                     anchor={'right'}
                 />}
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
+                }
             </div >
         );
     }
@@ -767,6 +772,7 @@ function mapStateToProps(state) {
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
     const { machineDatalist } = machine
+
     const { auth } = state;
     const { initialConfiguration } = auth;
 

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
-import moment from 'moment';
-// import { EXCHNAGERATE } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper'
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
@@ -193,26 +192,45 @@ function RunSimulationDrawer(props) {
         temp.push(obj)
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
-                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
                 break;
            
             case Number(RMDOMESTIC):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
                 break;
             case Number(RMIMPORT):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                break;
+            case Number(SURFACETREATMENT):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+
+                    if (res.data.Result) {
+                        Toaster.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            case Number(OPERATIONS):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+
+                    if (res.data.Result) {
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -220,14 +238,33 @@ function RunSimulationDrawer(props) {
             default:
                 break;
         }
-        // runSimulationCosting()                       ///remove this
+
+
+
+
+        // if (masterId === Number(EXCHNAGERATE)) {
+        //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+        //         if (res.data.Result) {
+        //             Toaster.success('Simulation process has been run successfully.')
+        //             runSimulationCosting()
+        //         }
+        //     }))
+        // } else {
+        //     //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
+        //     dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+        //         if (res.data.Result) {
+        //             Toaster.success('Simulation process has been run successfully.')
+        //             runSimulationCosting()
+        //         }
+        //     }))
+        // }
     }), 500)
 
     const onSubmit = () => {
         // 
         // dispatch(runSimulationOnSelectedCosting(objs, (res) => {
         //     if (res.data.Result) {
-        //         toastr.success('Simulation process has been run successfully.')
+        //         Toaster.success('Simulation process has been run successfully.')
         //         runSimulationCosting()
         //     }
         // }))
@@ -498,15 +535,13 @@ function RunSimulationDrawer(props) {
                                                         errors={errors.EffectiveDate}
                                                     />
                                                 </Col>
-
-                                            </Row>
-                                            <Row>
                                                 <Col md="12" className="mt-4 warning-text-container">
                                                     <div className="warning-text">
                                                         <WarningMessage dClass="mr-3" message={"Unselected checkbox won't be applied in future"} />
                                                     </div>
                                                 </Col>
                                             </Row>
+
                                         </Col>
 
                                     </Row>

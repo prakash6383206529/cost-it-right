@@ -11,7 +11,7 @@ import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSel
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -23,14 +23,17 @@ import { FILE_URL, ZBC } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
-import moment from 'moment';
-import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
+import DayTime from '../../common/DayTimeWrapper'
+import { AcceptableBOPUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import attachClose from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { CheckApprovalApplicableMaster } from '../../../helper'
+import MasterSendForApproval from '../MasterSendForApproval'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -66,7 +69,10 @@ class AddBOPDomestic extends Component {
 
       NetLandedCost: '',
       DataToCheck: [],
-      DropdownChanged: true
+      DropdownChanged: true,
+      uploadAttachements: true,
+      showPopup: false,
+      updatedObj: {}
     }
   }
 
@@ -151,7 +157,7 @@ class AddBOPDomestic extends Component {
           let vendorObj
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -187,7 +193,7 @@ class AddBOPDomestic extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
@@ -442,7 +448,7 @@ class AddBOPDomestic extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -468,7 +474,7 @@ class AddBOPDomestic extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -561,13 +567,13 @@ class AddBOPDomestic extends Component {
         NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
-
+        this.setState({ showPopup: true, updatedObj: requestData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateBOPDomestic(requestData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
+                Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
                 this.cancel();
               }
             })
@@ -575,7 +581,7 @@ class AddBOPDomestic extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />,
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -592,7 +598,7 @@ class AddBOPDomestic extends Component {
         Vendor: vendorName.value,
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.NetLandedCost,
@@ -606,14 +612,45 @@ class AddBOPDomestic extends Component {
       }
 
       this.props.reset()
-
       this.props.createBOPDomestic(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.BOP_ADD_SUCCESS);
+          Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
           this.cancel();
         }
       });
+
+
+      // if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      //   this.setState({ approveDrawer: true, approvalObj: formData })
+      // } else {
+      //   this.props.reset()
+      //   this.props.createBOPDomestic(formData, (res) => {
+      //     if (res.data.Result) {
+      //       Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
+      //       //this.clearForm()
+      //       this.cancel()
+      //     }
+      //   })
+      // }
+
+
+
+
+     
     }
+  }
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateBOPDomestic(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+        this.cancel();
+      }
+    })
+
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
 
   handleKeyDown = function (e) {
@@ -1155,6 +1192,25 @@ class AddBOPDomestic extends Component {
               anchor={"right"}
             />
           )}
+
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                // masterId={BOP_MASTER_ID}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntery={false}
+              />
+            )
+          }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );
