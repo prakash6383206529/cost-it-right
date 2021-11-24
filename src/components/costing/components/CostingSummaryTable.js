@@ -70,6 +70,7 @@ const CostingSummaryTable = (props) => {
 
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [iccPaymentData, setIccPaymentData] = useState("")
 
   const [warningMsg, setShowWarningMsg] = useState(false)
 
@@ -185,10 +186,13 @@ const CostingSummaryTable = (props) => {
     let profitData = viewCostingData[index].netProfitCostView
     let rejectData = viewCostingData[index].netRejectionCostView
     let modelType = viewCostingData[index].modelType
+    let IccPaymentData = viewCostingData[index].netPaymentIccCostView
+
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewProfitData(profitData)
+    setIccPaymentData(IccPaymentData)
     setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
   }
 
@@ -1361,6 +1365,7 @@ const CostingSummaryTable = (props) => {
             overheadData={viewOverheadData}
             profitData={viewProfitData}
             rejectAndModelType={viewRejectAndModelType}
+            iccPaymentData={iccPaymentData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
           />

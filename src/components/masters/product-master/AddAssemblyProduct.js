@@ -81,14 +81,14 @@ class AddAssemblyProduct extends Component {
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.setState({ DataToCheck: Data })
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,

@@ -92,14 +92,14 @@ class AddAssemblyPart extends Component {
             productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
             return productArray
           })
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.setState({ DataToCheck: Data })
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
@@ -537,6 +537,7 @@ class AddAssemblyPart extends Component {
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
         if (fieldsObj.ECNNumber === partData.ECNNumber && fieldsObj.RevisionNumber === partData.RevisionNumber) {
           this.confirmBOMDraft(updateData)
+          Toaster.warning("Please edit Revision No or ECN No.")
           return false;
         }
       }

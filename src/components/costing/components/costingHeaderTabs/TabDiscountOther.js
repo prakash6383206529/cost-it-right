@@ -36,7 +36,7 @@ function TabDiscountOther(props) {
   const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
   const [GoToNext, setGoToNext] = useState(false);
   const [otherCostType, setOtherCostType] = useState([]);
-  const [hundiscountType,setHundiDiscountType] =useState([])
+  const [hundiscountType, setHundiDiscountType] = useState([])
 
   const dispatch = useDispatch()
   let history = useHistory();
@@ -55,8 +55,8 @@ function TabDiscountOther(props) {
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
         setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
-        setValue('HundiOrDiscountPercentage', DiscountCostData !==undefined && DiscountCostData.HundiOrDiscountPercentage !== null ? DiscountCostData.HundiOrDiscountPercentage : '')
-        setValue('HundiOrDiscountValue',DiscountCostData !==undefined && DiscountCostData.DiscountCostType==='Percentage'? DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)):DiscountCostData?.HundiOrDiscountValue)
+        setValue('HundiOrDiscountPercentage', DiscountCostData !== undefined && DiscountCostData.HundiOrDiscountPercentage !== null ? DiscountCostData.HundiOrDiscountPercentage : '')
+        setValue('HundiOrDiscountValue', DiscountCostData !== undefined && DiscountCostData.DiscountCostType === 'Percentage' ? DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)) : DiscountCostData?.HundiOrDiscountValue)
         setValue('AnyOtherCost', DiscountCostData !== undefined && DiscountCostData.AnyOtherCost)
         // setValue('HundiDiscountType',DiscountCostData !==undefined && DiscountCostData.DiscountCostType)
 
@@ -64,8 +64,8 @@ function TabDiscountOther(props) {
           DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          DiscountCostType:checkForNull(DiscountCostData !==undefined && DiscountCostData.DiscountCostType),
-          HundiOrDiscountValue:DiscountCostData&& checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue !== null ? DiscountCostData.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
+          DiscountCostType: checkForNull(DiscountCostData !== undefined && DiscountCostData.DiscountCostType),
+          HundiOrDiscountValue: DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue !== null ? DiscountCostData.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
         }
         props.setHeaderCost(topHeaderData)
       }
@@ -124,7 +124,7 @@ function TabDiscountOther(props) {
             "OtherCostPercentage": '',
             "PercentageOtherCost": getValues('PercentageOtherCost'),
             "OtherCostType": otherCostType.value,
-            "DiscountCostType":hundiscountType.value
+            "DiscountCostType": hundiscountType.value
           }
         },
         "Attachements": updatedFiles,
@@ -149,10 +149,10 @@ function TabDiscountOther(props) {
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
-            setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate)._isValid ? DayTime(OtherCostDetails.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
             setCurrency(OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setOtherCostType(OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : [])
-            setHundiDiscountType(OtherCostDetails.DiscountCostType !==null ?{label:OtherCostDetails.DiscountCostType,value:OtherCostDetails.DiscountCostType}:[])
+            setHundiDiscountType(OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : [])
             setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
             setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
             setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : '')
@@ -165,7 +165,7 @@ function TabDiscountOther(props) {
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
-            setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate)._isValid ? DayTime(OtherCostDetails.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -173,7 +173,7 @@ function TabDiscountOther(props) {
               HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
               AnyOtherCost: checkForDecimalAndNull(OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '', initialConfiguration.NoOfDecimalForPrice),
               HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '',
-              DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType:''
+              DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : ''
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -185,7 +185,7 @@ function TabDiscountOther(props) {
                 OtherCostType: OtherCostDetails.OtherCostType,
                 PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
                 HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
-                DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType:''
+                DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : ''
               }
               props.setHeaderCost(topHeaderData)
 
@@ -204,8 +204,8 @@ function TabDiscountOther(props) {
       if (otherCostType.value === 'Percentage') {
         setValue('AnyOtherCost', DiscountCostData !== undefined ? DiscountCostData.AnyOtherCost : 0)
       }
-      if(hundiscountType.value ==='Percentage'){
-        setValue('HundiOrDiscountPercentage',DiscountCostData && DiscountCostData.HundiOrDiscountPercentage)
+      if (hundiscountType.value === 'Percentage') {
+        setValue('HundiOrDiscountPercentage', DiscountCostData && DiscountCostData.HundiOrDiscountPercentage)
       }
 
       if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
@@ -227,7 +227,7 @@ function TabDiscountOther(props) {
           DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration.NoOfDecimalForPrice),
           HundiOrDiscountPercentage: checkForNull(event.target.value),
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          DiscountCostType:hundiscountType.value
+          DiscountCostType: hundiscountType.value
         }
         props.setHeaderCost(topHeaderData)
 
@@ -262,16 +262,16 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountCostChange = (event) => {
-    console.log("COMING IN discount",event.target.value);
+    console.log("COMING IN discount", event.target.value);
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
         let topHeaderData = {
           DiscountsAndOtherCost: checkForNull(event.target.value),
           HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          DiscountCostType:hundiscountType.value
+          DiscountCostType: hundiscountType.value
         }
-         props.setHeaderCost(topHeaderData)
+        props.setHeaderCost(topHeaderData)
 
       } else {
         Toaster.warning('Please enter valid number.')
@@ -312,14 +312,14 @@ function TabDiscountOther(props) {
         setHundiDiscountType(newValue)
         setValue('HundiOrDiscountValue', 0)
         setValue('HundiOrDiscountPercentage', 0)
-        setValue('HundiDiscountType',newValue.value)
+        setValue('HundiDiscountType', newValue.value)
         let topHeaderData = {
           DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
           HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-          AnyOtherCost:checkForNull(getValues('AnyOtherCost')),
-          OtherCostType: otherCostType.value,          
-          PercentageOtherCost:checkForNull(getValues('PercentageOtherCost')),
-          DiscountCostType:newValue.value
+          AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+          OtherCostType: otherCostType.value,
+          PercentageOtherCost: checkForNull(getValues('PercentageOtherCost')),
+          DiscountCostType: newValue.value
         }
         props.setHeaderCost(topHeaderData)
       } else {
@@ -540,7 +540,7 @@ function TabDiscountOther(props) {
           "OtherCostPercentage": '',
           "PercentageOtherCost": values.PercentageOtherCost,
           "OtherCostType": otherCostType.value,
-          "DiscountCostType":hundiscountType.value
+          "DiscountCostType": hundiscountType.value
         }
       },
       "Attachements": updatedFiles
@@ -621,7 +621,7 @@ function TabDiscountOther(props) {
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <Row className="mx-0">
-                  <Col md="2">
+                    <Col md="2">
                       <SearchableSelectHookForm
                         label={"Hundi/Other Discount Type"}
                         name={"HundiDiscountType"}
@@ -641,36 +641,36 @@ function TabDiscountOther(props) {
                     {
                       hundiscountType && hundiscountType.value === 'Percentage' &&
 
-                    <Col md="4" >
-                      <TextFieldHookForm
-                        label="Hundi/Other Discount(%)"
-                        name={"HundiOrDiscountPercentage"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.'
-                          },
-                          max: {
-                            value: 100,
-                            message: 'Percentage cannot be greater than 100'
-                          },
-                        }}
-                        handleChange={(e) => {
-                          e.preventDefault();
-                          handleDiscountChange(e);
-                        }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.HundiOrDiscountPercentage}
-                        disabled={CostingViewMode ? true : false}
-                      />
-                    </Col>
+                      <Col md="4" >
+                        <TextFieldHookForm
+                          label="Hundi/Other Discount(%)"
+                          name={"HundiOrDiscountPercentage"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{
+                            required: false,
+                            pattern: {
+                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              message: 'Invalid Number.'
+                            },
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
+                          }}
+                          handleChange={(e) => {
+                            e.preventDefault();
+                            handleDiscountChange(e);
+                          }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.HundiOrDiscountPercentage}
+                          disabled={CostingViewMode ? true : false}
+                        />
+                      </Col>
                     }
                     <Col md="4" >
                       <TextFieldHookForm
@@ -725,7 +725,7 @@ function TabDiscountOther(props) {
                             message: "Invalid Number.",
                           },
                         }}
-                        handleChange={(e) => { 
+                        handleChange={(e) => {
                           e.preventDefault();
                           handleDiscountCostChange(e);
                         }}

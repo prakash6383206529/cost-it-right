@@ -31,8 +31,8 @@ class Role extends Component {
 			RoleId: '',
 			Modules: [],
 			isNewRole: true,
-			showPopup:false,
-            updatedObj:{}
+			showPopup: false,
+			updatedObj: {}
 		};
 	}
 
@@ -172,7 +172,7 @@ class Role extends Component {
 		let userDetail = userDetails()
 
 		if (isEditFlag) {
-            
+
 			let updateData = {
 				RoleId: RoleId,
 				IsActive: true,
@@ -183,7 +183,7 @@ class Role extends Component {
 				CreatedBy: loggedInUserId(),
 				Modules: Modules
 			}
-			this.setState({showPopup:true, updatedObj:updateData})
+			this.setState({ showPopup: true, updatedObj: updateData })
 			const toastrConfirmOptions = {
 				onOk: () => {
 					this.confirmUpdate(updateData)
@@ -212,6 +212,7 @@ class Role extends Component {
 				Modules: Modules
 			}
 
+
 			this.setState({ isLoader: true })
 			this.props.addRoleAPI(formData, (res) => {
 				if (res && res.data && res.data.Result) {
@@ -223,13 +224,13 @@ class Role extends Component {
 		}
 
 	}
-  
-	onPopupConfirm = ()=>{ 
+
+	onPopupConfirm = () => {
 		this.confirmUpdate(this.state.updatedObj)
-	  }
-	  closePopUp= () =>{
-		this.setState({showPopup:false})
-	  }
+	}
+	closePopUp = () => {
+		this.setState({ showPopup: false })
+	}
 	render() {
 		const { handleSubmit, } = this.props;
 		const { isLoader, isSubmitted, isEditFlag } = this.state;
@@ -268,7 +269,7 @@ class Role extends Component {
 
 										<div className="row form-group grant-user-grid">
 											<div className="col-md-12">
-											{isLoader && <Loader />}
+												{isLoader && <Loader />}
 												<PermissionsTabIndex
 													onRef={ref => (this.child = ref)}
 													isEditFlag={this.state.isEditFlag}
@@ -293,8 +294,8 @@ class Role extends Component {
 												disabled={isSubmitted ? true : false}
 												type="submit"
 												className="user-btn save-btn"
-											>	
-											<div className={"save-icon"}></div>
+											>
+												<div className={"save-icon"}></div>
 												{isEditFlag ? 'Update' : 'Save'}
 											</button>
 										</div>
@@ -305,8 +306,8 @@ class Role extends Component {
 					</div>
 				</div>
 				{
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.ROLE_UPDATE_ALERT}`}  />
-                }
+					this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.ROLE_UPDATE_ALERT}`} />
+				}
 			</div>
 		);
 	}

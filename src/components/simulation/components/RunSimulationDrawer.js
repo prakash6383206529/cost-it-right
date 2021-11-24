@@ -5,10 +5,10 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
-import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
@@ -191,7 +191,6 @@ function RunSimulationDrawer(props) {
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
-        console.log(masterId, 'masterIdmasterId')
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
                 dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
@@ -230,6 +229,15 @@ function RunSimulationDrawer(props) {
             case Number(OPERATIONS):
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
+                    if (res.data.Result) {
+                        Toaster.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            case Number(MACHINERATE):
+                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()

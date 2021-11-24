@@ -97,10 +97,10 @@ function CostingDetails(props) {
 
   const fieldValues = IsolateReRender(control);
   const [showPopup, setShowPopup] = useState(false)
-  const [costingObj, setCostingObj ] = useState({
-    item:{},
-    type:'',
-    index:[]
+  const [costingObj, setCostingObj] = useState({
+    item: {},
+    type: '',
+    index: []
   })
   const dispatch = useDispatch()
 
@@ -181,7 +181,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
 
           }),
         )
@@ -289,13 +289,15 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
+              console.log('Data: ', Data);
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+              setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
+              //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
 
             }),
@@ -956,8 +958,8 @@ function CostingDetails(props) {
   * @description CONFIRM DELETE COSTINGS
   */
   const deleteItem = (Item, index, type) => {
-     setShowPopup(true)
-      setCostingObj({item:Item, type:type,index:index})
+    setShowPopup(true)
+    setCostingObj({ item: Item, type: type, index: index })
     const toastrConfirmOptions = {
       onOk: () => {
         deleteCosting(Item, index, type);
@@ -1102,7 +1104,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
     }))
 
   }
@@ -1398,7 +1400,7 @@ function CostingDetails(props) {
   }
 
   const onPopupConfirm = () => {
-    const {item, type,  index} =costingObj;
+    const { item, type, index } = costingObj;
     deleteCosting(item, index, type);
   }
 
@@ -1432,6 +1434,7 @@ function CostingDetails(props) {
     new Promise(resolve => {
       resolve(filterList(inputValue));
     });
+
 
   return (
     <>
@@ -1617,14 +1620,15 @@ function CostingDetails(props) {
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
+                            {console.log(effectiveDate, "date")}
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
+                              // maxDate={new Date()}
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"

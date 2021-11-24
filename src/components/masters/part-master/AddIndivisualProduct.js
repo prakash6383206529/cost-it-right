@@ -48,6 +48,11 @@ class AddIndivisualProduct extends Component {
         this.getDetails()
     }
 
+
+    ProductGroupCodeUpdate = (e) => {
+        this.setState({ DropdownChanged: false })
+
+    }
     /**
     * @method getDetails
     * @description 
@@ -65,12 +70,13 @@ class AddIndivisualProduct extends Component {
 
                     const Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+
+                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
-                            effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
+                            effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                             isSurfaceTreatment: Data.IsConsideredForMBOM,
                         }, () => this.setState({ isLoader: false }))
@@ -98,7 +104,7 @@ class AddIndivisualProduct extends Component {
     * @description Handle Effective Date
     */
     handleEffectiveDateChange = (date) => {
-        this.setState({ effectiveDate: DayTime(date)._isValid ? DayTime(date)._d : '', });
+        this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
         this.setState({ DropdownChanged: false })
     };
 
@@ -416,10 +422,13 @@ class AddIndivisualProduct extends Component {
                                                                     placeholder={""}
                                                                     validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                                                     component={renderText}
+                                                                    onChange={
+                                                                        this.ProductGroupCodeUpdate
+                                                                    }
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={false}
                                                                 />
                                                             </Col>
                                                         )}
@@ -507,7 +516,7 @@ class AddIndivisualProduct extends Component {
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={false}
                                                                 //minDate={moment()}
                                                                 />
 
