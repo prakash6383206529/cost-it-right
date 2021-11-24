@@ -2,17 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getTaxDetailsDataList, deleteTaxDetails, } from '../actions/TaxMaster';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { TAX } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import AddTaxDetails from './AddTaxDetails';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -20,6 +19,7 @@ import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const gridOptions = {};
 class TaxListing extends Component {
@@ -37,6 +37,8 @@ class TaxListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -46,23 +48,28 @@ class TaxListing extends Component {
    */
   componentDidMount() {
     let ModuleId = reactLocalStorage.get('ModuleId');
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { leftMenuData } = this.props;
-      if (leftMenuData !== undefined) {
-        let Data = leftMenuData;
-        const accessData = Data && Data.find(el => el.PageName === TAX)
-        const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-        if (permmisionData !== undefined) {
-          this.setState({
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          })
+    const { topAndLeftMenuData } = this.props;
+    let leftMenuFromAPI = []
+    topAndLeftMenuData &&
+      topAndLeftMenuData.map((el, i) => {
+        if (el.ModuleId === ModuleId) {
+          leftMenuFromAPI = el.Pages
         }
+        return null;
+      })
+    if (topAndLeftMenuData !== undefined) {
+      const accessData = leftMenuFromAPI && leftMenuFromAPI.find(el => el.PageName === TAX)
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+      if (permmisionData !== undefined) {
+        this.setState({
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+        })
       }
-    })
+    }
 
     this.getTableListData()
   }
@@ -122,6 +129,7 @@ class TaxListing extends Component {
   * @description confirm delete TAX
   */
   deleteItem = (Id) => {
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id)
@@ -129,7 +137,7 @@ class TaxListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />
     };
-    return toastr.confirm(MESSAGES.TAX_DELETE_ALERT, toastrConfirmOptions);
+    // return Toaster.confirm(MESSAGES.TAX_DELETE_ALERT, toastrConfirmOptions);
   }
 
   /**
@@ -139,19 +147,27 @@ class TaxListing extends Component {
   confirmDelete = (Id) => {
     this.props.deleteTaxDetails(Id, (res) => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.DELETE_TAX_SUCCESS);
+        Toaster.success(MESSAGES.DELETE_TAX_SUCCESS);
         this.getTableListData()
       }
     });
+    this.setState({ showPopup: false })
+  }
+  onPopupConfirm = () => {
+    this.confirmDelete(this.state.deletedId);
+
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
-   effectiveDateFormatter = (props) => {
+  effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
-}
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+  }
 
 
   /**
@@ -160,7 +176,7 @@ class TaxListing extends Component {
 */
   buttonFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
@@ -174,11 +190,11 @@ class TaxListing extends Component {
     this.gridApi.sizeColumnsToFit();
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     params.api.paginationGoToPage(0);
-};
-onPageSizeChanged = (newPageSize) => {
+  };
+  onPageSizeChanged = (newPageSize) => {
     var value = document.getElementById('page-size').value;
     this.state.gridApi.paginationSetPageSize(Number(value));
-};
+  };
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
@@ -207,13 +223,13 @@ onPageSizeChanged = (newPageSize) => {
       resizable: true,
       filter: true,
       sortable: true,
-  };
-   const frameworkComponents = {
-  
+    };
+    const frameworkComponents = {
+
       effectiveDateRenderer: this.effectiveDateFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound
-  };
+    };
     return (
       < >
         {/* {this.props.loading && <Loader />} */}
@@ -268,50 +284,50 @@ onPageSizeChanged = (newPageSize) => {
 
               </BootstrapTable> */}
               <div className="ag-grid-react">
-                      <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                        <div className="ag-grid-header">
-                          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        </div>
-                        <div
-                          className="ag-theme-material">
-                          <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter = {true}
-                            domLayout='autoHeight'
-                            // columnDefs={c}
-                            rowData={this.props.taxDataList}
-                            pagination={true}
-                            paginationPageSize={10}
-                            onGridReady={this.onGridReady}
-                            gridOptions={this.gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                              title: CONSTANT.EMPTY_DATA,
-                              imagClass:'imagClass'
-                            }}
-                            frameworkComponents={frameworkComponents}
-                            suppressRowClickSelection={true}
-                            rowSelection={'multiple'}
-                          >
-                            {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                            <AgGridColumn field="TaxName" headerName="Tax Name"></AgGridColumn>
-                            <AgGridColumn field="Country" headerName="Country"></AgGridColumn>
-                            <AgGridColumn field="Rate" headerName="Rate (%)"></AgGridColumn>
-                            <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
-                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                            <AgGridColumn field="TaxDetailId" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
-                          </AgGridReact>
-                          <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-                              <option value="10" selected={true}>10</option>
-                              <option value="50">50</option>
-                              <option value="100">100</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      </div>
+                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-header">
+                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  </div>
+                  <div
+                    className="ag-theme-material">
+                    <AgGridReact
+                      defaultColDef={defaultColDef}
+                      floatingFilter={true}
+                      domLayout='autoHeight'
+                      // columnDefs={c}
+                      rowData={this.props.taxDataList}
+                      pagination={true}
+                      paginationPageSize={10}
+                      onGridReady={this.onGridReady}
+                      gridOptions={this.gridOptions}
+                      loadingOverlayComponent={'customLoadingOverlay'}
+                      noRowsOverlayComponent={'customNoRowsOverlay'}
+                      noRowsOverlayComponentParams={{
+                        title: EMPTY_DATA,
+                        imagClass: 'imagClass'
+                      }}
+                      frameworkComponents={frameworkComponents}
+                      suppressRowClickSelection={true}
+                      rowSelection={'multiple'}
+                    >
+                      {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                      <AgGridColumn field="TaxName" headerName="Tax Name"></AgGridColumn>
+                      <AgGridColumn field="Country" headerName="Country"></AgGridColumn>
+                      <AgGridColumn field="Rate" headerName="Rate (%)"></AgGridColumn>
+                      <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
+                      <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateFormatter'></AgGridColumn>
+                      <AgGridColumn field="TaxDetailId" headerName="Actions" cellRenderer='buttonFormatter'></AgGridColumn>
+                    </AgGridReact>
+                    <div className="paging-container d-inline-block float-right">
+                      <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+                        <option value="10" selected={true}>10</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </Col>
           </Row>
           {isOpen && (
@@ -323,6 +339,9 @@ onPageSizeChanged = (newPageSize) => {
               anchor={'right'}
             />
           )}
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.TAX_DELETE_ALERT}`} />
+          }
         </div>
       </ >
     );
@@ -344,6 +363,5 @@ export default connect(mapStateToProps,
   {
     getTaxDetailsDataList,
     deleteTaxDetails,
-    getLeftMenu,
   })(TaxListing);
 

@@ -10,17 +10,17 @@ import {
   getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
 } from '../actions/Fuel';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { GENERATOR_DIESEL, } from '../../../config/constants';
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { calculatePercentageValue } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -248,7 +248,7 @@ class AddPower extends Component {
 
       if (fieldsObj.SelfPowerContribution > 100 && powerContributionTotal > 100) {
         this.setState({ checkPowerContribution: true })
-        toastr.warning('Total power contribution should not be greater than 100%.')
+        Toaster.warning('Total power contribution should not be greater than 100%.')
       } else {
         this.setState({ checkPowerContribution: false })
       }
@@ -356,7 +356,7 @@ class AddPower extends Component {
               isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
               selectedPlants: plantArray,
               StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
-              effectiveDate: moment(Data.SEBChargesDetails[0].EffectiveDate)._d,
+              effectiveDate: DayTime(Data.SEBChargesDetails[0].EffectiveDate)._d,
               powerGrid: tempArray,
             }, () => this.setState({ isLoader: false }))
           }, 200)
@@ -477,7 +477,7 @@ class AddPower extends Component {
         const { StateName, UOM } = this.state;
 
         if (StateName.length === 0) {
-          toastr.warning("Please select state first.")
+          Toaster.warning("Please select state first.")
           return false
         }
 
@@ -519,7 +519,7 @@ class AddPower extends Component {
     }
 
     if (powerTotalT > 100) {
-      toastr.warning('Total Contribution should not be more than 100%');
+      Toaster.warning('Total Contribution should not be more than 100%');
       return false;
     }
 
@@ -531,27 +531,27 @@ class AddPower extends Component {
 
     if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined || fieldsObj.MinDemandKWPerMonth === undefined || fieldsObj.DemandChargesPerKW === undefined
       || fieldsObj.AvgUnitConsumptionPerMonth === undefined || fieldsObj.MaxDemandChargesKW === undefined) {
-      toastr.warning('Fields should not be empty.')
+      Toaster.warning('Fields should not be empty.')
       return false;
     }
     if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
       Number(fieldsObj.MaxDemandChargesKW) < 0 || Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 || Number(fieldsObj.DutyChargesAndFCA) < 0 ||
       Number(fieldsObj.SEBPowerContributaion) < 0) {
-      toastr.warning('Fields should not be negative');
+      Toaster.warning('Fields should not be negative');
       return false;
     }
     if (maxLength10(fieldsObj.MinDemandKWPerMonth) || maxLength10(fieldsObj.DemandChargesPerKW) || maxLength10(fieldsObj.AvgUnitConsumptionPerMonth) ||
       maxLength10(fieldsObj.MaxDemandChargesKW) || maxLength10(fieldsObj.MeterRentAndOtherChargesPerAnnum) || maxLength10(fieldsObj.DutyChargesAndFCA)) {
-      toastr.warning('Fields value should not be more than 10');
+      Toaster.warning('Fields value should not be more than 10');
       return false;
     }
     if (decimalLengthFour(fieldsObj.MinDemandKWPerMonth) || decimalLengthFour(fieldsObj.DemandChargesPerKW) || decimalLengthFour(fieldsObj.AvgUnitConsumptionPerMonth) ||
       decimalLengthFour(fieldsObj.MaxDemandChargesKW) || decimalLengthFour(fieldsObj.MeterRentAndOtherChargesPerAnnum) || decimalLengthFour(fieldsObj.DutyChargesAndFCA)) {
-      toastr.warning('Decimal value should not be more than 4');
+      Toaster.warning('Decimal value should not be more than 4');
       return false;
     }
     if (decimalLengthThree(SEBPowerContributaion)) {
-      toastr.warning('Decimal value should not be more than 3');
+      Toaster.warning('Decimal value should not be more than 3');
       return false;
     }
     const tempArray = [];
@@ -606,7 +606,7 @@ class AddPower extends Component {
     }
 
     if (powerTotalT > 100) {
-      toastr.warning('Total Contribution should not be more than 100%');
+      Toaster.warning('Total Contribution should not be more than 100%');
       return false;
     }
 
@@ -658,44 +658,44 @@ class AddPower extends Component {
     }
 
     if (powerTotalT > 100) {
-      toastr.warning('Total Contribution should not be more than 100%');
+      Toaster.warning('Total Contribution should not be more than 100%');
       return false;
     }
 
     if (source.length === 0 || (fieldsObj.UnitGeneratedPerAnnum === undefined ||
       fieldsObj.SelfPowerContribution === undefined)) {
-      toastr.warning('Fields should not be empty');
+      Toaster.warning('Fields should not be empty');
       return false;
     }
 
     // if (this.state.temp > 100) {
-    //   toastr.warning('Fields 100');
+    //   Toaster.warning('Fields 100');
     //   return false;
     // }
 
     if (source.label === 'Generator Diesel' && fieldsObj.UnitGeneratedPerUnitOfFuel === undefined) {
-      toastr.warning('Fields should not be empty');
+      Toaster.warning('Fields should not be empty');
       return false;
     }
 
     if (maxLength10(fieldsObj.AssetCost) || maxLength10(fieldsObj.AnnualCost) || maxLength10(fieldsObj.UnitGeneratedPerAnnum)
       || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
-      toastr.warning('Fields value should not be more than 10');
+      Toaster.warning('Fields value should not be more than 10');
       return false;
     }
 
     if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
       Number(fieldsObj.SelfPowerContribution) < 0 || Number(fieldsObj.CostPerUnitOfMeasurement) < 0 || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) < 0) {
-      toastr.warning('Fields should not be negative');
+      Toaster.warning('Fields should not be negative');
       return false;
     }
     if (decimalLengthFour(fieldsObj.AssetCost) || decimalLengthFour(fieldsObj.AnnualCost)) {
-      toastr.warning('Decimal value should not be more than 4');
+      Toaster.warning('Decimal value should not be more than 4');
       return false;
     }
     if (decimalLengthThree(fieldsObj.SelfPowerContribution) || decimalLengthThree(fieldsObj.UnitGeneratedPerUnitOfFuel) ||
       decimalLengthThree(fieldsObj.CostPerUnitOfMeasurement) || decimalLengthThree(fieldsObj.UnitGeneratedPerAnnum)) {
-      toastr.warning('Decimal value should not be more than 3');
+      Toaster.warning('Decimal value should not be more than 3');
       return false;
     }
 
@@ -769,7 +769,7 @@ class AddPower extends Component {
     }
 
     if (powerTotalT > 100) {
-      toastr.warning('Total Contribution should not be more than 100%');
+      Toaster.warning('Total Contribution should not be more than 100%');
       return false;
     }
 
@@ -1068,7 +1068,7 @@ class AddPower extends Component {
         this.props.reset()
         this.props.updateVendorPowerDetail(vendorDetailData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
+            Toaster.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
             this.cancel();
           }
         })
@@ -1121,7 +1121,7 @@ class AddPower extends Component {
               TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
-              EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+              EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD'),
             }
           ],
           SGChargesDetails: selfGridDataArray,
@@ -1130,7 +1130,7 @@ class AddPower extends Component {
         this.props.reset()
         this.props.updatePowerDetail(requestData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
+            Toaster.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
             this.cancel();
           }
         })
@@ -1149,7 +1149,7 @@ class AddPower extends Component {
         }
         this.props.createVendorPowerDetail(vendorPowerData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
+            Toaster.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
             this.cancel();
           }
         });
@@ -1184,7 +1184,7 @@ class AddPower extends Component {
 
         this.props.createPowerDetail(formData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
+            Toaster.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
             this.cancel();
           }
         });
@@ -1875,7 +1875,7 @@ class AddPower extends Component {
                                 <tbody>
                                   <tr>
                                     <td colSpan="5">
-                                      {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                      {this.state.powerGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
                                     </td>
                                   </tr>
                                 </tbody>

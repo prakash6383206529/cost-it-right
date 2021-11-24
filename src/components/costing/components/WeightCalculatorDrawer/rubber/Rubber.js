@@ -192,7 +192,7 @@ function Rubber(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.inputDiameter}
-                                                disabled={false}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
                                         <Col md="2" className="m-height-44-label-inside">
@@ -217,7 +217,7 @@ function Rubber(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.thickness}
-                                                disabled={false}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
                                         <Col md="2" className="m-height-44-label-inside">
@@ -267,7 +267,7 @@ function Rubber(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.length}
-                                                disabled={false}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
                                         <Col md="2" className="m-height-44-label-inside">
@@ -292,7 +292,7 @@ function Rubber(props) {
                                                 className=""
                                                 customClassName={'withBorder'}
                                                 errors={errors.cuttingAllowance}
-                                                disabled={false}
+                                                disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
 
@@ -410,8 +410,8 @@ function Rubber(props) {
                                 className="reset mr15 cancel-btn"
                             >
                                 <div className={'cancel-icon'}></div>
-                                      CANCEL
-                             </button>
+                                CANCEL
+                            </button>
                             <button
                                 type="submit"
                                 // disabled={isSubmitted ? true : false}

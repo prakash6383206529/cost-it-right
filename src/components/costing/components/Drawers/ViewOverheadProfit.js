@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../config/constants'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useForm, Controller, useWatch } from 'react-hook-form';
@@ -91,6 +91,7 @@ function ViewOverheadProfit(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Part No`}</th>
                         <th>{`Overhead On`}</th>
                         <th>{`Percentage(%)`}</th>
                         <th>{`Cost (Applicability)`}</th>
@@ -102,6 +103,7 @@ function ViewOverheadProfit(props) {
                         <>
                           {viewOverheadData.IsOverheadFixedApplicable && (
                             <tr>
+                              <td>{viewOverheadData.PartNumber !== null || viewOverheadData.PartNumber !== "" ? viewOverheadData.PartNumber : ""}</td>
                               <td>{`Fixed`}</td>
                               <td>
                                 {viewOverheadData.OverheadFixedPercentage ? viewOverheadData.OverheadFixedPercentage : "-"}
@@ -130,7 +132,7 @@ function ViewOverheadProfit(props) {
                           )}
                           {viewOverheadData.IsOverheadBOPApplicable && (
                             <tr>
-                              <td>{`BOP`}</td>
+                              <td>{`Insert`}</td>
                               <td>
                                 {viewOverheadData.OverheadBOPPercentage ? viewOverheadData.OverheadBOPPercentage : "-"}
                               </td>
@@ -175,7 +177,7 @@ function ViewOverheadProfit(props) {
                       {(viewOverheadData.IsOverheadFixedApplicable === null && viewOverheadData.IsOverheadRMApplicable === null && viewOverheadData.IsOverheadBOPApplicable === null && viewOverheadData.IsOverheadCCApplicable === null && viewOverheadData.IsOverheadCombined === null) && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -198,6 +200,7 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Profits (Fixed)`}</th>
                           <th>{`Percentage(%)`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -209,6 +212,7 @@ function ViewOverheadProfit(props) {
                           <>
                             {viewProfitData.IsProfitFixedApplicable && (
                               <tr>
+                                <td>{viewProfitData.PartNumber !== null || viewProfitData.PartNumber !== "" ? viewProfitData.PartNumber : ""}</td>
                                 <td>{`Fixed`}</td>
                                 <td>
                                   {viewProfitData.ProfitFixedPercentage ? viewProfitData.ProfitFixedPercentage : "-"}
@@ -237,7 +241,7 @@ function ViewOverheadProfit(props) {
                             )}
                             {viewProfitData.IsProfitBOPApplicable && (
                               <tr>
-                                <td>{`BOP`}</td>
+                                <td>{`Insert`}</td>
                                 <td>
                                   {viewProfitData.ProfitBOPPercentage ? viewProfitData.ProfitBOPPercentage : "-"}
                                 </td>
@@ -286,7 +290,7 @@ function ViewOverheadProfit(props) {
                         {(viewProfitData.IsProfitFixedApplicable === null && viewProfitData.IsProfitRMApplicable === null && viewProfitData.IsProfitBOPApplicable === null && viewProfitData.IsProfitCCApplicable === null && viewProfitData.IsProfitCombined === null) && (
                           <tr>
                             <td colSpan={12}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}
@@ -309,6 +313,7 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main " size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Applicability`}</th>
                           <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -320,10 +325,11 @@ function ViewOverheadProfit(props) {
                           (rejectData.RejectionApplicability === null) ?
                             <tr>
                               <td colSpan={8}>
-                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr> :
                             <tr>
+                              <td>{rejectData.PartNumber !== null || rejectData.PartNumber !== "" ? rejectData.PartNumber : ""}</td>
                               <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
                               <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
                               <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>

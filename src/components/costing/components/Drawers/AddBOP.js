@@ -8,8 +8,8 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
+import { EMPTY_DATA } from '../../../../config/constants';
+import Toaster from '../../../common/Toaster';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
@@ -69,7 +69,7 @@ function AddBOP(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: (bopDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    noDataText: (bopDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal(),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -145,7 +145,7 @@ function AddBOP(props) {
   */
   const addRow = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')
@@ -407,7 +407,7 @@ function AddBOP(props) {
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                          title: CONSTANT.EMPTY_DATA,
+                          title: EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}

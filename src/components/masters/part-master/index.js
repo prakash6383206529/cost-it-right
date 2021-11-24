@@ -10,9 +10,9 @@ import { MASTERS, PART } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
+import { getConfigurationKey } from '../../../helper/auth'
 
 class PartMaster extends Component {
     constructor(props) {
@@ -121,7 +121,7 @@ class PartMaster extends Component {
     */
     render() {
         const { isAddBOMForm, isPartForm, isProductForm } = this.state;
-
+        const { initialConfiguration } = this.props;
         if (isAddBOMForm === true) {
             return <AddAssemblyPart
                 hideForm={this.hideForm}
@@ -162,11 +162,13 @@ class PartMaster extends Component {
                                         Manage Component/Part
                                     </NavLink>
                                 </NavItem>
+                                {/* {getConfigurationKey().IsVendorPlantConfigurable && <NavItem> */}
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                         Manage Products
                                 </NavLink>
                                 </NavItem>
+
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 {this.state.activeTab === '1' &&
@@ -220,14 +222,13 @@ class PartMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-    const { leftMenuData, topAndLeftMenuData } = auth;
-    return { leftMenuData, topAndLeftMenuData }
+    const { leftMenuData, topAndLeftMenuData, initialConfiguration } = auth;
+    return { leftMenuData, topAndLeftMenuData, initialConfiguration }
 }
 
 
 export default connect(mapStateToProps,
     {
-        getLeftMenu
     }
 )(PartMaster);
 

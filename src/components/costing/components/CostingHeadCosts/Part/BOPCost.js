@@ -5,8 +5,8 @@ import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
+import { EMPTY_DATA } from '../../../../../config/constants';
+import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
@@ -169,7 +169,7 @@ function BOPCost(props) {
       setTimeout(() => {
         setValue(`${bopGridFields}.${index}.Quantity`, 0)
       }, 200)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -219,7 +219,7 @@ function BOPCost(props) {
     } else {
       setValue('BOPHandlingCharges', 0)
       setValue('BOPHandlingPercentage', 0)
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -369,7 +369,7 @@ function BOPCost(props) {
                     {gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={6}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     }

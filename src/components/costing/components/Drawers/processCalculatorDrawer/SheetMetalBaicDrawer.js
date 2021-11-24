@@ -8,7 +8,7 @@ import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { DIMENSIONLESS, HOUR, KG, MASS, NO, SHOTS, STROKE, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SheetMetalBaicDrawer(props) {
@@ -130,7 +130,7 @@ function SheetMetalBaicDrawer(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime('0.00', obj)
       }
     }))
@@ -282,7 +282,7 @@ function SheetMetalBaicDrawer(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.CycleTime}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                   }
@@ -311,7 +311,7 @@ function SheetMetalBaicDrawer(props) {
                       customClassName={'withBorder'}
                       errors={errors.Cavity}
                       // disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
-                      disabled={false}
+                      disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
 
@@ -337,7 +337,7 @@ function SheetMetalBaicDrawer(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Efficiency}
-                      disabled={false}
+                      disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -362,7 +362,7 @@ function SheetMetalBaicDrawer(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Quantity}
-                      disabled={(props.calculatorData.UOMType === MASS || props.calculatorData.UOMType === TIME) ? true : false}
+                      disabled={(props.calculatorData.UOMType === MASS || props.calculatorData.UOMType === TIME || props.CostingViewMode) ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -417,6 +417,7 @@ function SheetMetalBaicDrawer(props) {
               <button
                 type="submit"
                 // disabled={isSubmitted ? true : false}
+                disabled={props.CostingViewMode ? true : false}
                 className="btn-primary save-btn"
               >
                 <div className={"save-icon"}></div>

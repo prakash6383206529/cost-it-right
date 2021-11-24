@@ -50,12 +50,11 @@ import {
   GET_UOM_SELECTLIST_BY_UNITTYPE,
   GET_ICC_APPLICABILITY_SELECTLIST,
   GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
-  GET_LAST_SIMULATION_DATA,
   config,
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../components/common/Toaster';
 
 const headers = config;
 
@@ -75,7 +74,7 @@ export function fetchCountryDataAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -112,7 +111,7 @@ export function fetchStateDataAPI(countryId, callback) {
           });
           callback(response);
         } else {
-          toastr.error(MESSAGES.SOME_ERROR);
+          Toaster.error(MESSAGES.SOME_ERROR);
         }
       }).catch((error) => {
         dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -225,7 +224,7 @@ export function fetchRMGradeAPI(Id, callback) {
           });
           callback(response);
         } else {
-          toastr.error(MESSAGES.SOME_ERROR);
+          Toaster.error(MESSAGES.SOME_ERROR);
         }
       }).catch((error) => {
         dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -252,7 +251,7 @@ export function fetchRMCategoryAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -285,7 +284,7 @@ export function fetchCategoryAPI(Id, callback) {
           });
           callback(response);
         } else {
-          toastr.error(MESSAGES.SOME_ERROR);
+          Toaster.error(MESSAGES.SOME_ERROR);
         }
       }).catch((error) => {
         dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -312,7 +311,7 @@ export function getOtherOperationData(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE });
@@ -338,7 +337,7 @@ export function getCEDOtherOperationComboData(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE });
@@ -372,7 +371,7 @@ export function fetchPartComboAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -431,7 +430,7 @@ export function fetchBOPComboAPI(callback) {
         callback(response);
       }
       // else {
-      //     toastr.error(MESSAGES.SOME_ERROR);
+      //     Toaster.error(MESSAGES.SOME_ERROR);
       // }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -465,7 +464,7 @@ export function fetchBOMComboAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -523,7 +522,7 @@ export function fetchMaterialComboAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -560,7 +559,7 @@ export function fetchGradeDataAPI(rowMaterialId, callback) {
           });
           callback(response);
         } else {
-          toastr.error(MESSAGES.SOME_ERROR);
+          Toaster.error(MESSAGES.SOME_ERROR);
         }
       }).catch((error) => {
         dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -594,7 +593,7 @@ export function fetchSpecificationDataAPI(rmGradeId, callback) {
           });
           callback(response);
         } else {
-          toastr.error(MESSAGES.SOME_ERROR);
+          Toaster.error(MESSAGES.SOME_ERROR);
         }
       }).catch((error) => {
         dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -632,7 +631,7 @@ export function fetchFreightComboAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -665,7 +664,7 @@ export function fetchLabourComboAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -692,7 +691,7 @@ export function getMHRMasterComboData(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: DATA_FAILURE });
@@ -718,7 +717,7 @@ export function fetchSupplierCityDataAPI(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: FETCH_MATER_DATA_FAILURE, });
@@ -984,7 +983,7 @@ export function getChargeTypeSelectList(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE, });
@@ -1010,7 +1009,7 @@ export function getPowerSupplierTypeSelectList(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE, });
@@ -1524,29 +1523,3 @@ export function getAllCity(callback) {
     })
   }
 }
-
-
-export function getLastSimulationData(vendorId, effectiveDate, callback) {
-  return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
-
-    const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_LAST_SIMULATION_DATA,
-          payload: response.data.Data.ImpactedMasterDataList,
-        });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE, });
-      callback(error);
-      apiErrors(error);
-    });
-  };
-}
-
-
-

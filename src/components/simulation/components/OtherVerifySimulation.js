@@ -4,12 +4,12 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { getVerifyExchangeSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { EXCHNAGERATE, ZBC } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
@@ -60,7 +60,7 @@ function OtherVerifySimulation(props) {
                 if (res.data.Result) {
                     const data = res.data.Data
                     if (data.SimulationExchangeRateImpactedCostings.length === 0) {
-                        toastr.warning('No approved costing exist for this exchange rate.')
+                        Toaster.warning('No approved costing exist for this exchange rate.')
                         setHideRunButton(true)
                         return false
                     }
@@ -134,9 +134,10 @@ function OtherVerifySimulation(props) {
 
     const runSimulation = () => {
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
+            Toaster.warning('Please select atleast one costing.')
             return false
         }
+
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -275,8 +276,8 @@ function OtherVerifySimulation(props) {
                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
-                                                    title: CONSTANT.EMPTY_DATA,
-                                                    customClassName:'nodata-found-container'
+                                                    title: EMPTY_DATA,
+                                                    customClassName: 'nodata-found-container'
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 rowSelection={'multiple'}

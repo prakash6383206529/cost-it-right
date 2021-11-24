@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getRowMaterialDataAPI, deleteCategoryAPI } from '../../actions/Material';
 import { Loader } from '../../../../common/Loader';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { CATEGORY, NAME, DATE, EMPTY_DATA } from '../../../config/constants';
 import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class RMCategoryDetail extends Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class RMCategoryDetail extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -39,13 +42,14 @@ class RMCategoryDetail extends Component {
     * @description confirm delete Material type
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
             },
             onCancel: () => { }
         };
-        return toastr.confirm(`${MESSAGES.CATEGORY_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.CATEGORY_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -55,12 +59,18 @@ class RMCategoryDetail extends Component {
     confirmDelete = (CategoryId) => {
         this.props.deleteCategoryAPI(CategoryId, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_CATEGORY_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_CATEGORY_SUCCESS);
                 this.props.getRowMaterialDataAPI(res => { });
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method render
     * @description Renders the component
@@ -76,9 +86,9 @@ class RMCategoryDetail extends Component {
                             {this.props.rowMaterialCategoryDetail && this.props.rowMaterialCategoryDetail.length > 0 &&
                                 <thead>
                                     <tr>
-                                        <th>{`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}</th>
+                                        <th>{`${CATEGORY} ${NAME}`}</th>
                                         {/* <th>{`${CONSTANT.CATEGORY} ${CONSTANT.DESCRIPTION}`}</th> */}
-                                        <th>{`${CONSTANT.DATE}`}</th>
+                                        <th>{`${DATE}`}</th>
                                     </tr>
                                 </thead>}
                             <tbody >
@@ -96,11 +106,14 @@ class RMCategoryDetail extends Component {
                                             </tr>
                                         )
                                     })}
-                                {this.props.rowMaterialCategoryDetail === undefined && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                {this.props.rowMaterialCategoryDetail === undefined && <NoContentFound title={EMPTY_DATA} />}
                             </tbody>
                         </Table>
                     </Col>
                 </Row>
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CATEGORY_DELETE_ALERT}`}  />
+         }
             </div>
         );
     }

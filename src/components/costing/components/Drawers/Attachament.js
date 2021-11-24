@@ -7,7 +7,7 @@ import { FILE_URL } from '../../../../config/constants'
 function Attachament(props) {
   const { index } = props
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-  console.log('viewCostingData: ', viewCostingData);
+
   const Data = viewCostingData[index]
   /*
    * @method toggleDrawer

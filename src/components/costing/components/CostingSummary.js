@@ -3,8 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
-import { toastr } from 'react-redux-toastr'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
@@ -31,11 +30,11 @@ function CostingSummary(props) {
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false)
   const [part, setPart] = useState([])
+  const [partDropdown, setPartDropdown] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
   const [TechnologyId, setTechnologyId] = useState('')
   const [disabled, setDisabled] = useState(false)
   const [showWarningMsg, setShowWarningMsg] = useState(false)
-  const [partDropdown, setPartDropdown] = useState([])
 
   const partNumber = useSelector(state => state.costing.partNo);
 
@@ -89,7 +88,7 @@ function CostingSummary(props) {
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', Data.Price)
           setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-          setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId
           newValue.technologyName = costingData.TechnologyName
@@ -168,6 +167,11 @@ function CostingSummary(props) {
   useEffect(() => {
 
   }, [disabled])
+
+  useEffect(() => {
+    renderDropdownListing('PartList')
+  }, [partSelectListByTechnology])
+
   /**
    * @method handlePartChange
    * @description  USED TO HANDLE PART CHANGE
@@ -196,7 +200,7 @@ function CostingSummary(props) {
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
                   setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-                  setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                  setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value
                   newValue.technologyName = technology.label
@@ -304,7 +308,7 @@ function CostingSummary(props) {
     SetIsBulkOpen(false)
   }
 
-  const filterColors = (inputValue) => {
+  const filterList = (inputValue) => {
     if (inputValue) {
       let tempArr = []
       tempArr = partDropdown && partDropdown.filter(i => {
@@ -320,10 +324,9 @@ function CostingSummary(props) {
       return partDropdown
     }
   };
-
   const promiseOptions = inputValue =>
     new Promise(resolve => {
-      resolve(filterColors(inputValue));
+      resolve(filterList(inputValue));
     });
 
   useEffect(() => {
@@ -392,8 +395,8 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                        
-                      {/* <TooltipCustom tooltipText="Please enter first digit to see part numbers"/> */}
+
+                        {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
@@ -410,7 +413,7 @@ function CostingSummary(props) {
                           errors={errors.Part}
                           message={"Enter"}
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
-                        />
+                        /> 
                       </Col>
 
                       <Col className="col-md-15">

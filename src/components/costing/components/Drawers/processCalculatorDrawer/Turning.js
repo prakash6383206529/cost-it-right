@@ -7,7 +7,7 @@ import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from '.
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 
 
 function Turning(props) {
@@ -169,7 +169,7 @@ function Turning(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
@@ -211,7 +211,7 @@ function Turning(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.turningDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -236,7 +236,7 @@ function Turning(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.finishDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -261,7 +261,7 @@ function Turning(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.turningLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -319,7 +319,7 @@ function Turning(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -368,7 +368,7 @@ function Turning(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -409,7 +409,7 @@ function Turning(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.feedRev}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -474,7 +474,7 @@ function Turning(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -523,7 +523,7 @@ function Turning(props) {
                 <div className={'cancel-icon'}></div>
                 CANCEL
               </button>
-              <button type="submit" className="btn-primary save-btn"><div className={"save-icon"}></div>{'SAVE'}</button>
+              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}><div className={"save-icon"}></div>{'SAVE'}</button>
             </div>
           </form>
         </Col>

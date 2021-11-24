@@ -3,7 +3,7 @@ import { checkForDecimalAndNull } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 
 function ViewConversionCost(props) {
@@ -75,6 +75,7 @@ function ViewConversionCost(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Part No`}</th>
                         <th>{`Process Name`}</th>
                         <th>{`Process Description`}</th>
                         <th>{`Machine Name`}</th>
@@ -93,6 +94,7 @@ function ViewConversionCost(props) {
                         costingProcessCost.map((item, index) => {
                           return (
                             <tr key={index}>
+                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                               <td>{item.ProcessName ? item.ProcessName : '-'}</td>
                               <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
                               <td>{item.MachineName ? item.MachineName : '-'}</td>
@@ -111,7 +113,7 @@ function ViewConversionCost(props) {
                       {costingProcessCost && costingProcessCost.length === 0 && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -134,6 +136,7 @@ function ViewConversionCost(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Operation Name`}</th>
                           <th>{`Operation Code`}</th>
                           <th>{`UOM`}</th>
@@ -150,6 +153,7 @@ function ViewConversionCost(props) {
                           costingOperationCost.map((item, index) => {
                             return (
                               <tr key={index}>
+                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                                 <td>
                                   {item.OperationName ? item.OperationName : '-'}
                                 </td>
@@ -179,7 +183,7 @@ function ViewConversionCost(props) {
                         {costingOperationCost && costingOperationCost.length === 0 && (
                           <tr>
                             <td colSpan={9}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}
@@ -203,6 +207,7 @@ function ViewConversionCost(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Operation Name`}</th>
                           <th>{`Operation Code`}</th>
                           <th>{`UOM`}</th>
@@ -219,6 +224,7 @@ function ViewConversionCost(props) {
                           othercostingOperationCost.map((item, index) => {
                             return (
                               <tr key={index}>
+                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                                 <td>
                                   {item.OtherOperationName ? item.OtherOperationName : '-'}
                                 </td>
@@ -248,7 +254,7 @@ function ViewConversionCost(props) {
                         {othercostingOperationCost && othercostingOperationCost.length === 0 && (
                           <tr>
                             <td colSpan={9}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}
@@ -301,7 +307,7 @@ function ViewConversionCost(props) {
                           {costingToolsCost.length === 0 && (
                             <tr>
                               <td colSpan={8}>
-                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                                <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr>
                           )}
@@ -322,6 +328,7 @@ function ViewConversionCost(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Part No`}</th>
                         <th>{`Operation Name`}</th>
                         <th>{`Surface Area`}</th>
                         <th>{`UOM`}</th>
@@ -334,6 +341,7 @@ function ViewConversionCost(props) {
                         surfaceTreatmentDetails.map((item, index) => {
                           return (
                             <tr key={index}>
+                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                               <td>{item.OperationName ? item.OperationName : '-'}</td>
                               <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                               <td>{item.UOM ? item.UOM : '-'}</td>
@@ -346,7 +354,7 @@ function ViewConversionCost(props) {
                       {surfaceTreatmentDetails && surfaceTreatmentDetails.length === 0 && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -366,6 +374,7 @@ function ViewConversionCost(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Part No`}</th>
                         <th>{`UOM`}</th>
                         <th>{`Rate`}</th>
                         <th>{`Quantity`}</th>
@@ -376,10 +385,11 @@ function ViewConversionCost(props) {
                       {netTransportationCostView && netTransportationCostView.UOM === null ?
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr> :
                         <tr>
+                          <td>{netTransportationCostView.PartNumber !== null || netTransportationCostView.PartNumber !== "" ? netTransportationCostView.PartNumber : ""}</td>
                           <td>{netTransportationCostView && netTransportationCostView.UOM ? netTransportationCostView.UOM : '-'}</td>
                           <td>{netTransportationCostView && netTransportationCostView.Rate ? checkForDecimalAndNull(netTransportationCostView.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                           <td>{netTransportationCostView && netTransportationCostView.Quantity ? checkForDecimalAndNull(netTransportationCostView.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>

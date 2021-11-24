@@ -4,9 +4,9 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -20,17 +20,17 @@ import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -58,6 +58,9 @@ class OperationListing extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
+            selectedRowData: [],
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -124,6 +127,9 @@ class OperationListing extends Component {
                 this.setState({
                     tableData: Data,
                 })
+                if (this.props.isSimulation) {
+                    this.props.apply(Data)
+                }
             } else {
 
             }
@@ -195,6 +201,7 @@ class OperationListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -202,7 +209,7 @@ class OperationListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(MESSAGES.OPERATION_DELETE_ALERT, toastrConfirmOptions);
+        // return Toaster.confirm(MESSAGES.OPERATION_DELETE_ALERT, toastrConfirmOptions);
     }
 
     /**
@@ -212,10 +219,17 @@ class OperationListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteOperationAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_OPERATION_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.getTableListData(null, null, null, null)
             }
         });
+        this.setState({ showPopup: false })
+    }
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
     }
     /**
     * @method buttonFormatter
@@ -374,36 +388,19 @@ class OperationListing extends Component {
  */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
         return data;
 
     }
 
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { costingHead, selectedTechnology, vendorName, operationName, } = this.state;
-        const costingHeadTemp = costingHead ? costingHead.value : null;
-        const operationNameTemp = operationName ? operationName.value : null;
-        const technologyTemp = selectedTechnology ? selectedTechnology.value : null;
-        const vendorNameTemp = vendorName ? vendorName.value : null;
-        this.getTableListData(costingHeadTemp, operationNameTemp, technologyTemp, vendorNameTemp)
-    }
 
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
     resetFilter = () => {
         this.setState({
             costingHead: [],
@@ -520,6 +517,22 @@ class OperationListing extends Component {
                 />
             )
         }
+        const onRowSelect = () => {
+            const {isSimulation} = this.props
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (isSimulation) {
+                let len = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(len, res => { })
+                this.props.apply(selectedRows)
+            }
+            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
+        }
 
 
         const defaultColDef = {
@@ -552,97 +565,7 @@ class OperationListing extends Component {
                             // </Row>
                         }
                         <Row className="pt-4 filter-row-large blue-before">
-                            {this.state.shown &&
-                                <Col md="12" lg="10" className="filter-block operation-filer-block ">
-                                    <div className="d-inline-flex justify-content-start align-items-top w100">
-                                        <div className="flex-fills">
-                                            <h5>{`Filter By:`}</h5>
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="costingHead"
-                                                type="text"
-                                                label=""
-                                                component={searchableSelect}
-                                                placeholder={"Costing Head"}
-                                                isClearable={false}
-                                                options={this.renderListing("costingHead")}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={this.state.costingHead == null || this.state.costingHead.length === 0 ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleHeadChange}
-                                                valueDescription={this.state.costingHead}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="technology"
-                                                type="text"
-                                                label=""
-                                                component={searchableSelect}
-                                                placeholder={"Technology"}
-                                                isClearable={false}
-                                                options={this.renderListing("technology")}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleTechnology}
-                                                valueDescription={this.state.selectedTechnology}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="operationName"
-                                                type="text"
-                                                label=""
-                                                component={searchableSelect}
-                                                placeholder={"Operation Name"}
-                                                isClearable={false}
-                                                options={this.renderListing("OperationNameList")}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={this.state.operationName == null || this.state.operationName.length === 0 ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleOperationName}
-                                                valueDescription={this.state.operationName}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="vendorName"
-                                                type="text"
-                                                label=""
-                                                component={searchableSelect}
-                                                placeholder={"Vendors Name"}
-                                                isClearable={false}
-                                                options={this.renderListing("VendorList")}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleVendorName}
-                                                valueDescription={this.state.vendorName}
-                                            />
-                                        </div>
 
-                                        <div className="flex-fill">
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={this.resetFilter}
-                                                className="reset mr10"
-                                            >
-                                                {"Reset"}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                //disabled={pristine || submitting}
-                                                onClick={this.filterList}
-                                                className="user-btn"
-                                            >
-                                                {"Apply"}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Col>}
                             <Col md="6" lg="6" className="search-user-block mb-3">
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     <div>
@@ -651,9 +574,7 @@ class OperationListing extends Component {
                                                 <div className="cancel-icon-white"></div>
                                             </button>
                                             :
-                                            <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                <div className="filter mr-0"></div>
-                                            </button>
+                                            ""
                                         }
                                         {AddAccessibility && (
                                             <button
@@ -728,7 +649,7 @@ class OperationListing extends Component {
                                 loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
-                                    title: CONSTANT.EMPTY_DATA,
+                                    title: EMPTY_DATA,
                                     imagClass: 'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
@@ -765,7 +686,10 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </div >
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
+                }
+            </div>
         );
     }
 }
@@ -799,7 +723,7 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getLeftMenu,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

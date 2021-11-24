@@ -7,7 +7,7 @@ import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { clampingTime, feedByMin, totalMachineTime } from './CommonFormula'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 
 function Drilling(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -115,7 +115,7 @@ function Drilling(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
@@ -158,7 +158,7 @@ function Drilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.OuterDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -183,7 +183,7 @@ function Drilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.turningLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -208,7 +208,7 @@ function Drilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -233,7 +233,7 @@ function Drilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.PartLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                   </Row>
@@ -266,7 +266,7 @@ function Drilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -306,7 +306,7 @@ function Drilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.feedRev}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -371,7 +371,7 @@ function Drilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -404,6 +404,7 @@ function Drilling(props) {
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn" >
                 <div className={'cancel-icon'}></div> CANCEL </button>
               <button type="submit" className="btn-primary save-btn" >
+                disabled={props.CostingViewMode ? true : false}
                 <div className={'save-icon'}></div> {'SAVE'}
               </button>
             </div>

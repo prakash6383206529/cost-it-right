@@ -10,16 +10,16 @@ import { getVendorListByVendorType } from "../actions/Material";
 import {
   createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
 } from "../actions/Freight";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
-import moment from "moment";
+import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
-import { CONSTANT } from "../../../helper/AllConastant";
+import { EMPTY_DATA } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
@@ -119,7 +119,7 @@ class AddFreight extends Component {
                   FreightId: item.FreightId,
                   Capacity: item.Capacity,
                   RateCriteria: item.RateCriteria,
-                  EffectiveDate: moment(item.EffectiveDate)._d,
+                  EffectiveDate: DayTime(item.EffectiveDate)._d,
                   Rate: item.Rate,
                 };
               });
@@ -309,7 +309,7 @@ class AddFreight extends Component {
     } = this.state;
     const { fieldsObj } = this.props;
     if (FullTruckCapacity.length === 0 || RateCriteria.length === 0) {
-      toastr.warning("Fields should not be empty");
+      Toaster.warning("Fields should not be empty");
       return false;
     }
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
@@ -319,7 +319,7 @@ class AddFreight extends Component {
         el.RateCriteriaId === RateCriteria.value
     );
     if (isExist !== -1) {
-      toastr.warning("Already added, Please check the values.");
+      Toaster.warning("Already added, Please check the values.");
       return false;
     }
     const Rate =
@@ -364,7 +364,7 @@ class AddFreight extends Component {
         el.RateCriteria === RateCriteria.value
     );
     if (isExist !== -1) {
-      toastr.warning("Already added, Please check the values.");
+      Toaster.warning("Already added, Please check the values.");
       return false;
     }
     let tempArray = [];
@@ -492,7 +492,7 @@ class AddFreight extends Component {
       this.props.reset()
       this.props.updateFright(requestData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
+          Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
           this.cancel();
         }
       });
@@ -514,7 +514,7 @@ class AddFreight extends Component {
       this.props.reset()
       this.props.createFreight(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
+          Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
           this.cancel();
         }
       });
@@ -700,7 +700,7 @@ class AddFreight extends Component {
                               onChange={this.onPressLoadUnload}
                             >
                               Loading/Unloading Charges
-                            <input
+                              <input
                                 type="checkbox"
                                 checked={this.state.IsLoadingUnloadingApplicable}
                                 disabled={false}
@@ -825,7 +825,7 @@ class AddFreight extends Component {
                             <div className="form-group">
                               <label>
                                 Effective Date
-                              {/* <span className="asterisk-required">*</span> */}
+                                {/* <span className="asterisk-required">*</span> */}
                               </label>
                               <div className="inputbox date-section">
                                 <DatePicker
@@ -859,14 +859,14 @@ class AddFreight extends Component {
                                     onClick={this.updateGrid}
                                   >
                                     Update
-                                </button>
+                                  </button>
                                   <button
                                     type="button"
                                     className={"reset-btn mt30 pull-left mb-2 w-auto px-1"}
                                     onClick={this.resetGridData}
                                   >
                                     Cancel
-                                </button>
+                                  </button>
                                 </>
                               ) : (
                                 <button
@@ -875,7 +875,7 @@ class AddFreight extends Component {
                                   onClick={this.gridHandler}
                                 >
                                   <div className={"plus"}></div>
-                                ADD
+                                  ADD
                                 </button>
                               )}
                             </div>
@@ -902,7 +902,7 @@ class AddFreight extends Component {
                                         <td>{item.RateCriteria}</td>
                                         <td>{checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                         <td>
-                                          {item.EffectiveDate ? moment(item.EffectiveDate).format("DD/MM/YYYY") : '-'}
+                                          {item.EffectiveDate ? DayTime(item.EffectiveDate).format("DD/MM/YYYY") : '-'}
                                         </td>
                                         <td>
                                           <button className="Edit mr-2" type={"button"} onClick={() => this.editGridItemDetails(index)} />
@@ -914,10 +914,10 @@ class AddFreight extends Component {
                               </tbody>
                             </Table>
                             {this.state.gridTable.length === 0 && (
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             )}
                           </Col>
-                          
+
                         </Row>
                       </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">

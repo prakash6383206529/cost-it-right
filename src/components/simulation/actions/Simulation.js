@@ -15,8 +15,12 @@ import {
     GET_SIMULATION_DEPARTMENT_LIST,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_SELECTED_COSTING_STATUS,
-    GET_AMMENDENT_STATUS_COSTING,
-    GET_SELECTLIST_SIMULATION_TOKENS
+    GET_AMMENDENT_STATUS_COSTING, 
+    GET_SELECTLIST_SIMULATION_TOKENS,
+    GET_IMPACTED_MASTER_DATA,
+    GET_LAST_SIMULATION_DATA,
+    SET_ATTACHMENT_FILE_DATA,
+    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -588,3 +592,109 @@ export function uploadSimulationAttachment(data, callback) {
             })
     }
 }
+
+
+
+export function getLastSimulationData(vendorId, effectiveDate, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
+
+        const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_LAST_SIMULATION_DATA,
+                    payload: response.data.Data.ImpactedMasterDataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function getImpactedMasterData(simulationId, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const queryParams = `simulationId=${simulationId}`
+        const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_IMPACTED_MASTER_DATA,
+                    payload: response.data.Data.ImpactedMasterDataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+export function runVerifySurfaceTreatmentSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftSurfaceTreatmentSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getVerifySurfaceTreatmentSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function setSelectedRowCountForSimulationMessage(selectedMaster) {
+    console.log(selectedMaster, 'kkkkkkkk')
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+            payload: selectedMaster,
+        });
+    }
+}
+
+
+

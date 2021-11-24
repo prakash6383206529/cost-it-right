@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Col, Row } from 'reactstrap'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import { useDispatch, useSelector } from 'react-redux';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData } from '../actions/Simulation';
@@ -16,12 +16,12 @@ import { ZBC } from '../../../config/constants';
 const gridOptions = {};
 
 export function Summarysection(props) {
-    const {isbulkUpload} = props;
+    const { isbulkUpload } = props;
 
-    
-    
-    
-    
+
+
+
+
     const [simulationDetail, setSimulationDetail] = useState({})
     const [approvalLevelStep, setApprovalLevelStep] = useState([])
     const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
@@ -215,7 +215,7 @@ export function Summarysection(props) {
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
     // all formaters end
 
@@ -250,7 +250,7 @@ export function Summarysection(props) {
 
     return (
         <>
-             <Row>
+            <Row>
                 <Col md="10">
                     <div className="left-border">{'Summary:'}</div>
                 </Col>
@@ -289,8 +289,7 @@ export function Summarysection(props) {
                                                 <AgGridReact
                                                     style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
-domLayout='autoHeight'
-domLayout='autoHeight'
+                                                    domLayout='autoHeight'
                                                     // columnDefs={c}
                                                     rowData={costingList}
                                                     pagination={true}
@@ -300,7 +299,7 @@ domLayout='autoHeight'
                                                     loadingOverlayComponent={'customLoadingOverlay'}
                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                     noRowsOverlayComponentParams={{
-                                                        title: CONSTANT.EMPTY_DATA,
+                                                        title: EMPTY_DATA,
                                                     }}
                                                     frameworkComponents={frameworkComponents}
                                                 >
@@ -316,7 +315,7 @@ domLayout='autoHeight'
                                                     <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="PO Price New"></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="RM Cost Old" ></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="RM Cost New" ></AgGridColumn>
-                                                    <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions"  type="rightAligned"></AgGridColumn>
+                                                    <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' headerName="Actions" type="rightAligned"></AgGridColumn>
                                                     {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                     <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 

@@ -9,11 +9,11 @@ import {
     setUserAdditionalPermission, getActionHeadsSelectList, revertDefaultPermission,
 } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { Container, Row, Col, Table, Collapse, Button, CardBody, Card, CardTitle } from 'reactstrap';
 import { EAccessType } from "../../config/masterData";
 import NoContentFound from '../common/NoContentFound';
-import { CONSTANT } from '../../helper/AllConastant';
+import { EMPTY_DATA } from '../../config/constants';
 
 class PermissionsUserWise extends Component {
     constructor(props) {
@@ -564,7 +564,7 @@ class PermissionsUserWise extends Component {
 
         this.props.setUserAdditionalPermission(formData, (res) => {
             if (res && res.data && res.data.Result) {
-                toastr.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
+                Toaster.success(MESSAGES.ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY)
             }
             reset();
             this.setState({
@@ -720,7 +720,7 @@ class PermissionsUserWise extends Component {
                                             </tr>
                                         )
                                     })}
-                                    {this.state.Modules.length == 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                    {this.state.Modules.length == 0 && <NoContentFound title={EMPTY_DATA} />}
                                 </tbody>
                             </Table>
 

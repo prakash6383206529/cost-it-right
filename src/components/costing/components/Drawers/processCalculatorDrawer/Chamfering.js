@@ -6,7 +6,7 @@ import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from './CommonFormula'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 
 
@@ -148,7 +148,7 @@ function Chamfering(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
@@ -190,7 +190,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.turningDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -215,7 +215,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.finishDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -240,7 +240,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.turningLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -290,7 +290,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.removedMaterial}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
 
@@ -316,7 +316,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -365,7 +365,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -405,7 +405,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.feedRev}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -468,7 +468,7 @@ function Chamfering(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -502,7 +502,8 @@ function Chamfering(props) {
             <div className="mt25 col-md-12 text-right">
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn" >
                 <div className={'cancel-icon'}></div> CANCEL</button>
-              <button type="submit" className="btn-primary save-btn">
+              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}>
+
                 <div className={'save-icon'}></div> {'SAVE'} </button>
             </div>
           </form>

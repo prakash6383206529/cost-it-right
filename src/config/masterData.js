@@ -1802,8 +1802,8 @@ export const RMDomesticSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpecs", value: "RMSpec" },
-    { label: "RMCode", value: "RawMaterialCode", },
+    { label: "RMSpec", value: "RMSpec" },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     { label: "VendorName", value: "VendorName" },
@@ -1830,8 +1830,8 @@ export const RMImportSimulation = [
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpecs", value: "RMSpec" },
-    { label: "RMCode", value: "RawMaterialCode", },
+    { label: "RMSpec", value: "RMSpec" },
+    { label: "RawMaterialCode", value: "RawMaterialCode", },
     { label: "Category", value: "Category" },
     { label: "TechnologyName", value: "TechnologyName" },
     //{ label: "Plant", value: "Plant" },
@@ -1849,6 +1849,32 @@ export const RMImportSimulation = [
     { label: "PlantId", value: "PlantId" },
     { label: "RMCode", value: "RawMaterialCode", },
 
+]
+
+export const SurfaceTreatmentSimulation = [
+    { label: "Technology", value: "Technology" },
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "VendorName", value: "VendorName", },
+    { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
+    { label: "Rate", value: "Rate" },
+    { label: "NewRate", value: "NewRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
+]
+
+export const OperationSimulation = [
+    { label: "Technology", value: "Technology" },
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "VendorName", value: "VendorName", },
+    { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
+    { label: "Rate", value: "Rate" },
+    { label: "NewRate", value: "NewRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
 ]
 
 // Purchasing Group
@@ -2337,15 +2363,13 @@ export const CostingSimulationDownload = [
     { label: "Technology", value: "Technology" },
     { label: "Raw Material", value: "RMName" },
     { label: "RawMaterial Grade", value: "RMGrade" },
-    { label: "RawMaterial Specs", value: "RMSpec" },
+    { label: "RM Specs", value: "RMSpec" },
+    { label: "RM Code", value: "RMCode" },
     { label: "PlantCode", value: "PlantCode" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
-    { label: "Revision Number", value: "RevisionNumber" },
-    { label: "RM Specs", value: "RMSpec" },
-    { label: "RM Code", value: "RMCode" },
-
+    { label: "Revision Number", value: "RevisionNumber" },    
     { label: "Finish Weight", value: "RawMaterialFinishWeight" },
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "PO Price Old", value: "OldPOPrice" },
@@ -2368,7 +2392,7 @@ export const CostingSimulationDownload = [
     { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
     { label: "OldOtherCost", value: "OldOtherCost" },
     { label: "NewOtherCost", value: "NewOtherCost" },
-    { label: "OldDiscountCost", value: "NOldDiscountCostewRMPrice" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
@@ -2690,7 +2714,7 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "RMSpecification", value: "RMSpecification", },
     { label: "GrossWeight", value: "GrossWeight", },
     { label: "FinishWeight", value: "FinishWeight", },
-    { label: "ScrapWeight", value: "ScrapWeight", },
+    // { label: "ScrapWeight", value: "ScrapWeight", },
     { label: "NetRawMaterialsCost", value: "NetRawMaterialsCost", },
     { label: "NetInsertCost", value: "NetBoughtOutPartCost", },
     { label: "NetProcessCost", value: "NetProcessCost", },

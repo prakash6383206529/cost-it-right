@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Col, Row } from 'reactstrap';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
-import LoaderCustom from '../../common/LoaderCustom';
+import LoaderCustom from '../../../common/LoaderCustom'
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
-import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
-import { Costmovementgraph } from '../../dashboard/CostMovementGraph';
-import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../dashboard/ChartsDashboard';
-import { getBOPCategorySelectList } from '../actions/BoughtOutParts';
+import NoContentFound from '../../../common/NoContentFound'
+import { EMPTY_DATA } from '../../../../config/constants'
+import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
+import { graphColor1, graphColor3, graphColor4, graphColor6 } from '../../../dashboard/ChartsDashboard'
+import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts'
 
 function Insights(props) {
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -227,7 +227,6 @@ function Insights(props) {
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 domLayout='autoHeight'
-                                                floatingFilter={true}
                                                 rowData={rowData}
                                                 rowSelection={'single'}
                                                 onSelectionChanged={onSelectionChanged}
@@ -239,7 +238,7 @@ function Insights(props) {
                                                 loadingOverlayComponent={'customLoadingOverlay'}
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
-                                                    title: CONSTANT.EMPTY_DATA,
+                                                    title: EMPTY_DATA,
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                             >

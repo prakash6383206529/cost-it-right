@@ -258,11 +258,17 @@ export default function materialReducer(state = initialState, action) {
                 MaterialSelectList: action.payload
             };
         case GET_RM_DOMESTIC_LIST:
+            let arr = [];
+            arr = action.payload && action.payload.filter((item) => {
+                return item.IsAVCCosting === false
+
+            }
+            )
             return {
                 ...state,
                 loading: false,
                 error: true,
-                rmDataList: action.payload
+                rmDataList: arr
             }
         case GET_RM_IMPORT_LIST:
             return {

@@ -18,7 +18,7 @@ import {
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 
 let headers = config
 
@@ -1486,7 +1486,7 @@ export function getZBCCostingSelectListByPart(PartId, SupplierId, UserId, callba
         })
         callback(response)
       } else {
-        toastr.error(MESSAGES.SOME_ERROR)
+        Toaster.error(MESSAGES.SOME_ERROR)
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
@@ -1505,7 +1505,7 @@ export function createPartWithSupplier(data, callback) {
     request
       .then((response) => {
         if (response.data.Result) {
-          toastr.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS)
+          Toaster.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS)
         }
         callback(response)
       })
@@ -1567,7 +1567,7 @@ export function getCostSummaryOtherOperation(supplierId, callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1682,7 +1682,7 @@ export function fetchFreightHeadsAPI(callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1754,7 +1754,7 @@ export function getCostingFreight(data, callback) {
           callback(response)
         } else if (response.data == '') {
           dispatch({ type: API_FAILURE })
-          toastr.warning('No content available for selected freight.')
+          Toaster.warning('No content available for selected freight.')
         }
       })
       .catch((error) => {
@@ -1819,7 +1819,7 @@ export function getSingleCostingDetails(costingId, callback) {
         } else {
 
 
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {

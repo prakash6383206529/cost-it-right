@@ -7,7 +7,7 @@ import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from '.
 import { checkForDecimalAndNull, getConfigurationKey, trimDecimalPlace, loggedInUserId } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 
 
 function Facing(props) {
@@ -152,7 +152,7 @@ function Facing(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
@@ -193,7 +193,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.turningDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -216,7 +216,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.finishDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -239,7 +239,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutLength}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -262,7 +262,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.removedMaterial}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                   </Row>
@@ -288,7 +288,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -335,7 +335,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -375,7 +375,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.feedRev}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -438,7 +438,7 @@ function Facing(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -485,6 +485,7 @@ function Facing(props) {
               <button
                 type="submit"
                 // disabled={isSubmitted ? true : false}
+                disabled={props.CostingViewMode ? true : false}
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>

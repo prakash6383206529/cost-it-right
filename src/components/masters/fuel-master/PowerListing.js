@@ -10,12 +10,12 @@ import {
 import { getPlantBySupplier } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -27,6 +27,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { li } from 'react-dom-factories';
 import { getConfigurationKey } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,6 +50,8 @@ class PowerListing extends Component {
       plant: [],
       vendorName: [],
       vendorPlant: [],
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -121,6 +124,7 @@ class PowerListing extends Component {
   * @description confirm delete Raw Material details
   */
   deleteItem = (Id) => {
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id);
@@ -128,7 +132,7 @@ class PowerListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
-    return toastr.confirm(`${MESSAGES.POWER_DELETE_ALERT}`, toastrConfirmOptions);
+    // return Toaster.confirm(`${MESSAGES.POWER_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -139,20 +143,26 @@ class PowerListing extends Component {
     if (this.state.IsVendor) {
       this.props.deleteVendorPowerDetail(ID, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.DELETE_POWER_SUCCESS);
+          Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
         }
       });
     } else {
       this.props.deletePowerDetail(ID, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.DELETE_POWER_SUCCESS);
+          Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
         }
       });
+      this.setState({ showPopup: false })
     }
   }
-
+  onPopupConfirm = () => {
+    this.confirmDelete(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method renderPaginationShowsTotal
   * @description Pagination
@@ -226,50 +236,12 @@ class PowerListing extends Component {
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
   }
 
-  /**
-  * @method renderListing
-  * @description Used to show type of listing
-  */
-  renderListing = (label) => {
-    const { plantSelectList, stateSelectList, vendorWithVendorCodeSelectList, filterPlantList } = this.props;
-    const temp = [];
-
-    if (label === 'state') {
-      stateSelectList && stateSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'plant') {
-      plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'VendorNameList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'VendorPlant') {
-      filterPlantList && filterPlantList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-
-  }
 
   /**
   * @method onPressVendor
@@ -283,85 +255,7 @@ class PowerListing extends Component {
     });
   }
 
-  /**
-  * @method handleState
-  * @description  STATE FILTER
-  */
-  handleState = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ StateName: newValue }, () => {
-        const { StateName } = this.state;
-        this.props.getPlantListByState(StateName.value, () => { })
-      });
-    } else {
-      this.setState({ StateName: [], });
-    }
-  }
 
-  /**
-  * @method handlePlant
-  * @description  PLANT FILTER
-  */
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue });
-    } else {
-      this.setState({ plant: [], });
-    }
-  }
-
-  /**
-  * @method handleVendorName
-  * @description called
-  */
-  handleVendorName = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
-        const { vendorName } = this.state;
-        this.props.getPlantBySupplier(vendorName.value, () => { })
-      });
-    } else {
-      this.setState({ vendorName: [], selectedVendorPlants: [], })
-      this.props.getPlantBySupplier('', () => { })
-    }
-  };
-
-  /**
-  * @method handleVendorPlant
-  * @description called
-  */
-  handleVendorPlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ vendorPlant: newValue, });
-    } else {
-      this.setState({ vendorPlant: [], })
-    }
-  };
-
-  /**
-  * @method filterList
-  * @description Filter user listing on the basis of role and department
-  */
-  filterList = () => {
-    this.getDataList()
-  }
-
-  /**
-  * @method resetFilter
-  * @description Reset user filter
-  */
-  resetFilter = () => {
-    this.setState({
-      StateName: [],
-      plant: [],
-      vendorName: [],
-      vendorPlant: [],
-    }, () => {
-      this.props.getPlantListByState('', () => { })
-      this.props.getPlantBySupplier('', () => { })
-      this.getDataList()
-    })
-  }
 
   formToggle = () => {
     this.props.formToggle()
@@ -438,7 +332,7 @@ class PowerListing extends Component {
     const { isEditFlag, } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.powerDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       exportCSVBtn: this.createCustomExportCSVButton,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -494,122 +388,7 @@ class PowerListing extends Component {
             </Col>
           </Row>
           <Row>
-            {this.state.shown && (
-              <Col md="8" className="filter-block mt-4">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                  <div className="flex-fills">
-                    <h5>{`Filter By:`}</h5>
-                  </div>
-                  {!this.state.IsVendor && (
-                    <>
-                      <div className="flex-fill">
-                        <Field
-                          name="state"
-                          type="text"
-                          label={""}
-                          component={searchableSelect}
-                          placeholder={"Select State"}
-                          isClearable={false}
-                          options={this.renderListing("state")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.handleState}
-                          valueDescription={this.state.StateName}
-                          disabled={false}
-                        />
-                      </div>
-                      <div className="flex-fill">
-                        <Field
-                          name="plant"
-                          type="text"
-                          label={""}
-                          component={searchableSelect}
-                          placeholder={"Select Plant"}
-                          isClearable={false}
-                          options={this.renderListing("plant")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.handlePlant}
-                          valueDescription={this.state.plant}
-                        />
-                      </div>
-                    </>
-                  )}
-                  {this.state.IsVendor && (
-                    <>
-                      <div className="flex-fill">
-                        <Field
-                          name="VendorName"
-                          type="text"
-                          label={""}
-                          component={searchableSelect}
-                          placeholder={"Vendor Name"}
-                          isClearable={false}
-                          options={this.renderListing("VendorNameList")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.vendorName == null ||
-                              this.state.vendorName.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
-                          handleChangeDescription={this.handleVendorName}
-                          valueDescription={this.state.vendorName}
-                          disabled={isEditFlag ? true : false}
-                          className="fullinput-icon"
-                        />
-                      </div>
-                      {
-                        initialConfiguration && initialConfiguration.IsVendorPlantConfigurable &&
-                        <div className="flex-fill">
-                          <Field
-                            name="VendorPlant"
-                            type="text"
-                            label={""}
-                            component={searchableSelect}
-                            placeholder={"Vendor Plant"}
-                            isClearable={false}
-                            options={this.renderListing("VendorPlant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.vendorPlant == null ||
-                                this.state.vendorPlant.length === 0
-                                ? [required]
-                                : []
-                            }
-                            required={true}
-                            handleChangeDescription={this.handleVendorPlant}
-                            valueDescription={this.state.vendorPlant}
-                            disabled={isEditFlag ? true : false}
-                            className="fullinput-icon"
-                          />
-                        </div>
-                      }
-                    </>
-                  )}
-                  <div className="flex-fill">
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.resetFilter}
-                      className="reset mr10"
-                    >
-                      {"Reset"}
-                    </button>
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.filterList}
-                      className="user-btn mr5"
-                    >
-                      {"Apply"}
-                    </button>
-                  </div>
-                </div>
-              </Col>)}
+
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 <div>
@@ -618,9 +397,7 @@ class PowerListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
-                      </button>
+                      ""
                     )}
                     {AddAccessibility && (
                       <button
@@ -677,8 +454,8 @@ class PowerListing extends Component {
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
                     floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.props.powerDataList}
                     pagination={true}
@@ -688,8 +465,8 @@ class PowerListing extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass power-listing'
+                      title: EMPTY_DATA,
+                      imagClass: 'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
@@ -714,8 +491,8 @@ class PowerListing extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass power-listing'
+                      title: EMPTY_DATA,
+                      imagClass: 'imagClass power-listing'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
@@ -735,6 +512,9 @@ class PowerListing extends Component {
             </div>
           </Col>
         </Row>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.POWER_DELETE_ALERT}`} />
+        }
       </div >
     );
   }

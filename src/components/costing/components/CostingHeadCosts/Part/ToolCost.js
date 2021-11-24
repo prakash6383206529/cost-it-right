@@ -3,7 +3,7 @@ import { useForm, } from 'react-hook-form';
 import { useDispatch, } from 'react-redux'
 import { Col, Row, Table } from 'reactstrap';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../../config/constants';
 import { checkForDecimalAndNull, } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -163,7 +163,7 @@ function ToolCost(props) {
                   {gridData && gridData.length === 0 &&
                     <tr>
                       <td colSpan={8}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
                   }

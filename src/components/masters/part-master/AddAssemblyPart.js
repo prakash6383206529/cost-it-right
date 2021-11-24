@@ -10,7 +10,7 @@ import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
   getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList
 } from '../actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -18,12 +18,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
-import moment from 'moment';
-import { reactLocalStorage } from 'reactjs-localstorage';
+import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import imgRedcross from "../../../assests/images/red-cross.png";
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+
 const selector = formValueSelector('AddAssemblyPart')
 
 class AddAssemblyPart extends Component {
@@ -48,7 +52,14 @@ class AddAssemblyPart extends Component {
       NewAddedLevelOneChilds: [],
       avoidAPICall: false,
       DataToCheck: [],
-      DropdownChanged: true
+      DropdownChanged: true,
+      BOMChanged: true,
+      GroupCode: '',
+      showPopup: false,
+      showPopupDraft: false,
+      updatedObj: {},
+      updatedObjDraft: {},
+
     }
   }
 
@@ -82,14 +93,14 @@ class AddAssemblyPart extends Component {
             productArray.push({ Text: item.GroupCode, Value: "", })
             return productArray
           })
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
           this.setState({ DataToCheck: Data })
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
@@ -270,7 +281,7 @@ class AddAssemblyPart extends Component {
     const { BOMViewerData, isEditFlag } = this.state;
 
     if (this.checkIsFormFilled() === false) {
-      toastr.warning("Please fill the mandatory fields.")
+      Toaster.warning("Please fill the mandatory fields.")
       return false;
     }
 
@@ -355,7 +366,7 @@ class AddAssemblyPart extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -381,7 +392,7 @@ class AddAssemblyPart extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeletePart(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -430,7 +441,7 @@ class AddAssemblyPart extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
-    return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
+    // return Toaster.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -441,10 +452,11 @@ class AddAssemblyPart extends Component {
     let Data = { ...updateData, IsForceUpdate: true }
     this.props.updateAssemblyPart(Data, (res) => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.UPDATE_BOM_SUCCESS);
+        Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
         this.cancel()
       }
     });
+    this.setState({ showPopupDraft: false })
   }
 
   /**
@@ -454,14 +466,15 @@ class AddAssemblyPart extends Component {
   onSubmit = (values) => {
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
+    const { initialConfiguration } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
-    let productArray = ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text }))
+    let productArray = (initialConfiguration?.IsProductMasterConfigurable) ? ProductGroup && ProductGroup.map((item) => ({ GroupCode: item.Text })) : [{ GroupCode: values.GroupCode }]
     let childPartArray = [];
 
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
     if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
-      toastr.warning('Need to add Child parts');
+      Toaster.warning('Need to add Child parts');
       return false;
     }
 
@@ -509,7 +522,7 @@ class AddAssemblyPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD'),
         Remark: values.Remark,
         Plants: plantArray,
         Attachements: updatedFiles,
@@ -528,13 +541,13 @@ class AddAssemblyPart extends Component {
       }
 
       if (isEditFlag) {
-
+        this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateAssemblyPart(updateData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.UPDATE_BOM_SUCCESS);
+                Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
                 this.cancel()
               }
             });
@@ -542,7 +555,7 @@ class AddAssemblyPart extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />,
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions)
       }
 
 
@@ -558,7 +571,7 @@ class AddAssemblyPart extends Component {
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(this.state.effectiveDate).format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -572,7 +585,7 @@ class AddAssemblyPart extends Component {
       this.props.reset()
       this.props.createAssemblyPart(formData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
+          Toaster.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
           this.cancel()
         }
       });
@@ -584,7 +597,22 @@ class AddAssemblyPart extends Component {
       e.preventDefault();
     }
   };
-
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateAssemblyPart(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
+        this.cancel()
+      }
+    });
+  }
+  onPopupConfirmDraft = () => {
+    this.confirmDraftItem(this.state.updatedObjDraft)
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+    this.setState({ showPopupDraft: false })
+  }
   /**
   * @method render
   * @description Renders the component
@@ -720,45 +748,47 @@ class AddAssemblyPart extends Component {
                             customClassName={"withBorder"}
                           />
                         </Col>
-                        {false &&
-                          initialConfiguration.IsGroupCodeDisplay && (
-                            <Col md="3">
-                              <Field
-                                label={`Group Code`}
-                                name={"GroupCode"}
-                                type="text"
-                                placeholder={""}
-                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
-                                component={renderText}
-                                //required={true}
-                                className=""
-                                customClassName={"withBorder"}
-                              />
-                            </Col>
-                          )}
                       </Row>
 
                       <Row>
-                        <Col md="3">
-                          <Field
-                            label="Group Code"
-                            name="ProductGroup"
-                            placeholder={"Select"}
-                            selection={
-                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
-                            options={this.renderListing("ProductGroup")}
-                            selectionChanged={this.handleProductGroup}
-                            validate={
-                              this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
-                            required={true}
-                            optionValue={(option) => option.Value}
-                            optionLabel={(option) => option.Text}
-                            component={renderMultiSelectField}
-                            mendatory={true}
-                            className="multiselect-with-border"
-                          // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                          />
-                        </Col>
+                        {initialConfiguration?.IsProductMasterConfigurable ? (
+                          // initialConfiguration.IsGroupCodeDisplay && (
+                          <Col md="3">
+                            <Field
+                              label="Group Code"
+                              name="ProductGroup"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
+                              options={this.renderListing("ProductGroup")}
+                              selectionChanged={this.handleProductGroup}
+                              validate={
+                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                              required={true}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                            />
+                          </Col>
+                        ) :
+                          <Col md="3">
+                            <Field
+                              label={`Group Code`}
+                              name={"GroupCode"}
+                              type="text"
+                              placeholder={""}
+                              validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                              component={renderText}
+                              //required={true}
+                              className=""
+                              customClassName={"withBorder"}
+                            />
+                          </Col>
+                        }
+
                         {/* <Col md="3">
                           <Field
                             label="Plant"
@@ -813,7 +843,7 @@ class AddAssemblyPart extends Component {
                                 component={renderDatePicker}
                                 className="form-control"
                                 disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
-                              //minDate={moment()} 
+
                               />
                             </div>
                           </div>
@@ -924,7 +954,7 @@ class AddAssemblyPart extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={require("../../../assests/images/red-cross.png")}
+                                      src={imgRedcross}
                                     ></img>
                                   </div>
                                 );
@@ -984,6 +1014,12 @@ class AddAssemblyPart extends Component {
               avoidAPICall={this.state.avoidAPICall}
             />
           )}
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
+          {
+            this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
+          }
         </div>
       </>
     );
@@ -1002,9 +1038,8 @@ function mapStateToProps(state) {
   const { plantSelectList } = comman;
   const { partData, actualBOMTreeData, productGroupSelectList } = part;
   const { initialConfiguration } = auth;
-
   let initialValues = {};
-  if (partData && partData !== undefined) {
+  if (partData && Object.keys(partData).length > 0) {
     initialValues = {
       BOMNumber: partData.BOMNumber,
       AssemblyPartNumber: partData.AssemblyPartNumber,
@@ -1013,7 +1048,7 @@ function mapStateToProps(state) {
       ECNNumber: partData.ECNNumber,
       RevisionNumber: partData.RevisionNumber,
       DrawingNumber: partData.DrawingNumber,
-      GroupCode: partData.GroupCode,
+      GroupCode: partData !== null && partData.GroupCodeList[0]?.GroupCode,
       Remark: partData.Remark,
     }
   }

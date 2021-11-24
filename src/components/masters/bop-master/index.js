@@ -7,19 +7,18 @@ import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
 import BOPApproval from './BOPApproval';
-import InsightsBop from './InsightsBop';
+
 import { BOP, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import SOBListing from './SOBListing';
 
 class BOPMaster extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: '2',
+      activeTab: '1',
       isBOPDomesticForm: false,
       isBOPImportForm: false,
       data: {},
@@ -152,16 +151,13 @@ class BOPMaster extends Component {
           <Row>
             <Col>
               <Nav tabs className="subtabs mt-0">
-                {/* <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === "1", })} onClick={() => { this.toggle("1");}}>Insights</NavLink>
-                </NavItem> */}
                 <NavItem>
                   <NavLink
                     className={classnames({
-                      active: this.state.activeTab === "2",
+                      active: this.state.activeTab === "1",
                     })}
                     onClick={() => {
-                      this.toggle("2");
+                      this.toggle("1");
                     }}
                   >
                     Manage Inserts (Domestic)
@@ -171,10 +167,10 @@ class BOPMaster extends Component {
                 <NavItem>
                   <NavLink
                     className={classnames({
-                      active: this.state.activeTab === "3",
+                      active: this.state.activeTab === "2",
                     })}
                     onClick={() => {
-                      this.toggle("3");
+                      this.toggle("2");
                     }}
                   >
                     Manage Inserts (Import)
@@ -182,30 +178,26 @@ class BOPMaster extends Component {
                 </NavItem>
 
                 <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                  <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                     Manage SOB
                   </NavLink>
                 </NavItem>
 
 
 
-                <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                {/* <NavItem>
+                  <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                     Approval Status
                   </NavLink>
-                </NavItem>
+                </NavItem> */}
 
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
+
+
                 {this.state.activeTab == 1 && (
                   <TabPane tabId="1">
-                    <InsightsBop />
-                  </TabPane>
-                )}
-
-                {this.state.activeTab == 2 && (
-                  <TabPane tabId="2">
                     <BOPDomesticListing
                       displayForm={this.displayDomesticForm}
                       getDetails={this.getDetails}
@@ -218,8 +210,8 @@ class BOPMaster extends Component {
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 3 && (
-                  <TabPane tabId="3">
+                {this.state.activeTab == 2 && (
+                  <TabPane tabId="2">
                     <BOPImportListing
                       displayForm={this.displayImportForm}
                       getDetails={this.getImportDetails}
@@ -232,8 +224,8 @@ class BOPMaster extends Component {
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 4 &&
-                  <TabPane tabId="4">
+                {this.state.activeTab == 3 &&
+                  <TabPane tabId="3">
                     <SOBListing
                       displayForm={this.displayImportForm}
                       getDetails={this.getImportDetails}
@@ -247,8 +239,8 @@ class BOPMaster extends Component {
 
 
 
-                {this.state.activeTab == 5 &&
-                  <TabPane tabId="5">
+                {this.state.activeTab == 4 &&
+                  <TabPane tabId="4">
                     <BOPApproval
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
@@ -278,9 +270,5 @@ function mapStateToProps({ boughtOutparts, auth }) {
 }
 
 
-export default connect(mapStateToProps,
-  {
-    getLeftMenu,
-  }
-)(BOPMaster);
+export default connect(mapStateToProps, {})(BOPMaster);
 

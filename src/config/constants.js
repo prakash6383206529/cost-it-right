@@ -16,7 +16,7 @@ export const config = {
 
 // DEVELOPMENT MIL URL
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = `https://apiinsightqa.unominda.com/api/v1`;
+// const BASE_URL = `http://10.10.1.100:10132/api/v1`;
 
 
 //DEVELOPMENT MIL URL
@@ -498,6 +498,7 @@ export const API = {
   getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
   getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
   getLastSimulationData: `${BASE_URL}/simulation/get-last-simulation-data`,
+  getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
@@ -533,6 +534,7 @@ export const API = {
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
+  saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1217,6 +1219,7 @@ export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
+export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1430,8 +1433,12 @@ export const GET_APPROVAL_SIMULATION_COSTING_SUMMARY = 'GET_APPROVAL_SIMULATION_
 export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 
 
+export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
+export const SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE = 'SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE'
+
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
+export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
@@ -1448,6 +1455,8 @@ export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
+export const PUSHED = 'Pushed'
+export const ERROR = 'Error'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1508,8 +1517,12 @@ export const CostingSummary_BulkUpload = 'Costing Summary BulkUpload'
 export const Simulation_History = 'Simulation History'
 export const Simulation_Page = "Simulation"
 export const Simulation_Upload = 'Simulation Upload'
-
+export const COSTING_SUMMARY_ = 'Costing Summary'
+export const APPROVAL_APP = 'Approval'
 export const TAX = 'Tax'
+export const COSTING_DETAILS_REPORT = 'Costing Details Report'
+export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
+//export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
 export const PLASTIC = 'Plastic';
@@ -1696,3 +1709,19 @@ export const RM_MASTER_ID = 1
 
 //approve reject drawer
 export const provisional = "Provisional"
+
+
+//AllConastant File Moved here
+
+export const NAME = 'Name';
+export const TYPE = 'Type';
+export const CATEGORY = 'Category';
+export const MATERIAL = 'Raw Material';
+export const GRADE = 'Grade';
+export const SPECIFICATION = 'Specification';
+export const DATE = 'Created Date';
+export const EMPTY_DATA = 'No Record Found';
+
+export const LEVEL0 = 'L0';
+export const LEVEL1 = 'L1';
+export const SUB_ASSEMBLY = 'Sub Assembly';

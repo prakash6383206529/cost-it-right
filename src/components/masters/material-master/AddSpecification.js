@@ -10,9 +10,9 @@ import {
   getMaterialTypeSelectList, checkAndGetRawMaterialCode
 } from '../actions/Material';
 import { fetchRMGradeAPI } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { SPECIFICATION } from '../../../config/constants';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
@@ -332,7 +332,7 @@ class AddSpecification extends Component {
       this.props.reset()
       this.props.updateRMSpecificationAPI(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
+          Toaster.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
           this.toggleDrawer('', '')
         }
       })
@@ -348,7 +348,7 @@ class AddSpecification extends Component {
       this.props.reset()
       this.props.createRMSpecificationAPI(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
+          Toaster.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
           this.toggleDrawer('', formData)
         }
       });
@@ -364,7 +364,7 @@ class AddSpecification extends Component {
   checkUniqCode = (e) => {
     this.props.checkAndGetRawMaterialCode(e.target.value, res => {
       if (res && res.data && res.data.Result === false) {
-        toastr.warning(res.data.Message);
+        Toaster.warning(res.data.Message);
       }
     })
   }
@@ -535,7 +535,7 @@ class AddSpecification extends Component {
                   <Row>
                     <Col md="12">
                       <Field
-                        label={`${CONSTANT.SPECIFICATION}`}
+                        label={`${SPECIFICATION}`}
                         name={"Specification"}
                         type="text"
                         placeholder={"Enter"}

@@ -7,7 +7,6 @@ import VBCPlantListing from './VBCPlantListing';
 
 import { checkPermission } from '../../../helper/util';
 import { MASTERS, PLANT } from '../../../config/constants';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 
 class PlantMaster extends Component {
     constructor(props) {
@@ -141,7 +140,6 @@ function mapStateToProps({ comman, auth }) {
 
 export default connect(mapStateToProps,
     {
-        getLeftMenu
     }
 )(PlantMaster);
 

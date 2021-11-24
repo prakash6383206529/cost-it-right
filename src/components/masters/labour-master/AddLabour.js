@@ -7,16 +7,16 @@ import { renderText, searchableSelect } from '../../layout/FormInputs'
 import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 
 const selector = formValueSelector('AddLabour')
@@ -97,7 +97,7 @@ class AddLabour extends Component {
                   MachineType: item.MachineType,
                   LabourTypeId: item.LabourTypeId,
                   LabourType: item.LabourType,
-                  EffectiveDate: moment(item.EffectiveDate)._isValid ? moment(item.EffectiveDate)._d : '',
+                  EffectiveDate: DayTime(item.EffectiveDate)._isValid ? DayTime(item.EffectiveDate)._d : '',
                   LabourRate: item.LabourRate,
                 }
               })
@@ -326,21 +326,21 @@ class AddLabour extends Component {
     const { fieldsObj, error } = this.props
 
     if (vendorName.length == 0 || selectedPlants.length == 0 || StateName == 0) {
-      toastr.warning('First fill upper detail')
+      Toaster.warning('First fill upper detail')
       return false
     }
 
     if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
-      toastr.warning('Fields should not be empty')
+      Toaster.warning('Fields should not be empty')
       return false
     }
     if (Number(fieldsObj) === 0 || Number(fieldsObj) === '') {
-      toastr.warning('Please enter value.')
+      Toaster.warning('Please enter value.')
       return false;
     }
 
     if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
-      toastr.warning('Please enter valid value.')
+      Toaster.warning('Please enter valid value.')
       return false;
     }
     if (maxLength10(fieldsObj)) {
@@ -348,12 +348,12 @@ class AddLabour extends Component {
     }
 
     if (decimalLengthsix(Number(fieldsObj))) {
-      toastr.warning('Decimal value should not be more than 6')
+      Toaster.warning('Decimal value should not be more than 6')
       return false;
     }
 
     // if ((machineType.length >= 11) || (labourType.length > 11)) {
-    //   toastr.warning('Please enter qo')
+    //   Toaster.warning('Please enter qo')
     //   return false;
     // }
 
@@ -363,7 +363,7 @@ class AddLabour extends Component {
       el.LabourTypeId === labourType.value,
     )
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false
     }
 
@@ -377,7 +377,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     })
 
@@ -423,7 +423,7 @@ class AddLabour extends Component {
         el.LabourTypeId === labourType.value,
     )
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false
     }
 
@@ -435,7 +435,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     }
 
@@ -553,7 +553,7 @@ class AddLabour extends Component {
     const userDetail = userDetails()
 
     if (gridTable && gridTable.length === 0) {
-      toastr.warning('Labour Rate entry required.')
+      Toaster.warning('Labour Rate entry required.')
       return false
     }
 
@@ -582,7 +582,7 @@ class AddLabour extends Component {
       this.props.reset()
       this.props.updateLabour(updateData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
+          Toaster.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
           this.cancel()
         }
       })
@@ -605,7 +605,7 @@ class AddLabour extends Component {
       this.props.reset()
       this.props.createLabour(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS)
+          Toaster.success(MESSAGES.LABOUR_ADDED_SUCCESS)
           this.cancel()
         }
       })
@@ -826,7 +826,7 @@ class AddLabour extends Component {
                         <div className="form-group date-filed pr-3">
                           <label>
                             Effective Date
-                              {/* <span className="asterisk-required">*</span> */}
+                            {/* <span className="asterisk-required">*</span> */}
                           </label>
                           <div className="inputbox date-section">
                             <DatePicker
@@ -857,7 +857,7 @@ class AddLabour extends Component {
                                 onClick={this.updateGrid}
                               >
                                 Update
-                                </button>
+                              </button>
 
                               <button
                                 type="button"
@@ -865,7 +865,7 @@ class AddLabour extends Component {
                                 onClick={this.resetGridData}
                               >
                                 Cancel
-                                </button>
+                              </button>
                             </>
                           ) : (
                             <button
@@ -898,7 +898,7 @@ class AddLabour extends Component {
                                     <td>{item.LabourType}</td>
                                     <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                     <td>
-                                      {item.EffectiveDate ? moment(item.EffectiveDate).format(
+                                      {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
                                         "DD/MM/YYYY"
                                       ) : '-'}
                                     </td>
@@ -924,7 +924,7 @@ class AddLabour extends Component {
                           </tbody>
                         </Table>
                         {this.state.gridTable.length === 0 && (
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         )}
                       </Col>
                     </Row>

@@ -1,31 +1,53 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import moment from 'moment'
-import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import DayTime from '../../common/DayTimeWrapper'
 import { Row, Col } from 'reactstrap'
-import { SearchableSelectHookForm } from '../layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId, userDetails } from '../../helper/auth'
-import { Badge } from 'reactstrap'
-import NoContentFound from '../common/NoContentFound'
-import { CONSTANT } from '../../helper/AllConastant'
-import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
-import { GridTotalFormate } from '../common/TableGridFunctions'
-import { getReportListing } from '../report/actions/ReportListing'
+import { loggedInUserId, } from '../../../helper/auth'
+import NoContentFound from '../../common/NoContentFound'
+import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
+import { GridTotalFormate } from '../../common/TableGridFunctions'
+import { getReportListing } from '.././actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster } from '../../config/constants';
-import LoaderCustom from '../common/LoaderCustom';
-import { table } from 'react-dom-factories';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster ,EMPTY_DATA} from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
+import WarningMessage from '../../common/WarningMessage'
+
+
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
+
+var filterParams = {
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        if (dateAsString == null) return -1;
+        var dateParts = dateAsString.split('/');
+        var cellDate = new Date(
+            Number(dateParts[2]),
+            Number(dateParts[1]) - 1,
+            Number(dateParts[0])
+        );
+        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+            return 0;
+        }
+        if (cellDate < filterLocalDateAtMidnight) {
+            return -1;
+        }
+        if (cellDate > filterLocalDateAtMidnight) {
+            return 1;
+        }
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+};
 
 function ReportListing(props) {
 
@@ -41,6 +63,11 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [warningMessage, setWarningMessage] = useState(true)
+    const [totalRecordCount, setTotalRecordCount] = useState(0)
+    const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
+
+
     const dispatch = useDispatch()
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -48,8 +75,31 @@ function ReportListing(props) {
         reValidateMode: 'onChange',
     })
 
+
+
+
+    const onBtFirst = () => {
+        gridApi.paginationGoToFirstPage();
+    };
+
+    const onBtLast = () => {
+        gridApi.paginationGoToLastPage();
+    };
+
+
+
+
+    const onBtPageFive = () => {
+        gridApi.paginationGoToPage(4);
+    };
+
+    const onBtPageFifty = () => {
+        gridApi.paginationGoToPage(49);
+    };
+
+
     const partSelectList = useSelector((state) => state.costing.partSelectList)
-    const reportListingData = useSelector((state) => state.report.reportListing)
+    let reportListingData = useSelector((state) => state.report.reportListing)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const approvalList = useSelector(state => state.approval.approvalList)
@@ -57,7 +107,21 @@ function ReportListing(props) {
     const userList = useSelector(state => state.auth.userList)
     // const { bopDrawerList } = useSelector(state => state.costing)
 
+    const getData = () => {
 
+        let temp = []
+        temp = reportListingData && reportListingData.map(item => {
+            if (item.Status === CREATED_BY_ASSEMBLY) {
+                return false
+            } else {
+                return item
+            }
+        })
+        setTableData(temp)
+        setTimeout(() => {
+            setLoader(false)
+        }, 200);
+    }
 
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -78,14 +142,14 @@ function ReportListing(props) {
     const linkableFormatter = (props) => {
         let tempDate = props.data.CreatedDate
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let temp = `${moment(tempDate).format('DD/MM/YYYY')}-${cellValue}`
+        let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
         setCostingVersion(temp);
         return temp
     }
 
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let temp = moment(cellValue).format('DD/MM/YYYY h:m:s')
+        let temp = DayTime(cellValue).format('DD/MM/YYYY h:m:s')
         return temp
     }
 
@@ -100,7 +164,7 @@ function ReportListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.DisplayStatus}</div>
+        return <div className={cell}>{row.Status}</div>
     }
 
     /**
@@ -108,7 +172,7 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = () => {
+    const getTableData = (index, take, isPagination) => {
         const filterData = {
             costingNumber: "",
             toDate: null,
@@ -121,12 +185,9 @@ function ReportListing(props) {
             isSortByOrderAsc: true,
         }
         var t0 = performance.now();
-        // console.log('t0: ', t0);
-        dispatch(getReportListing(filterData, (res) => {
+
+        dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
             //  props.getReportListing();   // <---- The function you're measuring time for 
-
-
-            setLoader(false)
 
             // var t1 = performance.now();
             // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
@@ -136,10 +197,53 @@ function ReportListing(props) {
 
 
     useEffect(() => {
-        getTableData();
+
+
+        setLoader(true)
+        getTableData(0, 500, true);
+
+        return () => {
+
+            getTableData(0, 500, false);
+
+
+        }
+
+
+
     }, [])
 
+    useEffect(() => {
+        var tempArr = []
 
+        // reportListingData && reportListingData.map(item => {
+        //     if (item.Value === '0') return false;
+        //     temp.push({ label: item.Text, value: item.Value })
+        //     return null;
+        // });
+        const blank = () => { setWarningMessage(false) }
+
+        setReportListingDataStateArray(reportListingData)
+        if (reportListingData.length > 0) {
+
+            if (totalRecordCount === 0) {
+                setTotalRecordCount(reportListingData[0].TotalRecordCount)
+
+                reportListingData[0].TotalRecordCount > 500 ? getTableData(500, reportListingData[0].TotalRecordCount, true) : blank()
+                setLoader(false)
+            }
+            if (totalRecordCount !== 0) {
+                setWarningMessage(false)
+            }
+
+
+        }
+
+
+
+
+
+    }, [reportListingData])
 
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -148,7 +252,7 @@ function ReportListing(props) {
 
     const options = {
         clearSearch: true,
-        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        noDataText: <NoContentFound title={EMPTY_DATA} />,
         paginationShowsTotal: renderPaginationShowsTotal(),
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -200,19 +304,15 @@ function ReportListing(props) {
         return thisIsFirstColumn;
     }
 
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
+    };
 
-    const revisionFormatter = (props) => {
-
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
-
-        return cell
-        // return params.value !== null ? params.value : '-'
-    }
-    const requestterFormatter = (props) => {
-
-        return userDetails().Name
-        // return params.value !== null ? params.value : '-'
-    }
 
     const onGridReady = (params) => {
         // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -220,6 +320,21 @@ function ReportListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+
+
+        //setGridApi(params.api);
+        // setGridColumnApi(params.columnApi);
+
+        // const updateData = (data) => {
+        //     setRowData(data);
+        // };
+
+       
+
+
+        // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
+        //     .then((resp) => resp.json())
+        //     .then((data) => updateData(data));
 
     };
 
@@ -231,12 +346,24 @@ function ReportListing(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
+    useEffect(() => {
 
+    }, [tableData])
 
     // const renderColumn = (fileName) => {
     //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
     // }
 
+    const frameworkComponents = {
+        linkableFormatter: linkableFormatter,
+        createDateFormatter: createDateFormatter,
+        hyphenFormatter: hyphenFormatter,
+        simulatedOnFormatter: simulatedOnFormatter,
+        customNoRowsOverlay: NoContentFound,
+        dateFormatter: dateFormatter,
+        statusFormatter: statusFormatter,
+        //customLoadingOverlay: LoaderCustom
+    };
 
     /**
     * @method resetHandler
@@ -279,17 +406,18 @@ function ReportListing(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         // console.log('TempData: ', TempData);
-        let temp = []
+      
 
 
         return (<ExcelSheet data={TempData} name={ReportMaster}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
+
     const renderColumnSAP = (fileName) => {
         let tempData = []
 
-        if (selectedRowData.length == 0) {
+        if (selectedRowData.length === 0) {
             tempData = reportListingData
         }
         else {
@@ -301,14 +429,57 @@ function ReportListing(props) {
     }
 
 
+    const renderColumnSAPEncoded = (fileName) => {
+        console.log('fileName: ', fileName);
+        let tempData = []
+
+        if (selectedRowData.length === 0) {
+
+
+            tempData = reportListingData
+
+        }
+        else {
+            tempData = selectedRowData
+
+        }
+        return returnExcelColumnSAPEncoded(REPORT_DOWNLOAD_SAP_EXCEl, tempData)
+
+
+    }
+
+
+
 
     const returnExcelColumnSAP = (data = [], TempData) => {
+
+        // console.log('TempData: ', TempData);
+        let temp = []
+
+        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+
+
+    const returnExcelColumnSAPEncoded = (data = [], TempData) => {
+
         // console.log('TempData: ', TempData);
         let temp = []
 
 
-        return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+
+        TempData && TempData.map(item => {
+
+            temp.push({ SrNo: btoa(item.SrNo), SANumber: btoa(item.SANumber), LineNumber: btoa(item.LineNumber), CreatedDate: btoa(item.CreatedDate), NetPOPrice: btoa(item.NetPOPrice), Reason: btoa(item.Reason), Text: btoa(item.Text), PersonRequestingChange: btoa(item.PersonRequestingChange) })
+            return null;
+        });
+
+
+
+
+        return (<ExcelSheet data={temp} name={ReportSAPMaster}>
+            {data && data.map((ele, index) => < ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
@@ -325,32 +496,10 @@ function ReportListing(props) {
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
 
-    const defaultColDef = {
-        resizable: true,
-        filter: true,
-        sortable: true,
-        headerCheckboxSelectionFilteredOnly: true,
-        headerCheckboxSelection: isFirstColumn,
-        checkboxSelection: isFirstColumn
-    };
-
-    const frameworkComponents = {
-        linkableFormatter: linkableFormatter,
-        createDateFormatter: createDateFormatter,
-        hyphenFormatter: hyphenFormatter,
-        simulatedOnFormatter: simulatedOnFormatter,
-        customNoRowsOverlay: NoContentFound,
-        dateFormatter: dateFormatter,
-        statusFormatter: statusFormatter,
-        customLoadingOverlay: LoaderCustom,
-        revisionFormatter: revisionFormatter,
-        requestterFormatter: requestterFormatter
-    };
-
 
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
-            {/* {isLoader && <LoaderCustom />} */}
+            {isLoader && <LoaderCustom />}
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
                 <h1 className="mb-0">Report</h1>
@@ -358,7 +507,7 @@ function ReportListing(props) {
                 <Row className="pt-4 blue-before">
 
 
-                    <Col md="6" lg="6" className="search-user-block mb-3">
+                <Col md="8" lg="8" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
@@ -368,7 +517,10 @@ function ReportListing(props) {
                                     {renderColumnSAP(ReportSAPMaster)}
                                 </ExcelFile>
 
-                                <button type="button" className="user-btn refresh-icon" onClick={() => resetState()}></button>
+                                <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>Encoded Download</button>}>
+                                    {renderColumnSAPEncoded(ReportSAPMaster)}
+                                </ExcelFile>
+
 
                             </div>
                         </div>
@@ -377,6 +529,17 @@ function ReportListing(props) {
                 </Row>
             </form>
 
+            <div>
+                {/* <button onClick={() => onBtFirst()}>To First</button>
+                <button onClick={() => onBtLast()} id="btLast">
+                    To Last
+                </button> */}
+                {/* <button onClick={onBtPrevious}>To Previous</button>
+                <button onClick={onBtNext}>To Next</button> */}
+                {/* // <button onClick={() => onBtPageFive()}>To Page 5</button>
+                //<button onClick={() => onBtPageFifty()}>To Page 50</button> */}
+
+            </div>
 
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
@@ -390,21 +553,25 @@ function ReportListing(props) {
                         defaultColDef={defaultColDef}
                         floatingFilter={true}
                         // columnDefs={c}
-                        rowData={reportListingData}
+                        rowData={reportListingDataStateArray}
                         pagination={true}
+                        //   suppressPaginationPanel={true}
+                        suppressScrollOnNewData={true}
+
                         paginationPageSize={10}
                         onGridReady={onGridReady}
                         gridOptions={gridOptions}
+
+                        // onFilterModified={onFloatingFilterChanged}
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                            title: CONSTANT.EMPTY_DATA,
+                            title: EMPTY_DATA,
                         }}
-                        // suppressRowClickSelection={true}
+                        //suppressRowClickSelection={true}
                         rowSelection={'multiple'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
-
                     >
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
@@ -413,20 +580,20 @@ function ReportListing(props) {
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
-                        <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field="Rev" headerName="Revision Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ECN" headerName="ECN Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="VendorCode" headerName="Vendor Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RawMaterialName" headerName="RM Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                        <AgGridColumn field="RawMaterialCode" headerName="RM Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMGrade" headerName="RM Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
+                        {/* <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn> */}
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
-                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net Insert Cost"></AgGridColumn>
+                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>
                         <AgGridColumn field="NetOperationCost" headerName="Operation Cost"></AgGridColumn>
                         <AgGridColumn field="SurfaceTreatmentCost" headerName="Surface Treatment"></AgGridColumn>
@@ -459,9 +626,7 @@ function ReportListing(props) {
                         <AgGridColumn field="NetPOPriceInCurrency" headerName="Net PO Price Currency"></AgGridColumn>
                         <AgGridColumn field="Remark" headerName="Remark" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="CreatedBy" headerName="CreatedBy" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'}></AgGridColumn>
-                        <AgGridColumn field="SANumber" headerName="SA Number"></AgGridColumn>
-                        <AgGridColumn field="LineNumber" headerName="Line Number"></AgGridColumn>
+                        <AgGridColumn field="CreatedDate" headerName="Created Date and Time" cellRenderer={'dateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                         <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
                     </AgGridReact>
                     <div className="paging-container d-inline-block float-right">
@@ -471,6 +636,9 @@ function ReportListing(props) {
                             <option value="100">100</option>
                         </select>
                     </div>
+                    <div className="warning-text">
+                        {warningMessage && <WarningMessage dClass="mr-3" message={'Loading more data'} />}
+                    </div>
                 </div>
             </div>
 
@@ -479,16 +647,5 @@ function ReportListing(props) {
 }
 
 
-export default ReportListing
-// function mapStateToProps({ report, auth }) {
-//     const { reportDataList, loading } = report;
-//     const { initialConfiguration } = auth;
-//     return { reportDataList, loading, initialConfiguration, }
-// }
 
-// export default connect(mapStateToProps, {
-//     getReportListing,
-// })(reduxForm({
-//     form: 'ReportListing',
-//     enableReinitialize: true,
-// })(ReportListing));
+export default ReportListing

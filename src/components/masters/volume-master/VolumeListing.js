@@ -4,9 +4,9 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { focusOnError, searchableSelect } from '../../layout/FormInputs'
 import { required } from '../../../helper/validation'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
-import { CONSTANT } from '../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
@@ -16,9 +16,6 @@ import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
-import { reactLocalStorage } from 'reactjs-localstorage'
-import { loggedInUserId } from '../../../helper/auth'
-import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -26,6 +23,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -132,7 +130,9 @@ class VolumeListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      showPopup:false,
+      deletedId:''
 
     }
   }
@@ -204,56 +204,6 @@ class VolumeListing extends Component {
     })
   }
 
-  /**
-   * @method renderListing
-   * @description Used show listing of unit of measurement
-   */
-  renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, plantSelectList, financialYearSelectList, costingHead } = this.props
-    const temp = []
-
-    if (label === 'costingHead') {
-      return costingHeadObjs;
-    }
-
-
-    if (label === 'VendorList') {
-      vendorWithVendorCodeSelectList &&
-        vendorWithVendorCodeSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-    if (label === 'year') {
-      financialYearSelectList &&
-        financialYearSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-    if (label === 'month') {
-      Months &&
-        Months.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-    if (label === 'plant') {
-      plantSelectList &&
-        plantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-  }
 
   /**
    * @method editItemDetails
@@ -271,6 +221,7 @@ class VolumeListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
@@ -278,7 +229,7 @@ class VolumeListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     }
-    return toastr.confirm(MESSAGES.VOLUME_DELETE_ALERT, toastrConfirmOptions)
+    // return Toaster.confirm(MESSAGES.VOLUME_DELETE_ALERT, toastrConfirmOptions)
   }
 
   /**
@@ -288,12 +239,18 @@ class VolumeListing extends Component {
   confirmDeleteItem = (ID) => {
     this.props.deleteVolume(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_VOLUME_SUCCESS)
+        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS)
         this.getTableListData(null, null, null, null, null, null)
       }
     })
+    this.setState({showPopup:false})
   }
-
+  onPopupConfirm =() => {
+    this.confirmDeleteItem(this.state.deletedId);
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
 * @method buttonFormatter
 * @description Renders buttons
@@ -310,55 +267,6 @@ class VolumeListing extends Component {
       </>
     )
   };
-
-  /**
-   * @method handleYear
-   * @description called
-   */
-  handleYear = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ year: newValue })
-    } else {
-      this.setState({ year: [] })
-    }
-  }
-
-  /**
-   * @method handleMonth
-   * @description called
-   */
-  handleMonth = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ month: newValue })
-    } else {
-      this.setState({ month: [] })
-    }
-  }
-
-  /**
-   * @method handleVendorName
-   * @description called
-   */
-  handleVendorName = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue })
-    } else {
-      this.setState({ vendorName: [] })
-    }
-  }
-
-  /**
-   * @method handlePlant
-   * @description called
-   */
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue })
-    } else {
-      this.setState({ plant: [] })
-    }
-  }
-
 
 
 
@@ -418,51 +326,8 @@ class VolumeListing extends Component {
     })
   }
 
-  /**
-  * @method handleHeadChange
-  * @description called
-  */
-  handleHeadChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ costing_head: newValue, });
-    } else {
-      this.setState({ costing_head: [], })
-    }
-  };
 
-  /**
-   * @method filterList
-   * @description Filter user listing on the basis of role and department
-   */
-  filterList = () => {
-    const { year, month, vendorName, plant, costing_head } = this.state
-    const yearTemp = year ? year.value : null
-    const monthTemp = month ? month.value : null
-    const vendorNameTemp = vendorName ? vendorName.value : null
-    const plantTemp = plant ? plant.value : null
-    const costingHead = costing_head ? costing_head.value === ZBC ? 0 : 1 : null
 
-    this.getTableListData(yearTemp, monthTemp, vendorNameTemp, plantTemp, costingHead)
-  }
-
-  /**
-   * @method resetFilter
-   * @description Reset user filter
-   */
-  resetFilter = () => {
-    this.setState(
-      {
-        year: [],
-        month: [],
-        vendorName: [],
-        plant: [],
-        costing_head: []
-      },
-      () => {
-        this.getTableListData()
-      },
-    )
-  }
 
   formToggle = () => {
     this.setState({ showVolumeForm: true })
@@ -559,7 +424,7 @@ class VolumeListing extends Component {
     } = this.state
     const options = {
       clearSearch: true,
-      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       exportCSVBtn: this.createCustomExportCSVButton,
       //paginationShowsTotal: true,
@@ -606,140 +471,7 @@ class VolumeListing extends Component {
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
             </Row>
             <Row className="pt-4 blue-before">
-              {this.state.shown && (
-                <Col md="11" className="filter-block">
-                  <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills">
-                      <h5>{`Filter By:`}</h5>
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="costing_head"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Costing Head"}
-                        isClearable={false}
-                        options={this.renderListing("costingHead")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.costing_head == null ||
-                            this.state.costing_head.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleHeadChange}
-                        valueDescription={this.state.costing_head}
-                      //disabled={isEditFlag ? true : false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="year"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={'-Year-'}
-                        isClearable={false}
-                        options={this.renderListing('year')}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.year == null || this.state.year.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleYear}
-                        valueDescription={this.state.year}
-                      //disabled={isEditFlag ? true : false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="month"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={'-Month-'}
-                        isClearable={false}
-                        options={this.renderListing('month')}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.month == null || this.state.month.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleMonth}
-                        valueDescription={this.state.month}
-                      //disabled={isEditFlag ? true : false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="vendorName"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={'-Vendors-'}
-                        isClearable={false}
-                        options={this.renderListing('VendorList')}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.vendorName == null ||
-                            this.state.vendorName.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleVendorName}
-                        valueDescription={this.state.vendorName}
-                        disabled={isEditFlag ? true : false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="plant"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={'-Plant-'}
-                        isClearable={false}
-                        options={this.renderListing('plant')}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.plant == null || this.state.plant.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handlePlant}
-                        valueDescription={this.state.plant}
-                        disabled={isEditFlag ? true : false}
-                      />
-                    </div>
 
-                    <div className="flex-fill">
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.resetFilter}
-                        className="reset mr10"
-                      >
-                        {'Reset'}
-                      </button>
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.filterList}
-                        className="user-btn mr5"
-                      >
-                        {'Apply'}
-                      </button>
-                    </div>
-                  </div>
-                </Col>)}
 
               <Col md="8" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight">
@@ -748,9 +480,7 @@ class VolumeListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
-                      </button>
+                      ""
                     )}
                     {AddAccessibility && (
                       <button
@@ -823,8 +553,8 @@ class VolumeListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
                 floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.volumeDataList}
                 pagination={true}
@@ -835,8 +565,8 @@ class VolumeListing extends Component {
                 loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
-                  imagClass:'imagClass'
+                  title: EMPTY_DATA,
+                  imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -884,6 +614,9 @@ class VolumeListing extends Component {
               anchor={'right'}
             />
           )}
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`}  />
+         }
         </div>
       </>
     )
@@ -924,7 +657,6 @@ export default connect(mapStateToProps, {
   getVolumeDataList,
   deleteVolume,
   getFinancialYearSelectList,
-  getLeftMenu,
   getVendorWithVendorCodeSelectList
 })(
   reduxForm({

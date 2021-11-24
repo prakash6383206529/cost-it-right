@@ -13,13 +13,13 @@ import ViewOverheadProfit from './Drawers/ViewOverheadProfit'
 import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
-import { toastr } from 'react-redux-toastr'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper'
+import Toaster from '../../common/Toaster'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval'
 import { isSafeInteger } from 'lodash'
@@ -111,6 +111,7 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
   }, [topAndLeftMenuData, selectedTechnology])
+
 
   /**
   * @method applyPermission
@@ -218,8 +219,8 @@ const CostingSummaryTable = (props) => {
 
 
   const viewAttachmentData = (index) => {
-    console.log('index: ', index);
-    console.log(viewCostingData, "viewCostingData");
+
+
     let data = viewCostingData[index].attachment
     setAttachment(true)
     setViewAttachment(index)
@@ -570,7 +571,7 @@ const CostingSummaryTable = (props) => {
 
   const checkCostings = () => {
     if (multipleCostings.length === 0) {
-      toastr.warning('Please select at least one costing to send for approval')
+      Toaster.warning('Please select at least one costing to send for approval')
       return
     } else {
       sendForApprovalData(multipleCostings)
@@ -591,12 +592,14 @@ const CostingSummaryTable = (props) => {
       dispatch(getSingleCostingDetails(costingID, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data
+
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
         }
       },
       ))
     }
+
   }, [costingID])
 
 
@@ -675,6 +678,7 @@ const CostingSummaryTable = (props) => {
                         isApproval ? <th scope="col">{props.id}</th> : <th scope="col">VBC/ZBC</th>
                       }
 
+
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
 
@@ -749,7 +753,7 @@ const CostingSummaryTable = (props) => {
                               return (
                                 <td>
                                   <span class="d-flex justify-content-between bg-grey">
-                                    {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                    {`${DayTime(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
                                     {
                                       !viewMode &&
                                       <a
@@ -800,28 +804,29 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data) => {
                           return (
 
-                            <td>
-                              <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : data.rm : ''}</span>
+
+                            < td >
+                              <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : data.rm : ''}</span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                               <span class="d-block small-grey-text">
                                 {/* try with component */}
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && reducer(data.netRMCostView) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.IsAssemblyCosting === true ? "Multiple RM" : (data.netRMCostView && reducer(data.netRMCostView)) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && reducerFinish(data.netRMCostView) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.IsAssemblyCosting === true ? "Multiple RM" : (data.netRMCostView && reducerFinish(data.netRMCostView)) : ''}
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 1 ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.gWeight - data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 0 ? checkForDecimalAndNull(data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : 0 : ''}
                               </span>
                             </td>
                           )
@@ -889,13 +894,13 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.pCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                {data.CostingHeading !== VARIANCE ? (data.IsAssemblyCosting === true ? "Multiple Process" : checkForDecimalAndNull(data.pCost, initialConfiguration.NoOfDecimalForPrice)) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                {data.CostingHeading !== VARIANCE ? (data.IsAssemblyCosting === true ? "Multiple Operation" : checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice)) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                {data.CostingHeading !== VARIANCE ? (data.IsAssemblyCosting === true ? "Multiple Other Operation" : checkForDecimalAndNull(data.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)) : ''}
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}
@@ -914,7 +919,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
                                 data.CostingHeading !== VARIANCE &&
                                 <button
@@ -1219,7 +1224,7 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>Attachment</td>
                       {viewCostingData &&
-                        viewCostingData.map((data, index) => {                    
+                        viewCostingData.map((data, index) => {
                           return (
 
                             <td>
@@ -1303,86 +1308,104 @@ const CostingSummaryTable = (props) => {
 
         </Fragment>
       }
-      {addComparisonToggle && (
-        <AddToComparisonDrawer
-          isOpen={addComparisonToggle}
-          closeDrawer={closeAddComparisonDrawer}
-          isEditFlag={isEditFlag}
-          editObject={editObject}
-          anchor={'right'}
-          viewMode={viewMode}
-        />
-      )}
+      {
+        addComparisonToggle && (
+          <AddToComparisonDrawer
+            isOpen={addComparisonToggle}
+            closeDrawer={closeAddComparisonDrawer}
+            isEditFlag={isEditFlag}
+            editObject={editObject}
+            anchor={'right'}
+            viewMode={viewMode}
+          />
+        )
+      }
       {/* DRAWERS FOR VIEW  */}
-      {isViewBOP && (
-        <ViewBOP
-          isOpen={isViewBOP}
-          viewBOPData={viewBOPData}
-          closeDrawer={closeViewDrawer}
-          anchor={'right'}
-        />
-      )}
-      {isViewConversionCost && (
-        <ViewConversionCost
-          isOpen={isViewConversionCost}
-          viewConversionCostData={viewConversionCostData}
-          closeDrawer={closeViewDrawer}
-          anchor={'right'}
-        />
-      )}
-      {isViewRM && (
-        <ViewRM
-          isOpen={isViewRM}
-          viewRMData={viewRMData}
-          closeDrawer={closeViewDrawer}
-          anchor={'right'}
-          index={index}
-          technologyId={technologyId}
-          rmMBDetail={rmMBDetail}
-        />
-      )}
-      {isViewOverheadProfit && (
-        <ViewOverheadProfit
-          isOpen={isViewOverheadProfit}
-          overheadData={viewOverheadData}
-          profitData={viewProfitData}
-          rejectAndModelType={viewRejectAndModelType}
-          closeDrawer={closeViewDrawer}
-          anchor={'right'}
-        />
-      )}
-      {isViewPackagingFreight && (
-        <ViewPackagingAndFreight
-          isOpen={isViewPackagingFreight}
-          packagingAndFreightCost={viewPackagingFreight}
-          closeDrawer={closeViewDrawer}
-          anchor={'right'}
-        />
-      )}
-      {isViewToolCost && (
-        <ViewToolCost
-          isOpen={isViewToolCost}
-          viewToolCost={viewToolCost}
-          closeDrawer={closeViewDrawer}
-          anchor={'right'}
-        />
-      )}
-      {showApproval && (
-        <SendForApproval
-          isOpen={showApproval}
-          closeDrawer={closeShowApproval}
-          anchor={'right'}
-        />
-      )}
-      {isAttachment && (
-        <Attachament
-          isOpen={isAttachment}
-          index={viewAtttachments}
-          closeDrawer={closeAttachmentDrawer}
-          anchor={'right'}
-        />
-      )}
-    </Fragment>
+      {
+        isViewBOP && (
+          <ViewBOP
+            isOpen={isViewBOP}
+            viewBOPData={viewBOPData}
+            closeDrawer={closeViewDrawer}
+            anchor={'right'}
+          />
+        )
+      }
+      {
+        isViewConversionCost && (
+          <ViewConversionCost
+            isOpen={isViewConversionCost}
+            viewConversionCostData={viewConversionCostData}
+            closeDrawer={closeViewDrawer}
+            anchor={'right'}
+          />
+        )
+      }
+      {
+        isViewRM && (
+          <ViewRM
+            isOpen={isViewRM}
+            viewRMData={viewRMData}
+            closeDrawer={closeViewDrawer}
+            anchor={'right'}
+            index={index}
+            technologyId={technologyId}
+            rmMBDetail={rmMBDetail}
+          />
+        )
+      }
+      {
+        isViewOverheadProfit && (
+          <ViewOverheadProfit
+            isOpen={isViewOverheadProfit}
+            overheadData={viewOverheadData}
+            profitData={viewProfitData}
+            rejectAndModelType={viewRejectAndModelType}
+            closeDrawer={closeViewDrawer}
+            anchor={'right'}
+          />
+        )
+      }
+      {
+        isViewPackagingFreight && (
+          <ViewPackagingAndFreight
+            isOpen={isViewPackagingFreight}
+            packagingAndFreightCost={viewPackagingFreight}
+            closeDrawer={closeViewDrawer}
+            anchor={'right'}
+          />
+        )
+      }
+      {
+        isViewToolCost && (
+          <ViewToolCost
+            isOpen={isViewToolCost}
+            viewToolCost={viewToolCost}
+            closeDrawer={closeViewDrawer}
+            anchor={'right'}
+          />
+        )
+      }
+      {
+        showApproval && (
+          <SendForApproval
+            isOpen={showApproval}
+            closeDrawer={closeShowApproval}
+            anchor={'right'}
+          />
+        )
+      }
+      {
+        isAttachment && (
+          <Attachament
+            isOpen={isAttachment}
+            index={viewAtttachments}
+            closeDrawer={closeAttachmentDrawer}
+            anchor={'right'}
+          />
+        )
+      }
+    </Fragment >
   )
 }
 

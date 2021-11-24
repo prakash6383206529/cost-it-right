@@ -12,7 +12,7 @@ import {
 } from '../../config/constants';
 import { apiErrors } from '../../helper/util';
 
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 
 const headers = config;
 
@@ -36,7 +36,7 @@ export function createBOMAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_BOM_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -66,7 +66,7 @@ export function createNewBOMAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_BOM_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -124,7 +124,7 @@ export function getAllBOMAPI(callback) {
             });
             callback(response);
             // } else {
-            //     toastr.error(MESSAGES.SOME_ERROR);
+            //     Toaster.error(MESSAGES.SOME_ERROR);
             // }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -151,7 +151,7 @@ export function uploadBOMxlsAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_BOM_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {

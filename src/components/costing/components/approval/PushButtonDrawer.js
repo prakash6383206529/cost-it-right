@@ -9,8 +9,8 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/Hoo
 import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 import { useState } from 'react'
 import { INR } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
-import moment from 'moment'
+import Toaster from '../../../common/Toaster'
+import DayTime from '../../../common/DayTimeWrapper'
 import { useEffect } from 'react'
 
 function PushButtonDrawer(props) {
@@ -34,9 +34,7 @@ function PushButtonDrawer(props) {
     props.closeDrawer('', 'Cancel')
   }
 
-  const closeDrawerAfterPush = () => {
 
-  }
 
   useEffect(() => {
     // setValue('')
@@ -93,7 +91,7 @@ function PushButtonDrawer(props) {
         const vendor = item.VendorName.split('(')[1]
         const { netPo, quantity } = getPOPriceAfterDecimal(simulationDetail.DecimalOption, item.NewPOPrice)
         temp.push({
-          CostingId: item.CostingId, effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: netPo, plant: item.PlantCode ? item.PlantCode : '1511',
+          CostingId: item.CostingId, effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/yyyy'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: netPo, plant: item.PlantCode ? item.PlantCode : '1511',
           currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW', TokenNumber: simulationDetail.Token,
           Quantity: quantity
         })
@@ -104,14 +102,14 @@ function PushButtonDrawer(props) {
       }
       dispatch(approvalPushedOnSap(simObj, res => {
         if (res && res.status && (res.status === 200 || res.status === 204)) {
-          toastr.success('Approval pushed successfully.')
+          Toaster.success('Approval pushed successfully.')
         }
         props.closeDrawer('', 'Push')
       }))
     } else {
       const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
       let pushdata = {
-        effectiveDate: dataSend[0].EffectiveDate ? moment(dataSend[0].EffectiveDate).local().format('MM/DD/yyyy') : '',
+        effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/yyyy') : '',
         vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
         materialNumber: dataSend[1].PartNumber,
         netPrice: netPo,
@@ -143,12 +141,11 @@ function PushButtonDrawer(props) {
       }
       dispatch(approvalPushedOnSap(obj, res => {
         if (res && res.status && (res.status === 200 || res.status === 204)) {
-          toastr.success('Approval pushed successfully.')
+          Toaster.success('Approval pushed successfully.')
         }
         props.closeDrawer('', 'Push')
       }))
     }
-
 
 
 

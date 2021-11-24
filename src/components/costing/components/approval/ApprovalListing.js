@@ -3,18 +3,16 @@ import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { getApprovalList, getSelectedCostingList } from '../../actions/Approval'
+import { getApprovalList, } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
-import { getAllPartSelectList, } from '../../actions/Costing'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
-import moment from 'moment'
+import { EMPTY_DATA } from '../../../../config/constants'
+import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
-import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
 import { PENDING } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
 import imgArrowUP from "../../../../assests/images/arrow-up.svg";
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -59,10 +57,6 @@ function ApprovalListing(props) {
   })
   useEffect(() => {
     getTableData()
-    dispatch(getAllPartSelectList(() => { }))
-    dispatch(getSelectedCostingList(() => { }))
-    dispatch(getAllUserAPI(() => { }))
-
   }, [])
 
 
@@ -182,7 +176,7 @@ function ApprovalListing(props) {
   const createdOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
   }
 
   const priceFormatter = (props) => {
@@ -210,7 +204,7 @@ function ApprovalListing(props) {
   const requestedOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
   }
 
   const statusFormatter = (props) => {
@@ -264,7 +258,7 @@ function ApprovalListing(props) {
 
   const sendForApproval = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select atleast one approval to send for approval.')
+      Toaster.warning('Please select atleast one approval to send for approval.')
       return false
     }
     let count = 0
@@ -292,10 +286,10 @@ function ApprovalListing(props) {
       }
     })
     if (technologyCount > 0) {
-      return toastr.warning("Technology should be same for sending multiple costing for approval")
+      return Toaster.warning("Technology should be same for sending multiple costing for approval")
     }
     if (count > 0) {
-      return toastr.warning("Reason should be same for sending multiple costing for approval")
+      return Toaster.warning("Reason should be same for sending multiple costing for approval")
     } else {
       setReasonId(selectedRowData[0].ReasonId)
     }
@@ -377,7 +371,7 @@ function ApprovalListing(props) {
 
             {!isApproval && <h1 className="mb-0">Costing Approval</h1>}
 
-            {/* {isLoader && <LoaderCustom />} */}
+            {isLoader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
               {shown &&
                 <Col lg="10" md="12" className="filter-block">
@@ -515,10 +509,10 @@ function ApprovalListing(props) {
                       paginationPageSize={10}
                       onGridReady={onGridReady}
                       gridOptions={gridOptions}
-                      loadingOverlayComponent={'customLoadingOverlay'}
+                      //loadingOverlayComponent={'customLoadingOverlay'}
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
-                        title: CONSTANT.EMPTY_DATA,
+                        title: EMPTY_DATA,
                       }}
                       frameworkComponents={frameworkComponents}
                       suppressRowClickSelection={true}

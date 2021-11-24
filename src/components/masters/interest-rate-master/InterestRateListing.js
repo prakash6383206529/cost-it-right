@@ -3,21 +3,20 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import AddInterestRate from './AddInterestRate';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, InterestMaster, INTEREST_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -26,6 +25,7 @@ import { INTERESTRATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -59,6 +59,8 @@ class InterestRateListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       isLoader: true,
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -132,44 +134,6 @@ class InterestRateListing extends Component {
     });
   }
 
-  /**
-  * @method renderListing
-  * @description Used show listing of unit of measurement
-  */
-  renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
-    const temp = [];
-
-    if (label === 'costingHead') {
-      let tempObj = [
-        { label: 'ZBC', value: 'ZBC' },
-        { label: 'VBC', value: 'VBC' },
-      ]
-      return tempObj;
-    }
-
-    if (label === 'VendorList') {
-      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'ICC') {
-      iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'PaymentTerms') {
-      paymentTermsSelectList && paymentTermsSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-  }
 
   /**
   * @method editItemDetails
@@ -187,6 +151,7 @@ class InterestRateListing extends Component {
   * @description confirm delete Item.
   */
   deleteItem = (Id) => {
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
@@ -194,7 +159,7 @@ class InterestRateListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />
     };
-    return toastr.confirm(MESSAGES.INTEREST_DELETE_ALERT, toastrConfirmOptions);
+    // return Toaster.confirm(MESSAGES.INTEREST_DELETE_ALERT, toastrConfirmOptions);
   }
 
   /**
@@ -202,21 +167,28 @@ class InterestRateListing extends Component {
   * @description confirm delete item
   */
   confirmDeleteItem = (ID) => {
+
     this.props.deleteInterestRate(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
+        Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
         this.getTableListData()
       }
     });
+    this.setState({ showPopup: false })
   }
-
+  onPopupConfirm = () => {
+    this.confirmDeleteItem(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method effectiveDateFormatter
   * @description Renders buttons
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
 
 
@@ -251,50 +223,16 @@ class InterestRateListing extends Component {
     // this.props.activeInactiveVendorStatus(data, res => {
     //     if (res && res.data && res.data.Result) {
     //         if (cell == true) {
-    //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
+    //             Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
     //         } else {
-    //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
+    //             Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
     //         }
     //         this.getTableListData(null, null, null, null)
     //     }
     // })
   }
 
-  /**
-  * @method handleICCApplicability
-  * @description called
-  */
-  handleICCApplicability = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ ICCApplicability: newValue, });
-    } else {
-      this.setState({ ICCApplicability: [], })
-    }
-  };
 
-  /**
-  * @method handlePaymentApplicability
-  * @description called
-  */
-  handlePaymentApplicability = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ PaymentTermsApplicability: newValue, });
-    } else {
-      this.setState({ PaymentTermsApplicability: [], })
-    }
-  };
-
-  /**
-  * @method handleVendorName
-  * @description called
-  */
-  handleVendorName = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue });
-    } else {
-      this.setState({ vendorName: [] })
-    }
-  };
 
   /**
   * @method statusButtonFormatter
@@ -369,33 +307,7 @@ class InterestRateListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
-  /**
-  * @method filterList
-  * @description Filter user listing on the basis of role and department
-  */
-  filterList = () => {
-    const { vendorName, ICCApplicability, PaymentTermsApplicability, } = this.state;
 
-    const vendorTemp = vendorName ? vendorName.value : '';
-    const iccTemp = ICCApplicability ? ICCApplicability.value : '';
-    const paymentTemp = PaymentTermsApplicability ? PaymentTermsApplicability.value : '';
-
-    this.getTableListData(vendorTemp, iccTemp, paymentTemp)
-  }
-
-  /**
-  * @method resetFilter
-  * @description Reset user filter
-  */
-  resetFilter = () => {
-    this.setState({
-      vendorName: [],
-      ICCApplicability: [],
-      PaymentTermsApplicability: [],
-    }, () => {
-      this.getTableListData()
-    })
-  }
 
   formToggle = () => {
     this.setState({ toggleForm: true })
@@ -544,87 +456,7 @@ class InterestRateListing extends Component {
               </Col>
             </Row>
             <Row className="pt-4 filter-row-large blue-before">
-              {this.state.shown &&
-                <Col lg="10" md="12" className="filter-block interest-rate-filter-block">
-                  <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills">
-                      <h5>{`Filter By:`}</h5>
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="vendorName"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Vendors"}
-                        isClearable={false}
-                        options={this.renderListing("VendorList")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.handleVendorName}
-                        valueDescription={this.state.vendorName}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="ICCApplicability"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"ICC Applicability"}
-                        isClearable={false}
-                        options={this.renderListing("ICC")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={this.handleICCApplicability}
-                        valueDescription={this.state.ICCApplicability}
-                        disabled={false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="PaymentTermsApplicability"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Payment Term Applicability"}
-                        isClearable={false}
-                        options={this.renderListing("PaymentTerms")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        //validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
-                        //required={true}
-                        handleChangeDescription={
-                          this.handlePaymentApplicability
-                        }
-                        valueDescription={
-                          this.state.PaymentTermsApplicability
-                        }
-                        disabled={false}
-                      />
-                    </div>
 
-                    <div className="flex-fill">
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.resetFilter}
-                        className="reset mr10"
-                      >
-                        {"Reset"}
-                      </button>
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.filterList}
-                        className="user-btn mr5"
-                      >
-                        {"Apply"}
-                      </button>
-                    </div>
-                  </div>
-                </Col>}
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
@@ -632,9 +464,7 @@ class InterestRateListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <div className="cancel-icon-white"></div></button>
                     ) : (
-                      <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="filter mr-0"></div>
-                      </button>
+                      ""
                     )}
                     {AddAccessibility && (
                       <button
@@ -695,8 +525,8 @@ class InterestRateListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
                 floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.interestRateDataList}
                 pagination={true}
@@ -706,8 +536,8 @@ class InterestRateListing extends Component {
                 // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
-                  imagClass:'imagClass'
+                  title: EMPTY_DATA,
+                  imagClass: 'imagClass'
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -743,6 +573,9 @@ class InterestRateListing extends Component {
               anchor={'right'}
             />
           }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />
+          }
         </div >
       </ >
     );
@@ -774,7 +607,6 @@ export default connect(mapStateToProps, {
   getVendorListByVendorType,
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
-  getLeftMenu,
   getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'InterestRateListing',

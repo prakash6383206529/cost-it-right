@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { useSelector } from 'react-redux';
 
@@ -69,6 +69,7 @@ function ViewPackagingAndFreight(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Part No`}</th>
                         <th>{`Packaging Description`}</th>
                         <th>{`Packaging Type/Percentage`}</th>
                         <th className="costing-border-right">{`Cost`}</th>
@@ -79,6 +80,7 @@ function ViewPackagingAndFreight(props) {
                         viewPackaging.map((item, index) => {
                           return (
                             <tr key={index}>
+                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                               <td>
                                 {item.PackagingDescription ? item.PackagingDescription : '-'}
                               </td>
@@ -94,7 +96,7 @@ function ViewPackagingAndFreight(props) {
                       {viewPackaging && viewPackaging.length === 0 && (
                         <tr>
                           <td colSpan={12}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       )}
@@ -117,6 +119,7 @@ function ViewPackagingAndFreight(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Freight Type`}</th>
                           <th>{`Criteria`}</th>
                           <th>{`Rate`}</th>
@@ -129,6 +132,7 @@ function ViewPackagingAndFreight(props) {
                           viewFrieght.map((item, index) => {
                             return (
                               <tr key={index}>
+                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                                 <td>{item.FreightType ? item.FreightType : '-'}</td>
                                 <td>{item.Criteria ? item.Criteria : '-'}</td>
                                 <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
@@ -142,7 +146,7 @@ function ViewPackagingAndFreight(props) {
                         {viewFrieght.length === 0 && (
                           <tr>
                             <td colSpan={9}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
                         )}

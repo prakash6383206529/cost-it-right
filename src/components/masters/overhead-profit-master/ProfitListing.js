@@ -8,23 +8,24 @@ import {
     getVendorWithVendorCodeSelectList, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
 } from '../actions/OverheadProfit';
 import { searchableSelect } from "../../layout/FormInputs";
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { ProfitMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,6 +47,8 @@ class ProfitListing extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -102,6 +105,7 @@ class ProfitListing extends Component {
     * @description confirm delete
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -109,7 +113,7 @@ class ProfitListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(`${MESSAGES.PROFIT_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.PROFIT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -119,12 +123,19 @@ class ProfitListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteProfit(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_PROFIT_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
                 this.getDataList()
             }
         });
+        this.setState({ showPopup: false })
     }
 
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -191,7 +202,7 @@ class ProfitListing extends Component {
   */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -213,106 +224,10 @@ class ProfitListing extends Component {
 
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
-    /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
-
-    /**
-    * @method handleModelTypeChange
-    * @description called
-    */
-    handleModelTypeChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ ModelType: newValue, }, () => {
-                const { ModelType } = this.state;
-                this.props.getProfitVendorFilterByModelSelectList(ModelType.value, () => { })
-            });
-        } else {
-            this.setState({ ModelType: [], })
-            this.props.getVendorWithVendorCodeSelectList()
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description called
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue }, () => {
-                const { vendorName } = this.state;
-                this.props.getProfitModelFilterByVendorSelectList(vendorName.value, () => { })
-            });
-        } else {
-            this.setState({ vendorName: [] })
-            this.props.fetchModelTypeAPI('--Model Types--', res => { });
-        }
-    };
-
-    /**
-    * @method handleOverheadChange
-    * @description called
-    */
-    handleOverheadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ overheadAppli: newValue });
-        } else {
-            this.setState({ overheadAppli: [] })
-        }
-    };
-
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { filterOverheadSelectList, costingHead } = this.props;
-        const temp = [];
-
-        if (label === 'costingHead') {
-            return costingHeadObj;
-        }
-
-        if (label === 'ModelType') {
-            filterOverheadSelectList && filterOverheadSelectList.modelTypeSelectList && filterOverheadSelectList.modelTypeSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'VendorNameList') {
-            filterOverheadSelectList && filterOverheadSelectList.VendorsSelectList && filterOverheadSelectList.VendorsSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'ProfitApplicability') {
-            costingHead && costingHead.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-
-    }
 
     /**
     * @method statusButtonFormatter
@@ -346,9 +261,9 @@ class ProfitListing extends Component {
         this.props.activeInactiveProfit(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell === true) {
-                    toastr.success(MESSAGES.PROFIT_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PROFIT_INACTIVE_SUCCESSFULLY)
                 } else {
-                    toastr.success(MESSAGES.PROFIT_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PROFIT_ACTIVE_SUCCESSFULLY)
                 }
                 this.getDataList(null, null, null, null)
             }
@@ -359,33 +274,7 @@ class ProfitListing extends Component {
     * @method filterList
     * @description Filter user listing on the basis of role and department
     */
-    filterList = () => {
-        const { costingHead, ModelType, vendorName, overheadAppli, } = this.state;
-        const costingHeadTemp = costingHead ? costingHead.value : null;
-        const ModelTypeTemp = ModelType ? ModelType.value : null;
-        const vendorNameTemp = vendorName ? vendorName.value : null;
-        const OverheadAppliTemp = overheadAppli ? overheadAppli.value : null;
 
-        this.getDataList(costingHeadTemp, vendorNameTemp, OverheadAppliTemp, ModelTypeTemp)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset filter
-    */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            ModelType: [],
-            vendorName: [],
-            overheadAppli: []
-        }, () => {
-            this.props.fetchModelTypeAPI('--Model Types--', res => { });
-            this.props.getVendorWithVendorCodeSelectList()
-            this.getDataList(null, null, null, null)
-        })
-
-    }
 
     formToggle = () => {
         this.props.formToggle()
@@ -397,15 +286,7 @@ class ProfitListing extends Component {
     */
     onSubmit = (values) => { }
 
-    /**
- * @method handleOverheadChange
- * @description Handle overhead chnage
-*/
-    handleOverheadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ overheadAppli: newValue });
-        }
-    };
+
 
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
@@ -453,6 +334,10 @@ class ProfitListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+
+            }
 
             return item
         })
@@ -482,7 +367,7 @@ class ProfitListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: (this.props.overheadProfitList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.overheadProfitList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             exportCSVBtn: this.createCustomExportCSVButton,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -515,126 +400,7 @@ class ProfitListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="10" className="filter-block profit-filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="costingHead"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Costing Head"}
-                                            isClearable={false}
-                                            options={this.renderListing("costingHead")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.costingHead == null ||
-                                                    this.state.costingHead.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleHeadChange}
-                                            valueDescription={this.state.costingHead}
-                                        //disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="ModelType"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Model Type"}
-                                            isClearable={false}
-                                            options={this.renderListing("ModelType")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.ModelType == null ||
-                                                    this.state.ModelType.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleModelTypeChange}
-                                            valueDescription={this.state.ModelType}
-                                        //disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="ProfitApplicabilityId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Profit Applicability"}
-                                            options={this.renderListing(
-                                                "ProfitApplicability"
-                                            )}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.overheadAppli == null ||
-                                                    this.state.overheadAppli.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={
-                                                this.handleOverheadChange
-                                            }
-                                            valueDescription={this.state.overheadAppli}
-                                        //disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="vendorName"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Vendor Name"}
-                                            isClearable={false}
-                                            options={this.renderListing("VendorNameList")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.vendorName == null ||
-                                                    this.state.vendorName.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={isEditFlag ? true : false}
-                                        />
-                                    </div>
 
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -642,9 +408,7 @@ class ProfitListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <div className="cancel-icon-white"></div></button>
                                     ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
+                                        ""
                                     )}
                                     {AddAccessibility && (
                                         <button
@@ -697,8 +461,8 @@ class ProfitListing extends Component {
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
                                     floatingFilter={true}
+                                    domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
@@ -708,8 +472,8 @@ class ProfitListing extends Component {
                                     loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
-                                        title: CONSTANT.EMPTY_DATA,
-                                        imagClass:'imagClass'
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
@@ -738,6 +502,9 @@ class ProfitListing extends Component {
 
                     </Col>
                 </Row>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`} />
+                }
             </div >
         );
     }

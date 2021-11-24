@@ -14,7 +14,7 @@ import {
   getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
   masterFinalLevelUser
 } from '../actions/Material';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, getConfigurationKey, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -30,7 +30,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, INR, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import WarningMessage from '../../common/WarningMessage';
@@ -39,6 +39,7 @@ import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 const selector = formValueSelector('AddRMImport');
@@ -359,7 +360,7 @@ class AddRMImport extends Component {
     } else {
       if (currency && effectiveDate) {
 
-        this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
+        this.props.getExchangeRateByCurrency(currency.label, DayTime(effectiveDate).format('YYYY-MM-DD'), res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
           }
@@ -387,7 +388,7 @@ class AddRMImport extends Component {
   handleScrapRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
     if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
-      toastr.warning("Scrap rate should not be greater than basic rate")
+      Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
   }
@@ -413,7 +414,7 @@ class AddRMImport extends Component {
           } else {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
@@ -473,7 +474,7 @@ class AddRMImport extends Component {
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+                  effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,
@@ -789,6 +790,8 @@ class AddRMImport extends Component {
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
+      showPopup: false,
+      updatedObj: {}
     })
     this.props.getRMImportDataById('', false, res => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
@@ -839,7 +842,7 @@ class AddRMImport extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -865,7 +868,7 @@ class AddRMImport extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteRMDomestic(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -933,7 +936,7 @@ class AddRMImport extends Component {
         ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         Attachements: updatedFiles,
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
@@ -946,11 +949,12 @@ class AddRMImport extends Component {
         JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
       }
       if (isEditFlag) {
+
         if (isSourceChange) {
           this.props.reset()
           this.props.updateRMImportAPI(requestData, (res) => {
             if (res.data.Result) {
-              toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
               this.clearForm()
               // this.cancel()
             }
@@ -961,7 +965,7 @@ class AddRMImport extends Component {
           this.props.reset()
           this.props.updateRMImportAPI(requestData, (res) => {
             if (res.data.Result) {
-              toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
               this.clearForm()
               // this.cancel()
             }
@@ -972,12 +976,13 @@ class AddRMImport extends Component {
             return false
           }
           if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
+             this.setState({showPopup:true, updatedObj:requestData})
             const toastrConfirmOptions = {
               onOk: () => {
                 this.props.reset()
                 this.props.updateRMImportAPI(requestData, (res) => {
                   if (res.data.Result) {
-                    toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                    Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
                     this.clearForm();
                   }
                 })
@@ -985,7 +990,7 @@ class AddRMImport extends Component {
               onCancel: () => { },
               component: () => <ConfirmComponent />,
             }
-            return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+            // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
           }
 
         }
@@ -1016,7 +1021,7 @@ class AddRMImport extends Component {
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
@@ -1040,7 +1045,7 @@ class AddRMImport extends Component {
         this.props.reset()
         this.props.createRMImport(formData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
+            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
             this.clearForm();
           }
         });
@@ -1048,7 +1053,18 @@ class AddRMImport extends Component {
     }
   }
 
-
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateRMImportAPI(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+        this.clearForm();
+      }
+    })
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
 
 
   handleKeyDown = function (e) {
@@ -1865,6 +1881,9 @@ class AddRMImport extends Component {
                 IsImportEntery={true}
               />
             )
+          }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
           }
         </div>
       </>

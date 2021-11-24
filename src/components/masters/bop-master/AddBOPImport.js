@@ -14,7 +14,7 @@ import {
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -26,7 +26,7 @@ import { FILE_URL, ZBC, INR } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
@@ -35,6 +35,9 @@ import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import MasterSendForApproval from '../MasterSendForApproval'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -72,7 +75,10 @@ class AddBOPImport extends Component {
       netLandedConverionCost: '',
       DataToChange: [],
       DropdownChange: true,
-      showWarning: false
+      showWarning: false,
+      uploadAttachements: true,
+      showPopup: false,
+      updatedObj: {}
     }
   }
 
@@ -155,7 +161,7 @@ class AddBOPImport extends Component {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
 
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -174,7 +180,7 @@ class AddBOPImport extends Component {
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
-            this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+            this.handleEffectiveDateChange(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
@@ -194,7 +200,7 @@ class AddBOPImport extends Component {
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
@@ -400,7 +406,7 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ showCurrency: true }, () => {
           if (this.state.effectiveDate) {
-            this.props.getExchangeRateByCurrency(newValue.label, moment(this.state.effectiveDate).local().format('YYYY-MM-DD'), res => {
+            this.props.getExchangeRateByCurrency(newValue.label, DayTime(this.state.effectiveDate).format('YYYY-MM-DD'), res => {
               //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
               if (Object.keys(res.data.Data).length === 0) {
@@ -454,7 +460,7 @@ class AddBOPImport extends Component {
       })
 
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('YYYY-MM-DD'), res => {
+      this.props.getExchangeRateByCurrency(currency.label, DayTime(date).format('YYYY-MM-DD'), res => {
         //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
         if (Object.keys(res.data.Data).length === 0) {
@@ -500,7 +506,7 @@ class AddBOPImport extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -526,7 +532,7 @@ class AddBOPImport extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -620,12 +626,13 @@ class AddBOPImport extends Component {
         NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
+        this.setState({ showPopup: true, updatedObj: requestData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
             this.props.updateBOPImport(requestData, (res) => {
               if (res.data.Result) {
-                toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
+                Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
                 this.cancel();
               }
             })
@@ -633,7 +640,7 @@ class AddBOPImport extends Component {
           onCancel: () => { },
           component: () => <ConfirmComponent />
         }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -650,7 +657,7 @@ class AddBOPImport extends Component {
         Vendor: vendorName.value,
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.netLandedcost,
@@ -664,16 +671,46 @@ class AddBOPImport extends Component {
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost
       }
+
+
+
+      // if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      //   this.setState({ approveDrawer: true, approvalObj: formData })
+      // } else {
+      //   this.props.reset()
+      //   this.props.createBOPImport(formData, (res) => {
+      //     if (res.data.Result) {
+      //        Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
+      //       //this.clearForm()
+      //       this.cancel()
+      //     }
+      //   })
+      // }
+
+
+
       this.props.reset()
       this.props.createBOPImport(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.BOP_ADD_SUCCESS);
+          Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
           this.cancel();
         }
       });
     }
   }
 
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateBOPImport(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+        this.cancel()
+      }
+    });
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1169,7 +1206,7 @@ class AddBOPImport extends Component {
                                             f.FileName
                                           )
                                         }
-                                        src={require("../../../assests/images/red-cross.png")}
+                                        src={imgRedcross}
                                       ></img>
                                     </div>
                                   );
@@ -1188,13 +1225,29 @@ class AddBOPImport extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
+
+
+                          {
+                            // (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                            //   <button type="submit"
+                            //     class="user-btn approval-btn save-btn mr5"
+                            //     disabled={this.state.isFinalApprovar}
+                            //   >
+                            //     <div className="send-for-approval"></div>
+                            //     {'Send For Approval'}
+                            //   </button>
+                            //   :
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                            >
+                              <div className={"save-icon"}></div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          }
+
+
+
                         </div>
                       </Row>
                     </form>
@@ -1229,6 +1282,24 @@ class AddBOPImport extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.approveDrawer && (
+              <MasterSendForApproval
+                isOpen={this.state.approveDrawer}
+                closeDrawer={this.closeApprovalDrawer}
+                isEditFlag={false}
+                // masterId={BOP_MASTER_ID}
+                type={'Sender'}
+                anchor={"right"}
+                approvalObj={this.state.approvalObj}
+                isBulkUpload={false}
+                IsImportEntery={false}
+              />
+            )
+          }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );

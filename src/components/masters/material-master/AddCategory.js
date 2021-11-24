@@ -5,9 +5,9 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { createRMCategoryAPI, getCategoryDataAPI, updateCategoryAPI } from '../actions/Material';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { CATEGORY, NAME } from '../../../config/constants';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import saveImg from '../../../assests/images/check.png'
@@ -78,10 +78,10 @@ class AddCategory extends Component {
             this.props.reset()
             this.props.createRMCategoryAPI(values, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.CATEGORY_ADD_SUCCESS);
                     this.toggleModel();
                 } else {
-                    toastr.error(res.data.message);
+                    Toaster.error(res.data.message);
                 }
             });
         }
@@ -126,7 +126,7 @@ class AddCategory extends Component {
                                 <Row>
                                     <Col md="12">
                                         <Field
-                                            label={`${CONSTANT.CATEGORY} ${CONSTANT.NAME}`}
+                                            label={`${CATEGORY} ${NAME}`}
                                             name={"CategoryName"}
                                             type="text"
                                             placeholder={''}

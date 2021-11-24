@@ -8,7 +8,7 @@ import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLos
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 
 function Plastic(props) {
@@ -34,8 +34,6 @@ function Plastic(props) {
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
-  console.log('getPlasticData: ', getPlasticData);
-
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
@@ -136,7 +134,7 @@ function Plastic(props) {
 
     // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
     if (finishedWeight > grossWeight) {
-      toastr.warning('Finish Weight should not be greater than gross weight')
+      Toaster.warning('Finish Weight should not be greater than gross weight')
       return false
     }
     if (finishedWeight !== 0) {
@@ -209,7 +207,7 @@ function Plastic(props) {
     dispatch(saveRawMaterialCalciData(obj, res => {
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
-        toastr.success("Calculation saved successfully")
+        Toaster.success("Calculation saved successfully")
         dispatch(setPlasticArray([]))
         props.toggleDrawer('', obj)
       }
@@ -509,8 +507,8 @@ function Plastic(props) {
               className="reset mr15 cancel-btn"
             >
               <div className={'cancel-icon'}></div>
-                CANCEL
-              </button>
+              CANCEL
+            </button>
             <button
               type="submit"
               disabled={props.CostingViewMode}

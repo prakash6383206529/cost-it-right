@@ -10,12 +10,12 @@ import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
@@ -91,10 +91,10 @@ function TabToolCost(props) {
     params.api.paginationGoToPage(0);
 
   };
- 
+
   const gridOptions = {
     clearSearch: true,
-    noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    noDataText: (ToolsDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
     // // paginationShowsTotal: renderPaginationShowsTotal(),
     // prePage: <span className="prev-page-pg"></span>, // Previous page button text
     // nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -227,7 +227,7 @@ function TabToolCost(props) {
 
     dispatch(saveToolTab(data, res => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
+        Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
         dispatch(setComponentToolItemData({}, () => { }))
         InjectDiscountAPICall()
       }
@@ -331,7 +331,7 @@ function TabToolCost(props) {
                 onSubmit={handleSubmit(onSubmit)}
               >
 
-                {!IsApplicableProcessWise && 
+                {!IsApplicableProcessWise &&
                   <Row>
                     <Col md="12">
                       <Table className="table cr-brdr-main" size="sm">
@@ -370,7 +370,7 @@ function TabToolCost(props) {
                     </Col>
                   </Row>}
 
-                { IsApplicableProcessWise &&
+                {IsApplicableProcessWise &&
                   <Row>
                     <Col>
                       {/* <BootstrapTable
@@ -397,54 +397,54 @@ function TabToolCost(props) {
                         <TableHeaderColumn width={100} dataField="Life" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Life'}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="NetToolCost" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Net Tool Cost'}</TableHeaderColumn>
                       </BootstrapTable> */}
-                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
+                      {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
-                      <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                        <div className="ag-grid-header">
-                          {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
-                        </div>
-                        <div
-                          className="ag-theme-material">
-                          <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter = {true}
-                            domLayout='autoHeight'
-                            // columnDefs={c}
-                            rowData={ToolsDataList}
-                            pagination={true}
-                            paginationPageSize={10}
-                            onGridReady={onGridReady}
-                            gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                              title: CONSTANT.EMPTY_DATA,
-                              imagClass:'imagClass'
-                            }}
-                            frameworkComponents={frameworkComponents}
-                            suppressRowClickSelection={true}
-                            rowSelection={'multiple'}
-                          >
-                            {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                            <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn>
-                            <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
-                            <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
-                            <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
-                            <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
-                            <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
-                            <AgGridColumn field="ToolCost" headerName="ToolCost"></AgGridColumn>
-                            <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
-                            <AgGridColumn field="NetToolCost" headerName="Net Tool Cost"></AgGridColumn>
-                          </AgGridReact>
-                          <div className="paging-container d-inline-block float-right">
-                            <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
-                              <option value="10" selected={true}>10</option>
-                              <option value="50">50</option>
-                              <option value="100">100</option>
-                            </select>
+                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                          <div className="ag-grid-header">
+                            {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
+                          </div>
+                          <div
+                            className="ag-theme-material">
+                            <AgGridReact
+                              defaultColDef={defaultColDef}
+                              floatingFilter={true}
+                              domLayout='autoHeight'
+                              // columnDefs={c}
+                              rowData={ToolsDataList}
+                              pagination={true}
+                              paginationPageSize={10}
+                              onGridReady={onGridReady}
+                              gridOptions={gridOptions}
+                              loadingOverlayComponent={'customLoadingOverlay'}
+                              noRowsOverlayComponent={'customNoRowsOverlay'}
+                              noRowsOverlayComponentParams={{
+                                title: EMPTY_DATA,
+                                imagClass: 'imagClass'
+                              }}
+                              frameworkComponents={frameworkComponents}
+                              suppressRowClickSelection={true}
+                              rowSelection={'multiple'}
+                            >
+                              {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                              <AgGridColumn field="ToolOperationId" headerName=" "></AgGridColumn>
+                              <AgGridColumn field="BOMLevel" headerName="BOMLevel"></AgGridColumn>
+                              <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
+                              <AgGridColumn field="ProcessOrOperation" headerName="Process/Operation"></AgGridColumn>
+                              <AgGridColumn field="ToolCategory" headerName="Tool Category" ></AgGridColumn>
+                              <AgGridColumn field="ToolName" headerName="Tool Name"></AgGridColumn>
+                              <AgGridColumn field="ToolCost" headerName="ToolCost"></AgGridColumn>
+                              <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
+                              <AgGridColumn field="NetToolCost" headerName="Net Tool Cost"></AgGridColumn>
+                            </AgGridReact>
+                            <div className="paging-container d-inline-block float-right">
+                              <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
+                                <option value="10" selected={true}>10</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                              </select>
+                            </div>
                           </div>
                         </div>
-                      </div>
                       </div>
                       {/* <--------------------AG Grid convert by 21-10-2021------> */}
                     </Col>

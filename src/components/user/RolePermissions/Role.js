@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
 import { required, alphabetsOnlyForName, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, } from "../../../helper/validation";
@@ -15,6 +15,7 @@ import { } from 'reactstrap';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
 import ConfirmComponent from "../../../helper/ConfirmComponent";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 
 class Role extends Component {
 	constructor(props) {
@@ -30,6 +31,8 @@ class Role extends Component {
 			RoleId: '',
 			Modules: [],
 			isNewRole: true,
+			showPopup:false,
+            updatedObj:{}
 		};
 	}
 
@@ -150,7 +153,7 @@ class Role extends Component {
 		this.setState({ isLoader: true })
 		this.props.updateRoleAPI(updateData, (res) => {
 			if (res.data.Result) {
-				toastr.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
+				Toaster.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
 				this.clearForm()
 			}
 			this.setState({ isLoader: false })
@@ -169,7 +172,7 @@ class Role extends Component {
 		let userDetail = userDetails()
 
 		if (isEditFlag) {
-
+            
 			let updateData = {
 				RoleId: RoleId,
 				IsActive: true,
@@ -180,7 +183,7 @@ class Role extends Component {
 				CreatedBy: loggedInUserId(),
 				Modules: Modules
 			}
-
+			this.setState({showPopup:true, updatedObj:updateData})
 			const toastrConfirmOptions = {
 				onOk: () => {
 					this.confirmUpdate(updateData)
@@ -188,7 +191,7 @@ class Role extends Component {
 				onCancel: () => this.clearForm(),
 				component: () => <ConfirmComponent />
 			};
-			return toastr.confirm(`${MESSAGES.ROLE_UPDATE_ALERT}`, toastrConfirmOptions);
+			// return Toaster.confirm(`${MESSAGES.ROLE_UPDATE_ALERT}`, toastrConfirmOptions);
 
 
 		} else {
@@ -198,7 +201,7 @@ class Role extends Component {
 
 
 			if (isSelected.length < 1) {
-				toastr.warning("Please select atleast one module.")
+				Toaster.warning("Please select atleast one module.")
 				return false
 			}
 
@@ -212,7 +215,7 @@ class Role extends Component {
 			this.setState({ isLoader: true })
 			this.props.addRoleAPI(formData, (res) => {
 				if (res && res.data && res.data.Result) {
-					toastr.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
+					Toaster.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
 					this.clearForm()
 				}
 				this.setState({ isLoader: false })
@@ -220,7 +223,13 @@ class Role extends Component {
 		}
 
 	}
-
+  
+	onPopupConfirm = ()=>{ 
+		this.confirmUpdate(this.state.updatedObj)
+	  }
+	  closePopUp= () =>{
+		this.setState({showPopup:false})
+	  }
 	render() {
 		const { handleSubmit, } = this.props;
 		const { isLoader, isSubmitted, isEditFlag } = this.state;
@@ -295,6 +304,9 @@ class Role extends Component {
 						</div>
 					</div>
 				</div>
+				{
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.ROLE_UPDATE_ALERT}`}  />
+                }
 			</div>
 		);
 	}

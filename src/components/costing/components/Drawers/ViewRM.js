@@ -5,11 +5,11 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 import { EMPTY_GUID } from '../../../../config/constants';
 
 function ViewRM(props) {
@@ -42,7 +42,7 @@ function ViewRM(props) {
   const getWeightData = (index) => {
     setIndex(index)
     if (viewRM[index].WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
-      toastr.warning('Data is not avaliabe for calculator')
+      Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
     const tempData = viewCostingData[props.index]
@@ -104,6 +104,7 @@ function ViewRM(props) {
               <Table className="table cr-brdr-main" size="sm">
                 <thead>
                   <tr>
+                    <th>{`Part No`}</th>
                     <th>{`RM Name -Grade`}</th>
                     <th>{`RM Rate`}</th>
                     <th>{`Scrap Rate`}</th>
@@ -121,6 +122,7 @@ function ViewRM(props) {
                   {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
                     return (
                       <tr key={index}>
+                        <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                         <td>{item.RMName}</td>
                         <td>{item.RMRate}</td>
                         <td>{item.ScrapRate}</td>
@@ -144,7 +146,7 @@ function ViewRM(props) {
                   {viewRM.length === 0 && (
                     <tr>
                       <td colSpan={9}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
                   )}

@@ -9,8 +9,8 @@ import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
+import { EMPTY_DATA } from '../../../../../config/constants';
+import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
@@ -313,7 +313,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -334,7 +334,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -357,7 +357,7 @@ function ProcessCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -435,7 +435,7 @@ function ProcessCost(props) {
         setValue(`${ProcessGridFields}.${index}.Quantity`, 0)
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, 0)
       }, 200)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -602,11 +602,11 @@ function ProcessCost(props) {
                                 />
                               }
                             </span>
-                            {!CostingViewMode && <button
+                            <button
                               className="CalculatorIcon cr-cl-icon calc-icon-middle"
                               type={'button'}
                               onClick={() => toggleWeightCalculator(index)}
-                            />}
+                            />
                           </td>
 
                           <td style={{ width: 100 }}>
@@ -639,7 +639,7 @@ function ProcessCost(props) {
                   {gridData && gridData.length === 0 && (
                     <tr>
                       <td colSpan={7}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
                   )}
@@ -686,6 +686,7 @@ function ProcessCost(props) {
           technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          CostingViewMode={CostingViewMode}
           rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}

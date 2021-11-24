@@ -4,10 +4,10 @@ import {
   Container, Row, Col, Button, Table
 } from 'reactstrap';
 import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../actions/auth/AuthActions';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
-import { CONSTANT } from '../../helper/AllConastant';
+import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
@@ -18,6 +18,7 @@ import { GridTotalFormate } from '../common/TableGridFunctions';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
 
 const gridOptions = {};
 
@@ -36,7 +37,9 @@ class DepartmentsListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      showPopup:false,
+      deletedId:''
 
     }
   }
@@ -120,28 +123,37 @@ class DepartmentsListing extends Component {
   * @description confirm delete Department
   */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
       onCancel: () => { }
     };
-    return toastr.confirm(`${MESSAGES.DEPARTMENT_DELETE_ALERT}`, toastrConfirmOptions);
+    // return Toaster.confirm(`${MESSAGES.DEPARTMENT_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
+  onPopupConfirm =() => {
+    this.confirmDeleteItem(this.state.deletedId);
+   
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
-  * @method confirmDeleteItem
-  * @description confirm delete Department item
-  */
+   * @method confirmDeleteItem
+   * @description confirm delete Department item
+   */
   confirmDeleteItem = (DepartmentId) => {
     this.props.deleteDepartmentAPI(DepartmentId, (res) => {
       if (res && res.data && res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
+        Toaster.success(MESSAGES.DELETE_DEPARTMENT_SUCCESSFULLY);
         this.getDepartmentListData();
       } else if (res.data.Result === false && res.statusText == "Found") {
-        toastr.warning(res.data.Message)
+        Toaster.warning(res.data.Message)
       }
     });
+    this.setState({showPopup:false})
   }
 
   renderPaginationShowsTotal(start, to, total) {
@@ -196,7 +208,7 @@ class DepartmentsListing extends Component {
     const { isOpen, isEditFlag, DepartmentId, AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: <NoContentFound title={EMPTY_DATA} />,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -274,8 +286,8 @@ class DepartmentsListing extends Component {
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
-                    domLayout='autoHeight'
                     floatingFilter={true}
+                    domLayout='autoHeight'
                     // columnDefs={c}
                     rowData={this.state.tableData}
                     pagination={true}
@@ -285,8 +297,8 @@ class DepartmentsListing extends Component {
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
-                      title: CONSTANT.EMPTY_DATA,
-                      imagClass:'imagClass'
+                      title: EMPTY_DATA,
+                      imagClass: 'imagClass'
                     }}
                     frameworkComponents={frameworkComponents}
                   >
@@ -318,6 +330,9 @@ class DepartmentsListing extends Component {
               className={"test-rahul"}
             />
           )}
+           {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`}  />
+                }
         </>
       </div>
     );
@@ -339,6 +354,5 @@ export default connect(mapStateToProps,
   {
     getAllDepartmentAPI,
     deleteDepartmentAPI,
-    getLeftMenu,
   })(DepartmentsListing);
 

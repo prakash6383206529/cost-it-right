@@ -5,10 +5,10 @@ import {
     GET_IN_APP_NOTIFICATION_LIST_SUCCESS,
     GET_MARK_AS_READ_NOTIFICATION_SUCCESS,
     RESET_APP
-} from '../config/constants';
+} from '../../../config/constants'
 import {
     formatChartFilterResult
-} from '../helper/ApiResponse';
+} from '../../../helper/ApiResponse'
 
 const initialState = {
     error: false,

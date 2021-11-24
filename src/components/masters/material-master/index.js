@@ -13,9 +13,8 @@ import RMImportListing from './RMImportListing';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId } from '../../../helper';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import Insights from './Insights';
+import { getConfigurationKey } from '../../../helper';
+
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RMApproval from './RMApproval';
@@ -213,37 +212,35 @@ function RowMaterialMaster(props) {
                 <Col>
                     <div>
                         <Nav tabs className="subtabs mt-0">
-                            {/* {ViewRMAccessibility && <NavItem>
-                                    <NavLink className={classnames({ active:activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                                        Insights
-                                    </NavLink>
-                                </NavItem>} */}
+
+
+
                             {ViewRMAccessibility && <NavItem>
-                                <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                                <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                                     Manage Raw Material (Domestic)
                                     </NavLink>
                             </NavItem>}
                             {ViewRMAccessibility && <NavItem>
-                                <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                                <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                     Manage Raw Material (Import)
                                     </NavLink>
                             </NavItem>}
                             {ViewRMAccessibility && <NavItem>
-                                <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+                                <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                                     Manage Specification
                                     </NavLink>
                             </NavItem>}
                             {ViewRMAccessibility && <NavItem>
-                                <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
+                                <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                                     Manage Material
                                     </NavLink>
                             </NavItem>}
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
-                            {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
-                            {ViewRMAccessibility && <NavItem>
-                                <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => {
-                                    toggle('6');
+                            {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
+                            {/* {ViewRMAccessibility && <NavItem> */}
+                                <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
+                                    toggle('5');
                                     // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                 }}>
                                     Approval Status
@@ -253,13 +250,10 @@ function RowMaterialMaster(props) {
 
                         <TabContent activeTab={activeTab}>
 
+
+
                             {activeTab == 1 && ViewRMAccessibility &&
                                 <TabPane tabId="1">
-                                    <Insights />
-                                </TabPane>}
-
-                            {activeTab == 2 && ViewRMAccessibility &&
-                                <TabPane tabId="2">
                                     <RMDomesticListing
                                         formToggle={displayDomesticForm}
                                         getDetails={getDetails}
@@ -272,8 +266,8 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 3 && ViewRMAccessibility &&
-                                <TabPane tabId="3">
+                            {activeTab == 2 && ViewRMAccessibility &&
+                                <TabPane tabId="2">
                                     <RMImportListing
                                         formToggle={displayImportForm}
                                         getDetails={getDetailsImport}
@@ -286,8 +280,8 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 4 && ViewRMAccessibility &&
-                                <TabPane tabId="4">
+                            {activeTab == 3 && ViewRMAccessibility &&
+                                <TabPane tabId="3">
                                     <SpecificationListing
                                         toggle={toggle}
                                         AddAccessibility={AddAccessibility}
@@ -300,8 +294,8 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 5&& ViewRMAccessibility &&
-                                <TabPane tabId="5">
+                            {activeTab == 4 && ViewRMAccessibility &&
+                                <TabPane tabId="4">
                                     <RMListing
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
@@ -309,8 +303,8 @@ function RowMaterialMaster(props) {
                                         DownloadAccessibility={DownloadAccessibility}
                                     />
                                 </TabPane>}
-                            {activeTab == 6 && ViewRMAccessibility &&
-                                <TabPane tabId="6">
+                            {activeTab ==5 && ViewRMAccessibility &&
+                                <TabPane tabId="5">
                                     {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                         } */}

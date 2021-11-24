@@ -6,10 +6,8 @@ import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
-import { CONSTANT } from '../../../helper/AllConastant';
-import { required } from "../../../helper/validation";
-
-import { toastr } from 'react-redux-toastr';
+import { EMPTY_DATA } from '../../../config/constants';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
 
@@ -163,13 +161,13 @@ function ManageSOBDrawer(props) {
   const warningMessageHandle = (warningType) => {
     switch (warningType) {
       case 'SOB_WARNING':
-        toastr.warning('SOB Should not be greater than 100.');
+        Toaster.warning('SOB Should not be greater than 100.');
         break;
       case 'VALID_NUMBER_WARNING':
-        toastr.warning('Please enter a valid number.');
+        Toaster.warning('Please enter a valid number.');
         break;
       case 'ERROR_WARNING':
-        toastr.warning('Please enter a valid number.');
+        Toaster.warning('Please enter a valid number.');
         break;
       default:
         break;
@@ -214,7 +212,7 @@ function ManageSOBDrawer(props) {
     }, 0)
 
     if (Number(sum) > 100) {
-      toastr.warning('Total SOB% should be up to 100%')
+      Toaster.warning('Total SOB% should be up to 100%')
       return false
     }
 
@@ -229,7 +227,7 @@ function ManageSOBDrawer(props) {
     reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
-        toastr.success('BOP Vendors SOB has been updated.')
+        Toaster.success('BOP Vendors SOB has been updated.')
         props.closeDrawer('')
       }
     }))
@@ -335,7 +333,7 @@ function ManageSOBDrawer(props) {
                       {GridData.length === 0 &&
                         <tr>
                           <td colSpan={5}>
-                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                            <NoContentFound title={EMPTY_DATA} />
                           </td>
                         </tr>
                       }

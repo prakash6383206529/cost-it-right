@@ -4,17 +4,16 @@ import { reduxForm } from "redux-form";
 import { Col, } from 'reactstrap';
 import $ from "jquery";
 import { focusOnError, } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import AddReason from './AddReason';
 import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -23,6 +22,7 @@ import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,7 +49,9 @@ class ReasonListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       isLoader: true,
-      renderState: true
+      renderState: true,
+      showPopup:false,
+      deletedId:''
     }
   }
 
@@ -132,13 +134,14 @@ class ReasonListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
       onCancel: () => { },
     }
-    return toastr.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions)
+    // return Toaster.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions)
   }
 
   /**
@@ -148,12 +151,19 @@ class ReasonListing extends Component {
   confirmDeleteItem = (ID) => {
     this.props.deleteReasonAPI(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
+        Toaster.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
         this.getTableListData()
       }
     })
+    this.setState({showPopup:false})
   }
-
+  onPopupConfirm =() => {
+    this.confirmDeleteItem(this.state.deletedId);
+   
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -205,9 +215,9 @@ class ReasonListing extends Component {
     this.props.activeInactiveReasonStatus(data, (res) => {
       if (res && res.data && res.data.Result) {
         if (cell == true) {
-          toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
         } else {
-          toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
         }
         this.getTableListData()
       }
@@ -320,8 +330,9 @@ class ReasonListing extends Component {
 
     const options = {
       clearSearch: true,
-      noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-      exportCSVBtn: this.createCustomExportCSVButton,
+      noDataText: (this.props.reasonDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
+      // exportCSVBtn: this.createCustomExportCSVButton,
+      // onExportToCSV: this.handleExportCSVButtonClick,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -450,8 +461,8 @@ class ReasonListing extends Component {
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
-                domLayout='autoHeight'
                 floatingFilter={true}
+                domLayout='autoHeight'
                 // columnDefs={c}
                 rowData={this.props.reasonDataList}
                 pagination={true}
@@ -461,7 +472,7 @@ class ReasonListing extends Component {
                 loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
-                  title: CONSTANT.EMPTY_DATA,
+                  title: EMPTY_DATA,
                 }}
                 frameworkComponents={frameworkComponents}
               >
@@ -479,7 +490,9 @@ class ReasonListing extends Component {
             </div>
           </div>
 
-
+          {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.REASON_DELETE_ALERT}`}  />
+                }
         </div>
         {isOpenDrawer && (
           <AddReason
@@ -517,7 +530,6 @@ export default connect(mapStateToProps, {
   getAllReasonAPI,
   deleteReasonAPI,
   activeInactiveReasonStatus,
-  getLeftMenu,
 })(
   reduxForm({
     form: 'ReasonListing',

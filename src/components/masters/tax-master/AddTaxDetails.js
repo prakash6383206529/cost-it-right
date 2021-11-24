@@ -6,11 +6,11 @@ import { required, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, acce
 import { renderDatePicker, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddTaxDetails')
 
@@ -46,12 +46,12 @@ class AddTaxDetails extends Component {
             let Data = res.data.Data;
             this.setState({ DataToCheck: Data })
 
-            this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+            this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
             let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
             setTimeout(() => {
               this.setState({
                 country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
-                effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+                effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
               }, () => this.setState({ isLoader: false })
               )
             }, 500)
@@ -170,14 +170,14 @@ class AddTaxDetails extends Component {
         TaxName: values.TaxName,
         CountryId: country.value,
         Rate: values.Rate,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         LoggedInUserId: loggedInUserId(),
       }
 
       this.props.reset()
       this.props.updateTaxDetails(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.TAX_UPDATE_SUCCESS);
+          Toaster.success(MESSAGES.TAX_UPDATE_SUCCESS);
           this.cancel();
         }
       });
@@ -188,13 +188,13 @@ class AddTaxDetails extends Component {
         TaxName: values.TaxName,
         CountryId: country.value,
         Rate: values.Rate,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         LoggedInUserId: loggedInUserId(),
       }
       this.props.reset()
       this.props.createTaxDetails(reqData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.TAX_ADD_SUCCESS);
+          Toaster.success(MESSAGES.TAX_ADD_SUCCESS);
           this.cancel();
         }
       });

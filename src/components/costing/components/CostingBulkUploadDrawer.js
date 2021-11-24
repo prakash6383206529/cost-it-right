@@ -4,7 +4,7 @@ import ReactExport from 'react-export-excel';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting } from '../actions/CostWorking'
@@ -83,7 +83,7 @@ class CostingBulkUploadDrawer extends Component {
         //         const check = fileHeads.includes(CostingBulkUpload)
 
         //         if (check === false) {
-        //             toastr.error('Please check your data.')
+        //             Toaster.error('Please check your data.')
         //         }
         //         else {
         //             // fileHeads = resp.rows[0];
@@ -138,7 +138,7 @@ class CostingBulkUploadDrawer extends Component {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xlsx files.')
+            Toaster.warning('Allowed only xlsx files.')
         }
     }
 
@@ -198,7 +198,7 @@ class CostingBulkUploadDrawer extends Component {
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
-            toastr.warning('File type should be .xls or .xlsx')
+            Toaster.warning('File type should be .xls or .xlsx')
         }
     }
 
@@ -332,10 +332,10 @@ class CostingBulkUploadDrawer extends Component {
                                                                 Drag and Drop or{" "}
                                                                 <span className="text-primary">
                                                                     Browse
-                                                                        </span>
+                                                                </span>
                                                                 <br />
-                                                                      file to upload
-                                                                     </span>
+                                                                file to upload
+                                                            </span>
                                                         </div>
                                                     )
                                                 }
@@ -362,7 +362,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 className="reset mr15 cancel-btn"
                                             >
                                                 <div className={'cancel-icon'}></div>
-                                                    CANCEL
+                                                CANCEL
                                             </button>
                                             <button type="submit" className="btn-primary save-btn">
                                                 <div className={'save-icon'}></div>

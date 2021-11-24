@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CONSTANT } from '../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import BOMViewerProduct from './BOMViewerProduct';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -45,6 +46,8 @@ class AssemblyProductListing extends Component {
             visualAdId: '',
             BOMId: '',
             isBulkUpload: false,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -93,6 +96,7 @@ class AssemblyProductListing extends Component {
     * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -100,7 +104,7 @@ class AssemblyProductListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -110,19 +114,26 @@ class AssemblyProductListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteAssemblyPart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_BOM_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({ showPopup: false })
     }
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
 
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -207,9 +218,9 @@ class AssemblyProductListing extends Component {
         // this.props.activeInactiveStatus(data, res => {
         //     if (res && res.data && res.data.Result) {
         //         if (cell == true) {
-        //             toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+        //             Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
         //         } else {
-        //             toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+        //             Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
         //         }
         //         this.getTableListData()
         //     }
@@ -304,7 +315,7 @@ class AssemblyProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        temp = TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -316,11 +327,16 @@ class AssemblyProductListing extends Component {
             } else {
                 return false
             }
+            if (item.EffectiveDate.includes('T')) {
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+            }
+
+
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyPart}>
+            <ExcelSheet data={temp} name={AssemblyPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -344,7 +360,7 @@ class AssemblyProductListing extends Component {
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const options = {
             clearSearch: true,
-            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -463,11 +479,10 @@ class AssemblyProductListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
@@ -478,7 +493,7 @@ class AssemblyProductListing extends Component {
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
-                                title: CONSTANT.EMPTY_DATA,
+                                title: EMPTY_DATA,
                             }}
                             frameworkComponents={frameworkComponents}
                         >
@@ -493,7 +508,7 @@ class AssemblyProductListing extends Component {
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={120} headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -504,7 +519,9 @@ class AssemblyProductListing extends Component {
                         </div>
                     </div>
                 </div>
-
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`} />
+                }
                 {isOpenVisualDrawer && <BOMViewerProduct
                     isOpen={isOpenVisualDrawer}
                     closeDrawer={this.closeVisualDrawer}

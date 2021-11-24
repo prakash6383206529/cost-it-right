@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CONSTANT } from '../../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
+import { EMPTY_DATA } from '../../../../../config/constants';
+import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
@@ -145,7 +145,7 @@ function SurfaceTreatmentCost(props) {
       setGridData(tempArr)
 
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -160,7 +160,7 @@ function SurfaceTreatmentCost(props) {
       setGridData(tempArr)
 
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -308,7 +308,7 @@ function SurfaceTreatmentCost(props) {
                   {gridData && gridData.length === 0 &&
                     <tr>
                       <td colSpan={8}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
                   }

@@ -1,7 +1,7 @@
 import React, { Component, useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from "react-redux";
-import { getMenuByUser, getLeftMenu } from "../../actions/auth/AuthActions";
+import { getMenuByUser } from "../../actions/auth/AuthActions";
 import { checkForNull, loggedInUserId } from "../../helper";
 import { Col, Container, Row } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
@@ -11,11 +11,12 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { Field, reduxForm } from "redux-form";
 import dashboardImg from '../../assests/images/dashboard-img.png'
 
+
 function Dashboard(props) {
   const { handleSubmit, menusData, } = props
 
-  const [acc1, setAcc1] = useState(true)
-  const [acc2, setAcc2] = useState(false)
+  const [acc1, setAcc1] = useState(false)
+  const [acc2, setAcc2] = useState(true)
   const [acc3, setAcc3] = useState(false)
   const [costingApprovalListingView, setCostingApprovalListingView] = useState(false)
   const [simulationApprovalListingView, setSimulationApprovalListingView] = useState(false)
@@ -47,21 +48,6 @@ function Dashboard(props) {
 
   }, [isOpenRMApprovalDashboard]);
 
-
-
-  // useEffect(() => {
-  //   props.getMenuByUser(loggedInUserId(), () => {
-  //     if (menusData !== undefined) {
-  //       reactLocalStorage.set("ModuleId", menusData[0].ModuleId);
-  //       props.getLeftMenu(
-  //         menusData[0].ModuleId,
-  //         loggedInUserId(),
-  //         (res) => { }
-  //       );
-  //     }
-  //   });
-  // })
-
   const closeDashboard = () => {
     setShowHideDash(true)
   }
@@ -81,27 +67,7 @@ function Dashboard(props) {
             </Row>
             <form onSubmit={handleSubmit}>
 
-              {costingApprovalListingView &&
-                <Row className="m-0">
-                  <div className="graph-box w-100">
-                    <Row>
-                      <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
-                      <Col md="4" className="text-right">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
-                          {acc1 ? (
-                            <i className="fa fa-minus" ></i>
-                          ) : (
-                            <i className="fa fa-plus"></i>
-                          )}
-                        </button>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} />}</Col>
-                    </Row>
-                  </div>
-                </Row>
-              }
+
 
 
               {simulationApprovalListingView &&
@@ -122,6 +88,29 @@ function Dashboard(props) {
 
                     <Row>
                       <Col md="12">{acc2 && <SimulationApprovalListing isSmApprovalListing={true} isDashboard={true} />}</Col>
+                    </Row>
+                  </div>
+                </Row>
+              }
+
+
+              {costingApprovalListingView &&
+                <Row className="m-0">
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">Costings Awaiting Approval</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                          {acc1 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="12">{acc1 && <ApprovalListing isApproval={true} closeDashboard={closeDashboard} isDashboard={true} />}</Col>
                     </Row>
                   </div>
                 </Row>
@@ -178,7 +167,6 @@ function mapStateToProps({ auth }) {
 
 export default connect(mapStateToProps, {
   getMenuByUser,
-  getLeftMenu,
 })(reduxForm({
   form: 'Dashboard',
   enableReinitialize: true,

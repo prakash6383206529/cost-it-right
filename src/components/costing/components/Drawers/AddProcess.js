@@ -5,8 +5,8 @@ import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../act
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
+import { EMPTY_DATA } from '../../../../config/constants';
+import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -97,7 +97,7 @@ function AddProcess(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: (processDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    noDataText: (processDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal(),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -142,7 +142,7 @@ function AddProcess(props) {
   */
   const addRow = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')
@@ -291,7 +291,7 @@ function AddProcess(props) {
                         loadingOverlayComponent={'customLoadingOverlay'}
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
-                          title: CONSTANT.EMPTY_DATA,
+                          title: EMPTY_DATA,
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}

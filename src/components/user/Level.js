@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
@@ -307,7 +307,7 @@ class Level extends Component {
 
         this.props.updateUserLevelAPI(formReq, (res) => {
           if (res && res.data && res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+            Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
           }
           this.toggleDrawer('')
           reset();
@@ -318,7 +318,7 @@ class Level extends Component {
 
         this.props.addUserLevelAPI(values, (res) => {
           if (res && res.data && res.data.Result) {
-            toastr.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
+            Toaster.success(MESSAGES.ADD_LEVEL_SUCCESSFULLY)
           }
           this.toggleDrawer('')
           reset();
@@ -343,7 +343,7 @@ class Level extends Component {
 
           this.props.updateLevelMappingAPI(formReq, (res) => {
             if (res && res.data && res.data.Result) {
-              toastr.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              Toaster.success(MESSAGES.UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
               reset();
               this.setState({
                 isLoader: false,
@@ -367,7 +367,7 @@ class Level extends Component {
 
           this.props.updateSimulationLevel(formReq, (res) => {
             if (res && res.data && res.data.Result) {
-              toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+              Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
             this.toggleDrawer('')
             reset();
@@ -386,7 +386,7 @@ class Level extends Component {
 
           this.props.updateMasterLevel(formReq, (res) => {
             if (res && res.data && res.data.Result) {
-              toastr.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
+              Toaster.success(MESSAGES.UPDATE_LEVEL_SUCCESSFULLY)
             }
             this.toggleDrawer('')
             reset();
@@ -404,7 +404,7 @@ class Level extends Component {
         if (this.state.levelType === 'Costing') {
           this.props.setApprovalLevelForTechnology(formData, (res) => {
             if (res && res.data && res.data.Result) {
-              toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              Toaster.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
             }
             this.props.reset();
             this.setState({
@@ -420,7 +420,7 @@ class Level extends Component {
           // ADD SIMULATION NEW LEVEL
           this.props.addSimulationLevel(formData, (res) => {
             if (res && res.data && res.data.Result) {
-              toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              Toaster.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
             }
             this.props.reset();
             this.setState({
@@ -440,7 +440,7 @@ class Level extends Component {
           // ADD MASTER NEW LEVEL
           this.props.addMasterLevel(masterData, (res) => {
             if (res && res.data && res.data.Result) {
-              toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+              Toaster.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
             }
             this.props.reset();
             this.setState({

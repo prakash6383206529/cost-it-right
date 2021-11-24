@@ -4,10 +4,10 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
+import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey } from '../../../../helper'
-import { toastr } from 'react-redux-toastr'
-import { setPlasticArray } from '../../actions/Costing'
+import Toaster from '../../../common/Toaster'
+import { setPlasticArray } from '../../actions/Costing';
 
 function LossStandardTable(props) {
   const trimValue = getConfigurationKey()
@@ -71,7 +71,7 @@ function LossStandardTable(props) {
     const LossWeight = Number(lossWeight)
 
     if (LossPercentage === 0 || LossOfType === '' || LossWeight === 0) {
-      toastr.warning("Please add data first.")
+      Toaster.warning("Please add data first.")
       return false;
     }
 
@@ -79,7 +79,7 @@ function LossStandardTable(props) {
     if (!isEdit) {
       const isExist = tableData.findIndex(el => (el.LossOfType === LossOfType))
       if (isExist !== -1) {
-        toastr.warning('Already added, Please select another loss type.')
+        Toaster.warning('Already added, Please select another loss type.')
         return false;
       }
     }
@@ -219,7 +219,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={false}
+            disabled={props.CostingViewMode}
           />
         </Col>
         <Col md="3">
@@ -244,7 +244,7 @@ function LossStandardTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.LossPercentage}
-            disabled={false}
+            disabled={props.CostingViewMode}
           />
         </Col>
         <Col md="3">
@@ -282,7 +282,7 @@ function LossStandardTable(props) {
                   onClick={() => addRow()}
                 >
                   Update
-                  </button>
+                </button>
 
                 <button
                   type="button"
@@ -290,7 +290,7 @@ function LossStandardTable(props) {
                   onClick={() => cancelUpdate()}
                 >
                   Cancel
-                  </button>
+                </button>
               </>
             ) : (
               <button
@@ -358,7 +358,7 @@ function LossStandardTable(props) {
               {tableData && tableData.length === 0 && (
                 <tr>
                   <td colspan="4">
-                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                    <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>
               )}
@@ -366,17 +366,17 @@ function LossStandardTable(props) {
 
             {/* <span className="col-sm-4 ">{'30'}</span> */}
           </Table>
-            <div className="col-md-12 text-right bluefooter-butn border">
+          <div className="col-md-12 text-right bluefooter-butn border">
             {props.isPlastic &&
               <span className="w-50 d-inline-block text-left">
                 {`Burning Loss Weight:`}
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
-              <span className="w-50 d-inline-block">
-                {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight:`}
-                {checkForDecimalAndNull(findLostWeight(tableData), trim)}
-              </span>
-            </div>
+            <span className="w-50 d-inline-block">
+              {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight:`}
+              {checkForDecimalAndNull(findLostWeight(tableData), trim)}
+            </span>
+          </div>
         </Col>
 
         {/* <Row>

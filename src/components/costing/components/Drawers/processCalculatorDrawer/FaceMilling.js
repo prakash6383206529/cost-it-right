@@ -7,7 +7,7 @@ import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from '.
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 
 function FaceMilling(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -163,7 +163,7 @@ function FaceMilling(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))
@@ -205,7 +205,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.OuterDiameter}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -230,7 +230,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cutLengthOfArea}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -255,7 +255,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.areaWidth}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -299,7 +299,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.removedMaterial}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -324,7 +324,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.doc}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -373,7 +373,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -429,7 +429,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.toothFeed}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -510,7 +510,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
-                        disabled={false}
+                        disabled={props.CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="3">
@@ -542,7 +542,7 @@ function FaceMilling(props) {
             <div className="mt25 col-md-12 text-right">
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn">
                 <div className={'cancel-icon'}></div>CANCEL</button>
-              <button type="submit" className="btn-primary save-btn">
+              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}>
                 <div className={"save-icon"}></div>
                 {'SAVE'}
               </button>

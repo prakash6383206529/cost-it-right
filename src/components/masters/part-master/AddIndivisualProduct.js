@@ -7,11 +7,11 @@ import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -62,12 +62,12 @@ class AddIndivisualProduct extends Component {
 
                     const Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
-                            effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+                            effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
                             files: Data.Attachements,
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
@@ -94,7 +94,7 @@ class AddIndivisualProduct extends Component {
     * @description Handle Effective Date
     */
     handleEffectiveDateChange = (date) => {
-        this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+        this.setState({ effectiveDate: DayTime(date)._isValid ? DayTime(date)._d : '', });
         this.setState({ DropdownChanged: false })
     };
 
@@ -144,7 +144,7 @@ class AddIndivisualProduct extends Component {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
 
@@ -170,7 +170,7 @@ class AddIndivisualProduct extends Component {
                 DeletedBy: loggedInUserId(),
             }
             this.props.fileDeletePart(deleteData, (res) => {
-                toastr.success('File has been deleted successfully.')
+                Toaster.success('File has been deleted successfully.')
                 let tempArr = this.state.files.filter(item => item.FileId !== FileId)
                 this.setState({ files: tempArr })
             })
@@ -217,9 +217,7 @@ class AddIndivisualProduct extends Component {
         if (isEditFlag) {
 
 
-            if (DropdownChanged && DataToCheck.ProductNumber == values.ProductNumber && DataToCheck.Description == values.Description &&
-                DataToCheck.ProductGroupCode == values.ProductGroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-                DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+            if (DropdownChanged) {
                 this.cancel()
                 return false;
             }
@@ -237,7 +235,7 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
-                EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+                EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
                 IsForcefulUpdated: true
@@ -247,7 +245,7 @@ class AddIndivisualProduct extends Component {
                 this.props.reset()
                 this.props.updateProduct(updateData, (res) => {
                     if (res.data.Result) {
-                        toastr.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
+                        Toaster.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
                         this.cancel()
                     }
                 });
@@ -272,7 +270,7 @@ class AddIndivisualProduct extends Component {
                 ProductName: values.ProductName,
                 Description: values.Description,
                 ECNNumber: values.ECNNumber,
-                EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+                EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
@@ -283,7 +281,7 @@ class AddIndivisualProduct extends Component {
             this.props.reset()
             this.props.createProduct(formData, (res) => {
                 if (res.data.Result === true) {
-                    toastr.success(MESSAGES.PRODUCT_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()
                 }
             });
@@ -356,6 +354,7 @@ class AddIndivisualProduct extends Component {
                                                             required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     {/* {initialConfiguration &&
@@ -386,6 +385,7 @@ class AddIndivisualProduct extends Component {
                                                             required={false}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
 
@@ -402,6 +402,7 @@ class AddIndivisualProduct extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 />
                                                             </Col>
                                                         )}
@@ -420,6 +421,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -433,6 +435,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -446,6 +449,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             className=""
                                                             customClassName={"withBorder"}
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
 
@@ -486,7 +490,7 @@ class AddIndivisualProduct extends Component {
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
+                                                                    disabled={isEditFlag ? true : false}
                                                                 //minDate={moment()}
                                                                 />
 
@@ -539,6 +543,7 @@ class AddIndivisualProduct extends Component {
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
+                                                            disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
                                                     <Col md="3">
@@ -586,6 +591,7 @@ class AddIndivisualProduct extends Component {
                                                                         extra.reject ? { color: "red" } : {},
                                                                 }}
                                                                 classNames="draper-drop"
+                                                                disabled={isEditFlag ? true : false}
                                                             />
                                                         )}
                                                     </Col>

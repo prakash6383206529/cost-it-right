@@ -4,7 +4,7 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useSelector } from 'react-redux';
 import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import { EMPTY_DATA } from '../../../../config/constants';
 
 
 function ViewToolCost(props) {
@@ -50,6 +50,7 @@ function ViewToolCost(props) {
                 <Table className="table cr-brdr-main" size="sm" >
                   <thead>
                     <tr>
+                      <th>{`Part No`}</th>
                       <th>{`Tool Maintenance Cost`}</th>
                       <th>{`Tool Cost`}</th>
                       <th>{`Amortization Quantity (Tool Life)`}</th>
@@ -62,6 +63,7 @@ function ViewToolCost(props) {
                       viewToolCost.map((item, index) => {
                         return (
                           <tr key={index}>
+                            <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                             <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.Life ? item.Life : "-"}</td>
@@ -73,7 +75,7 @@ function ViewToolCost(props) {
                     {viewToolCost.length === 0 && (
                       <tr>
                         <td colSpan={7}>
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     )}
