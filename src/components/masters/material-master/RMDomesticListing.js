@@ -25,7 +25,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } from '../../../helper';
-import { SearchableSelectHookForm ,TextFieldHookForm} from '../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -213,9 +213,9 @@ function RMDomesticListing(props) {
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
 
-                    if (isSimulation) {
-                        props.apply(Data)
-                    }
+                    // if (isSimulation) {
+                    //     props.apply(Data)
+                    // }
 
                     // const func = () => {
                     // }
