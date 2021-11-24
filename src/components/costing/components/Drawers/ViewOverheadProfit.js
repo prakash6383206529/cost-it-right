@@ -8,7 +8,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull } from '../../../../helper'
 import { useSelector } from 'react-redux'
 function ViewOverheadProfit(props) {
-  const { overheadData, profitData, rejectAndModelType } = props
+  const { overheadData, profitData, rejectAndModelType, iccPaymentData } = props
 
   const { rejectData, modelType } = rejectAndModelType
 
@@ -384,7 +384,7 @@ function ViewOverheadProfit(props) {
                       </thead>
                       <tbody>
                         {
-                          (rejectData.RejectionApplicability === null) ?
+                          (iccPaymentData.ICCApplicabilityDetail.ICCApplicability === null) ?
                             <tr>
                               <td colSpan={8}>
                                 <NoContentFound title={EMPTY_DATA} />
@@ -392,10 +392,10 @@ function ViewOverheadProfit(props) {
                             </tr> :
                             <tr>
 
-                              <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
-                              <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
-                              <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>
-                              <td>{rejectData.RejectionTotalCost ? rejectData.RejectionTotalCost : '-'}</td>
+                              <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
+                              <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? iccPaymentData.ICCApplicabilityDetail.InterestRate : '-'}</td>
+                              <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? iccPaymentData.ICCApplicabilityDetail.CostApplicability : '-'}</td>
+                              <td>{iccPaymentData.NetICC ? iccPaymentData.NetICC : '-'}</td>
                             </tr>
                         }
 
@@ -431,7 +431,7 @@ function ViewOverheadProfit(props) {
                       </thead>
                       <tbody>
                         {
-                          (rejectData.RejectionApplicability === null) ?
+                          (iccPaymentData.PaymentTermDetail.PaymentTermApplicability === null) ?
                             <tr>
                               <td colSpan={8}>
                                 <NoContentFound title={EMPTY_DATA} />
@@ -439,10 +439,10 @@ function ViewOverheadProfit(props) {
                             </tr> :
                             <tr>
 
-                              <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
-                              <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
-                              <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>
-                              <td>{rejectData.RejectionTotalCost ? rejectData.RejectionTotalCost : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability ? iccPaymentData.PaymentTermDetail.PaymentTermApplicability : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.RepaymentPeriod ? iccPaymentData.PaymentTermDetail.RepaymentPeriod : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.InterestRate ? iccPaymentData.PaymentTermDetail.InterestRate : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.NetCost ? iccPaymentData.PaymentTermDetail.NetCost : '-'}</td>
                             </tr>
                         }
 
