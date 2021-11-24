@@ -621,9 +621,104 @@ function TabDiscountOther(props) {
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <Row className="mx-0">
+                  <Col md="2">
+                      <SearchableSelectHookForm
+                        label={"Other Cost Type"}
+                        name={"OtherCostType"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        defaultValue={otherCostType.length !== 0 ? otherCostType : ""}
+                        options={renderListing("OtherCostType")}
+                        mandatory={false}
+                        handleChange={handleOtherCostTypeChange}
+                        errors={errors.OtherCostType}
+                        disabled={CostingViewMode ? true : false}
+                      />
+                    </Col>
+                    {otherCostType && otherCostType.value === 'Percentage' &&
+                      <Col md="2" >
+                        <NumberFieldHookForm
+                          label="Percentage(%)"
+                          name={"PercentageOtherCost"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{
+                            //required: true,
+                            pattern: {
+                              value: /^\d*\.?\d*$/,
+                              message: "Invalid Number.",
+                            },
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
+                          }}
+                          handleChange={(e) => {
+                            e.preventDefault();
+                            handleOtherCostPercentageChange(e);
+                          }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.PercentageOtherCost}
+                          disabled={CostingViewMode ? true : false}
+                        />
+                      </Col>}
+                      <Col md="4" >
+                      <TextFieldHookForm
+                        label="Other Cost Description"
+                        name={"OtherCostDescription"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false,
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.OtherCostDescription}
+                        disabled={CostingViewMode ? true : false}
+                      />
+                    </Col>
+                    <Col md="4">
+                      <NumberFieldHookForm
+                        label="Other Cost"
+                        name={"AnyOtherCost"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          //required: true,
+                          pattern: {
+                            value: /^\d*\.?\d*$/,
+                            message: "Invalid Number.",
+                          },
+                        }}
+                        handleChange={(e) => {
+                          e.preventDefault();
+                          handleAnyOtherCostChange(e);
+                        }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.AnyOtherCost}
+                        disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
+                      />
+                    </Col>
+                    </Row>
+                    <Row className="mx-0">
                     <Col md="2">
                       <SearchableSelectHookForm
-                        label={"Hundi/Other Discount Type"}
+                        label={"Discount Type"}
                         name={"HundiDiscountType"}
                         placeholder={"-Select-"}
                         Controller={Controller}
@@ -641,9 +736,9 @@ function TabDiscountOther(props) {
                     {
                       hundiscountType && hundiscountType.value === 'Percentage' &&
 
-                      <Col md="4" >
+                      <Col md="2" >
                         <TextFieldHookForm
-                          label="Hundi/Other Discount(%)"
+                          label="Discount(%)"
                           name={"HundiOrDiscountPercentage"}
                           Controller={Controller}
                           control={control}
@@ -674,45 +769,6 @@ function TabDiscountOther(props) {
                     }
                     <Col md="4" >
                       <TextFieldHookForm
-                        label="Other Cost Description"
-                        name={"OtherCostDescription"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          required: false,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.OtherCostDescription}
-                        disabled={CostingViewMode ? true : false}
-                      />
-                    </Col>
-                    <Col md="4">
-                      <TextFieldHookForm
-                        label="Net PO Price (INR)"
-                        name={'NetPOPriceINR'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{}}
-                        handleChange={() => { }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.NetPOPriceINR}
-                        disabled={true}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row className="mx-0">
-                    <Col md="4" >
-                      <TextFieldHookForm
                         label="Hundi/Discount Value"
                         name={'HundiOrDiscountValue'}
                         Controller={Controller}
@@ -735,84 +791,23 @@ function TabDiscountOther(props) {
                         errors={errors.HundiOrDiscountValue}
                         disabled={CostingViewMode || hundiscountType.value === 'Percentage' || Object.keys(hundiscountType).length === 0 ? true : false}
                       />
-                    </Col>
-                    <Col md="2">
-                      <SearchableSelectHookForm
-                        label={"Other Cost Type"}
-                        name={"OtherCostType"}
-                        placeholder={"-Select-"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        defaultValue={otherCostType.length !== 0 ? otherCostType : ""}
-                        options={renderListing("OtherCostType")}
-                        mandatory={false}
-                        handleChange={handleOtherCostTypeChange}
-                        errors={errors.OtherCostType}
-                        disabled={CostingViewMode ? true : false}
-                      />
-                    </Col>
-                    {otherCostType && otherCostType.value === 'Percentage' &&
-                      <Col md="1" >
-                        <NumberFieldHookForm
-                          label="Percentage(%)"
-                          name={"PercentageOtherCost"}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-                          rules={{
-                            //required: true,
-                            pattern: {
-                              value: /^\d*\.?\d*$/,
-                              message: "Invalid Number.",
-                            },
-                            max: {
-                              value: 100,
-                              message: 'Percentage cannot be greater than 100'
-                            },
-                          }}
-                          handleChange={(e) => {
-                            e.preventDefault();
-                            handleOtherCostPercentageChange(e);
-                          }}
-                          defaultValue={""}
-                          className=""
-                          customClassName={"withBorder"}
-                          errors={errors.PercentageOtherCost}
-                          disabled={CostingViewMode ? true : false}
-                        />
-                      </Col>}
-                    <Col md="2">
-                      <NumberFieldHookForm
-                        label="Other Cost"
-                        name={"AnyOtherCost"}
+                    </Col>             
+                    <Col md="4">
+                      <TextFieldHookForm
+                        label="Net PO Price (INR)"
+                        name={'NetPOPriceINR'}
                         Controller={Controller}
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          //required: true,
-                          pattern: {
-                            value: /^\d*\.?\d*$/,
-                            message: "Invalid Number.",
-                          },
-                        }}
-                        handleChange={(e) => {
-                          e.preventDefault();
-                          handleAnyOtherCostChange(e);
-                        }}
+                        rules={{}}
+                        handleChange={() => { }}
                         defaultValue={""}
                         className=""
-                        customClassName={"withBorder"}
-                        errors={errors.AnyOtherCost}
-                        disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
+                        customClassName={'withBorder'}
+                        errors={errors.NetPOPriceINR}
+                        disabled={true}
                       />
-                    </Col>
-
-                    <Col md="4">
-
                     </Col>
                   </Row>
 
