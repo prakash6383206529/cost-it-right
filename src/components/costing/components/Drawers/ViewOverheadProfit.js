@@ -24,6 +24,7 @@ function ViewOverheadProfit(props) {
   useEffect(() => {
     setViewOverheadData(overheadData)
     setViewProfitData(profitData)
+
   }, [])
   /**
   * @method toggleDrawer
@@ -92,7 +93,7 @@ function ViewOverheadProfit(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th>{`Part No`}</th>
+                        <th>{`Applicability`}</th>
                         <th>{`Overhead On`}</th>
                         <th>{`Percentage(%)`}</th>
                         <th>{`Cost (Applicability)`}</th>
@@ -104,7 +105,7 @@ function ViewOverheadProfit(props) {
                         <>
                           {viewOverheadData.IsOverheadFixedApplicable && (
                             <tr>
-                              <td>{viewOverheadData.PartNumber !== null || viewOverheadData.PartNumber !== "" ? viewOverheadData.PartNumber : ""}</td>
+
                               <td>{`Fixed`}</td>
                               <td>
                                 {viewOverheadData.OverheadFixedPercentage ? viewOverheadData.OverheadFixedPercentage : "-"}
@@ -200,8 +201,9 @@ function ViewOverheadProfit(props) {
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
+
                         <tr>
-                          <th>{`Part No`}</th>
+                          <th>{`Applicability`}</th>
                           <th>{`Profits (Fixed)`}</th>
                           <th>{`Percentage(%)`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -213,7 +215,7 @@ function ViewOverheadProfit(props) {
                           <>
                             {viewProfitData.IsProfitFixedApplicable && (
                               <tr>
-                                <td>{viewProfitData.PartNumber !== null || viewProfitData.PartNumber !== "" ? viewProfitData.PartNumber : ""}</td>
+
                                 <td>{`Fixed`}</td>
                                 <td>
                                   {viewProfitData.ProfitFixedPercentage ? viewProfitData.ProfitFixedPercentage : "-"}
@@ -314,7 +316,7 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main " size="sm">
                       <thead>
                         <tr>
-                          <th>{`Part No`}</th>
+
                           <th>{`Applicability`}</th>
                           <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -330,7 +332,7 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr> :
                             <tr>
-                              <td>{rejectData.PartNumber !== null || rejectData.PartNumber !== "" ? rejectData.PartNumber : ""}</td>
+
                               <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
                               <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
                               <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>
@@ -355,8 +357,104 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
+                  <Col md="12"><hr /></Col>
                 </Row>
               </div>
+
+
+              <div>
+                <Row className="px-3">
+                  <Col md="12">
+                    <div className="left-border">{"ICC:"}</div>
+                  </Col>
+                </Row>
+                <Row className="px-3">
+                  {/*REJECTION RENDERING */}
+
+                  <Col md="12">
+                    <Table className="table cr-brdr-main " size="sm">
+                      <thead>
+                        <tr>
+
+                          <th>{`Applicability`}</th>
+                          <th>{`Interest Rate (%)`}</th>
+                          <th>{`Cost (Applicability)`}</th>
+                          <th>{`Net ICC`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          (rejectData.RejectionApplicability === null) ?
+                            <tr>
+                              <td colSpan={8}>
+                                <NoContentFound title={EMPTY_DATA} />
+                              </td>
+                            </tr> :
+                            <tr>
+
+                              <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
+                              <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
+                              <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>
+                              <td>{rejectData.RejectionTotalCost ? rejectData.RejectionTotalCost : '-'}</td>
+                            </tr>
+                        }
+
+                      </tbody>
+                    </Table>
+                  </Col>
+                  <Col md="12"><hr /></Col>
+                </Row>
+              </div>
+
+
+
+
+              <div>
+                <Row className="px-3">
+                  <Col md="12">
+                    <div className="left-border">{"Payment Terms:"}</div>
+                  </Col>
+                </Row>
+                <Row className="px-3">
+                  {/*REJECTION RENDERING */}
+
+                  <Col md="12">
+                    <Table className="table cr-brdr-main " size="sm">
+                      <thead>
+                        <tr>
+
+                          <th>{`Applicability`}</th>
+                          <th>{`Repayment Period (No of days)`}</th>
+                          <th>{`Interest Rate (%)`}</th>
+                          <th>{`Cost`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          (rejectData.RejectionApplicability === null) ?
+                            <tr>
+                              <td colSpan={8}>
+                                <NoContentFound title={EMPTY_DATA} />
+                              </td>
+                            </tr> :
+                            <tr>
+
+                              <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
+                              <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
+                              <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>
+                              <td>{rejectData.RejectionTotalCost ? rejectData.RejectionTotalCost : '-'}</td>
+                            </tr>
+                        }
+
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+              </div>
+
+
+
+
             </div>
           </div>
         </Container>
