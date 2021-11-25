@@ -1683,8 +1683,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Plant`}</th>
-                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
+                                  <th className='vendor'>{`Plant`}</th>
+                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                   <th className="costing-version" >{`Costing Version`}</th>
                                   <th className="text-center costing-status" >{`Status`}</th>
                                   <th className="costing-price">{`Price`}</th>
@@ -1821,13 +1821,13 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Vendor`}</th>
-                                  {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
-                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
+                                  <th className='vendor'>{`Vendor`}</th>
+                                  {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant`}</th>}
+                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                   <th className="costing-version">{`Costing Version`}</th>
-                                  <th className="text-center" style={{ minWidth: "230px" }}>{`Status`}</th>
-                                  <th style={{ minWidth: "115px" }}>{`Price`}</th>
-                                  <th style={{ minWidth: "280px" }}>{`Actions`}</th>
+                                  <th className="text-center costing-status">{`Status`}</th>
+                                  <th className= "costing-price">{`Price`}</th>
+                                  <th className="costing-action">{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
