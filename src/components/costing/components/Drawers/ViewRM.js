@@ -125,21 +125,21 @@ function ViewRM(props) {
                       <tr key={index}>
                         <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                         <td>{item.RMName}</td>
-                        <td>{item.RMRate}</td>
-                        <td>{item.ScrapRate}</td>
-                        <td>{item.ScrapRecoveryPercentage}</td>
-                        <td>{item.GrossWeight}</td>
-                        <td>{item.FinishWeight}</td>
-                        <td>{item.ScrapWeight}</td>
+                        <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td><button
                           className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                           type={"button"}
                           disabled={item.WeightCalculationId === EMPTY_GUID}
                           onClick={() => { getWeightData(index) }}
                         /></td>
-                        <td>{item.FreightCost ? item.FreightCost : '-'}</td>
-                        <td>{item.ShearingCost ? item.ShearingCost : '-'}</td>
-                        <td>{item.BurningLossWeight ? item.BurningLossWeight : '-'}</td>
+                        <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                        <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                        <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
                       </tr>

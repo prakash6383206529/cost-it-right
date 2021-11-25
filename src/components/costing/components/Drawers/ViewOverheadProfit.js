@@ -334,7 +334,7 @@ function ViewOverheadProfit(props) {
                             </tr> :
                             <tr>
 
-                              <td>{rejectData.RejectionApplicability ? checkForDecimalAndNull(rejectData.RejectionApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
                               <td>{rejectData.RejectionPercentage ? checkForDecimalAndNull(rejectData.RejectionPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                               <td>{rejectData.RejectionCost ? checkForDecimalAndNull(rejectData.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                               <td>{rejectData.RejectionTotalCost ? checkForDecimalAndNull(rejectData.RejectionTotalCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
@@ -393,7 +393,7 @@ function ViewOverheadProfit(props) {
                             </tr> :
                             <tr>
 
-                              <td>{iccPaymentData.ICCApplicabilityDetail ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.ICCApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
                               <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                               <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                               <td>{iccPaymentData.NetICC ? checkForDecimalAndNull(iccPaymentData.NetICC, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
@@ -440,7 +440,7 @@ function ViewOverheadProfit(props) {
                             </tr> :
                             <tr>
 
-                              <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.PaymentTermApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability ? iccPaymentData.PaymentTermDetail.PaymentTermApplicability : '-'}</td>
                               <td>{iccPaymentData.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                               <td>{iccPaymentData.PaymentTermDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                               <td>{iccPaymentData.PaymentTermDetail.NetCost ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
