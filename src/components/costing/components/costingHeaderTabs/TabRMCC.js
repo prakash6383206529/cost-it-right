@@ -441,8 +441,10 @@ function TabRMCC(props) {
         case 'CC':
           
           i.CostingPartDetails.TotalConversionCost = setConversionCostAssembly(i.CostingChildPartDetails)        
-          i.CostingPartDetails.TotalOperationCostPerAssembly = setOperationCostForAssembly(i.CostingChildPartDetails) + i.CostingPartDetails.TotalOperationCostPerAssembly
-          i.CostingPartDetails.TotalConversionCostWithQuantity = (i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity) + i.CostingPartDetails.TotalOperationCostPerAssembly
+          console.log('  i.CostingPartDetails.TotalConversionCost : ',   i.CostingPartDetails.TotalConversionCost );
+          i.CostingPartDetails.TotalOperationCostComponent = i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity
+          i.CostingPartDetails.TotalOperationCostPerAssembly = setOperationCostForAssembly(i.CostingChildPartDetails) + checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly)
+          i.CostingPartDetails.TotalConversionCostWithQuantity = (i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity) + checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly)
           break;
         // case 'Assembly':
         //   i.CostingPartDetails.TotalBoughtOutPartCost = bopForAssembAndSubAssembly(i.CostingChildPartDetails) 
@@ -1286,8 +1288,8 @@ function TabRMCC(props) {
     console.log('item: ', item);
     console.log(RMCCTabData, "RMCCTabDataRMCCTabData");
     let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData, item)
-    let arr1= assemblyCalculation(arr1,'CC')
-    dispatch(setRMCCData(arr, () => { }))
+    let arr1= assemblyCalculation(arr,'CC')
+    dispatch(setRMCCData(arr1, () => { }))
   }
 
   /**
@@ -1436,7 +1438,7 @@ function TabRMCC(props) {
           let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCostWithQuantity) +
             checkForNull(i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) +checkForNull(i.CostingPartDetails.TotalConversionCostWithQuantity)
 
-          // i.CostingPartDetails.CostingOperationCostResponse = OperationGrid;
+          i.CostingPartDetails.CostingOperationCostResponse = OperationGrid;
           // i.CostingPartDetails.TotalConversionCost =  checkForNull(i.CostingPartDetails.TotalConversionCostWithQuantity)
           // i.CostingPartDetails.TotalConversionCostWithQuantity = i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity
           // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
