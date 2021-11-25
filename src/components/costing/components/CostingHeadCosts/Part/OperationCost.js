@@ -38,6 +38,7 @@ function OperationCost(props) {
       index: 0,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
+      PartType:props.item.PartType
     }
     if (!CostingViewMode) {
       if (props.IsAssemblyCalculation) {
