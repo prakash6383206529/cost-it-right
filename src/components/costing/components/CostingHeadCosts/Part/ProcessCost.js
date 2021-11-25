@@ -202,8 +202,14 @@ function ProcessCost(props) {
           UOMTypeId: el.UnitTypeId
         }
       })
+      
 
       let tempArr = [...gridData, ...rowArray]
+     
+
+      tempArr && tempArr.map((el,index)=>{
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`,el.ProcessCost)
+      })
 
       let ProcessCostTotal = 0
       ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
@@ -231,9 +237,9 @@ function ProcessCost(props) {
    */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map((el) => {
-      if (Ids.includes(el.MachineRateId) === false) {
+      if (Ids.includes(el.ProcessId) === false) {
         let selectedIds = Ids
-        selectedIds.push(el.MachineRateId)
+        selectedIds.push(el.ProcessId)
         setIds(selectedIds)
       }
       return null
@@ -262,7 +268,7 @@ function ProcessCost(props) {
 
       let selectedIds = []
       tempArrAfterDelete.map(el => {
-        selectedIds.push(el.MachineRateId)
+        selectedIds.push(el.ProcessId)
       })
       setGridData(tempArrAfterDelete)
       setIds(selectedIds)
@@ -610,6 +616,7 @@ function ProcessCost(props) {
                           </td>
 
                           <td style={{ width: 100 }}>
+                           
                             {
                               <TextFieldHookForm
                                 label=""
