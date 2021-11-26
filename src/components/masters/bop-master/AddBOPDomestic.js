@@ -71,8 +71,8 @@ class AddBOPDomestic extends Component {
       DataToCheck: [],
       DropdownChanged: true,
       uploadAttachements: true,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
     }
   }
 
@@ -567,7 +567,7 @@ class AddBOPDomestic extends Component {
         NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
-        this.setState({showPopup:true, updatedObj:requestData})
+        this.setState({ showPopup: true, updatedObj: requestData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -611,15 +611,13 @@ class AddBOPDomestic extends Component {
         Attachements: files,
       }
 
-      // this.props.reset()
-      // this.props.createBOPDomestic(formData, (res) => {
-      //   if (res.data.Result) {
-      //     Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
-      //     this.cancel();
-      //   }
-      // });
-
-
+      this.props.reset()
+      this.props.createBOPDomestic(formData, (res) => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
+          this.cancel();
+        }
+      });
 
 
       // if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -641,7 +639,7 @@ class AddBOPDomestic extends Component {
      
     }
   }
-  onPopupConfirm = ()=>{ 
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updateBOPDomestic(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -651,10 +649,10 @@ class AddBOPDomestic extends Component {
     })
 
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
-   
+
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -1210,9 +1208,9 @@ class AddBOPDomestic extends Component {
               />
             )
           }
-           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
-        }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );
