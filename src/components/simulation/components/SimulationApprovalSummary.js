@@ -9,8 +9,8 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getAmmendentStatus,getApprovalSimulatedCostingSummary, getComparisionSimulationData,setAttachmentFileData, getImpactedMasterData, getLastSimulationData } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,COMBINED_PROCESS,FILE_URL } from '../../../config/constants';
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData } from '../actions/Simulation'
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -107,7 +107,6 @@ function SimulationApprovalSummary(props) {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
-            console.log(SimulatedCostingList, 'SimulatedCostingListSimulatedCostingList')
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -408,7 +407,7 @@ function SimulationApprovalSummary(props) {
 
         return (
             <>
-               <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} /></Link> 
+                <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} /></Link>
             </>
         )
     }
@@ -560,7 +559,6 @@ function SimulationApprovalSummary(props) {
         toastr.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
         setShowListing(true)
     }
-
 
 
 
@@ -856,7 +854,7 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'Attachment:'}</div>
                             </Col>
                             <Col md="12" className="pr-0">
-                                <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} />
+                                <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} showAttachment={true} />
                             </Col>
                         </Row>
                         {/* Costing Summary page here */}

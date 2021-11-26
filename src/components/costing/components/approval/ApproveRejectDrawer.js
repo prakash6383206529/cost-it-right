@@ -253,14 +253,14 @@ function ApproveRejectDrawer(props) {
           setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
             let status = 200
-            if('response' in res){
+            if ('response' in res) {
 
-               status = res && res?.response?.status
+              status = res && res?.response?.status
             }
 
-            if (status!==undefined && status === 400) {
+            if (status !== undefined && status === 400) {
               setDisableSubmitbutton(true)
-            }else{
+            } else {
               setDisableSubmitbutton(false)
             }
             setLoader(false)
@@ -701,7 +701,7 @@ function ApproveRejectDrawer(props) {
                             <div className="inputbox date-section">
                               <DatePicker
                                 name="EffectiveDate"
-                                selected={simulationDetail?.EffectiveDate && DayTime(simulationDetail.EffectiveDate).isValid() ? DayTime(simulationDetail.EffectiveDate) : ''}
+                                selected={simulationDetail?.EffectiveDate && DayTime(simulationDetail.EffectiveDate).isValid() ? new Date(simulationDetail.EffectiveDate) : ''}
                                 // onChange={handleEffectiveDateChange}
                                 showMonthDropdown
                                 showYearDropdown
@@ -769,7 +769,7 @@ function ApproveRejectDrawer(props) {
 
                 {
                   isSimulation && type === 'Sender' && !isSimulationApprovalListing &&
-                  <AttachmentSec token={simulationDetail?.TokenNo} type={type} Attachements={simulationDetail?.Attachements} />
+                  <AttachmentSec token={simulationDetail?.TokenNo} type={type} Attachements={simulationDetail?.Attachements} showAttachment={false} />
                 }
 
               </Row>
