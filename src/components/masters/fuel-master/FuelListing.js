@@ -11,7 +11,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import 'react-input-range/lib/css/index.css'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -44,8 +44,8 @@ class FuelListing extends Component {
             gridColumnApi: null,
             rowData: null,
             isLoader: true,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
 
         }
     }
@@ -177,7 +177,7 @@ class FuelListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -413,8 +413,8 @@ class FuelListing extends Component {
                     anchor={'right'}
                 />}
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FUEL_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FUEL_DELETE_ALERT}`} />
+                }
             </div >
         );
     }

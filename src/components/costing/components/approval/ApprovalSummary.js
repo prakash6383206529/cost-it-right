@@ -7,7 +7,7 @@ import { setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalListing from './ApprovalListing'
 import ViewDrawer from './ViewDrawer'
@@ -139,7 +139,7 @@ function ApprovalSummary(props) {
                   </button>
                   <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
                     View All
-                    </button>
+                  </button>
                 </div>
               </Col>
             </Row>
@@ -203,7 +203,7 @@ function ApprovalSummary(props) {
                       <th>
                         <span className="d-block grey-text">{`Effective Date:`}</span>
                         <span className="d-block">
-                          {partDetail.EffectiveDate ? moment(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                          {partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
                         </span>
                       </th>
                     </tr>
@@ -298,7 +298,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
                       </td>
                       <td>
-                        {approvalDetails.EffectiveDate !== null ? moment(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                        {approvalDetails.EffectiveDate !== null ? DayTime(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
                       </td>
                       <td>
                         {approvalDetails.AnnualImpact !== null ? approvalDetails.AnnualImpact : '-'}

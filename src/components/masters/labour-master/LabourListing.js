@@ -18,7 +18,7 @@ import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/consta
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -59,8 +59,8 @@ class LabourListing extends Component {
       gridColumnApi: null,
       rowData: null,
       isLoader: true,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -151,7 +151,7 @@ class LabourListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
@@ -178,14 +178,14 @@ class LabourListing extends Component {
         console.log("not deleted");
       }
     })
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
- 
-  onPopupConfirm =() => {
+
+  onPopupConfirm = () => {
     this.confirmDeleteItem(this.state.deletedId);
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
   * @method buttonFormatter
@@ -295,7 +295,7 @@ closePopUp= () =>{
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
 
 
@@ -603,9 +603,9 @@ closePopUp= () =>{
               anchor={'right'}
             />
           )}
-         {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`}  />
-         }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`} />
+          }
         </div>
       </>
     )

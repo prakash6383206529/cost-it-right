@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../layout/HookFormInputs'
 import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
-import moment from 'moment'
+import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
 import PushSection from '../common/PushSection';
@@ -152,7 +152,7 @@ function MasterSendForApproval(props) {
             senderObj.SenderRemark = remark
             senderObj.LoggedInUserId = loggedInUserId()
             senderObj.IsVendor = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.IsVendor : false
-            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : moment(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
+            senderObj.EffectiveDate = approvalObj && Object.keys(approvalObj).length > 0 ? approvalObj.EffectiveDate : DayTime(new Date()).local().format('YYYY-MM-DD HH:mm:ss')
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             let tempArray = []
@@ -311,7 +311,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={moment(approvalObj.EffectiveDate).isValid ? moment(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
@@ -407,6 +407,171 @@ function MasterSendForApproval(props) {
                                             </>
                                         }
 
+<<<<<<< HEAD
+=======
+                                        {
+                                            !isBulkUpload && masterId == '2' &&
+                                            <>
+                                                <div className="input-group form-group col-md-12">
+                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="EffectiveDate"
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
+                                                            // onChange={handleEffectiveDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dateFormat="dd/MM/yyyy"
+                                                            //maxDate={new Date()}
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Basic Rate"
+                                                        name={'basicRate'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.basicRate}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.BasicRate : ''}
+                                                        disabled={true}
+                                                    />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+                                                </div>
+
+
+
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Net Cost"
+                                                        name={'netCost'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.netCost}
+                                                        disabled={true}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.NetLandedCost : ''}
+                                                    />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+                                                </div>
+                                                {/* <PushSection /> */}
+                                            </>
+                                        }
+
+
+                                        {
+                                            !isBulkUpload && masterId == '3' &&
+                                            <>
+                                                <div className="input-group form-group col-md-12">
+                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="EffectiveDate"
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
+                                                            // onChange={handleEffectiveDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dateFormat="dd/MM/yyyy"
+                                                            //maxDate={new Date()}
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="input-group form-group col-md-12">
+                                                    <TextFieldHookForm
+                                                        label="Rate (INR)"
+                                                        name={'rate'}
+                                                        Controller={Controller}
+                                                        control={control}
+                                                        register={register}
+                                                        className=""
+                                                        customClassName={'withBorder'}
+                                                        errors={errors.basicRate}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.Rate : ''}
+                                                        disabled={true}
+                                                    />
+                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+                                                </div>
+
+
+                                            </>
+                                        }
+
+                                        {
+                                            !isBulkUpload && masterId == '4' &&
+                                            <>
+                                                <div className="input-group form-group col-md-12">
+                                                    <label>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <div className="inputbox date-section">
+                                                        <DatePicker
+                                                            name="EffectiveDate"
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
+                                                            // onChange={handleEffectiveDateChange}
+                                                            showMonthDropdown
+                                                            showYearDropdown
+                                                            dateFormat="dd/MM/yyyy"
+                                                            //maxDate={new Date()}
+                                                            dropdownMode="select"
+                                                            placeholderText="Select date"
+                                                            className="withBorder"
+                                                            autoComplete={"off"}
+                                                            disabledKeyboardNavigation
+                                                            onChangeRaw={(e) => e.preventDefault()}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="input-group form-group col-md-12">
+
+                                                    {approvalObj.MachineProcessRates && approvalObj.MachineProcessRates.map((item, index) => {
+
+                                                        return (
+                                                            <TextFieldHookForm
+                                                                label={`Machine Rate ${index + 1}`}
+                                                                name={'machine'}
+                                                                Controller={Controller}
+                                                                control={control}
+                                                                register={register}
+                                                                className=""
+                                                                customClassName={'withBorder'}
+                                                                errors={errors.basicRate}
+                                                                defaultValue={item.MachineRate}
+                                                                disabled={true}
+
+                                                            />
+                                                        )
+                                                    })
+                                                    }
+
+                                                </div>
+
+
+                                            </>
+                                        }
+
+
+>>>>>>> 57d4baf37 (day.js added and moment removed , and all is centralised)
 
 
                                     </>

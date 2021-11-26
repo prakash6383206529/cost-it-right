@@ -12,7 +12,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import AddTaxDetails from './AddTaxDetails';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -38,8 +38,8 @@ class TaxListing extends Component {
       AddAccessibility: false,
       EditAccessibility: false,
       DeleteAccessibility: false,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -125,7 +125,7 @@ class TaxListing extends Component {
   * @description confirm delete TAX
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id)
@@ -147,14 +147,14 @@ class TaxListing extends Component {
         this.getTableListData()
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDelete(this.state.deletedId);
-   
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
     * @method effectiveDateFormatter
@@ -162,7 +162,7 @@ closePopUp= () =>{
     */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
 
 
@@ -335,9 +335,9 @@ closePopUp= () =>{
               anchor={'right'}
             />
           )}
-           {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.TAX_DELETE_ALERT}`}  />
-                }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.TAX_DELETE_ALERT}`} />
+          }
         </div>
       </ >
     );

@@ -32,7 +32,7 @@ import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { calculatePercentage } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import saveImg from '../../../assests/images/check.png'
@@ -103,8 +103,8 @@ class AddMoreDetails extends Component {
       isProcessOpen: false,
       UOM: [],
       effectiveDate: '',
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
     }
   }
 
@@ -199,7 +199,7 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
 
@@ -245,7 +245,7 @@ class AddMoreDetails extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              DateOfPurchase: moment(Data.DateOfPurchase)._isValid === true ? moment(Data.DateOfPurchase)._d : '',
+              DateOfPurchase: DayTime(Data.DateOfPurchase)._isValid === true ? DayTime(Data.DateOfPurchase)._d : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
               IsAnnualConsumableFixed: Data.IsConsumableFixed,
               IsInsuranceFixed: Data.IsInsuranceFixed,
@@ -256,7 +256,7 @@ class AddMoreDetails extends Component {
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
             })
           }, 500)
         }
@@ -351,7 +351,7 @@ class AddMoreDetails extends Component {
       return temp;
     }
   }
-  onPopupConfirm = ()=>{ 
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updateExchangeRate(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -360,8 +360,8 @@ class AddMoreDetails extends Component {
       }
     });
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
   * @method handlePlants
@@ -1543,7 +1543,7 @@ class AddMoreDetails extends Component {
       Attachements: updatedFiles,
       VendorPlant: [],
       IsForcefulUpdated: true,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+      EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
     }
 
     if (editDetails.isIncompleteMachine) {
@@ -1653,7 +1653,7 @@ class AddMoreDetails extends Component {
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         Attachements: files,
         VendorPlant: [],
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       }
 
 

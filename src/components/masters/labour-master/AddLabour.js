@@ -16,7 +16,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 
 const selector = formValueSelector('AddLabour')
@@ -97,7 +97,7 @@ class AddLabour extends Component {
                   MachineType: item.MachineType,
                   LabourTypeId: item.LabourTypeId,
                   LabourType: item.LabourType,
-                  EffectiveDate: moment(item.EffectiveDate)._isValid ? moment(item.EffectiveDate)._d : '',
+                  EffectiveDate: DayTime(item.EffectiveDate)._isValid ? DayTime(item.EffectiveDate)._d : '',
                   LabourRate: item.LabourRate,
                 }
               })
@@ -377,7 +377,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
+      EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     })
 
@@ -435,7 +435,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
+      EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     }
 
@@ -906,7 +906,7 @@ class AddLabour extends Component {
                                     <td>{item.LabourType}</td>
                                     <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                     <td>
-                                      {item.EffectiveDate ? moment(item.EffectiveDate).format(
+                                      {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
                                         "DD/MM/YYYY"
                                       ) : '-'}
                                     </td>

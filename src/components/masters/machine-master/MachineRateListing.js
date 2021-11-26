@@ -18,7 +18,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { MachineRate } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -48,8 +48,8 @@ class MachineRateListing extends Component {
 
             isBulkUpload: false,
             isLoader: false,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -122,7 +122,7 @@ class MachineRateListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id);
@@ -145,12 +145,12 @@ class MachineRateListing extends Component {
             }
         });
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDelete(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -228,7 +228,7 @@ class MachineRateListing extends Component {
   */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -290,7 +290,7 @@ class MachineRateListing extends Component {
                 return false
             }
             if (item.EffectiveDate !== null) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
             return item
@@ -471,7 +471,7 @@ class MachineRateListing extends Component {
                                 </div>
                             </div>
                         </div>
-             
+
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload
@@ -484,8 +484,8 @@ class MachineRateListing extends Component {
                     messageLabel={'Machine'}
                     anchor={'right'}
                 />}
-                 {
-                  this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`}  />
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
                 }
             </div >
         );

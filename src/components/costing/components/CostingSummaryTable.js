@@ -19,7 +19,7 @@ import Attachament from './Drawers/Attachament'
 import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval'
 import { isSafeInteger } from 'lodash'
@@ -747,7 +747,7 @@ const CostingSummaryTable = (props) => {
                               return (
                                 <td>
                                   <span class="d-flex justify-content-between bg-grey">
-                                    {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                    {`${DayTime(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
                                     {
                                       !viewMode &&
                                       <a

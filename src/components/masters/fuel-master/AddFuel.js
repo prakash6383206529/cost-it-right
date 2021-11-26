@@ -16,7 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddFuelNameDrawer from './AddFuelNameDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableFuelUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddFuel');
@@ -91,7 +91,7 @@ class AddFuel extends Component {
                 StateLabel: item.StateName,
                 StateId: item.StateId,
                 //effectiveDate: moment(item.EffectiveDate).format('DD/MM/YYYY'),
-                effectiveDate: moment(item.EffectiveDate)._d,
+                effectiveDate: DayTime(item.EffectiveDate)._d,
                 Rate: item.Rate,
               }
             })
@@ -653,7 +653,7 @@ class AddFuel extends Component {
                                         <td>{checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                         {/* <td>{item.effectiveDate}</td> */}
                                         <td>
-                                          {moment(item.effectiveDate).format(
+                                          {DayTime(item.effectiveDate).format(
                                             "DD/MM/YYYY"
                                           )}
                                         </td>

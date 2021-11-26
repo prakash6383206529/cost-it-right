@@ -28,7 +28,8 @@ import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import { Rate } from 'antd';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
+import { CheckApprovalApplicableMaster } from '../../../helper'
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 import attachClose from '../../../assests/images/red-cross.png'
@@ -74,8 +75,8 @@ class AddMachineRate extends Component {
       DropdownChange: true,
       effectiveDate: '',
       uploadAttachements: true,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
 
     }
   }
@@ -201,7 +202,7 @@ class AddMachineRate extends Component {
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           this.props.change('Description', Data.Description)
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
@@ -241,7 +242,7 @@ class AddMachineRate extends Component {
               remarks: Data.Remark,
               // Description: Data.Description,
               files: Data.Attachements,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
             }, () => this.setState({ isLoader: false }))
           }, 100)
         }
@@ -842,14 +843,14 @@ class AddMachineRate extends Component {
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
-          EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+          EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         }
         if (isEditFlag) {
           if (DropdownChange) {
             this.cancel();
             return false
           }
-          this.setState({showPopup:true, updatedObj:requestData})
+          this.setState({ showPopup: true, updatedObj: requestData })
           const toastrConfirmOptions = {
             onOk: () => {
               this.props.reset()
@@ -889,7 +890,7 @@ class AddMachineRate extends Component {
         VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       }
 
 
@@ -917,7 +918,7 @@ class AddMachineRate extends Component {
 
     }
   }
-  onPopupConfirm = ()=>{ 
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updateExchangeRate(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -927,8 +928,8 @@ class AddMachineRate extends Component {
       }
     });
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
 
   /**
@@ -943,7 +944,7 @@ class AddMachineRate extends Component {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
 
-    this.props.change('EffectiveDate', moment(data.EffectiveDate)._isValid ? moment(data.EffectiveDate)._d : '')
+    this.props.change('EffectiveDate', DayTime(data.EffectiveDate)._isValid ? DayTime(data.EffectiveDate)._d : '')
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
@@ -1568,8 +1569,8 @@ class AddMachineRate extends Component {
             />
           )
         }
-         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}  />
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
         }
       </>
     );

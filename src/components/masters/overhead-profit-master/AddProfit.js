@@ -16,7 +16,7 @@ import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { FILE_URL } from '../../../config/constants';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
@@ -59,8 +59,8 @@ class AddProfit extends Component {
       DropdownChanged: true,
       DataToChange: [],
       uploadAttachements: true,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
 
     }
   }
@@ -129,7 +129,7 @@ class AddProfit extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
 
@@ -158,7 +158,7 @@ class AddProfit extends Component {
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
@@ -581,11 +581,11 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true
       }
       if (isEditFlag) {
-        this.setState({showPopup:true, updatedObj:requestData})
+        this.setState({ showPopup: true, updatedObj: requestData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -623,7 +623,7 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
       }
 
       this.props.reset()
@@ -635,7 +635,7 @@ class AddProfit extends Component {
       });
     }
   }
-  onPopupConfirm = ()=>{ 
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updateProfit(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -644,8 +644,8 @@ class AddProfit extends Component {
       }
     });
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1056,8 +1056,8 @@ class AddProfit extends Component {
             </div>
           </div>
           {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
-        }
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );

@@ -26,7 +26,7 @@ import { FILE_URL, ZBC, INR } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
@@ -77,8 +77,8 @@ class AddBOPImport extends Component {
       DropdownChange: true,
       showWarning: false,
       uploadAttachements: true,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
     }
   }
 
@@ -161,7 +161,7 @@ class AddBOPImport extends Component {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
 
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -180,7 +180,7 @@ class AddBOPImport extends Component {
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
-            this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+            this.handleEffectiveDateChange(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
@@ -200,7 +200,7 @@ class AddBOPImport extends Component {
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
@@ -406,7 +406,7 @@ class AddBOPImport extends Component {
       } else {
         this.setState({ showCurrency: true }, () => {
           if (this.state.effectiveDate) {
-            this.props.getExchangeRateByCurrency(newValue.label, moment(this.state.effectiveDate).local().format('YYYY-MM-DD'), res => {
+            this.props.getExchangeRateByCurrency(newValue.label, DayTime(this.state.effectiveDate).local().format('YYYY-MM-DD'), res => {
               //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
               if (Object.keys(res.data.Data).length === 0) {
@@ -460,7 +460,7 @@ class AddBOPImport extends Component {
       })
 
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('YYYY-MM-DD'), res => {
+      this.props.getExchangeRateByCurrency(currency.label, DayTime(date).local().format('YYYY-MM-DD'), res => {
         //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
 
         if (Object.keys(res.data.Data).length === 0) {
@@ -626,7 +626,7 @@ class AddBOPImport extends Component {
         NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
-        this.setState({showPopup:true, updatedObj:requestData})
+        this.setState({ showPopup: true, updatedObj: requestData })
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -657,7 +657,7 @@ class AddBOPImport extends Component {
         Vendor: vendorName.value,
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.netLandedcost,
@@ -698,8 +698,8 @@ class AddBOPImport extends Component {
       });
     }
   }
-   
-  onPopupConfirm = ()=>{ 
+
+  onPopupConfirm = () => {
     this.props.reset()
     this.props.updateBOPImport(this.state.updatedObj, (res) => {
       if (res.data.Result) {
@@ -708,8 +708,8 @@ class AddBOPImport extends Component {
       }
     });
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1297,9 +1297,9 @@ class AddBOPImport extends Component {
               />
             )
           }
-           {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}/>
-                }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );
