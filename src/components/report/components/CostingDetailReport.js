@@ -18,11 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import $ from 'jquery';
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { EMPTY_GUID } from '../../../config/constants'
 import { formViewData } from '../../../helper'
-
-
-
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -84,27 +80,6 @@ function ReportListing(props) {
         reValidateMode: 'onChange',
     })
 
-
-
-
-    const onBtFirst = () => {
-        gridApi.paginationGoToFirstPage();
-    };
-
-    const onBtLast = () => {
-        gridApi.paginationGoToLastPage();
-    };
-
-
-
-
-    const onBtPageFive = () => {
-        gridApi.paginationGoToPage(4);
-    };
-
-    const onBtPageFifty = () => {
-        gridApi.paginationGoToPage(49);
-    };
 
 
 
@@ -196,22 +171,6 @@ function ReportListing(props) {
 
 
         setCostingID(row.BaseCostingId)
-
-
-        // let obj = {
-        //     simulationApprovalProcessSummaryId: EMPTY_GUID,
-        //     simulationId: simulationId,
-        //     costingId: data.CostingId
-        // }
-        // setId(id)
-        // setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
-        // dispatch(getComparisionSimulationData(obj, res => {
-        //     const Data = res.data.Data
-        //     const obj1 = formViewData(Data.OldCosting)
-        //     dispatch(setCostingViewData(obj1))
-        //     runCostingDetailSimulation()
-        // }))
-
 
         setIsOpen(true)
         setUserId(UserId)
@@ -399,19 +358,6 @@ function ReportListing(props) {
         params.api.paginationGoToPage(0);
 
 
-        //setGridApi(params.api);
-        // setGridColumnApi(params.columnApi);
-
-        // const updateData = (data) => {
-        //     setRowData(data);
-        // };
-
-
-
-
-        // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-        //     .then((resp) => resp.json())
-        //     .then((data) => updateData(data));
 
     };
 
@@ -530,18 +476,6 @@ function ReportListing(props) {
                     </Col>
                 </Row>
             </form>
-
-            <div>
-                {/* <button onClick={() => onBtFirst()}>To First</button>
-                <button onClick={() => onBtLast()} id="btLast">
-                    To Last
-                </button> */}
-                {/* <button onClick={onBtPrevious}>To Previous</button>
-                <button onClick={onBtNext}>To Next</button> */}
-                {/* // <button onClick={() => onBtPageFive()}>To Page 5</button>
-                //<button onClick={() => onBtPageFifty()}>To Page 50</button> */}
-
-            </div>
 
 
             <div className="ag-grid-wrapper height-width-wrapper">
@@ -669,9 +603,6 @@ function ReportListing(props) {
                     //pricesDetail={pricesDetail}
                     //simulationDetail={simulationDetail}
                     selectedRowData={selectedRowData}
-                    // costingArr={costingArr}
-                    // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
-                    // closeDrawer={closeDrawer}
                     isSimulation={true}
                 />
             }
