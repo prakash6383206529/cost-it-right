@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation } from '../../../config/masterData';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation,MachineRateSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
@@ -29,6 +29,7 @@ import { ProcessListingSimulation } from './ProcessListingSimulation';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import TooltipCustom from '../../common/Tooltip';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
+import MRSimulation from './SimulationPages/MRSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -79,6 +80,11 @@ function Simulation(props) {
         // setFilterStatus(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
         setOnLoad(true)
     }, [])
+
+    // useEffect(() => {
+
+    //     editTable(tableData)
+    // }, [selectedRowCountForSimulationMessage])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
@@ -162,6 +168,9 @@ function Simulation(props) {
             case Number(OPERATIONS):
                 temp = TempData
                 break;
+            case Number(MACHINERATE):
+                temp = TempData
+                break;
             default:
                 break;
         }
@@ -210,6 +219,8 @@ function Simulation(props) {
                 return returnExcelColumn(SurfaceTreatmentSimulation, tableData && tableData.length > 0 ? tableData : [])
             case OPERATIONS:
                 return returnExcelColumn(OperationSimulation, tableData && tableData.length > 0 ? tableData : [])
+            case MACHINERATE:
+                return returnExcelColumn(MachineRateSimulation, tableData && tableData.length > 0 ? tableData : [])
             default:
                 return 'foo';
         }
@@ -280,6 +291,7 @@ function Simulation(props) {
         if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
+
         switch (master.value) {
             case RMDOMESTIC:
                 if (Data.length === 0) {
@@ -411,6 +423,48 @@ function Simulation(props) {
                     (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 }
                 break;
+            case MACHINERATE:
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
+                Data && Data.forEach((element, index) => {
+                    if (index !== 0) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+                            setEditWarning(true);
+                            flag = false
+                            // return false
+                        }
+                        if (element.VendorName !== Data[index - 1].VendorName) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
+                            vendorFlag = false
+                            // return false
+                        }
+                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                            setEditWarning(true);
+                            plantFlag = false
+                            // return false
+                        }
+                    }
+                });
+                if (flag === true && vendorFlag === true && plantFlag === true) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                }
+                //  else {
+                //     setEditWarning(true)
+                // }
+                break;
 
             // case COMBINED_PROCESS:
 
@@ -471,13 +525,10 @@ function Simulation(props) {
                 return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             case SURFACETREATMENT:
                 return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
-
-            // case SURFACETREATMENT:
-            //     return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
-            // case OPERATIONS:
-            //     return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
-
-
+            case OPERATIONS:
+                return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            case MACHINERATE:
+                return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }

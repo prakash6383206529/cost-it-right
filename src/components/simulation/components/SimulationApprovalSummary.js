@@ -32,7 +32,7 @@ import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
-import {Link } from 'react-scroll'
+import { Link } from 'react-scroll'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -107,11 +107,11 @@ function SimulationApprovalSummary(props) {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
+            console.log(SimulatedCostingList, 'SimulatedCostingListSimulatedCostingList')
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setEffectiveDate(res.data.Data.EffectiveDate)
-
 
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,

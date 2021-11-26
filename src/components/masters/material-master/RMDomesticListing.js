@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
@@ -19,17 +18,16 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-import { costingHeadObjs, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData } from '../../../helper';
+import { CheckApprovalApplicableMaster, getFilteredRMData } from '../../../helper';
 import { func } from 'prop-types';
 //import {  Controller, useWatch } from 'react-hook-form'
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
@@ -210,10 +208,9 @@ function RMDomesticListing(props) {
                     settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
-
-                    if (isSimulation) {
-                        props.apply(Data)
-                    }
+                    // if (isSimulation) {
+                    //     apply(Data)
+                    // }
 
                     // const func = () => {
                     // }
@@ -564,7 +561,7 @@ function RMDomesticListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         if (isSimulation) {
             let length = gridApi.getSelectedRows().length
-            dispatch(setSelectedRowCountForSimulationMessage(length, res => { }))
+            dispatch(setSelectedRowCountForSimulationMessage(length))
 
             apply(selectedRows)
         }

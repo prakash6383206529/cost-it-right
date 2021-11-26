@@ -12,7 +12,7 @@ import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import NewReport from '../../report/CostingBenchmarkReport';
 import TooltipCustom from '../../common/Tooltip';
-import { COMBINED_PROCESS, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { COMBINED_PROCESS,MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -233,6 +233,32 @@ class SimulationUploadDrawer extends Component {
                                         basicRateCount = 1
                                     }
                                     if (val[8] === '') {
+                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                        return false
+                                    }
+                                    correctRowCount = correctRowCount + 1
+                                    let obj = {}
+                                    val.map((el, i) => {
+                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                            el = getJsDateFromExcel(el)
+                                        }
+                                        obj[fileHeads[i]] = el;
+                                        return null;
+                                    })
+                                    fileData.push(obj)
+                                    obj = {}
+
+                                }
+                                return null;
+                            })
+                            break;
+                        case Number(MACHINERATE):
+                            resp.rows.map((val, index) => {
+                                if (index > 0) {
+                                    if (val[9] !== '' && val[9] !== undefined) {
+                                        basicRateCount = 1
+                                    }
+                                    if (val[9] === '') {
                                         NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                         return false
                                     }

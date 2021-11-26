@@ -504,9 +504,13 @@ function RMImportListing(props) {
     setSelectedRowData(selectedRows)
     if (isSimulation) {
       let len = gridApi.getSelectedRows().length
-      dispatch(setSelectedRowCountForSimulationMessage(len, res => { }))
+      dispatch(setSelectedRowCountForSimulationMessage(len))
       props.apply(selectedRows)
 
+  }
+
+  const onFloatingFilterChanged = (p) => {
+    gridApi.deselectAll()
   }
 
   const defaultColDef = {
@@ -636,6 +640,7 @@ function RMImportListing(props) {
                 frameworkComponents={frameworkComponents}
                 rowSelection={'multiple'}
                 onSelectionChanged={onRowSelect}
+                onFilterModified={onFloatingFilterChanged}
               >
                 <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
