@@ -459,7 +459,7 @@ class AddVendorDrawer extends Component {
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
-                    {this.state.isLoader && <LoaderCustom />}
+                    {this.state.isLoader &&<LoaderCustom customClass={`${isEditFlag ? 'update-vendor-loader': ''}`} />}
                     <Container >
                         <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
                             <form
