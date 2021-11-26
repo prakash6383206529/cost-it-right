@@ -6383,21 +6383,20 @@ left: 17rem;
   .update-vendor-loader {
     min-height: calc(100vh + 11rem);
   }
-.costing-detail-tabs {
-  .nav-item {
-    .nav-link {
-      border-left: none;
-    }
-  }
-}
 .view-conversion-header {
-  flex: 0 0 10.1%;
-    max-width: 10.1%;
+  flex: 0 0 9.78%;
+    max-width: 9.78%;
     height: fit-content;
+    .nav-item {
+      .nav-link {
+        border-left: none;
+        border-bottom: 0;
+      }
+    }
 }
 .view-conversion-container {
-  flex: 0 0 89.9%;
-  max-width: 89.9%;
+  flex: 0 0 90.22%;
+  max-width: 90.22%;
   .left-border {
     padding: 8px;
   }
