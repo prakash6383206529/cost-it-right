@@ -831,7 +831,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row>
                             <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
-                            <Col md="12" className="px-4">
+                            {false && <Col md="12" className="px-4">
                                 <label>Upload Attachment (upload up to 2 files)</label>
                                 {files && files.length > 2 ? (
                                     <div class="alert alert-danger" role="alert">
@@ -874,7 +874,7 @@ function SimulationApprovalSummary(props) {
                                         disabled={true}
                                     />
                                 )}
-                            </Col>
+                            </Col>}
                             <div className="w-100">
                                 <div className={"attachment-wrapper mt-0 mb-3 px-4"}>
                                     {files &&
@@ -886,12 +886,13 @@ function SimulationApprovalSummary(props) {
                                                     <a href={fileURL} target="_blank">
                                                         {f.OriginalFileName}
                                                     </a>
-                                                    <img
+                                                    {false && <img
                                                         alt={""}
                                                         className="float-right"
                                                         onClick={() => false ? deleteFile(f.FileId, f.FileName) : ""}
                                                         src={redcrossImg}
                                                     ></img>
+                                                    }
                                                 </div>
                                             );
                                         })}
