@@ -407,8 +407,6 @@ function MasterSendForApproval(props) {
                                             </>
                                         }
 
-<<<<<<< HEAD
-=======
                                         {
                                             !isBulkUpload && masterId == '2' &&
                                             <>
@@ -571,7 +569,6 @@ function MasterSendForApproval(props) {
                                         }
 
 
->>>>>>> 57d4baf37 (day.js added and moment removed , and all is centralised)
 
 
                                     </>

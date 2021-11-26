@@ -23,14 +23,8 @@ import { FILE_URL, ZBC } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
-<<<<<<< HEAD
-import moment from 'moment';
-import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
-import { applySuperScripts } from '../../../helper';
-=======
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableBOPUOM } from '../../../config/masterData'
->>>>>>> 57d4baf37 (day.js added and moment removed , and all is centralised)
 import LoaderCustom from '../../common/LoaderCustom';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'

@@ -621,7 +621,7 @@ function TabDiscountOther(props) {
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <Row className="mx-0">
-                  <Col md="2">
+                    <Col md="2">
                       <SearchableSelectHookForm
                         label={"Other Cost Type"}
                         name={"OtherCostType"}
@@ -734,6 +734,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     {
+
 
                       <Col md="2" >
                         <TextFieldHookForm

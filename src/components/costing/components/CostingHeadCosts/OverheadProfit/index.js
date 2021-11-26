@@ -2,15 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
-import Switch from "react-switch";
+import { fetchModelTypeAPI,   getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { getOverheadProfitDataByModelType,  gridDataAdded, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
-import TooltipCustom from '../../../../common/Tooltip';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
@@ -676,10 +674,11 @@ function OverheadProfit(props) {
 
 
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
-      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal : RMBOPCC;
+      const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly): headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
+      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost +ConversionCostForCalculation : RMBOPCC;
       const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0].NetSurfaceTreatmentCost);
-      const NetConversionCost = headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+      const NetConversionCost =ConversionCostForCalculation
       // START HERE ADD CC IN OVERHEAD
       if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
 

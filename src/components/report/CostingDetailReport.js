@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import DayTime from '../../common/DayTimeWrapper'
+import DayTime from '../common/DayTimeWrapper'
 import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'

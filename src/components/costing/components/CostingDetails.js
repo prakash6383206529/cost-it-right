@@ -128,10 +128,6 @@ function CostingDetails(props) {
     applyPermission(topAndLeftMenuData, technology.label)
   }, [topAndLeftMenuData, technology])
 
-  useEffect(() => {
-    renderListing('PartList')
-  }, [partSelectListByTechnology])
-
   /**
   * @method applyPermission
   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -185,7 +181,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
 
           }),
         )
@@ -227,6 +223,7 @@ function CostingDetails(props) {
         return null
       })
       setPartDropdown(temp)
+
       return temp
     }
 
@@ -299,7 +296,7 @@ function CostingDetails(props) {
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+              setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
 
@@ -510,6 +507,7 @@ function CostingDetails(props) {
     //nextToggle()
     setIsCopyCostingDrawer(false)
     dispatch(getZBCCostingByCostingId('', (res) => { }))
+
     if (type === ZBC) {
       setCostingData({ costingId: costingId, type })
       dispatch(getZBCCostingByCostingId(costingId, (res) => {
@@ -523,6 +521,7 @@ function CostingDetails(props) {
     if (type === VBC) {
       setCostingData({ costingId: costingId, type })
       dispatch(getZBCCostingByCostingId(costingId, (res) => {
+
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -905,7 +904,6 @@ function CostingDetails(props) {
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
-         
         }, 500)
       }))
     }
@@ -1106,7 +1104,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
     }))
 
   }
@@ -1437,10 +1435,6 @@ function CostingDetails(props) {
       resolve(filterList(inputValue));
     });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 2551917b3 (effective date picker issue handled)
 
   return (
     <>
@@ -1626,7 +1620,7 @@ function CostingDetails(props) {
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
-
+                            {console.log(effectiveDate, "date")}
                             <DatePicker
                               name="EffectiveDate"
                               selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -1634,7 +1628,7 @@ function CostingDetails(props) {
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
+                              // maxDate={new Date()}
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"
@@ -1678,7 +1672,7 @@ function CostingDetails(props) {
                         <Row>
                           <Col md="12" className={"costing-table-container"}>
                             <Table
-                              className="table cr-brdr-main costing-table-next costing-table-vbc"
+                              className="table cr-brdr-main costing-table-next costing-table-zbc"
                               size="sm"
                             >
                               <thead>

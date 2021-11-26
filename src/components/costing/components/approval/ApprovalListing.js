@@ -175,12 +175,7 @@ function ApprovalListing(props) {
 
   const createdOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-<<<<<<< HEAD
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-=======
     return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
->>>>>>> 57d4baf37 (day.js added and moment removed , and all is centralised)
   }
 
   const priceFormatter = (props) => {
@@ -207,12 +202,7 @@ function ApprovalListing(props) {
 
   const requestedOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-<<<<<<< HEAD
-    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
-=======
     return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
->>>>>>> 57d4baf37 (day.js added and moment removed , and all is centralised)
   }
 
   const statusFormatter = (props) => {

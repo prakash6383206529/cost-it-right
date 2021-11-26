@@ -553,7 +553,7 @@ function RawMaterialCost(props) {
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
       const RecoveryPercentage = weightData.RecoveryPercentage
 
-      const scrapWeight = checkForNull(GrossWeight - FinishWeight);
+      const scrapWeight = weightData.scrapWeight? weightData.scrapWeight : checkForNull(GrossWeight - FinishWeight)
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
 
@@ -568,7 +568,8 @@ function RawMaterialCost(props) {
         IsCalculatedEntry: true,
         CutOffRMC: CutOffRMC,
         ScrapRecoveryPercentage: RecoveryPercentage,
-        BurningLossWeight: weightData.BurningValue
+        BurningLossWeight: weightData.BurningValue,
+        ScrapWeight:scrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
@@ -578,6 +579,7 @@ function RawMaterialCost(props) {
         setValue(`${rmGridFields}.${editIndex}.FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.BurningLossWeight`, checkForDecimalAndNull(weightData.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${editIndex}.ScrapWeight`,checkForDecimalAndNull(scrapWeight,getConfigurationKey().NoOfDecimalForInputOutput))
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING
       }, 500)

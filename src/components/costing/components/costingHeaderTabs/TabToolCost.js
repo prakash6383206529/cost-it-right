@@ -4,9 +4,9 @@ import { useDispatch, useSelector, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
-  setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
+  setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
 } from '../../actions/Costing';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 
 function TabToolCost(props) {
 
-  const { handleSubmit, } = useForm();
+  const { handleSubmit, setValue,getValues,formState:{errors}} = useForm();
 
   const dispatch = useDispatch()
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
@@ -32,7 +32,7 @@ function TabToolCost(props) {
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(IsToolCostApplicable);
   const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
 
-  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData } = useSelector(state => state.costing)
+  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData,RMCCTabData,SurfaceTabData,OverheadProfitTabData,DiscountCostData,PackageAndFreightTabData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -40,6 +40,7 @@ function TabToolCost(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -213,6 +214,10 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = (formData) => {
+    const tabData = RMCCTabData[0]
+    const surfaceTabData= SurfaceTabData[0]
+    const overHeadAndProfitTabData=OverheadProfitTabData[0]
+    const discountAndOtherTabData =DiscountCostData[0]
     const data = {
       "IsToolCostProcessWise": false,
       "CostingId": costData.CostingId,
@@ -223,6 +228,39 @@ function TabToolCost(props) {
       "ToolCost": ToolTabData.TotalToolCost,
       "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
       "TotalCost": netPOPrice,
+    }
+    if(costData.IsAssemblyPart === true){
+
+      let assemblyRequestedData = {        
+        "TopRow": {
+          "CostingId":tabData.CostingId,
+          "CostingNumber": tabData.CostingNumber,
+          "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity+ tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+          "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+          "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+          "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+          "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
+          "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
+          "NetDiscounts":discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
+          "TotalCostINR": netPOPrice,
+          "TabId":5
+        },
+         "WorkingRows": [],
+        "LoggedInUserId": loggedInUserId()
+      
+    };
+    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
     }
 
     dispatch(saveToolTab(data, res => {
@@ -277,6 +315,11 @@ function TabToolCost(props) {
     var value = document.getElementById('page-size').value;
     gridApi.paginationSetPageSize(Number(value));
   };
+
+
+
+
+
   /**
   * @method onSubmit
   * @description Used to Submit the form

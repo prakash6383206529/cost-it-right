@@ -7,6 +7,7 @@ import { checkForDecimalAndNull } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function PartSurfaceTreatment(props) {
+  
   const { item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -36,8 +37,8 @@ function PartSurfaceTreatment(props) {
         dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
-            props.setPartDetails(Params, Data)
             DrawerToggle()
+            props.setPartDetails(Params, Data)
           }
         }))
       }
