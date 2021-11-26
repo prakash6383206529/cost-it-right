@@ -370,7 +370,13 @@ class UsersListing extends Component {
 	* @method linkableFormatter
 	* @description Renders Name link
 	*/
-	linkableFormatter = (cell, row, enumObject, rowIndex) => {
+
+
+
+	linkableFormatter = (props) => {
+
+		const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 		return (
 			<>
 				<div
@@ -380,6 +386,18 @@ class UsersListing extends Component {
 			</>
 		)
 	}
+
+
+	// linkableFormatter = (cell, row, enumObject, rowIndex) => {
+	// 	return (
+	// 		<>
+	// 			<div
+	// 				onClick={() => this.viewDetails(row.UserId)}
+	// 				className={'link'}
+	// 			>{cell}</div>
+	// 		</>
+	// 	)
+	// }
 
 	viewDetails = (UserId) => {
 		$('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -513,7 +531,8 @@ class UsersListing extends Component {
 			customLoadingOverlay: LoaderCustom,
 			customNoRowsOverlay: NoContentFound,
 			statusButtonFormatter: this.statusButtonFormatter,
-			hyphenFormatter: this.hyphenFormatter
+			hyphenFormatter: this.hyphenFormatter,
+			linkableFormatter: this.linkableFormatter
 		};
 
 		return (
@@ -672,7 +691,7 @@ class UsersListing extends Component {
 								frameworkComponents={frameworkComponents}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-								<AgGridColumn field="FullName" headerName="Name"></AgGridColumn>
+								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
 								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 								) : null}

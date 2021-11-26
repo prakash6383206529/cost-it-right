@@ -560,8 +560,8 @@ function ProcessCost(props) {
               <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
                 <thead>
                   <tr>
-                    <th>{`Process Name`}</th>
-                    <th>{`Machine Tonnage`}</th>
+                    <th style={{ width: "150px" }}>{`Process Name`}</th>
+                    <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
                     <th style={{ width: "220px" }}>{`Quantity`}</th>
