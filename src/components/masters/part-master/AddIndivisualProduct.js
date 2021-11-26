@@ -64,12 +64,12 @@ class AddIndivisualProduct extends Component {
                     const Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
 
-                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
+                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
-                            effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '',
+                            effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                             isSurfaceTreatment: Data.IsConsideredForMBOM,
                         }, () => this.setState({ isLoader: false }))
@@ -97,7 +97,7 @@ class AddIndivisualProduct extends Component {
     * @description Handle Effective Date
     */
     handleEffectiveDateChange = (date) => {
-        this.setState({ effectiveDate: DayTime(date).isValid ? DayTime(date) : '', });
+        this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
         this.setState({ DropdownChanged: false })
     };
 

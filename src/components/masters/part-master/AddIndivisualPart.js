@@ -77,12 +77,12 @@ class AddIndivisualPart extends Component {
             return productArray
           })
           this.setState({ DataToCheck: Data })
-          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
+          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               // isLoader: false,
-              effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               ProductGroup: productArray,
               oldProductGroup: productArray
@@ -116,7 +116,7 @@ class AddIndivisualPart extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: DayTime(date).isValid ? DayTime(date) : '', });
+    this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
     this.setState({ DropdownChanged: false })
   };
 
