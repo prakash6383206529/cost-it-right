@@ -14,7 +14,7 @@ import Toaster from '../../../common/Toaster';
 
 function AttachmentSec(props) {
     const dispatch = useDispatch()
-    const { token, type, Attachements } = props
+    const { token, type, Attachements, showAttachment } = props
     const [acc1, setAcc1] = useState(false)
     const [acc2, setAcc2] = useState(false)
     const [acc3, setAcc3] = useState(false)
@@ -372,7 +372,7 @@ function AttachmentSec(props) {
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
                     {acc1 && <>
-                        <Col md="12" className="p-0">
+                        {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 2 files)</label>
                             {files && files.length >= 2 ? (
                                 <div class="alert alert-danger" role="alert">
@@ -415,7 +415,7 @@ function AttachmentSec(props) {
                                     disabled={type === 'Sender' ? false : true}
                                 />
                             )}
-                        </Col>
+                        </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
                                 {files &&
@@ -459,7 +459,7 @@ function AttachmentSec(props) {
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
                     {acc2 && <>
-                        <Col md="12" className="p-0">
+                        {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 2 files)</label>
                             {supplierFiles && supplierFiles.length >= 2 ? (
                                 <div class="alert alert-danger" role="alert">
@@ -502,7 +502,7 @@ function AttachmentSec(props) {
                                     disabled={type === 'Sender' ? false : true}
                                 />
                             )}
-                        </Col>
+                        </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
                                 {supplierFiles &&
@@ -547,7 +547,7 @@ function AttachmentSec(props) {
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
                     {acc3 && <>
-                        <Col md="12" className="p-0">
+                        {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 10 files)</label>
                             {invoiceFiles && invoiceFiles.length >= 10 ? (
                                 <div class="alert alert-danger" role="alert">
@@ -590,7 +590,7 @@ function AttachmentSec(props) {
                                     disabled={type === 'Sender' ? false : true}
                                 />
                             )}
-                        </Col>
+                        </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
                                 {invoiceFiles &&
@@ -634,7 +634,7 @@ function AttachmentSec(props) {
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
                     {acc4 && <>
-                        <Col md="12" className="p-0">
+                        {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 10 files)</label>
                             {otherFiles && otherFiles.length >= 10 ? (
                                 <div class="alert alert-danger" role="alert">
@@ -677,7 +677,7 @@ function AttachmentSec(props) {
                                     disabled={type === 'Sender' ? false : true}
                                 />
                             )}
-                        </Col>
+                        </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
                                 {otherFiles &&
@@ -721,7 +721,7 @@ function AttachmentSec(props) {
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
                     {acc5 && <>
-                        <Col md="12" className="p-0">
+                        {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 4 files)</label>
                             {attachmentFiles && attachmentFiles.length >= 4 ? (
                                 <div class="alert alert-danger" role="alert">
@@ -764,7 +764,7 @@ function AttachmentSec(props) {
                                     disabled={type === 'Sender' ? false : true}
                                 />
                             )}
-                        </Col>
+                        </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
                                 {attachmentFiles &&
