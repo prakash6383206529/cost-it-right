@@ -3,7 +3,6 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
-import { toastr } from 'react-redux-toastr'
 import moment from 'moment'
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,

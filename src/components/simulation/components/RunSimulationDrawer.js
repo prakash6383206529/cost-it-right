@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
@@ -192,7 +192,7 @@ function RunSimulationDrawer(props) {
             case Number(EXCHNAGERATE):
                 dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -201,7 +201,7 @@ function RunSimulationDrawer(props) {
                 dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -209,7 +209,7 @@ function RunSimulationDrawer(props) {
             case Number(RMDOMESTIC):
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -217,7 +217,7 @@ function RunSimulationDrawer(props) {
             case Number(RMIMPORT):
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -226,7 +226,7 @@ function RunSimulationDrawer(props) {
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -236,7 +236,7 @@ function RunSimulationDrawer(props) {
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -251,7 +251,7 @@ function RunSimulationDrawer(props) {
         // 
         // dispatch(runSimulationOnSelectedCosting(objs, (res) => {
         //     if (res.data.Result) {
-        //         toastr.success('Simulation process has been run successfully.')
+        //         Toaster.success('Simulation process has been run successfully.')
         //         runSimulationCosting()
         //     }
         // }))
@@ -533,6 +533,7 @@ function RunSimulationDrawer(props) {
                                                 </Col>
 
                                             </Row>
+                                            
                                         </Col>
 
                                     </Row>

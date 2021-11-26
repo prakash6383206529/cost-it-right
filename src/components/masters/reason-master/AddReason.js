@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, required } from "../../../helper/validation";
 import { renderText, focusOnError } from "../../layout/FormInputs";
 import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth';
 import Drawer from '@material-ui/core/Drawer';
@@ -108,7 +108,7 @@ class AddReason extends Component {
       }
       this.props.reset()
       this.props.updateReasonAPI(formData, (res) => {
-        toastr.success(MESSAGES.UPDATE_REASON_SUCESS);
+        Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
         this.cancel()
       });
     } else {
@@ -122,7 +122,7 @@ class AddReason extends Component {
       this.props.reset()
       this.props.createReasonAPI(values, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.REASON_ADD_SUCCESS);
+          Toaster.success(MESSAGES.REASON_ADD_SUCCESS);
           this.cancel()
         }
       });

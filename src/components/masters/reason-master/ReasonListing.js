@@ -4,7 +4,7 @@ import { reduxForm } from "redux-form";
 import { Col, } from 'reactstrap';
 import $ from "jquery";
 import { focusOnError, } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -23,6 +23,7 @@ import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,7 +50,9 @@ class ReasonListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       isLoader: true,
-      renderState: true
+      renderState: true,
+      showPopup:false,
+      deletedId:''
     }
   }
 
@@ -132,13 +135,14 @@ class ReasonListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
       onCancel: () => { },
     }
-    return toastr.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions)
+    // return Toaster.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions)
   }
 
   /**
@@ -148,12 +152,19 @@ class ReasonListing extends Component {
   confirmDeleteItem = (ID) => {
     this.props.deleteReasonAPI(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
+        Toaster.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
         this.getTableListData()
       }
     })
+    this.setState({showPopup:false})
   }
-
+  onPopupConfirm =() => {
+    this.confirmDeleteItem(this.state.deletedId);
+   
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -205,9 +216,9 @@ class ReasonListing extends Component {
     this.props.activeInactiveReasonStatus(data, (res) => {
       if (res && res.data && res.data.Result) {
         if (cell == true) {
-          toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
         } else {
-          toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
         }
         this.getTableListData()
       }
@@ -479,7 +490,9 @@ class ReasonListing extends Component {
             </div>
           </div>
 
-
+          {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.REASON_DELETE_ALERT}`}  />
+                }
         </div>
         {isOpenDrawer && (
           <AddReason

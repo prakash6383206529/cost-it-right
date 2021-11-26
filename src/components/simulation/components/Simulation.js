@@ -10,7 +10,7 @@ import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation } from '../../../config/masterData';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -295,13 +295,13 @@ function Simulation(props) {
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
+                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                             // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
-                            // toastr.warning('Please select one vendor at a time.')
+                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                             return false
@@ -360,7 +360,7 @@ function Simulation(props) {
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
+                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                             // return false

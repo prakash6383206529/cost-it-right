@@ -10,7 +10,7 @@ import { getVendorListByVendorType, } from '../actions/Material';
 import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -22,6 +22,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -41,7 +42,9 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
-      isLoader: true
+      isLoader: true,
+      showPopup:false,
+      deletedId:''
     }
   }
 
@@ -101,6 +104,7 @@ class FreightListing extends Component {
   * @description confirm delete Raw Material details
   */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id)
@@ -109,7 +113,7 @@ class FreightListing extends Component {
       component: () => <ConfirmComponent />
 
     };
-    return toastr.confirm(`${MESSAGES.FREIGHT_DELETE_ALERT}`, toastrConfirmOptions);
+    // return Toaster.confirm(`${MESSAGES.FREIGHT_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -119,12 +123,18 @@ class FreightListing extends Component {
   confirmDelete = (ID) => {
     this.props.deleteFright(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
+        Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
         this.getDataList()
       }
     });
+    this.setState({showPopup:false})
   }
-
+  onPopupConfirm =() => {
+    this.confirmDelete(this.state.deletedId);
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
 
 
 
@@ -376,6 +386,9 @@ class FreightListing extends Component {
             </div>
           </Col>
         </Row>
+        {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FREIGHT_DELETE_ALERT}`}  />
+         }
       </div >
     );
   }

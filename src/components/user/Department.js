@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../helper/validation";
@@ -102,11 +102,11 @@ class Department extends Component {
 				if (res && res.data && res.data.Result) {
 					if (this.state.isCompanyConfigurable) {
 						this.props.updateCompanyAPI(comObj, () => {
-							toastr.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
+							Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
 						})
 					} else {
 						// IF COMPANY CONFIGURABLE IS FALSE
-						toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+						Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
 					}
 				}
 				reset();
@@ -135,7 +135,7 @@ class Department extends Component {
 						this.props.addDepartmentAPI(formReq, (res) => {
 
 							if (res && res.data && res.data.Result) {
-								toastr.success(MESSAGES.ADD_COMPANY_SUCCESSFULLY)
+								Toaster.success(MESSAGES.ADD_COMPANY_SUCCESSFULLY)
 								reset();
 								this.toggleDrawer('')
 							}
@@ -151,7 +151,7 @@ class Department extends Component {
 				}
 				this.props.addDepartmentAPI(depObj, (res) => {
 					if (res && res.data && res.data.Result) {
-						toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+						Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
 						reset();
 						this.toggleDrawer('')
 					}

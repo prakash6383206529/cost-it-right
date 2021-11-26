@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, getFilteredPlantList, deletePlantAPI } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -21,6 +21,7 @@ import { VBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -40,6 +41,12 @@ class VBCPlantListing extends Component {
             city: [],
             country: [],
             state: [],
+            showPopup:false,
+            deletedId:'',
+            cellData:{},
+            cellValue:'',
+            showPopupToggle:false
+
         }
     }
 
@@ -78,6 +85,7 @@ class VBCPlantListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -85,7 +93,7 @@ class VBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -95,12 +103,23 @@ class VBCPlantListing extends Component {
     confirmDeleteItem = (Id) => {
         this.props.deletePlantAPI(Id, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
+                Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 // this.getTableListData();
                 this.filterList()
             }
         });
+        this.setState({showPopup:false})
     }
+    onPopupConfirm =() => {        
+        this.confirmDeleteItem(this.state.deletedId);         
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+    this.setState({showPopupToggle:false})
+  }
+  onPopupConfirmToggle =() => {        
+    this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)      
+ }
 
     /**
     * @method buttonFormatter
@@ -129,16 +148,16 @@ class VBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
     }
 
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 // if (cell == true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 // }
                 //this.getTableListData()
                 this.filterList()
@@ -624,6 +643,12 @@ class VBCPlantListing extends Component {
                     ID={this.state.ID}
                     anchor={'right'}
                 />}
+            {
+           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`}  />
+        }
+        {
+            this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`}  />
+        }
             </div>
         );
     }

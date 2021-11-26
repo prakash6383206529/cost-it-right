@@ -8,7 +8,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../layout/HookFormInputs'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import moment from 'moment'
 import DatePicker from "react-datepicker";
@@ -169,7 +169,7 @@ function MasterSendForApproval(props) {
             //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
             dispatch(masterApprovalRequestBySender(senderObj, res => {
                 if (res.data.Result) {
-                    toastr.success('Token has been sent for approval.')
+                    Toaster.success('Token has been sent for approval.')
                     props.closeDrawer('', 'submit')
                 }
             }))
@@ -198,10 +198,10 @@ function MasterSendForApproval(props) {
                 dispatch(approvalRequestByMasterApprove(obj, res => {
                     if (res.data.Result) {
                         if (IsPushDrawer) {
-                            toastr.success('The token has been approved')
+                            Toaster.success('The token has been approved')
 
                         } else {
-                            toastr.success(!IsFinalLevel ? 'The token has been approved' : 'The token has been sent to next level for approval')
+                            Toaster.success(!IsFinalLevel ? 'The token has been approved' : 'The token has been sent to next level for approval')
                             props.closeDrawer('', 'submit')
                         }
                     }
@@ -210,7 +210,7 @@ function MasterSendForApproval(props) {
                 // REJECT CONDITION
                 dispatch(rejectRequestByMasterApprove(obj, res => {
                     if (res.data.Result) {
-                        toastr.success('Token Rejected')
+                        Toaster.success('Token Rejected')
                         props.closeDrawer('', 'submit')
                     }
                 }))

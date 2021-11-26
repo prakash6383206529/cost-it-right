@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -33,6 +33,8 @@ import userPic from '../../assests/images/user-pic.png'
 import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
+import { toastr } from "react-redux-toastr";
+import PopupMsgWrapper from "../common/PopupMsgWrapper";
 
 class SideBar extends Component {
   constructor(props) {
@@ -44,6 +46,9 @@ class SideBar extends Component {
       isRedirect: false,
       isLoader: false,
       isLeftMenuRendered: false,
+      CostingsAwaitingApprovalDashboard: false,
+      showPopup:false,
+      updatedObj:{}
     };
   }
 
@@ -114,6 +119,8 @@ class SideBar extends Component {
       AccessToken: userData.Token,
       UserId: userData.LoggedInUserId,
     };
+    this.setState({showPopup:true, updatedObj:requestData})
+    
     const toastrConfirmOptions = {
       onOk: () => {
         this.props.logoutUserAPI(requestData, () => this.props.logUserOut());
@@ -123,9 +130,17 @@ class SideBar extends Component {
       component: () => <ConfirmComponent />
     };
 
-    return toastr.confirm(`Are you sure do you want to logout?`, toastrConfirmOptions);
+    // return Toaster.confirm(`Are you sure do you want to logout?`, toastrConfirmOptions);
   };
-
+ 
+  onPopupConfirm = (e)=> {
+    const {updatedObj} = this.state
+    e.preventDefault()
+    this.props.logoutUserAPI(updatedObj, () => this.props.logUserOut());
+  }
+  closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
    * @method user toggle
    */
@@ -749,6 +764,9 @@ class SideBar extends Component {
             </div>
           )}
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message= {`Are you sure do you want to logout?`} />
+        }
       </nav>
     )
   }

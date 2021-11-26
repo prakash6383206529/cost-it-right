@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -21,6 +21,7 @@ import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -42,6 +43,8 @@ class IndivisualProductListing extends Component {
 
             isBulkUpload: false,
             ActivateAccessibility: true,
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -91,6 +94,7 @@ class IndivisualProductListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -98,7 +102,7 @@ class IndivisualProductListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
     /**
@@ -108,12 +112,19 @@ class IndivisualProductListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deletePart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+                Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDeleteItem(this.state.deletedId);
+       
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -155,9 +166,9 @@ class IndivisualProductListing extends Component {
         this.props.activeInactivePartStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 // if (cell === true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 // }
                 this.getTableListData()
             }
@@ -378,14 +389,14 @@ class IndivisualProductListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                {AddAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        title="Add"
-                                        onClick={this.formToggle}>
-                                        <div className={'plus mr-0'}></div></button>
-                                )}
+
+                                <button
+                                    type="button"
+                                    className={'user-btn mr5'}
+                                    title="Add"
+                                    onClick={this.formToggle}>
+                                    <div className={'plus mr-0'}></div></button>
+
                                 {BulkUploadAccessibility && (
                                     <button
                                         type="button"
@@ -462,7 +473,6 @@ class IndivisualProductListing extends Component {
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             domLayout='autoHeight'
-                            floatingFilter={true}
                             // columnDefs={c}
                             rowData={this.props.newPartsListing}
                             pagination={true}
@@ -505,6 +515,9 @@ class IndivisualProductListing extends Component {
                     messageLabel={'Part'}
                     anchor={'right'}
                 />}
+                 {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`}  />
+                }
             </div >
         );
     }

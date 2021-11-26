@@ -10,7 +10,7 @@ import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 import moment from 'moment';
@@ -31,7 +31,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
-
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -88,6 +88,9 @@ function RMImportListing(props) {
   const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
   const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
+  const [showPopup, setShowPopup]=useState(false)
+  const [deletedId, setDeletedId] =useState('')
+  const [showPopupBulk, setShowPopupBulk] =useState(false)
 
 
 
@@ -245,6 +248,8 @@ function RMImportListing(props) {
   * @description confirm delete Raw Material details
   */
   const deleteItem = (Id) => {
+    setShowPopup(true)
+    setDeletedId(Id)
     const toastrConfirmOptions = {
       onOk: () => {
         confirmDelete(Id)
@@ -252,7 +257,7 @@ function RMImportListing(props) {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
-    return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
+    // return Toaster.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -262,13 +267,25 @@ function RMImportListing(props) {
   const confirmDelete = (ID) => {
     dispatch(deleteRawMaterialAPI(ID, (res) => {
       if (res.status === 417 && res.data.Result === false) {
-        toastr.warning(res.data.Message)
+        Toaster.warning(res.data.Message)
       } else if (res && res.data && res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+        Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
         getDataList()
       }
     }));
+    setShowPopup(false)
   }
+
+  const onPopupConfirm =() => {
+    confirmDelete(deletedId);
+ }
+ const closePopUp= () =>{
+   setShowPopup(false)
+   setShowPopupBulk(false)
+   }
+  const onPopupConfirmBulk =() => {
+    confirmDelete(deletedId);
+ }
 
   /**
   * @method buttonFormatter
@@ -381,13 +398,14 @@ function RMImportListing(props) {
   * @description confirm Redirection to Material tab.
   */
   const densityAlert = () => {
+    setShowPopupBulk(true)
     const toastrConfirmOptions = {
       onOk: () => {
         confirmDensity()
       },
       onCancel: () => { }
     };
-    return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
+    // return Toaster.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
   }
 
 
@@ -398,6 +416,7 @@ function RMImportListing(props) {
   */
   const confirmDensity = () => {
     props.toggle('4')
+    setShowPopupBulk(false)
   }
 
   /**
@@ -666,6 +685,12 @@ function RMImportListing(props) {
           />
         )
       }
+       {
+            showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`}  />
+         }
+       {
+            showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`}  />
+         }
     </div >
   );
 }

@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import $ from 'jquery';
@@ -30,6 +30,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -72,7 +73,9 @@ class VendorListing extends Component {
             rowData: null,
             warningMessage: false,
             sideBar: { toolPanels: ['columns'] },
-            showData: false
+            showData: false,
+            showPopup:false,
+            deletedId:''
 
         }
     }
@@ -294,6 +297,7 @@ class VendorListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -301,7 +305,7 @@ class VendorListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`Are you sure you want to delete this Vendor?`, toastrConfirmOptions);
+        // return Toaster.confirm(`Are you sure you want to delete this Vendor?`, toastrConfirmOptions);
     }
 
     /**
@@ -311,13 +315,19 @@ class VendorListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteSupplierAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
                 this.filterList()
                 //this.getTableListData(null, null, null)
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -352,9 +362,9 @@ class VendorListing extends Component {
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell == true) {
-                    toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
                 } else {
-                    toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
                 //this.getTableListData(null, null, null)
                 this.filterList()
@@ -857,6 +867,9 @@ class VendorListing extends Component {
                         />
                     )
                 }
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`}  />
+         }
             </div >
         );
     }

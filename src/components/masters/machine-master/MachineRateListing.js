@@ -12,7 +12,7 @@ import { getMachineDataList, deleteMachine, copyMachine, } from '../actions/Mach
 import { getTechnologySelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -24,6 +24,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,7 +47,9 @@ class MachineRateListing extends Component {
             machineType: [],
 
             isBulkUpload: false,
-            isLoader: false
+            isLoader: false,
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -108,7 +111,7 @@ class MachineRateListing extends Component {
     copyItem = (Id) => {
         this.props.copyMachine(Id, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.COPY_MACHINE_SUCCESS);
+                Toaster.success(MESSAGES.COPY_MACHINE_SUCCESS);
                 this.getDataList()
             }
         });
@@ -119,6 +122,7 @@ class MachineRateListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id);
@@ -126,7 +130,7 @@ class MachineRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
+        // return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -136,12 +140,17 @@ class MachineRateListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMachine(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
                 this.getDataList()
             }
         });
     }
-
+    onPopupConfirm =() => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -462,7 +471,7 @@ class MachineRateListing extends Component {
                                 </div>
                             </div>
                         </div>
-
+             
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload
@@ -475,6 +484,9 @@ class MachineRateListing extends Component {
                     messageLabel={'Machine'}
                     anchor={'right'}
                 />}
+                 {
+                  this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`}  />
+                }
             </div >
         );
     }

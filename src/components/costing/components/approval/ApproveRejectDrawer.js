@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
-import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 import { APPROVER, EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment, setAttachmentFileData } from '../../../simulation/actions/Simulation'
@@ -18,7 +17,7 @@ import AttachmentSec from './AttachmentSec'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
-
+import Toaster from '../../../common/Toaster'
 
 function ApproveRejectDrawer(props) {
 
@@ -186,7 +185,7 @@ function ApproveRejectDrawer(props) {
             count = count + 1;
             if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
 
-              toastr.warning('User does not exist on next level for selected simulation.')
+              Toaster.warning('User does not exist on next level for selected simulation.')
               setApprovalDropDown([])
               return false
             }
@@ -225,7 +224,7 @@ function ApproveRejectDrawer(props) {
           setApprovalDropDown(tempDropdownList)
           if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
 
-            toastr.warning('User does not exist on next level for selected simulation.')
+            Toaster.warning('User does not exist on next level for selected simulation.')
             setApprovalDropDown([])
             return false
           }
@@ -250,7 +249,7 @@ function ApproveRejectDrawer(props) {
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
         if (res.data.Result) {
-          toastr.success('Simulation has been saved successfully')
+          Toaster.success('Simulation has been saved successfully')
           setLoader(true)
           dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
             let status = 200
@@ -337,11 +336,11 @@ function ApproveRejectDrawer(props) {
         dispatch(approvalRequestByApprove(Data, res => {
           if (res.data.Result) {
             if (IsPushDrawer) {
-              toastr.success('The costing has been approved')
+              Toaster.success('The costing has been approved')
               setOpenPushButton(true)
 
             } else {
-              toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+              Toaster.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
           }
@@ -350,7 +349,7 @@ function ApproveRejectDrawer(props) {
         // REJECT CONDITION
         dispatch(rejectRequestByApprove(Data, res => {
           if (res.data.Result) {
-            toastr.success('Costing Rejected')
+            Toaster.success('Costing Rejected')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -450,7 +449,7 @@ function ApproveRejectDrawer(props) {
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           if (res.data.Result) {
-            toastr.success('Simulation token has been sent for approval.')
+            Toaster.success('Simulation token has been sent for approval.')
             props.closeDrawer('', 'submit')
           }
         }))
@@ -460,7 +459,7 @@ function ApproveRejectDrawer(props) {
         dispatch(simulationApprovalRequestByApprove(approverObject, res => {
           if (res.data.Result) {
             if (IsPushDrawer) {
-              toastr.success('The simulation token has been approved')
+              Toaster.success('The simulation token has been approved')
               setOpenPushButton(true)
 
             } else {
@@ -475,10 +474,10 @@ function ApproveRejectDrawer(props) {
                 pushObj.LoggedInUserId = userLoggedIn
                 pushObj.AmmendentDataRequests = temp
                 dispatch(pushAPI(pushObj, () => { }))
-                toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
               } else {
-                toastr.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
+                Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
               }
             }
@@ -488,7 +487,7 @@ function ApproveRejectDrawer(props) {
         //SIMULATION REJECT CONDITION
         dispatch(simulationRejectRequestByApprove(approverObject, res => {
           if (res.data.Result) {
-            toastr.success('The simulation token has been rejected')
+            Toaster.success('The simulation token has been rejected')
             props.closeDrawer('', 'submit')
           }
         }))

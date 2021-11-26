@@ -12,7 +12,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -25,6 +25,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,6 +47,8 @@ class ProfitListing extends Component {
             ModelType: [],
             vendorName: [],
             overheadAppli: [],
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -102,6 +105,7 @@ class ProfitListing extends Component {
     * @description confirm delete
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -109,7 +113,7 @@ class ProfitListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(`${MESSAGES.PROFIT_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.PROFIT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -119,12 +123,19 @@ class ProfitListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteProfit(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_PROFIT_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
                 this.getDataList()
             }
         });
+        this.setState({showPopup:false})
     }
-
+     
+    onPopupConfirm =() => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -252,9 +263,9 @@ class ProfitListing extends Component {
         this.props.activeInactiveProfit(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell === true) {
-                    toastr.success(MESSAGES.PROFIT_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PROFIT_INACTIVE_SUCCESSFULLY)
                 } else {
-                    toastr.success(MESSAGES.PROFIT_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PROFIT_ACTIVE_SUCCESSFULLY)
                 }
                 this.getDataList(null, null, null, null)
             }
@@ -491,6 +502,9 @@ class ProfitListing extends Component {
 
                     </Col>
                 </Row>
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROFIT_DELETE_ALERT}`}  />
+         }
             </div >
         );
     }

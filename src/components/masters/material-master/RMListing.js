@@ -7,7 +7,7 @@ import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
@@ -18,6 +18,7 @@ import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,7 +37,8 @@ class RMListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -94,6 +96,7 @@ class RMListing extends Component {
     * @description confirm delete Raw Material
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id)
@@ -101,7 +104,7 @@ class RMListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(`${MESSAGES.MATERIAL1_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.MATERIAL1_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -111,14 +114,20 @@ class RMListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                toastr.warning(res.data.Message)
+                Toaster.warning(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
                 this.getListData();
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
    * @method openModel
    * @description  used to open filter form 
@@ -395,6 +404,9 @@ class RMListing extends Component {
                         closeDrawer={this.closeAssociationDrawer}
                         anchor={'right'} />
                 }
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}  />
+         }
             </div>
         );
     }

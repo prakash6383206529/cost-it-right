@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { loggedInUserId } from '../../../helper';
 import { APPROVED, PENDING } from '../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
@@ -150,7 +150,7 @@ class CostingSummaryBulkUpload extends Component {
         obj.LoggedInUserId = loggedInUserId()
         this.props.sendForApprovalFromBulkUpload(obj, res => {
             if (res.data.Result) {
-                toastr.success(res.data.Message)
+                Toaster.success(res.data.Message)
                 this.props.getCostingBulkUploadList(() => { })
             } else {
                 this.props.getCostingBulkUploadList(() => { })

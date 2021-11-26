@@ -4,7 +4,7 @@ import moment from 'moment';
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form'
@@ -109,12 +109,12 @@ function ERSimulation(props) {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
-                toastr.warning("Value should not be more than 8")
+                Toaster.warning("Value should not be more than 8")
                 return false
             }
             return true
         } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            toastr.warning('Please enter a valid positive numbers.')
+            Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
@@ -185,7 +185,7 @@ function ERSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
 
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
+            Toaster.warning('Please select atleast one costing.')
             return false
         }
         let obj = {}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,7 +9,7 @@ import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
 import { ZBC, VBC, VIEW_COSTING_DATA, APPROVED, REJECTED, HISTORY } from '../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
 
@@ -398,7 +399,7 @@ function AddToComparisonDrawer(props) {
               setIsZbcSelected(false)
               setisCbcSelected(true)
 
-              toastr.warning('This costing is already present for comparison.')
+              Toaster.warning('This costing is already present for comparison.')
               return
             }
           }

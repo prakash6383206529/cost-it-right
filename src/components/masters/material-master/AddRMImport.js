@@ -14,7 +14,7 @@ import {
   getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
   masterFinalLevelUser
 } from '../actions/Material';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, getConfigurationKey, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
@@ -39,6 +39,7 @@ import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
 const selector = formValueSelector('AddRMImport');
@@ -381,7 +382,7 @@ class AddRMImport extends Component {
   handleScrapRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
     if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
-      toastr.warning("Scrap rate should not be greater than basic rate")
+      Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
   }
@@ -783,6 +784,8 @@ class AddRMImport extends Component {
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
+      showPopup:false,
+      updatedObj:{}
     })
     this.props.getRMImportDataById('', false, res => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
@@ -833,7 +836,7 @@ class AddRMImport extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
   }
 
@@ -859,7 +862,7 @@ class AddRMImport extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteRMDomestic(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -885,7 +888,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -939,11 +942,12 @@ class AddRMImport extends Component {
         RawMaterialCode: values.Code
       }
       if (isEditFlag) {
+
         if (isSourceChange) {
           this.props.reset()
           this.props.updateRMImportAPI(requestData, (res) => {
             if (res.data.Result) {
-              toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
               this.clearForm()
               // this.cancel()
             }
@@ -954,7 +958,7 @@ class AddRMImport extends Component {
           this.props.reset()
           this.props.updateRMImportAPI(requestData, (res) => {
             if (res.data.Result) {
-              toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
               this.clearForm()
               // this.cancel()
             }
@@ -964,13 +968,16 @@ class AddRMImport extends Component {
             this.cancel()
             return false
           }
-          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
+          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+            Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+              values.cutOffPrice === undefined) || uploadAttachements === false)) {
+                this.setState({showPopup:true, updatedObj:requestData})
             const toastrConfirmOptions = {
               onOk: () => {
                 this.props.reset()
                 this.props.updateRMImportAPI(requestData, (res) => {
                   if (res.data.Result) {
-                    toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                    Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
                     this.clearForm();
                   }
                 })
@@ -978,7 +985,7 @@ class AddRMImport extends Component {
               onCancel: () => { },
               component: () => <ConfirmComponent />,
             }
-            return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+            // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
           }
 
         }
@@ -1030,7 +1037,7 @@ class AddRMImport extends Component {
         this.props.reset()
         this.props.createRMImport(formData, (res) => {
           if (res.data.Result) {
-            toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
+            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
             this.clearForm();
           }
         });
@@ -1038,7 +1045,18 @@ class AddRMImport extends Component {
     }
   }
 
-
+  onPopupConfirm = ()=>{ 
+    this.props.reset()
+                this.props.updateRMImportAPI(this.state.updatedObj, (res) => {
+                  if (res.data.Result) {
+                    Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                    this.clearForm();
+                  }
+                })
+  }
+  closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
 
 
   handleKeyDown = function (e) {
@@ -1820,6 +1838,9 @@ class AddRMImport extends Component {
               />
             )
           }
+           {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm}   />
+        }
         </div>
       </>
     );

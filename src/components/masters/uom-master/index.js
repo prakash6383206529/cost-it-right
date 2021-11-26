@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -20,6 +20,7 @@ import { UOM_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -45,7 +46,9 @@ class UOMMaster extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      showPopup:false,
+      deletedId:''
 
     }
   }
@@ -135,26 +138,33 @@ class UOMMaster extends Component {
   * @description confirm delete UOM
   */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteUOM(Id)
       },
       onCancel: () => { }
     };
-    return toastr.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
+    // return Toaster.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
   }
-
+  onPopupConfirm =() => {
+    this.confirmDeleteUOM(this.state.deletedId);
+  }
+  closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
-  * @method confirmDeleteUOM
-  * @description confirm delete unit of measurement
-  */
+   * @method confirmDeleteUOM
+   * @description confirm delete unit of measurement
+   */
   confirmDeleteUOM = (Id) => {
     this.props.deleteUnitOfMeasurementAPI(Id, (res) => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
+        Toaster.success(MESSAGES.DELETE_UOM_SUCCESS);
         this.getUOMDataList()
       }
     });
+    this.setState({showPopup:false})
   }
 
   renderPaginationShowsTotal(start, to, total) {
@@ -232,9 +242,9 @@ class UOMMaster extends Component {
     this.props.activeInactiveUOM(data, res => {
       if (res && res.data && res.data.Result) {
         if (cell === true) {
-          toastr.success(MESSAGES.UOM_INACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.UOM_INACTIVE_SUCCESSFULLY)
         } else {
-          toastr.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
         }
         this.getUOMDataList()
       }
@@ -411,6 +421,9 @@ class UOMMaster extends Component {
               anchor={"right"}
             />
           )}
+            {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete UOM?`}  />
+                }
         </div>
       </>
     );

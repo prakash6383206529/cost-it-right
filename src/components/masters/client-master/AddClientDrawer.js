@@ -6,7 +6,7 @@ import { required, number, email, minLength7, maxLength70, minLength10, acceptAl
 import { renderText, renderEmailInputField, searchableSelect } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -220,7 +220,7 @@ class AddClientDrawer extends Component {
             this.props.reset()
             this.props.updateClient(updateData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
+                    Toaster.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
                     this.cancel();
                 }
             });
@@ -241,7 +241,7 @@ class AddClientDrawer extends Component {
             this.props.reset()
             this.props.createClient(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.CLIENT_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.CLIENT_ADD_SUCCESS);
                     this.cancel();
                 }
             });

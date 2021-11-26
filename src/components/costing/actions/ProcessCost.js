@@ -7,7 +7,6 @@ import {
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
-import { toastr } from 'react-redux-toastr'
 
 const headers = {
   'Content-Type': 'application/json',

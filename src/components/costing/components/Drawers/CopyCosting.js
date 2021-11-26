@@ -11,8 +11,9 @@ import { VBC, ZBC } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
 import DatePicker from "react-datepicker";
 import moment from 'moment';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import ConfirmComponent from '../../../../helper/ConfirmComponent';
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -56,6 +57,8 @@ function CopyCosting(props) {
   const [isFromVbc, setIsFromVbc] = useState(type === VBC ? true : false)
   const [isToVbc, setIsToVbc] = useState(type === VBC ? true : false)
   const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
+  const [showPopup, setShowPopup]=useState(false)
+  const [updatedObj, setUpdatedObj] = useState({})
 
   useEffect(() => {
     const ZbcTemp = []
@@ -351,27 +354,32 @@ function CopyCosting(props) {
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
       const Data = res.data.Data
+     
       if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
+       
         dispatch(
           saveCopyCosting(obj, (res) => {
 
             if ((res.status = 200)) {
-              toastr.success("Copy costing done sucessfully!")
+              Toaster.success("Copy costing done sucessfully!")
               const { CostingId, CostingType } = res.data.Data
               props.closeDrawer('', CostingId, CostingType)
             }
           }),
         ) // for saving data
       } else {
+        setShowPopup(true)
+        setUpdatedObj(obj)
         const toastrConfirmOptions = {
           onOk: () => {
             dispatch(
               saveCopyCosting(obj, (res) => {
 
                 if ((res.status = 200)) {
-                  toastr.success("Copy costing done sucessfully!")
+                  Toaster.success("Copy costing done sucessfully!")
                   const { CostingId, CostingType } = res.data.Data
                   props.closeDrawer('', CostingId, CostingType)
+                 
                 }
               }),
             ) // for saving data
@@ -379,12 +387,29 @@ function CopyCosting(props) {
           onCancel: () => { },
           component: () => <ConfirmComponent />
         }
-    
-        return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
+        // console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
+        // return Toaster.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
       }
     }))
 
+  }
+      
+  const onPopupConfirm = ()=>{ 
+    dispatch(
+      saveCopyCosting(updatedObj, (res) => {
 
+        if ((res.status = 200)) {
+          Toaster.success("Copy costing done sucessfully!")
+          const { CostingId, CostingType } = res.data.Data
+          props.closeDrawer('', CostingId, CostingType)
+         
+        }
+      }),
+      ) // for saving data
+      setShowPopup(false)
+  }
+  const closePopUp= () =>{
+    setShowPopup(false)
   }
   /**
    * @method toggleDrawer
@@ -405,6 +430,7 @@ function CopyCosting(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
+        className={`${showPopup ? 'main-modal-container':''}`}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
@@ -782,8 +808,12 @@ function CopyCosting(props) {
               </Row>
             </form>
           </div>
+         
         </Container>
       </Drawer>
+      {
+              showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!updatedObj.IsRMExist ? 'Raw Material,' : ''}${!updatedObj.IsOperationExist ? 'Operation,' : ''}${!updatedObj.IsProcessExist ? 'Process,' : ''}${!updatedObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`}  />
+                }
     </>
   );
 }

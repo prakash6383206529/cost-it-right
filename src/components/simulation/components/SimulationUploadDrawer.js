@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
 import { reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { bulkUploadCosting } from '../../costing/actions/CostWorking'
 import { loggedInUserId } from '../../../helper';
@@ -55,7 +55,7 @@ class SimulationUploadDrawer extends Component {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xlsx files.')
+            Toaster.warning('Allowed only xlsx files.')
         }
     }
 
@@ -118,7 +118,7 @@ class SimulationUploadDrawer extends Component {
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
-            toastr.warning('File type should be .xls or .xlsx')
+            Toaster.warning('File type should be .xls or .xlsx')
         } else {
 
             let data = new FormData()
@@ -293,7 +293,7 @@ class SimulationUploadDrawer extends Component {
                     //     return null;
                     // })
                     if (basicRateCount === 0) {
-                        toastr.warning('Please fill at least one basic rate.')
+                        Toaster.warning('Please fill at least one basic rate.')
                         return false
                     }
                     // if (basicRateCount === 0) {
@@ -316,7 +316,7 @@ class SimulationUploadDrawer extends Component {
         // let data = new FormData()
         // data.append('file', fileData)
         if (fileData.length === 0) {
-            toastr.warning("Please select a file to upload.")
+            Toaster.warning("Please select a file to upload.")
             return false
         }
 

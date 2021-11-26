@@ -6,7 +6,7 @@ import { required, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, acce
 import { renderDatePicker, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -177,7 +177,7 @@ class AddTaxDetails extends Component {
       this.props.reset()
       this.props.updateTaxDetails(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.TAX_UPDATE_SUCCESS);
+          Toaster.success(MESSAGES.TAX_UPDATE_SUCCESS);
           this.cancel();
         }
       });
@@ -194,7 +194,7 @@ class AddTaxDetails extends Component {
       this.props.reset()
       this.props.createTaxDetails(reqData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.TAX_ADD_SUCCESS);
+          Toaster.success(MESSAGES.TAX_ADD_SUCCESS);
           this.cancel();
         }
       });
