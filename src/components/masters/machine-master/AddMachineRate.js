@@ -843,7 +843,7 @@ class AddMachineRate extends Component {
           Remark: remarks,
           Attachements: updatedFiles,
           IsForcefulUpdated: true,
-          EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         }
         if (isEditFlag) {
           if (DropdownChange) {
@@ -890,7 +890,7 @@ class AddMachineRate extends Component {
         VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       }
 
 

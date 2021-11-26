@@ -541,7 +541,7 @@ class AddOperation extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlants : []) : [],
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
         DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
       }
 

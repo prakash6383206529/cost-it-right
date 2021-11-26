@@ -240,7 +240,7 @@ class AddIndivisualProduct extends Component {
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
         Remark: values.Remark,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true
@@ -277,7 +277,7 @@ class AddIndivisualProduct extends Component {
         PartName: values.PartName,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,

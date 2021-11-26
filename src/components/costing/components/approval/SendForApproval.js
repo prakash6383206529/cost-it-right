@@ -358,7 +358,7 @@ const SendForApproval = (props) => {
       tempObj.Reason = data.reason
       tempObj.ECNNumber = ''
       // tempObj.ECNNumber = 1;
-      tempObj.EffectiveDate = DayTime(data.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+      tempObj.EffectiveDate = DayTime(data.effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       tempObj.RevisionNumber = partNo.revisionNumber
       tempObj.PartName = partNo.partName
       // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here

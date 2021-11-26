@@ -354,7 +354,7 @@ class AddRMImport extends Component {
     } else {
       if (currency && effectiveDate) {
 
-        this.props.getExchangeRateByCurrency(currency.label, DayTime(effectiveDate).local().format('YYYY-MM-DD'), res => {
+        this.props.getExchangeRateByCurrency(currency.label, DayTime(effectiveDate).format('YYYY-MM-DD'), res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true })
           }
@@ -930,7 +930,7 @@ class AddRMImport extends Component {
         ScrapRate: values.ScrapRate,
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
@@ -1016,7 +1016,7 @@ class AddRMImport extends Component {
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
-        EffectiveDate: DayTime(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
