@@ -2,7 +2,7 @@ import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { APPROVED, PENDING, REJECTED } from '../../../../config/constants'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 
 function ViewDrawer(props) {
   const { approvalLevelStep, approvalNo, isSimulation } = props
@@ -87,7 +87,7 @@ function ViewDrawer(props) {
                             <div className="bottom">
                               <div className="d-flex mb-3">
                                 <span className="small-grey-text left">Date:</span>
-                                <span className=" right">{item.Date ? moment(item.Date).format('DD/MM/YYYY') : '-'}</span>
+                                <span className=" right">{item.Date ? DayTime(item.Date).format('DD/MM/YYYY') : '-'}</span>
                               </div>
                               <div className="d-flex">
                                 <span className="small-grey-text left">Remark:</span>

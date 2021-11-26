@@ -6,8 +6,8 @@ import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/Ho
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey } from '../../../../helper'
-import { toastr } from 'react-redux-toastr'
-import { setPlasticArray } from '../../actions/Costing'
+import Toaster from '../../../common/Toaster'
+import { setPlasticArray } from '../../actions/Costing';
 
 function LossStandardTable(props) {
   const trimValue = getConfigurationKey()
@@ -71,7 +71,7 @@ function LossStandardTable(props) {
     const LossWeight = Number(lossWeight)
 
     if (LossPercentage === 0 || LossOfType === '' || LossWeight === 0) {
-      toastr.warning("Please add data first.")
+      Toaster.warning("Please add data first.")
       return false;
     }
 
@@ -79,7 +79,7 @@ function LossStandardTable(props) {
     if (!isEdit) {
       const isExist = tableData.findIndex(el => (el.LossOfType === LossOfType))
       if (isExist !== -1) {
-        toastr.warning('Already added, Please select another loss type.')
+        Toaster.warning('Already added, Please select another loss type.')
         return false;
       }
     }

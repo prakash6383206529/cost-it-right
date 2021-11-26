@@ -1,4 +1,4 @@
-import moment from 'moment';
+import DayTime from '../components/common/DayTimeWrapper';
 /**
  * master listing used in Mass Upload
  * 
@@ -106,7 +106,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
     {
@@ -128,7 +128,7 @@ export const RMDomesticZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
 ]
@@ -181,7 +181,7 @@ export const RMDomesticVBCTempData = [
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "1032",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
     {
@@ -204,7 +204,7 @@ export const RMDomesticVBCTempData = [
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
 ]
@@ -261,7 +261,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
     {
@@ -284,7 +284,7 @@ export const RMImportZBCTempData = [
         "CutOffPrice": "10",
         "FreightCost": "10",
         "ShearingCost": "10",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
 ]
@@ -339,7 +339,7 @@ export const RMImportVBCTempData = [
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
     {
@@ -363,7 +363,7 @@ export const RMImportVBCTempData = [
         "ShearingCost": "10",
         "DestinationPlantName": "Manesar",
         "DestinationPlantCode": "EC1",
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
 ]
@@ -489,7 +489,7 @@ export const ZBCOperationTempData = [
         'PlantCode': 'Systematix01',
         'UOM': 'Litre',
         'Rate': 50,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IsSurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark Text',
@@ -530,7 +530,7 @@ export const VBCOperationTempData = [
         'VendorPlantCode': 'VP01',
         'UOM': 'Litre',
         'Rate': 50,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IsSurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark',
@@ -593,7 +593,7 @@ export const LabourTempData = [
         'MachineType': 'Grinder',
         'LabourType': 'Skilled',
         'RatePerPerson/Annum(INR)': 2000000,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     },
     {
         'EmploymentTerms': 'Employed',
@@ -604,7 +604,7 @@ export const LabourTempData = [
         'MachineType': 'Grinder',
         'LabourType': 'Semi-Skilled',
         'RatePerPerson/Annum': 300000,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
 ]
 
@@ -625,7 +625,7 @@ export const FuelTempData = [
         'UOM': 'Mililitre',
         'State': 'MP',
         'Rate': '100',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
 ]
 
@@ -673,7 +673,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'VendorCode': 'Systematix',
         'MinimumOrderQuantity': '10',
         'BasicRate(INR)': '100',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
 ]
@@ -717,7 +717,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'MinimumOrderQuantity': '10',
         'BasicRate(INR)': '100',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
 ]
@@ -754,7 +754,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '10',
         'BasicRate': '100',
-        'EffectiveDate': moment().format('DD-MM-YYYY'),
+        'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
 ]
@@ -801,7 +801,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'MinimumOrderQuantity': '10',
         'BasicRate': '100',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
 ]
@@ -825,8 +825,8 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         // 'OldPartNo': 'Old Part 2',
         'PartName': 'Screw',
-        'Year': moment().format('YYYY'),
-        'Month': moment().format('MM'),
+        'Year': DayTime().format('YYYY'),
+        'Month': DayTime().format('MM'),
         'ActualQuantity': 100,
     }
 ]
@@ -856,8 +856,8 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'PartNo': 'Screw Jack',
         // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
-        'Year': moment().format('YYYY'),
-        'Month': moment().format('MM'),
+        'Year': DayTime().format('YYYY'),
+        'Month': DayTime().format('MM'),
         'ActualQuantity': 50,
     }
 ]
@@ -881,8 +881,8 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'PartNo': 'Screw01',
         // 'OldPartNo': 'Old Part1',
         'PartName': 'Screw',
-        'Year': moment().format('YYYY'),
-        'Month': moment().format('MM'),
+        'Year': DayTime().format('YYYY'),
+        'Month': DayTime().format('MM'),
         'BudgetedQuantity': 10,
     }
 ]
@@ -912,8 +912,8 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'PartNo': 'Screw01',
         // 'OldPartNo': 'OldPartNo',
         'PartName': 'Screw',
-        'Year': moment().format('YYYY'),
-        'Month': moment().format('MM'),
+        'Year': DayTime().format('YYYY'),
+        'Month': DayTime().format('MM'),
         'BudgetedQuantity': 25,
     }
 ]
@@ -1033,7 +1033,7 @@ export const MachineZBCTempData = [
         'ProcessName': 'Punching',
         'UOM': 'Stroke',
         'MachineRate': 55,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
     }
 ]
@@ -1119,7 +1119,7 @@ export const MHRMoreZBCTempData = [
         "Description": "Description text",
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
-        "YearOfManufacturing": moment().format('YYYY'),
+        "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineTonnage": 40,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
@@ -1136,7 +1136,7 @@ export const MHRMoreZBCTempData = [
         "DepriciationRate": 0,
         "LifeOfAsset": 5,
         "CostOfScrap": 100,
-        "DateOfPurchase": moment().format('DD-MM-YYYY'),
+        "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintanceFixed": "YES",
         "AnnualMaintance": 0,
         "AnnualMaintanaceAmount": 1000,
@@ -1162,7 +1162,7 @@ export const MHRMoreZBCTempData = [
         "ProcessName": "Grinding",
         "UOM": "Hours",
         "OutputPerHours": 50,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     },
     {
         "Technology": "Sheet Metal",
@@ -1173,7 +1173,7 @@ export const MHRMoreZBCTempData = [
         "Description": "Description text",
         "MachineType": "Mechanical",
         "Manufacturer": "TATA",
-        "YearOfManufacturing": moment().format('YYYY'),
+        "YearOfManufacturing": DayTime().format('YYYY'),
         "MachineTonnage": 50,
         "MachineCost(INR)": 5000,
         "AccessoriesCost(INR)": 500,
@@ -1190,7 +1190,7 @@ export const MHRMoreZBCTempData = [
         "DepriciationRate": 25,
         "LifeOfAsset": 0,
         "CostOfScrap": 100,
-        "DateOfPurchase": moment().format('DD-MM-YYYY'),
+        "DateOfPurchase": DayTime().format('DD-MM-YYYY'),
         "IsMaintanceFixed": "NO",
         "AnnualMaintance": 10,
         "AnnualMaintanaceAmount": 0,
@@ -1216,7 +1216,7 @@ export const MHRMoreZBCTempData = [
         "ProcessName": "Turning",
         "UOM": "Gram",
         "OutputPerHours": 40,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
 ]
 
@@ -1258,7 +1258,7 @@ export const MachineVBCTempData = [
         'ProcessName': 'Punching',
         'UOM': 'Stroke',
         'MachineRate': '20',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
     }
 ]
@@ -1288,7 +1288,7 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
         "ProductGroupCode": "VB"
     }
@@ -1319,7 +1319,7 @@ export const ProductComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
         "IsConsideredForMBOM": "YES or NO"                      //correction done
     }
@@ -1351,7 +1351,7 @@ export const ZBCInterestRateTempData = [
         'PaymentTermApplicability': 'RM',
         'RepaymentPeriod': 30,
         'PaymentTermPercent': 10,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
 ]
 
@@ -1378,7 +1378,7 @@ export const VBCInterestRateTempData = [
         'PaymentTermApplicability': 'RM',
         'RepaymentPeriod': '30',
         'PaymentTermPercent': '10',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
     }
 ]
 
@@ -1421,7 +1421,7 @@ export const BOMUploadTempData = [
         "IsAssembly": "YES",
         "BOMLevel": 0,
         "Quantity": 2,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
     },
@@ -1440,7 +1440,7 @@ export const BOMUploadTempData = [
         "IsAssembly": "NO",
         "BOMLevel": 1,
         "Quantity": 3,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
     },
@@ -1459,7 +1459,7 @@ export const BOMUploadTempData = [
         "IsAssembly": "YES",
         "BOMLevel": 1,
         "Quantity": 4,
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
     }
@@ -1846,6 +1846,20 @@ export const OperationSimulation = [
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
     { label: "Rate", value: "Rate" },
     { label: "NewRate", value: "NewRate" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
+]
+
+export const MachineRateSimulation = [
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "Technologies", value: "Technologies" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "MachineNumber", value: "MachineNumber", },
+    { label: "MachineTypeName", value: "MachineTypeName" },
+    { label: "MachineTonnage", value: "MachineTonnage" },
+    { label: "ProcessName", value: "ProcessName" },
+    { label: "MachineRate", value: "MachineRate" },
+    { label: "NewMachineRate", value: "NewMachineRate" },
     { label: "EffectiveDate", value: "EffectiveDate" }
 ]
 

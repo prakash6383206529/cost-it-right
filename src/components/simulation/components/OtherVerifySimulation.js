@@ -7,7 +7,7 @@ import { EMPTY_DATA } from '../../../config/constants';
 import { getVerifyExchangeSimulationList, getverifyCombinedProcessSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { EXCHNAGERATE, ZBC, COMBINED_PROCESS } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
@@ -57,7 +57,7 @@ function OtherVerifySimulation(props) {
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationExchangeRateImpactedCostings.length === 0) {           //   for condition
-                                toastr.warning('No approved costing exist for this exchange rate.')
+                                Toaster.warning('No approved costing exist for this exchange rate.')
                                 setHideRunButton(true)
                                 return false
                             }
@@ -75,7 +75,7 @@ function OtherVerifySimulation(props) {
                         if (res.data.Result) {
                             const data = res.data.Data
                             if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                                toastr.warning('No approved costing exist for this combined process.')
+                                Toaster.warning('No approved costing exist for this combined process.')
                                 setHideRunButton(true)
                                 return false
                             }
@@ -212,7 +212,7 @@ function OtherVerifySimulation(props) {
 
     const runSimulation = debounce(() => {
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
+            Toaster.warning('Please select atleast one costing.')
             return false
         }
 
@@ -342,7 +342,7 @@ function OtherVerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                    <div className="ag-grid-wrapper height-width-wrapper">
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>

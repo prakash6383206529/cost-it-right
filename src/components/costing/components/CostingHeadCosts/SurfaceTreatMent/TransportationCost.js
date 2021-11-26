@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { getUOMSelectList } from '../../../../../actions/Common'
 
@@ -99,7 +99,7 @@ function TransportationCost(props) {
         }
       }
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -115,7 +115,7 @@ function TransportationCost(props) {
         setValue('TransportationCost', 0);
       }
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 

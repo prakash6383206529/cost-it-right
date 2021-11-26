@@ -120,7 +120,10 @@ function PaymentTerms(props) {
             const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
             const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
+            console.log('RepaymentPeriodPercentage: ', RepaymentPeriodPercentage);
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
+            console.log(headerCosts.NetRawMaterialsCost, 'RepaymentCost: ', RepaymentCost);
+            console.log(headerCosts.NetRawMaterialsCost * RepaymentCost, "HEADER");
             switch (Text) {
                 case 'RM':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))

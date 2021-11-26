@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { runVerifySimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
@@ -73,7 +73,7 @@ function RMSimulation(props) {
         })
 
         if (basicRateCount === list.length && basicScrapCount === list.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
         basicRateCount = 0
@@ -161,7 +161,7 @@ function RMSimulation(props) {
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
 
@@ -256,12 +256,12 @@ function RMSimulation(props) {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
-                toastr.warning("Value should not be more than 8")
+                Toaster.warning("Value should not be more than 8")
                 return false
             }
             return true
         } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            toastr.warning('Please enter a valid positive numbers.')
+            Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
@@ -303,7 +303,7 @@ function RMSimulation(props) {
             }
 
             if (basicRateCount === list.length || basicScrapCount === list.length) {
-                toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+                Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
             } else {
                 setShowRunSimulationDrawer(true)
             }
@@ -440,7 +440,7 @@ function RMSimulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>

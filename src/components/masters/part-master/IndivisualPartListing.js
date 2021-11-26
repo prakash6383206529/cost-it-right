@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -22,6 +22,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import { apiErrors } from '../../../helper/util'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -56,7 +57,9 @@ class IndivisualPartListing extends Component {
             warningMessage: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
-            loader: true
+            loader: true,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -231,6 +234,7 @@ class IndivisualPartListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -238,7 +242,7 @@ class IndivisualPartListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
     /**
@@ -248,12 +252,19 @@ class IndivisualPartListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deletePart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+                Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({ showPopup: false })
     }
 
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -295,9 +306,9 @@ class IndivisualPartListing extends Component {
         this.props.activeInactivePartStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 // if (cell === true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 // }
                 this.getTableListData()
             }
@@ -364,7 +375,7 @@ class IndivisualPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -572,7 +583,7 @@ class IndivisualPartListing extends Component {
 
 
 
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-wrapper height-width-wrapper">
                         <div className="ag-grid-header">
                             <Row className="pt-5 no-filter-row">
                             </Row>
@@ -640,6 +651,9 @@ class IndivisualPartListing extends Component {
                         messageLabel={'Part'}
                         anchor={'right'}
                     />}
+                    {
+                        this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
+                    }
                 </div >
             </>
         );

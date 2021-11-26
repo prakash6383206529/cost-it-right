@@ -14,7 +14,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 const headers = config
 
 /**
@@ -33,7 +33,7 @@ export function getOverheadProfitComboData(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Button, Table } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
@@ -12,6 +12,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getConfigurationKey } from '../../helper/auth';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
 
 const gridOptions = {};
 
@@ -26,6 +27,8 @@ class LevelTechnologyListing extends Component {
 			rowData: null,
 			sideBar: { toolPanels: ['columns'] },
 			showData: false,
+			showPopup:false,
+            deletedId:''
 
 		}
 	}
@@ -82,6 +85,7 @@ class LevelTechnologyListing extends Component {
 	* @description confirm delete level
 	*/
 	deleteItem = (Id) => {
+		this.setState({showPopup:true, deletedId:Id })
 		const toastrConfirmOptions = {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
@@ -89,7 +93,7 @@ class LevelTechnologyListing extends Component {
 			onCancel: () => { },
 			component: () => <ConfirmComponent />
 		};
-		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
+		// return Toaster.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -99,12 +103,19 @@ class LevelTechnologyListing extends Component {
 	confirmDeleteItem = (LevelId) => {
 		this.props.deleteUserLevelAPI(LevelId, (res) => {
 			if (res.data.Result === true) {
-				toastr.success(MESSAGES.DELETE_LEVEL_SUCCESSFULLY);
+				Toaster.success(MESSAGES.DELETE_LEVEL_SUCCESSFULLY);
 				this.getUpdatedData()
 			}
 		});
+		this.setState({showPopup:false})
 	}
-
+	onPopupConfirm =() => {
+		this.confirmDeleteItem(this.state.deletedId);
+	   
+	}
+	closePopUp= () =>{
+		this.setState({showPopup:false})
+	  }
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
@@ -259,24 +270,7 @@ class LevelTechnologyListing extends Component {
 				</Row>
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12">
-						{/* <BootstrapTable
-							data={this.state.tableData}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
-						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+						<div className="ag-grid-wrapper height-width-wrapper">
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 							</div>
@@ -336,24 +330,7 @@ class LevelTechnologyListing extends Component {
 
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12 ">
-						{/* <BootstrapTable
-							data={this.props.simulationLevelDataList}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.simulationButtonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
-						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+						<div className="ag-grid-wrapper height-width-wrapper">
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 							</div>
@@ -415,7 +392,7 @@ class LevelTechnologyListing extends Component {
 
 						<Row className="levellisting-page">
 							<Col className="level-table" md="12 ">
-								<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+								<div className="ag-grid-wrapper height-width-wrapper">
 									<div className="ag-grid-header">
 										<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 									</div>
@@ -455,7 +432,9 @@ class LevelTechnologyListing extends Component {
 									</div>
 								</div>
 
-
+								{
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`}  />
+                }
 							</Col>
 						</Row>
 					</>

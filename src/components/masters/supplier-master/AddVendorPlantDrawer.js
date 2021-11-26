@@ -9,7 +9,7 @@ import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
   getCityByCountry,
 } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -208,7 +208,7 @@ class AddVendorPlantDrawer extends Component {
       this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.PLANT_ADDED_SUCCESS);
           this.toggleDrawer('', formData)
           reset();
           this.setState({

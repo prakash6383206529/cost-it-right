@@ -125,8 +125,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}) => {
-
-    let arr = formatData(Params, Data, SurfaceTabData)
+       let arr = formatData(Params, Data, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -135,6 +134,9 @@ function TabSurfaceTreatment(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (Params, Data, aar) => {
+    console.log('aar: ', aar);
+    console.log('Data: ', Data);
+    console.log('Params: ', Params);
     let tempArr = [];
     try {
       tempArr = aar && aar.map(i => {
@@ -164,6 +166,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TransportationCost = checkForNull(Data.TransportationCost);
           i.CostingPartDetails.SurfaceTreatmentDetails = Data.SurfaceTreatmentDetails;
           i.CostingPartDetails.TransportationDetails = Data.TransportationDetails;
+          console.log(' i: ',  i);
           i.IsOpen = !Data.IsOpen;
 
         } else {
@@ -256,6 +259,29 @@ function TabSurfaceTreatment(props) {
     return tempArr;
   }
 
+  const totalSurfaceTreatmentCost = (arr,type)=>{
+    const total = arr && arr.reduce((accummlator, item) => {
+      if(type === 'surface'){
+        return accummlator + checkForNull(item.CostingPartDetails.SurfaceTreatmentCost)
+      }else{
+        return accummlator + checkForNull(item.CostingPartDetails.TransportationCost)
+      }
+    }, 0)
+    return total
+  }
+
+  const assemblyTotalSurfaceTransportCost = (arr) =>{
+    let tempArr = []
+    tempArr = arr && arr.map((i) => {   
+     i.CostingPartDetails.SurfaceTreatmentCost = totalSurfaceTreatmentCost(i.CostingChildPartDetails,'surface')
+     i.CostingPartDetails.TransportationCost = totalSurfaceTreatmentCost(i.CostingChildPartDetails,'transport')
+     i.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(i.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(i.CostingPartDetails.TransportationCost)
+
+      return i
+    })
+    return tempArr
+  }
+
   /**
   * @method setSurfaceCost
   * @description SET SURFACE TREATMENT COST
@@ -263,6 +289,7 @@ function TabSurfaceTreatment(props) {
   const setSurfaceCost = (surfaceGrid, params) => {
 
     let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData)
+    // let arr1 = assemblyTotalSurfaceTransportCost(arr)
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -350,6 +377,7 @@ function TabSurfaceTreatment(props) {
   const setTransportationCost = (transportationObj, params) => {
 
     let arr = dispatchTransportationCost(transportationObj, params, SurfaceTabData)
+    // let arr1 = assemblyTotalSurfaceTransportCost(arr)
     dispatch(setSurfaceData(arr, () => { }))
   }
 

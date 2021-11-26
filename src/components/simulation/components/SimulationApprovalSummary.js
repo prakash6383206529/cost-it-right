@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
@@ -10,7 +10,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL } from '../../../config/constants';
+import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -31,6 +32,7 @@ import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
+import { Link } from 'react-scroll'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -105,11 +107,11 @@ function SimulationApprovalSummary(props) {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
+            console.log(SimulatedCostingList, 'SimulatedCostingListSimulatedCostingList')
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setEffectiveDate(res.data.Data.EffectiveDate)
-
 
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
@@ -146,26 +148,22 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
-            
-                if(costingList && costingList.length >0 && effectiveDate && Object.keys('simulationDetail'.length>0)){
-                    dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                        const Data = res.data.Data.ImpactedMasterDataList
-                        const masterId = res.data.Data.SimulationTechnologyId;
-            
-                        if (res) {
-                            setImpactedMasterDataListForLastRevisionData(Data)
-                            setShowLastRevisionData(true)
-                            setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
-            
-                        }
-                    }))
-                    // }
-                    // if (simulationDetail.SimulationId) {
-                    dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+        if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
+            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                const Data = res.data.Data.ImpactedMasterDataList
+                const masterId = res.data.Data.SimulationTechnologyId;
+
+                if (res) {
+                    setImpactedMasterDataListForLastRevisionData(Data)
+                    setShowLastRevisionData(true)
+                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+
                 }
-            
-     
-        // }
+            }))
+            // }
+            // if (simulationDetail.SimulationId) {
+            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+        }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
 
@@ -410,7 +408,7 @@ function SimulationApprovalSummary(props) {
 
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+                <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} /></Link>
             </>
         )
     }
@@ -465,7 +463,7 @@ function SimulationApprovalSummary(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
 
@@ -658,7 +656,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
+                                                <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
@@ -734,12 +732,12 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <div className={`ag-grid-react`}>
+                                <div className={`ag-grid-react re-summary-table`}>
                                     <Row className="pb-2">
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                                    <div className="ag-grid-wrapper height-width-wrapper">
                                                         <div className="ag-grid-header">
                                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -837,7 +835,7 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mt-3">
                             <Col md="10">
-                                <div className="left-border">{'Compare Costing:'}</div>
+                                <div id="fg-compare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
@@ -892,7 +890,7 @@ function SimulationApprovalSummary(props) {
                                 <div className="accordian-content w-100">
                                     <div className={`ag-grid-react`}>
                                         <Col md="12" className="mb-3">
-                                            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                            <div className="ag-grid-wrapper height-width-wrapper">
                                                 <div className="ag-grid-header">
                                                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                 </div>

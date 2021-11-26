@@ -9,7 +9,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 
 const headers = config
 
@@ -29,7 +29,7 @@ export function getWeightCalculationCosting(CostingId = '', callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -55,7 +55,7 @@ export function getWeightCalculationLayoutType(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -81,7 +81,7 @@ export function createWeightCalculationCosting(data, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -127,7 +127,7 @@ export function getCostingBySupplier(reqData, callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -158,7 +158,7 @@ export function getRawMaterialListBySupplierId(supplierId, callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -183,7 +183,7 @@ export function createNewCosting(data, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -217,7 +217,7 @@ export function addCostingRawMaterial(data, selectedIndex, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -251,7 +251,7 @@ export function getCostingDetailsById(costingId, isEditFlag, callback) {
             // });
             callback(response);
           } else {
-            toastr.error(MESSAGES.SOME_ERROR);
+            Toaster.error(MESSAGES.SOME_ERROR);
           }
           callback(response);
         }).catch((error) => {
@@ -329,7 +329,7 @@ export function addCostingBoughtOutPart(data, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -358,7 +358,7 @@ export function getOtherOperationList(supplierId, callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -387,7 +387,7 @@ export function getCostingOtherOperation(costingId, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -431,7 +431,7 @@ export function getMHRCostingList(supplierId, callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -470,7 +470,7 @@ export function getProcessesSelectList(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -497,7 +497,7 @@ export function saveProcessCosting(data, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -529,7 +529,7 @@ export function getCostingProcesses(costingId, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -601,7 +601,7 @@ export function getOtherOpsSelectList(callback) {
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -627,7 +627,7 @@ export function saveOtherOpsCosting(data, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -688,7 +688,7 @@ export function saveCostingAsDraft(data, callback) {
       } else {
         dispatch({ type: API_FAILURE });
         if (response.data.Message) {
-          toastr.error(response.data.Message);
+          Toaster.error(response.data.Message);
         }
       }
     }).catch((error) => {
@@ -718,7 +718,7 @@ export function getRawMaterialCalculationByTechnology(costingId, rawMaterialId, 
         });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -916,7 +916,7 @@ export function getProcessCalculation(costingId, processId, processCalculationId
         // });
         callback(response);
       } else {
-        toastr.error(MESSAGES.SOME_ERROR);
+        Toaster.error(MESSAGES.SOME_ERROR);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });

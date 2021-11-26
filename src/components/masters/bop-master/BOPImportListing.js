@@ -10,8 +10,8 @@ import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendor
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import moment from 'moment';
+import Toaster from '../../common/Toaster';
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
@@ -24,7 +24,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -49,7 +49,9 @@ class BOPImportListing extends Component {
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            loader: true
+            loader: true,
+            showPopup: false,
+            deletedId: ''
 
         }
     }
@@ -108,6 +110,7 @@ class BOPImportListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id);
@@ -115,7 +118,7 @@ class BOPImportListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
+        // return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -123,14 +126,22 @@ class BOPImportListing extends Component {
     * @description confirm delete BOP
     */
     confirmDelete = (ID) => {
+
         this.props.deleteBOP(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.BOP_DELETE_SUCCESS);
+                Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.getDataList()
             }
         });
+        this.setState({ showPopup: false })
     }
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
 
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
@@ -188,7 +199,7 @@ class BOPImportListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -254,7 +265,7 @@ class BOPImportListing extends Component {
             }
 
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })
@@ -386,7 +397,7 @@ class BOPImportListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -437,7 +448,9 @@ class BOPImportListing extends Component {
                                 </div>
                             </div>
                         </div>
-
+                        {
+                            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
+                        }
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload
