@@ -1,7 +1,7 @@
 import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Moment from 'moment'
+import DayTime from '../components/common/DayTimeWrapper';
 import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
@@ -159,7 +159,7 @@ export function formatDate(date) {
  * @param res
  */
 export function convertISOToUtcDate(date) {
-  return Moment.utc(date).format('MM/DD/YYYY')
+  return DayTime(date).format('MM/DD/YYYY')
 }
 
 /**
@@ -168,7 +168,7 @@ export function convertISOToUtcDate(date) {
  * @param res
  */
 export function convertISOToUtcForTime(date) {
-  return Moment.utc(date).format('hh:mm A')
+  return DayTime(date).format('hh:mm A')
 }
 
 /**
@@ -185,7 +185,7 @@ export function stripHtml(text) {
  * @desc CONVERT INTO DATE TIME
  */
 export function convertDate(date) {
-  return Moment(date).format('DD-MMM-YYYY hh:mm A')
+  return DayTime(date).format('DD-MMM-YYYY hh:mm A')
 }
 
 /**
@@ -193,14 +193,14 @@ export function convertDate(date) {
  * @desc DISPLAY DATE TIME FORMATE
  */
 export function displayDateTimeFormate(date) {
-  const currentDate = Moment()
-  const dateObj = Moment(date)
-  if (Moment(Moment(date).format('YYYY-MM-DD'), 'YYYY-MM-DD', true).isValid()) {
+  const currentDate = DayTime()
+  const dateObj = DayTime(date)
+  if (DayTime(DayTime(date).format('YYYY-MM-DD'), 'YYYY-MM-DD', true).isValid()) {
     // check day difference is not less or grater then zero
     if (checkNumberOfDayDiff(date, currentDate) === 0) {
       const remainingTimeInMinutes = currentDate.diff(dateObj, 'minutes')
       if (remainingTimeInMinutes > 720) {
-        return `Today ${Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
+        return `Today ${DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
           'MM/DD/YYYY hh:mm A',
         )}`
       } else if (remainingTimeInMinutes >= 60 && remainingTimeInMinutes < 720) {
@@ -211,15 +211,15 @@ export function displayDateTimeFormate(date) {
       } else if (remainingTimeInMinutes === 0) {
         return 'few seconds ago'
       } else {
-        return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
+        return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
       }
     } else if (
       checkNumberOfDayDiff(date, currentDate) >= 1 &&
       checkNumberOfDayDiff(date, currentDate) <= 7
     ) {
-      return Moment(date).format('ddd hh:mm A')
+      return DayTime(date).format('ddd hh:mm A')
     } else {
-      return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
+      return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
         'MM/DD/YYYY hh:mm A',
       )
     }
@@ -318,20 +318,20 @@ export const displayTitle = (text) => {
 }
 
 export function displayPublishOnDate(date) {
-  const currentDate = Moment().format('YYYY-MM-DD')
+  const currentDate = DayTime().format('YYYY-MM-DD')
   // convert date to validate and check with current date
-  const checkValidDate = Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
+  const checkValidDate = DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
     'YYYY-MM-DD',
   )
   // convert date is valid or not
-  if (Moment(Moment(checkValidDate).format('YYYY-MM-DD'), 'YYYY-MM-DD', true,).isValid()) {
+  if (DayTime(DayTime(checkValidDate).format('YYYY-MM-DD'), 'YYYY-MM-DD', true,).isValid()) {
     // check day difference is not less or grater then zero
     if (checkNumberOfDayDiff(checkValidDate, currentDate) === 0) {
-      return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
+      return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
     } else if (checkNumberOfDayDiff(checkValidDate, currentDate) === -1) {
       return 'Yesterday'
     } else {
-      return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('MM/DD/YYYY')
+      return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('MM/DD/YYYY')
     }
   } else {
     return 'N/A'

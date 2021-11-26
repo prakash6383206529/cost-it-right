@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, getFormValues, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
@@ -34,6 +34,8 @@ class AddIndivisualProduct extends Component {
             DataToCheck: [],
             DropdownChanged: true,
             isSurfaceTreatment: false,
+            ProductGroupCode: "",
+
         }
     }
 
@@ -46,6 +48,11 @@ class AddIndivisualProduct extends Component {
         this.getDetails()
     }
 
+
+    ProductGroupCodeUpdate = (e) => {
+        this.setState({ DropdownChanged: false })
+
+    }
     /**
     * @method getDetails
     * @description 
@@ -413,6 +420,9 @@ class AddIndivisualProduct extends Component {
                                                                     placeholder={""}
                                                                     validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                                                     component={renderText}
+                                                                    onChange={
+                                                                        this.ProductGroupCodeUpdate
+                                                                    }
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
