@@ -119,7 +119,7 @@ class AddFreight extends Component {
                   FreightId: item.FreightId,
                   Capacity: item.Capacity,
                   RateCriteria: item.RateCriteria,
-                  EffectiveDate: DayTime(item.EffectiveDate)._d,
+                  EffectiveDate: DayTime(item.EffectiveDate),
                   Rate: item.Rate,
                 };
               });
