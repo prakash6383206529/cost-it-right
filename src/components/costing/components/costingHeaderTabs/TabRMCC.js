@@ -1706,10 +1706,10 @@ function TabRMCC(props) {
                             <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Type`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM Cost`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`BOP Cost`}</th>
-                            <th className="py-3 align-middle" style={{ minWidth: '150px' }}>{`Conversion Cost`}</th>
+                            <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Conversion Cost`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
-                            <th className="py-3 align-middle" style={{ minWidth: '150px' }}>{`RM + CC Cost/Pc`}</th>
-                            {costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '200px' }}>{`RM + CC Cost/Assembly`}</th>}
+                            <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM + CC Cost/Pc`}</th>
+                            {costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`RM + CC Cost/Assembly`}</th>}
                             {
                               costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{
                                 <button
