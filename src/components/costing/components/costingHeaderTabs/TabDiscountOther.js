@@ -262,7 +262,6 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountCostChange = (event) => {
-    console.log("COMING IN discount", event.target.value);
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
         let topHeaderData = {

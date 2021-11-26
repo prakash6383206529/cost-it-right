@@ -85,7 +85,7 @@ const initialState = {
   IsToolCostApplicable: false,
   SurfaceCostData: {},
   RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' },
-  getAssemBOPCharge:{},
+  getAssemBOPCharge: {},
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -278,7 +278,6 @@ export default function costingReducer(state = initialState, action) {
       };
     case SET_RMCC_TAB_DATA:
       const tempRMData = [...action.payload]
-      console.log(action.payload, "action.payloadaction.payload");
       return {
         ...state,
         loading: false,
@@ -551,8 +550,8 @@ export default function costingReducer(state = initialState, action) {
     case SET_ASSEM_BOP_CHARGE:
       return {
         ...state,
-        loading:false,
-        getAssemBOPCharge:action.payload
+        loading: false,
+        getAssemBOPCharge: action.payload
       }
     default:
       return state

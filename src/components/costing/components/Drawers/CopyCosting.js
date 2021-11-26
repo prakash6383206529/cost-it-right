@@ -387,7 +387,6 @@ function CopyCosting(props) {
           onCancel: () => { },
           component: () => <ConfirmComponent />
         }
-        // console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
         // return Toaster.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
       }
     }))
@@ -556,7 +555,7 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
-                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
@@ -727,7 +726,7 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
-                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Destination Plant"}

@@ -527,7 +527,6 @@ class OperationListing extends Component {
                 this.props.setSelectedRowCountForSimulationMessage(len)
                 this.props.apply(selectedRows)
             }
-            // console.log(setSelectedRowCountForSimulationMessage, 'nn (selectedRowCountForSimulationMessage !== 0) && ')
             // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
             this.setState({ selectedRowData: selectedRows })
 

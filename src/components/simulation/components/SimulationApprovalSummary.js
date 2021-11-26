@@ -107,7 +107,6 @@ function SimulationApprovalSummary(props) {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
-            console.log(SimulatedCostingList, 'SimulatedCostingListSimulatedCostingList')
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -563,7 +562,6 @@ function SimulationApprovalSummary(props) {
 
 
 
-    console.log(simulationDetail, 'kkkkkkkkkkk')
     return (
         <>
             {showListing === false &&
