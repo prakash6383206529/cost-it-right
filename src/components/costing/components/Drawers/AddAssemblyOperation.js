@@ -142,11 +142,11 @@ function AddAssemblyOperation(props) {
           "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
           "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
         "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
-        "TotalOperationCostComponent": tabData.CostingPartDetails.TotalOperationCostComponent,
+        "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
           "SurfaceTreatmentCostPerAssembly": 0,
           "TransportationCostPerAssembly": 0,
           "TotalSurfaceTreatmentCostPerAssembly": 0,
-          "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity
+          "TotalCostINR": netPOPrice
         }
         assemblyWorkingRow.push(subAssemblyObj)
         return assemblyWorkingRow
