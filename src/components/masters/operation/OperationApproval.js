@@ -14,7 +14,7 @@ import { DRAFT } from '../../../config/constants';
 
 const gridOptions = {};
 
-function BOPApproval(props) {
+function OperationApproval(props) {
 
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -230,4 +230,4 @@ function BOPApproval(props) {
     );
 }
 
-export default BOPApproval;
+export default OperationApproval;

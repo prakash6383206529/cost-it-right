@@ -270,6 +270,7 @@ class LevelTechnologyListing extends Component {
 				</Row>
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12">
+<<<<<<< HEAD
 						{/* <BootstrapTable
 							data={this.state.tableData}
 							striped={false}
@@ -288,6 +289,9 @@ class LevelTechnologyListing extends Component {
 						</BootstrapTable> */}
 
 						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+=======
+						<div className="ag-grid-wrapper height-width-wrapper">
+>>>>>>> 9bcb5fdee (removed inline css for grid height width)
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 							</div>
@@ -347,6 +351,7 @@ class LevelTechnologyListing extends Component {
 
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12 ">
+<<<<<<< HEAD
 						{/* <BootstrapTable
 							data={this.props.simulationLevelDataList}
 							striped={false}
@@ -365,6 +370,9 @@ class LevelTechnologyListing extends Component {
 						</BootstrapTable> */}
 
 						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+=======
+						<div className="ag-grid-wrapper height-width-wrapper">
+>>>>>>> 9bcb5fdee (removed inline css for grid height width)
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 							</div>
@@ -426,7 +434,7 @@ class LevelTechnologyListing extends Component {
 
 						<Row className="levellisting-page">
 							<Col className="level-table" md="12 ">
-								<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+								<div className="ag-grid-wrapper height-width-wrapper">
 									<div className="ag-grid-header">
 										<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 									</div>

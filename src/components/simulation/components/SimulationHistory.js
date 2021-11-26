@@ -157,7 +157,7 @@ function SimulationHistory(props) {
                 <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} isKey={true} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable> */}
       <div className="ag-grid-react">
-        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+        <div className="ag-grid-wrapper height-width-wrapper">
           <div className="ag-grid-header">
             {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
           </div>
