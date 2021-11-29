@@ -192,12 +192,11 @@ function VerifySimulation(props) {
             default:
                 break;
         }
-     
+        // }
 
 
 
-           
-    
+
     }
 
 
