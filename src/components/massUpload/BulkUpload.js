@@ -17,12 +17,12 @@ import { partComponentBulkUpload, productComponentBulkUpload } from '../masters/
 import { bulkUploadBOPDomesticZBC, bulkUploadBOPDomesticVBC, bulkUploadBOPImportZBC, bulkUploadBOPImportVBC, } from '../masters/actions/BoughtOutParts';
 import { bulkUploadVolumeActualZBC, bulkUploadVolumeActualVBC, bulkUploadVolumeBudgetedZBC, bulkUploadVolumeBudgetedVBC, } from '../masters/actions/Volume';
 import { bulkUploadInterestRateZBC, bulkUploadInterestRateVBC, } from '../masters/actions/InterestRateMaster';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
 import Downloadxls from './Downloadxls';
-import moment from 'moment';
+import DayTime from '../common/DayTimeWrapper'
 import cloudImg from '../../assests/images/uploadcloud.png';
 
 class BulkUpload extends Component {
@@ -98,7 +98,7 @@ class BulkUpload extends Component {
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
-            toastr.warning('File type should be .xls or .xlsx')
+            Toaster.warning('File type should be .xls or .xlsx')
         } else {
 
             let data = new FormData()
@@ -127,7 +127,7 @@ class BulkUpload extends Component {
                             let obj = {}
                             val.map((el, i) => {
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'string') {
-                                    el = moment(Date(el)).format('YYYY-MM-DD HH:mm:ss')
+                                    el = DayTime(Date(el)).format('YYYY-MM-DD HH:mm:ss')
                                 }
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
@@ -165,14 +165,14 @@ class BulkUpload extends Component {
             let DynamicData = res.data.DynamicData;
 
             if (Data.CountSucceeded > 0) {
-                toastr.success(`${Data.CountSucceeded} ${messageLabel}  has been uploaded successfully.`)
+                Toaster.success(`${Data.CountSucceeded} ${messageLabel}  has been uploaded successfully.`)
                 if (DynamicData && DynamicData.IsDensityAvailable === false) {
                     this.props.densityAlert()
                 }
             }
 
             if (Data.CountFailed > 0) {
-                toastr.warning(res.data.Message);
+                Toaster.warning(res.data.Message);
                 this.setState({
                     failedData: Data.FaildRecords,
                     faildRecords: true,
@@ -191,7 +191,7 @@ class BulkUpload extends Component {
         const { fileData, costingHead } = this.state;
         const { fileName } = this.props;
         if (fileData.length === 0) {
-            toastr.warning('Please select a file to upload.')
+            Toaster.warning('Please select a file to upload.')
             return false
         }
         let uploadData = {

@@ -882,6 +882,40 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
     };
 }
 
+export function runVerifyMachineRateSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftMachineRateSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function runSimulationOnSelectedMachineRateCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedMachineRateCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+
+
+
+
 
 
 

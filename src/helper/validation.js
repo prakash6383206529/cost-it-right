@@ -1,5 +1,5 @@
-import moment from 'moment';
-import { toastr } from 'react-redux-toastr';
+import DayTime from '../components/common/DayTimeWrapper';
+import Toaster from '../components/common/Toaster';
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -316,13 +316,13 @@ export const isGuid = (value) => {
 }
 
 export const getJsDateFromExcel = excelDate => {
-    return moment((excelDate - (25567 + 2)) * 86400 * 1000).local().format('YYYY-MM-DD HH:mm:ss');
+    return DayTime((excelDate - (25567 + 2)) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss');
 };
 
 //CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 
 export const checkPercentageValue = (value, msg = "Percentage value should not be greater than 100") => {
     if (Number(value) > 100) {
-        toastr.warning(msg)
+        Toaster.warning(msg)
         return false
     }
     return true
@@ -330,9 +330,9 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
 
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
 export const CheckIsCostingDateSelected = (costingDate) => {
-    const IsSelected = moment(costingDate)._isValid ? true : false;
+    const IsSelected = DayTime(costingDate).isValid ? true : false;
     if (!IsSelected) {
-        toastr.warning('Please select Costing effective date.')
+        Toaster.warning('Please select Costing effective date.')
     }
     return !IsSelected;
 }

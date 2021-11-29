@@ -10,9 +10,9 @@ import {
     SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, RM_APPROVAL_DASHBOARD
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
-import { toastr } from "react-redux-toastr";
 import { MESSAGES } from "../../config/message";
 import { loggedInUserId } from '../../helper/auth';
+import Toaster from '../../components/common/Toaster';
 
 
 /**
@@ -947,7 +947,7 @@ export function getAllTechnologyAPI(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -973,7 +973,7 @@ export function getSimulationTechnologySelectList(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -1042,7 +1042,7 @@ export function rolesSelectList(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -1177,7 +1177,7 @@ export function getPageSelectListByModule(moduleId, callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -1203,7 +1203,7 @@ export function getPageSelectList(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -1420,7 +1420,7 @@ export function getUsersByTechnologyAndLevel(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -1450,7 +1450,7 @@ export function getLevelByTechnology(technologyId, callback) {
                     });
                     callback(response);
                 } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
+                    Toaster.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
@@ -1543,7 +1543,7 @@ export function getSimualationLevelByTechnology(technologyId, callback) {
                     });
                     callback(response);
                 } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
+                    Toaster.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
@@ -1621,7 +1621,7 @@ export function getMastersSelectList(callback) {
                 });
                 callback(response);
             } else {
-                toastr.error(MESSAGES.SOME_ERROR);
+                Toaster.error(MESSAGES.SOME_ERROR);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
@@ -1725,7 +1725,7 @@ export function getMasterLevelByMasterId(masterId, callback) {
                     });
                     callback(response);
                 } else {
-                    toastr.error(MESSAGES.SOME_ERROR);
+                    Toaster.error(MESSAGES.SOME_ERROR);
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

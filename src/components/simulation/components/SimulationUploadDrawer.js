@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
 import { reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { bulkUploadCosting } from '../../costing/actions/CostWorking'
 import { loggedInUserId } from '../../../helper';
@@ -12,7 +12,7 @@ import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import NewReport from '../../report/CostingBenchmarkReport';
 import TooltipCustom from '../../common/Tooltip';
-import { COMBINED_PROCESS, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { COMBINED_PROCESS, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -55,7 +55,7 @@ class SimulationUploadDrawer extends Component {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xlsx files.')
+            Toaster.warning('Allowed only xlsx files.')
         }
     }
 
@@ -118,7 +118,7 @@ class SimulationUploadDrawer extends Component {
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
-            toastr.warning('File type should be .xls or .xlsx')
+            Toaster.warning('File type should be .xls or .xlsx')
         } else {
 
             let data = new FormData()
@@ -134,7 +134,6 @@ class SimulationUploadDrawer extends Component {
                     let scrapRateCount = 0
                     let correctRowCount = 0
                     let NoOfRowsWithoutChange = 0
-                    console.log(this.props.master.value, 'this.props.master.valuethis.props.master.value')
                     switch (Number(this.props.master.value)) {
                         // case Number(EXCHNAGERATE):
                         //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
@@ -173,7 +172,6 @@ class SimulationUploadDrawer extends Component {
 
                         case (Number(RMDOMESTIC) || Number(RMIMPORT)):
                             resp.rows.map((val, index) => {
-                                console.log(val, 'valval')
                                 if (index > 0) {
                                     if (val[11] !== '' && val[11] !== undefined) {
                                         basicRateCount = 1
@@ -252,6 +250,32 @@ class SimulationUploadDrawer extends Component {
                                 return null;
                             })
                             break;
+                        case Number(MACHINERATE):
+                            resp.rows.map((val, index) => {
+                                if (index > 0) {
+                                    if (val[9] !== '' && val[9] !== undefined) {
+                                        basicRateCount = 1
+                                    }
+                                    if (val[9] === '') {
+                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                        return false
+                                    }
+                                    correctRowCount = correctRowCount + 1
+                                    let obj = {}
+                                    val.map((el, i) => {
+                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                            el = getJsDateFromExcel(el)
+                                        }
+                                        obj[fileHeads[i]] = el;
+                                        return null;
+                                    })
+                                    fileData.push(obj)
+                                    obj = {}
+
+                                }
+                                return null;
+                            })
+                            break;
 
                         default:
                             break;
@@ -293,7 +317,7 @@ class SimulationUploadDrawer extends Component {
                     //     return null;
                     // })
                     if (basicRateCount === 0) {
-                        toastr.warning('Please fill at least one basic rate.')
+                        Toaster.warning('Please fill at least one basic rate.')
                         return false
                     }
                     // if (basicRateCount === 0) {
@@ -316,7 +340,7 @@ class SimulationUploadDrawer extends Component {
         // let data = new FormData()
         // data.append('file', fileData)
         if (fileData.length === 0) {
-            toastr.warning("Please select a file to upload.")
+            Toaster.warning("Please select a file to upload.")
             return false
         }
 

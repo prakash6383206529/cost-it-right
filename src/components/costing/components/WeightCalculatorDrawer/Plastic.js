@@ -8,7 +8,7 @@ import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLos
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 
 function Plastic(props) {
@@ -135,7 +135,7 @@ function Plastic(props) {
 
     // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
     if (finishedWeight > grossWeight) {
-      toastr.warning('Finish Weight should not be greater than gross weight')
+      Toaster.warning('Finish Weight should not be greater than gross weight')
       return false
     }
     if (finishedWeight !== 0) {
@@ -208,7 +208,7 @@ function Plastic(props) {
     dispatch(saveRawMaterialCalciData(obj, res => {
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
-        toastr.success("Calculation saved successfully")
+        Toaster.success("Calculation saved successfully")
         dispatch(setPlasticArray([]))
         props.toggleDrawer('', obj)
       }

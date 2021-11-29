@@ -8,7 +8,7 @@ import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUser
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 
 
 function HPDC(props) {
@@ -109,7 +109,7 @@ function HPDC(props) {
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
 
         if (finishedWeight > grossWeight) {
-            toastr.warning('Finish Weight should not be greater than gross weight')
+            Toaster.warning('Finish Weight should not be greater than gross weight')
             setValue('finishedWeight', 0)
             return false
         }
@@ -201,7 +201,7 @@ function HPDC(props) {
         dispatch(saveRawMaterialCalciData(obj, res => {
             if (res.data.Result) {
                 obj.WeightCalculationId = res.data.Identity
-                toastr.success("Calculation saved successfully")
+                Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', obj)
             }
         }))

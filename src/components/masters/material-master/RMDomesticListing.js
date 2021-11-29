@@ -1,37 +1,35 @@
 import React, { Component } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-import { costingHeadObjs, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData } from '../../../helper';
+import { CheckApprovalApplicableMaster, getFilteredRMData } from '../../../helper';
 import { func } from 'prop-types';
 //import {  Controller, useWatch } from 'react-hook-form'
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
-
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -40,7 +38,7 @@ const gridOptions = {};
 
 var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         if (dateAsString == null) return -1;
         var dateParts = dateAsString.split('/');
         var cellDate = new Date(
@@ -88,6 +86,9 @@ function RMDomesticListing(props) {
     const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
     const [selectedRowData, setSelectedRowData] = useState([]);
+    const [showPopup, setShowPopup] = useState(false)
+    const [deletedId, setDeletedId] = useState('')
+    const [showPopupBulk, setShowPopupBulk] = useState(false)
 
 
     /**
@@ -207,10 +208,9 @@ function RMDomesticListing(props) {
                     settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
-
-                    if (isSimulation) {
-                        props.apply(Data)
-                    }
+                    // if (isSimulation) {
+                    //     apply(Data)
+                    // }
 
                     // const func = () => {
                     // }
@@ -248,6 +248,8 @@ function RMDomesticListing(props) {
     * @description confirm delete Raw Material details
     */
     const deleteItem = (Id) => {
+        setShowPopup(true)
+        setDeletedId(Id)
         const toastrConfirmOptions = {
             onOk: () => {
                 confirmDelete(Id)
@@ -255,7 +257,7 @@ function RMDomesticListing(props) {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -265,14 +267,25 @@ function RMDomesticListing(props) {
     const confirmDelete = (ID) => {
         dispatch(deleteRawMaterialAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                toastr.warning(res.data.Message)
+                Toaster.warning(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
                 getDataList()
             }
         }));
+        setShowPopup(false)
     }
 
+    const onPopupConfirm = () => {
+        confirmDelete(deletedId);
+    }
+    const onPopupConfirmBulk = () => {
+        confirmDensity()
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+        setShowPopupBulk(false)
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -326,7 +339,7 @@ function RMDomesticListing(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     const hyphenFormatter = (props) => {
@@ -428,13 +441,14 @@ function RMDomesticListing(props) {
     * @description confirm Redirection to Material tab.
     */
     const densityAlert = () => {
+
         const toastrConfirmOptions = {
             onOk: () => {
                 confirmDensity()
             },
             onCancel: () => { }
         };
-        return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
+        // return Toaster.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
 
     const handleHeadChange = (newValue, actionMeta) => {
@@ -547,7 +561,7 @@ function RMDomesticListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         if (isSimulation) {
             let length = gridApi.getSelectedRows().length
-            dispatch(setSelectedRowCountForSimulationMessage(length, res => { }))
+            dispatch(setSelectedRowCountForSimulationMessage(length))
 
             apply(selectedRows)
         }
@@ -654,7 +668,7 @@ function RMDomesticListing(props) {
             <Row>
                 <Col>
                     {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-wrapper height-width-wrapper">
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
@@ -730,6 +744,12 @@ function RMDomesticListing(props) {
                         anchor={"right"}
                     />
                 )
+            }
+            {
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+            }
+            {
+                showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
             }
         </div >
     );

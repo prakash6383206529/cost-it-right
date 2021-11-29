@@ -14,6 +14,7 @@
     "chart.js": "^3.3.2",
     "classnames": "^2.3.1",
     "css-what": "^5.0.1",
+    "dayjs": "^1.10.7",
     "dotenv": "^8.2.0",
     "flowpoints": "^1.0.18",
     "fontawesome-4.7": "^4.7.0",

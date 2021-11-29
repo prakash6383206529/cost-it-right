@@ -7,7 +7,7 @@ import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costi
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -163,7 +163,7 @@ function AddRM(props) {
   */
   const addRow = () => {
     if (Object.keys(selectedRowData).length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')
@@ -402,7 +402,7 @@ function AddRM(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>

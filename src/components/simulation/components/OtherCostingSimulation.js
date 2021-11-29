@@ -10,8 +10,8 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS } from '../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS,ZBC } from '../../../config/constants';
+import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import { COMBINEDPROCESSSIMULATION, EXCHANGESIMULATIONDOWNLOAD } from '../../../config/masterData'
@@ -218,11 +218,11 @@ function OtherCostingSimulation(props) {
 
         if (temp.length > 1) {
             setSelectedRowData([])
-            toastr.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
+            Toaster.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            toastr.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
+            Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             gridApi.deselectAll()
             return false
         } else {
@@ -639,7 +639,7 @@ function OtherCostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                                        <div className="ag-grid-wrapper height-width-wrapper">
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>

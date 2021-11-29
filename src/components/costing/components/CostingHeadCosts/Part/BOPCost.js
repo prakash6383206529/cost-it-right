@@ -6,7 +6,7 @@ import AddBOP from '../../Drawers/AddBOP';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
@@ -47,25 +47,25 @@ function BOPCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
+        props.setBOPCost(gridData, Params,item)
       }
     }, 100)
     selectedIds(gridData)
   }, [gridData]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const Params = {
-        index: props.index,
-        BOMLevel: props.item.BOMLevel,
-        PartNumber: props.item.PartNumber,
-      }
-      if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
-      }
-    }, 100)
-    selectedIds(gridData)
-  }, [props.data]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const Params = {
+  //       index: props.index,
+  //       BOMLevel: props.item.BOMLevel,
+  //       PartNumber: props.item.PartNumber,
+  //     }
+  //     if (!CostingViewMode) {
+  //       props.setBOPCost(gridData, Params)
+  //     }
+  //   }, 100)
+  //   selectedIds(gridData)
+  // }, [props.data]);
 
   /**
   * @method DrawerToggle
@@ -169,7 +169,7 @@ function BOPCost(props) {
       setTimeout(() => {
         setValue(`${bopGridFields}.${index}.Quantity`, 0)
       }, 200)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -219,7 +219,7 @@ function BOPCost(props) {
     } else {
       setValue('BOPHandlingCharges', 0)
       setValue('BOPHandlingPercentage', 0)
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 

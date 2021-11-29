@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
@@ -21,6 +21,7 @@ import { ASSEMBLYPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -44,6 +45,8 @@ class AssemblyPartListing extends Component {
             visualAdId: '',
             BOMId: '',
             isBulkUpload: false,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -92,6 +95,7 @@ class AssemblyPartListing extends Component {
     * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -99,7 +103,7 @@ class AssemblyPartListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -109,12 +113,18 @@ class AssemblyPartListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteAssemblyPart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_BOM_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({ showPopup: false })
     }
-
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -122,8 +132,12 @@ class AssemblyPartListing extends Component {
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        //return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
-        return cellValue ? cellValue : ''
+        if (cellValue.includes("T")) {
+            return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        }
+        else {
+            return cellValue ? cellValue : ''
+        }
     }
 
     renderEffectiveDate = () => {
@@ -310,7 +324,7 @@ class AssemblyPartListing extends Component {
             }
 
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
 
@@ -416,8 +430,7 @@ class AssemblyPartListing extends Component {
                 </Row>
 
 
-
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -484,6 +497,9 @@ class AssemblyPartListing extends Component {
                     messageLabel={'BOM'}
                     anchor={'right'}
                 />}
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`} />
+                }
             </div >
         );
     }

@@ -15,10 +15,11 @@ import {
   GET_COSTING_SPECIFIC_TECHNOLOGY,
   EMPTY_GUID,
   SET_PLASTIC_ARR,
+  SET_ASSEM_BOP_CHARGE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 
 let headers = config
 
@@ -459,6 +460,8 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
+
+
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -1485,7 +1488,7 @@ export function getZBCCostingSelectListByPart(PartId, SupplierId, UserId, callba
         })
         callback(response)
       } else {
-        toastr.error(MESSAGES.SOME_ERROR)
+        Toaster.error(MESSAGES.SOME_ERROR)
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
@@ -1504,7 +1507,7 @@ export function createPartWithSupplier(data, callback) {
     request
       .then((response) => {
         if (response.data.Result) {
-          toastr.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS)
+          Toaster.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS)
         }
         callback(response)
       })
@@ -1566,7 +1569,7 @@ export function getCostSummaryOtherOperation(supplierId, callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1681,7 +1684,7 @@ export function fetchFreightHeadsAPI(callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1753,7 +1756,7 @@ export function getCostingFreight(data, callback) {
           callback(response)
         } else if (response.data == '') {
           dispatch({ type: API_FAILURE })
-          toastr.warning('No content available for selected freight.')
+          Toaster.warning('No content available for selected freight.')
         }
       })
       .catch((error) => {
@@ -1818,7 +1821,7 @@ export function getSingleCostingDetails(costingId, callback) {
         } else {
 
 
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1919,7 +1922,8 @@ export const setCostingApprovalData = (data) => (dispatch) => {
 export function getCostingByVendorAndVendorPlant(partNo, VendorId, VendorPlantId, destinationPlantId, callback) {
   return (dispatch) => {
     if (partNo !== '' && VendorId !== '' && VendorPlantId !== '') {
-      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}/${destinationPlantId}`, headers,)
+      const query = `${partNo}/${VendorId}/${VendorPlantId === '-' ? EMPTY_GUID : VendorPlantId}/${destinationPlantId === '-' ? EMPTY_GUID : destinationPlantId}`
+      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${query}`, headers,)
       request.then((response) => {
         callback(response)
         if (response.data.Result || response.status === 204) {
@@ -2181,4 +2185,27 @@ export function checkDataForCopyCosting(data, callback) {
   }
 }
 
+/*
+* @method saveAssemblyPartRowCostingCalculation
+* @description SAVE ASSEMBLY COSTING RM+CC TAB
+*/
+export function saveAssemblyPartRowCostingCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveAssemblyPartRowCostingCalculation, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
+export function saveAssemblyBOPHandlingCharge(data, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_ASSEM_BOP_CHARGE,
+      payload: data
+    })
+  }
+}

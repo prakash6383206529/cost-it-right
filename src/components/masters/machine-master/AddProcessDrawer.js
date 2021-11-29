@@ -7,11 +7,11 @@ import { renderText, renderMultiSelectField, renderDatePicker } from '../../layo
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
 import { getPlantSelectList } from '../../../actions/Common'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 const selector = formValueSelector('AddProcessDrawer');
 
@@ -50,7 +50,7 @@ class AddProcessDrawer extends Component {
         let Data = res.data.Data
         this.setState({
           ProcessId: Data.ProcessId,
-          effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : ''
+          effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
         })
         this.setState({ isLoader: false })
       })
@@ -173,7 +173,7 @@ class AddProcessDrawer extends Component {
       this.props.reset()
       this.props.updateProcess(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
+          Toaster.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
           this.toggleDrawer('', formData)
         }
       })
@@ -183,14 +183,14 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD'),
         LoggedInUserId: loggedInUserId(),
       }
 
       this.props.reset()
       this.props.createProcess(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.PROCESS_ADD_SUCCESS)
+          Toaster.success(MESSAGES.PROCESS_ADD_SUCCESS)
           this.toggleDrawer('', formData)
         }
       })

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting } from '../actions/Simulation';
+import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT,MACHINERATE } from '../../../config/constants';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting ,runSimulationOnSelectedMachineRateCosting} from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 // import { EXCHNAGERATE } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
@@ -190,53 +190,62 @@ function RunSimulationDrawer(props) {
         temp.push(obj)
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
-                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
                 break;
             case Number(COMBINED_PROCESS):
-                dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
                 break;
             case Number(RMDOMESTIC):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
                 break;
             case Number(RMIMPORT):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
                 break;
             case Number(SURFACETREATMENT):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
                 runSimulationCosting()
                 break;
             case Number(OPERATIONS):
-                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
 
                     if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
+                        Toaster.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            case Number(MACHINERATE):
+                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
                 }))
@@ -251,7 +260,7 @@ function RunSimulationDrawer(props) {
         // 
         // dispatch(runSimulationOnSelectedCosting(objs, (res) => {
         //     if (res.data.Result) {
-        //         toastr.success('Simulation process has been run successfully.')
+        //         Toaster.success('Simulation process has been run successfully.')
         //         runSimulationCosting()
         //     }
         // }))
@@ -533,6 +542,7 @@ function RunSimulationDrawer(props) {
                                                 </Col>
 
                                             </Row>
+
                                         </Col>
 
                                     </Row>

@@ -13,9 +13,9 @@ import { searchableSelect } from "../../layout/FormInputs";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -27,6 +27,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { li } from 'react-dom-factories';
 import { getConfigurationKey } from '../../../helper';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,6 +50,8 @@ class PowerListing extends Component {
       plant: [],
       vendorName: [],
       vendorPlant: [],
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -121,6 +124,7 @@ class PowerListing extends Component {
   * @description confirm delete Raw Material details
   */
   deleteItem = (Id) => {
+    this.setState({ showPopup: true, deletedId: Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDelete(Id);
@@ -128,7 +132,7 @@ class PowerListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
-    return toastr.confirm(`${MESSAGES.POWER_DELETE_ALERT}`, toastrConfirmOptions);
+    // return Toaster.confirm(`${MESSAGES.POWER_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -139,20 +143,26 @@ class PowerListing extends Component {
     if (this.state.IsVendor) {
       this.props.deleteVendorPowerDetail(ID, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.DELETE_POWER_SUCCESS);
+          Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
         }
       });
     } else {
       this.props.deletePowerDetail(ID, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.DELETE_POWER_SUCCESS);
+          Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
         }
       });
+      this.setState({ showPopup: false })
     }
   }
-
+  onPopupConfirm = () => {
+    this.confirmDelete(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method renderPaginationShowsTotal
   * @description Pagination
@@ -226,7 +236,7 @@ class PowerListing extends Component {
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
   renderEffectiveDate = () => {
     return <>Effective <br />Date</>
@@ -431,8 +441,7 @@ class PowerListing extends Component {
           <Col>
 
 
-
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -501,6 +510,9 @@ class PowerListing extends Component {
             </div>
           </Col>
         </Row>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.POWER_DELETE_ALERT}`} />
+        }
       </div >
     );
   }

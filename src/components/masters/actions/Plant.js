@@ -13,7 +13,7 @@ import {
     GET_COMPANY_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 
 const headers = config;
 
@@ -34,7 +34,7 @@ export function createPlantAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_PLANT_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {

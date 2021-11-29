@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFreightData,
-  setComponentPackageFreightItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData
+  setComponentPackageFreightItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 
@@ -23,7 +23,7 @@ function TabPackagingFreight(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
-  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData } = useSelector(state => state.costing)
+  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -147,6 +147,10 @@ function TabPackagingFreight(props) {
   * @description SAVE COSTING
   */
   const saveCosting = () => {
+    const tabData = RMCCTabData[0]
+    const surfaceTabData = SurfaceTabData[0]
+    const overHeadAndProfitTabData = OverheadProfitTabData[0]
+    const discountAndOtherTabData = DiscountCostData[0]
     const data = {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
@@ -159,10 +163,43 @@ function TabPackagingFreight(props) {
       //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
+    if (costData.IsAssemblyPart === true) {
+
+      let assemblyRequestedData = {
+        "TopRow": {
+          "CostingId": tabData.CostingId,
+          "CostingNumber": tabData.CostingNumber,
+          "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+          "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+          "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+          "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+          "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
+          "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
+          "NetDiscounts": discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
+          "TotalCostINR": netPOPrice,
+          "TabId": 4
+        },
+        "WorkingRows": [],
+        "LoggedInUserId": loggedInUserId()
+
+      }
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+    }
 
     dispatch(saveCostingPackageFreightTab(data, res => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+        Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
         dispatch(setComponentPackageFreightItemData({}, () => { }))
         InjectDiscountAPICall()
       }
