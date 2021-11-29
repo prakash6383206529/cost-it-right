@@ -8,7 +8,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull } from '../../../../helper'
 import { useSelector } from 'react-redux'
 function ViewOverheadProfit(props) {
-  const { overheadData, profitData, rejectAndModelType } = props
+  const { overheadData, profitData, rejectAndModelType, iccPaymentData } = props
 
   const { rejectData, modelType } = rejectAndModelType
 
@@ -24,6 +24,7 @@ function ViewOverheadProfit(props) {
   useEffect(() => {
     setViewOverheadData(overheadData)
     setViewProfitData(profitData)
+
   }, [])
   /**
   * @method toggleDrawer
@@ -92,6 +93,7 @@ function ViewOverheadProfit(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Applicability`}</th>
                         <th>{`Overhead On`}</th>
                         <th>{`Percentage(%)`}</th>
                         <th>{`Cost (Applicability)`}</th>
@@ -103,15 +105,16 @@ function ViewOverheadProfit(props) {
                         <>
                           {viewOverheadData.IsOverheadFixedApplicable && (
                             <tr>
+
                               <td>{`Fixed`}</td>
                               <td>
-                                {viewOverheadData.OverheadFixedPercentage ? viewOverheadData.OverheadFixedPercentage : "-"}
+                                {viewOverheadData.OverheadFixedPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadFixedCost ? viewOverheadData.OverheadFixedCost : "-"}
+                                {viewOverheadData.OverheadFixedCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadFixedTotalCost ? viewOverheadData.OverheadFixedTotalCost : "-"}
+                                {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost.initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}
@@ -119,13 +122,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{`RM`}</td>
                               <td>
-                                {viewOverheadData.OverheadRMPercentage ? viewOverheadData.OverheadRMPercentage : "-"}
+                                {viewOverheadData.OverheadRMPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadRMPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadRMCost ? viewOverheadData.OverheadRMCost : "-"}
+                                {viewOverheadData.OverheadRMCost ? checkForDecimalAndNull(viewOverheadData.OverheadRMCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadRMTotalCost ? viewOverheadData.OverheadRMTotalCost : "-"}
+                                {viewOverheadData.OverheadRMTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}
@@ -133,13 +136,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{`BOP`}</td>
                               <td>
-                                {viewOverheadData.OverheadBOPPercentage ? viewOverheadData.OverheadBOPPercentage : "-"}
+                                {viewOverheadData.OverheadBOPPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadBOPCost ? viewOverheadData.OverheadBOPCost : "-"}
+                                {viewOverheadData.OverheadBOPCost ? checkForDecimalAndNull(viewOverheadData.OverheadBOPCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadBOPTotalCost ? viewOverheadData.OverheadBOPTotalCost : "-"}
+                                {viewOverheadData.OverheadBOPTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}
@@ -147,13 +150,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{`CC`}</td>
                               <td>
-                                {viewOverheadData.OverheadCCPercentage ? viewOverheadData.OverheadCCPercentage : "-"}
+                                {viewOverheadData.OverheadCCPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadCCPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadCCCost ? viewOverheadData.OverheadCCCost : "-"}
+                                {viewOverheadData.OverheadCCCost ? checkForDecimalAndNull(viewOverheadData.OverheadCCCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadCCTotalCost ? viewOverheadData.OverheadCCTotalCost : "-"}
+                                {viewOverheadData.OverheadCCTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}
@@ -161,13 +164,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{viewOverheadData.OverheadApplicability}</td>
                               <td>
-                                {viewOverheadData.OverheadPercentage ? viewOverheadData.OverheadPercentage : "-"}
+                                {viewOverheadData.OverheadPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadCombinedCost ? viewOverheadData.OverheadCombinedCost : "-"}
+                                {viewOverheadData.OverheadCombinedCost ? checkForDecimalAndNull(viewOverheadData.OverheadCombinedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadCombinedTotalCost ? viewOverheadData.OverheadCombinedTotalCost : "-"}
+                                {viewOverheadData.OverheadCombinedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadCombinedTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}
@@ -198,7 +201,9 @@ function ViewOverheadProfit(props) {
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
+                        { }
                         <tr>
+                          <th>{`Applicability`}</th>
                           <th>{`Profits (Fixed)`}</th>
                           <th>{`Percentage(%)`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -210,15 +215,16 @@ function ViewOverheadProfit(props) {
                           <>
                             {viewProfitData.IsProfitFixedApplicable && (
                               <tr>
+
                                 <td>{`Fixed`}</td>
                                 <td>
-                                  {viewProfitData.ProfitFixedPercentage ? viewProfitData.ProfitFixedPercentage : "-"}
+                                  {viewProfitData.ProfitFixedPercentage ? checkForDecimalAndNull(viewProfitData.ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitFixedCost ? viewProfitData.ProfitFixedCost : "-"}
+                                  {viewProfitData.ProfitFixedCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitFixedTotalCost ? viewProfitData.ProfitFixedTotalCost : "-"}
+                                  {viewProfitData.ProfitFixedTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                               </tr>
                             )}
@@ -226,13 +232,13 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{`RM`}</td>
                                 <td>
-                                  {viewProfitData.ProfitRMPercentage ? viewProfitData.ProfitRMPercentage : "-"}
+                                  {viewProfitData.ProfitRMPercentage ? checkForDecimalAndNull(viewProfitData.ProfitRMPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitRMCost ? viewProfitData.ProfitRMCost : "-"}
+                                  {viewProfitData.ProfitRMCost ? checkForDecimalAndNull(viewProfitData.ProfitRMCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitRMTotalCost ? viewProfitData.ProfitRMTotalCost : "-"}
+                                  {viewProfitData.ProfitRMTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                               </tr>
                             )}
@@ -240,13 +246,13 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{`BOP`}</td>
                                 <td>
-                                  {viewProfitData.ProfitBOPPercentage ? viewProfitData.ProfitBOPPercentage : "-"}
+                                  {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitBOPCost ? viewProfitData.ProfitBOPCost : "-"}
+                                  {viewProfitData.ProfitBOPCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitBOPTotalCost ? viewProfitData.ProfitBOPTotalCost : "-"}
+                                  {viewProfitData.ProfitBOPTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                               </tr>
                             )}
@@ -254,10 +260,11 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{`CC`}</td>
                                 <td>
-                                  {viewProfitData.ProfitCCPercentage ? viewProfitData.ProfitCCPercentage : "-"}
+
+                                  {viewProfitData.ProfitCCPercentage ? checkForDecimalAndNull(viewProfitData.ProfitCCPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitCCCost ? viewProfitData.ProfitCCCost : "-"}
+                                  {viewProfitData.ProfitCCCost ? checkForDecimalAndNull(viewProfitData.ProfitCCCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
                                   {viewProfitData.ProfitCCTotalCost
@@ -270,10 +277,10 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{viewProfitData.ProfitApplicability}</td>
                                 <td>
-                                  {viewProfitData.ProfitPercentage ? viewProfitData.ProfitPercentage : "-"}
+                                  {viewProfitData.ProfitPercentage ? checkForDecimalAndNull(viewProfitData.ProfitPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitCombinedCost ? viewProfitData.ProfitCombinedCost : "-"}
+                                  {viewProfitData.ProfitCombinedCost ? checkForDecimalAndNull(viewProfitData.ProfitCombinedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>
                                 <td>
                                   {viewProfitData.ProfitCombinedTotalCost
@@ -310,6 +317,7 @@ function ViewOverheadProfit(props) {
                     <Table className="table cr-brdr-main " size="sm">
                       <thead>
                         <tr>
+
                           <th>{`Applicability`}</th>
                           <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                           <th>{`Cost (Applicability)`}</th>
@@ -325,10 +333,11 @@ function ViewOverheadProfit(props) {
                               </td>
                             </tr> :
                             <tr>
+
                               <td>{rejectData.RejectionApplicability ? rejectData.RejectionApplicability : '-'}</td>
-                              <td>{rejectData.RejectionPercentage ? rejectData.RejectionPercentage : '-'}</td>
-                              <td>{rejectData.RejectionCost ? rejectData.RejectionCost : '-'}</td>
-                              <td>{rejectData.RejectionTotalCost ? rejectData.RejectionTotalCost : '-'}</td>
+                              <td>{rejectData.RejectionPercentage ? checkForDecimalAndNull(rejectData.RejectionPercentage, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{rejectData.RejectionCost ? checkForDecimalAndNull(rejectData.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{rejectData.RejectionTotalCost ? checkForDecimalAndNull(rejectData.RejectionTotalCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             </tr>
                         }
                         {/* {rejectData && (
@@ -349,8 +358,104 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
+                  <Col md="12"><hr /></Col>
                 </Row>
               </div>
+
+
+              <div>
+                <Row className="px-3">
+                  <Col md="12">
+                    <div className="left-border">{"ICC:"}</div>
+                  </Col>
+                </Row>
+                <Row className="px-3">
+                  {/*REJECTION RENDERING */}
+
+                  <Col md="12">
+                    <Table className="table cr-brdr-main " size="sm">
+                      <thead>
+                        <tr>
+
+                          <th>{`Applicability`}</th>
+                          <th>{`Interest Rate (%)`}</th>
+                          <th>{`Cost (Applicability)`}</th>
+                          <th>{`Net ICC`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          (iccPaymentData.ICCApplicabilityDetail.ICCApplicability === null) ?
+                            <tr>
+                              <td colSpan={8}>
+                                <NoContentFound title={EMPTY_DATA} />
+                              </td>
+                            </tr> :
+                            <tr>
+
+                              <td>{iccPaymentData.ICCApplicabilityDetail ? iccPaymentData.ICCApplicabilityDetail.ICCApplicability : '-'}</td>
+                              <td>{iccPaymentData.ICCApplicabilityDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{iccPaymentData.ICCApplicabilityDetail.CostApplicability ? checkForDecimalAndNull(iccPaymentData.ICCApplicabilityDetail.CostApplicability, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{iccPaymentData.NetICC ? checkForDecimalAndNull(iccPaymentData.NetICC, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                            </tr>
+                        }
+
+                      </tbody>
+                    </Table>
+                  </Col>
+                  <Col md="12"><hr /></Col>
+                </Row>
+              </div>
+
+
+
+
+              <div>
+                <Row className="px-3">
+                  <Col md="12">
+                    <div className="left-border">{"Payment Terms:"}</div>
+                  </Col>
+                </Row>
+                <Row className="px-3">
+                  {/*REJECTION RENDERING */}
+
+                  <Col md="12">
+                    <Table className="table cr-brdr-main " size="sm">
+                      <thead>
+                        <tr>
+
+                          <th>{`Applicability`}</th>
+                          <th>{`Repayment Period (No of days)`}</th>
+                          <th>{`Interest Rate (%)`}</th>
+                          <th>{`Cost`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          (iccPaymentData.PaymentTermDetail.PaymentTermApplicability === null) ?
+                            <tr>
+                              <td colSpan={8}>
+                                <NoContentFound title={EMPTY_DATA} />
+                              </td>
+                            </tr> :
+                            <tr>
+
+                              <td>{iccPaymentData.PaymentTermDetail.PaymentTermApplicability ? iccPaymentData.PaymentTermDetail.PaymentTermApplicability : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.RepaymentPeriod ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.RepaymentPeriod, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.InterestRate ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{iccPaymentData.PaymentTermDetail.NetCost ? checkForDecimalAndNull(iccPaymentData.PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                            </tr>
+                        }
+
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+              </div>
+
+
+
+
             </div>
           </div>
         </Container>
