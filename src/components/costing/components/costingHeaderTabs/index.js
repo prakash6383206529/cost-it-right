@@ -24,7 +24,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
 
 function CostingHeaderTabs(props) {
-
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
@@ -46,7 +45,7 @@ function CostingHeaderTabs(props) {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
-
+      console.log('ComponentItemData: ', ComponentItemData);
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -81,6 +80,17 @@ function CostingHeaderTabs(props) {
         "PlantCode": costData.PlantCode,
         "Version": ComponentItemData.Version,
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+        "NetRMCost": CostingDataList[0].NetRMCost,
+        // "NetBOPCost": CostingDataList[0].NetBOPCost,
+        // "NetConversionCost": CostingDataList[0].NetConversionCost,
+        "NetTotalRMBOPCC": CostingDataList[0].NetTotalRMBOPCC,
+        // "ToolCost": CostingDataList[0].ToolCost,
+        // "TotalCost": CostingDataList[0].TotalCost,
+        // "NetDiscountsCost": CostingDataList[0].NetDiscountsCost,
+        // "NetOtherCost": CostingDataList[0].NetOtherCost,
+        // "NetSurfaceTreatmentCost": CostingDataList[0].NetSurfaceTreatmentCost,
+        // "NetOverheadAndProfitCost": CostingDataList[0].NetOverheadAndProfitCost,
+        // "NetPackagingAndFreight": CostingDataList[0].NetPackagingAndFreight,
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {

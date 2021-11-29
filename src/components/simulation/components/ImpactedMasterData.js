@@ -6,7 +6,7 @@ import { BOPDOMESTIC, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPOR
 import RMSimulation from './SimulationPages/RMSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
-import BDSimulation from './SimulationPages/BDSimulation';
+// import BDSimulation from './SimulationPages/BDSimulation';
 
 export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo } = props;
@@ -25,10 +25,10 @@ export function Impactedmasterdata(props) {
                 return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
             case MACHINERATE:
                 return <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
-            case BOPDOMESTIC:
-                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
-            case BOPIMPORT:
-                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+            // case BOPDOMESTIC:
+            //     return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+            // case BOPIMPORT:
+            //     return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
 
             default:
                 break;
