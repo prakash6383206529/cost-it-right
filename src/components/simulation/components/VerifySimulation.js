@@ -4,9 +4,9 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -20,6 +20,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { node } from 'prop-types';
 import { debounce } from 'lodash'
+import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
 
@@ -41,17 +42,16 @@ function VerifySimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
+    // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
     const { filteredRMData } = useSelector(state => state.material)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const [isSurfaceTreatmentOrOperattion, setFalsetIsSurfaceTreatmentOrOperation] = useState(Number(selectedMasterForSimulation.value) === (Number(SURFACETREATMENT) || Number(selectedMasterForSimulation.value) === Number(OPERATIONS)));
-    const [isRMDomesticOrRMImport, setIsRMDomesticOrRMImport] = useState((Number(selectedMasterForSimulation.value) === (Number(RMDOMESTIC) || Number(selectedMasterForSimulation.value) === Number(RMIMPORT))));
-    const [isExchangeRate, setIsExchangeRate] = useState((Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE))));
+    const isSurfaceTreatmentOrOperation = ((Number(selectedMasterForSimulation.value) === Number(SURFACETREATMENT)) || (Number(selectedMasterForSimulation.value) === Number(OPERATIONS)));
+    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)));
+    const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
+    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
+    const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
 
-    const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
-        mode: 'onBlur',
-        reValidateMode: 'onChange',
-    })
-
+    // const isAssemblyCosting = true
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -64,7 +64,7 @@ function VerifySimulation(props) {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
         // if (props.token) {
         switch (Number(selectedMasterForSimulation.value)) {
-            case Number(RMDOMESTIC) || Number(RMIMPORT):
+            case Number(RMDOMESTIC):
                 dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
@@ -82,13 +82,103 @@ function VerifySimulation(props) {
                     }
                 }))
                 break;
-            case Number(SURFACETREATMENT) || Number(OPERATIONS):
+            case Number(RMIMPORT):
+                dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationImpactedCostings.length === 0) {
+                            Toaster.warning('No approved costing exist for this raw material.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        setHideRunButton(false)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
+                        setVendorId(data.VendorId)
+
+                    }
+                }))
+                break;
+            case Number(SURFACETREATMENT):
 
                 dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
                         if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
                             Toaster.warning('No approved costing exist for this exchange rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        setHideRunButton(false)
+                    }
+                }))
+                break;
+            case Number(OPERATIONS):
+
+                dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this exchange rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        setHideRunButton(false)
+                    }
+                }))
+                break;
+            case Number(MACHINERATE):
+
+                dispatch(getVerifyMachineRateSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this machine rate.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        setHideRunButton(false)
+                    }
+                }))
+                break;
+            case Number(BOPDOMESTIC):
+
+                dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this bought out part.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        setHideRunButton(false)
+                    }
+                }))
+                break;
+            case Number(BOPIMPORT):
+
+                dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this bought out part.')
                             setHideRunButton(true)
                             return false
                         }
@@ -113,58 +203,6 @@ function VerifySimulation(props) {
 
     const verifyList = useSelector(state => state.simulation.simulationVerifyList)
 
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
-
-
-    const renderCostingNumber = () => {
-        return <>Costing <br /> Number </>
-    }
-
-    const renderVendorName = () => {
-        return <>Vendor <br />Name </>
-    }
-    const renderPlantCode = () => {
-        return <>Plant<br />Code </>
-    }
-
-    const renderDescription = () => {
-        return <>Part <br />Name </>
-    }
-
-    const renderECN = () => {
-        return <>ECN <br />No.</>
-    }
-
-    const revisionNumber = () => {
-        return <>Revision <br />No.</>
-    }
-
-    const OldPo = () => {
-        return <>PO Price <br />Old </>
-    }
-
-    const RMName = () => {
-        return <>RM <br />Name </>
-    }
-
-    const renderOldBR = () => {
-        return <>Old <br />Basic Rate</>
-    }
-
-    const renderNewBR = () => {
-        return <>New <br />Basic Rate</>
-    }
-
-    const renderOldSR = () => {
-        return <>Old <br />Scrap Rate</>
-    }
-
-    const renderNewSR = () => {
-        return <>New <br />Scrap Rate</>
-    }
-
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
@@ -188,25 +226,21 @@ function VerifySimulation(props) {
 
     const descriptionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const renderPlant = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (cell !== null && cell !== '-') ? `${cell}` : '-'
 
     }
@@ -223,9 +257,14 @@ function VerifySimulation(props) {
         return `${cell}-${row.RMGrade ? row.RMGrade : '-'}`
     }
 
+
     const onRowSelect = () => {
 
-        // setGridSelection(true)
+        var selectedRows = gridApi.getSelectedRows();
+        if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+        var selected = gridApi.getSelectedNodes()
+        setSelectedRowData(selectedRows)
+        console.log(selectedRows, 'ROW')
 
     }
 
@@ -249,34 +288,11 @@ function VerifySimulation(props) {
         setSelectedRowData(selectedRows)
     }
 
-    const renderDropdownListing = (label) => {
-        let temp = []
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-
-        if (label === 'material') {
-            rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
-                if (item.Value === '0') return false
-                temp.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return temp
-        }
-    }
-
-
-
     const runSimulation = debounce(() => {
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
-            return false
-        }
+        // if (selectedRowData.length === 0) {
+        //     Toaster.warning('Please select atleast one costing.')
+        //     return false
+        // }
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -296,7 +312,14 @@ function VerifySimulation(props) {
         setSimulationDrawer(true)
 
     }, 500)
+    const assemblySimulation = debounce(() => {
+        if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one costing.')
+            return false
+        }
+        // setShowAssemblyPage(true)   // REJECTED ASSEMBLY
 
+    }, 500)
     const closeDrawer = (e = '', mode) => {
         if (mode === true) {
             setSimulationDrawer(false)
@@ -306,21 +329,8 @@ function VerifySimulation(props) {
         }
     }
 
-    const handleMaterial = (value) => {
-        setMaterial(value)
-    }
-
-
-    const filterList = () => {
-        const plant = getValues('plantCode').value
-
-        verifyCostingList(plant, material.value)
-    }
-    const resetFilter = () => {
-        setValue('plantCode', '')
-        setValue('rawMaterial', '')
-        setMaterial('')
-        verifyCostingList('', '')
+    const cancelAssemblyPage = () => {
+        // setShowAssemblyPage(false)   // REJECTED ASSEMBLY
     }
 
     const isFirstColumn = (params) => {
@@ -329,7 +339,6 @@ function VerifySimulation(props) {
 
         return thisIsFirstColumn;
     }
-
 
     const defaultColDef = {
         resizable: true,
@@ -378,6 +387,7 @@ function VerifySimulation(props) {
     return (
         <>
             {
+                // (!costingPage && !showAssemblyPage) &&   // REJECTED ASSEMBLY
                 !costingPage &&
                 <>
                     <Row>
@@ -416,7 +426,7 @@ function VerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={verifyList}
+                                                rowData={[]}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
@@ -436,41 +446,60 @@ function VerifySimulation(props) {
                                             >
                                                 <AgGridColumn field="CostingId" hide ></AgGridColumn>
                                                 <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
-                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor Name"></AgGridColumn>
                                                 <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant Code"></AgGridColumn>
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                                <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="UOM" headerName="UOM"></AgGridColumn>}
-                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>}
-                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>}
-                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="NewPO" headerName="New PO"></AgGridColumn>}
-                                                {isSurfaceTreatmentOrOperattion && <AgGridColumn width={185} field="OldPO" headerName="Old PO"></AgGridColumn>}
-                                                {isRMDomesticOrRMImport &&
-                                                    <AgGridColumn width={120} field="RMName" cellRenderer='renderRM' headerName="RM Name" ></AgGridColumn>
-                                                }
-                                                {
+                                                <AgGridColumn width={130} field="POPrice" headerName="Current PO Price"></AgGridColumn>
+
+                                                {isSurfaceTreatmentOrOperation === true &&
                                                     <>
-                                                        <AgGridColumn width={130} field="POPrice" headerName="PO Price Old"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="Overhead" headerName="Overhead"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="Profit" headerName="Profit"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="Discount" headerName="Discount"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="OtherCost" headerName="Other Cost"></AgGridColumn>
+                                                        <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>
+                                                        <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>
+                                                        <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>
+                                                        <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>
                                                     </>
                                                 }
-                                                {isRMDomesticOrRMImport && <>
-                                                    <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                    <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
-                                                    <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
-                                                    <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
-                                                </>
+
+                                                {isBOPDomesticOrImport === true &&
+                                                    <>
+                                                        <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                    </>
                                                 }
-                                                {isRMDomesticOrRMImport &&
-                                                    <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
+
+                                                {isBOPDomesticOrImport === true &&
+                                                    <>
+                                                        <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                    </>
                                                 }
+                                                {isMachineRate &&
+                                                    <>
+                                                        <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldMachineRate" headerName="Old Machine Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewMachineRate" headerName="New Machine Rate"></AgGridColumn>
+                                                    </>
+                                                }
+                                                {isRMDomesticOrRMImport === true &&
+                                                    <>
+                                                        <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>
+                                                        <AgGridColumn width={120} field="RMGrade" headerName="RM Grade" ></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldScrapRate" headerName="Old Scrap Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="New Scrap Rate" ></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>
+                                                    </>
+                                                }
+
+
                                             </AgGridReact>
 
                                             <div className="paging-container d-inline-block float-right">
@@ -494,11 +523,20 @@ function VerifySimulation(props) {
                                 <div className={"cancel-icon"}></div>
                                 {"CANCEL"}
                             </button>
+                            {/* {!isAssemblyCosting && */}
                             <button onClick={runSimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button>
+                            {/* } */}
+                            {/* {isAssemblyCosting &&    // REJECTED ASSEMBLY
+                                <button onClick={assemblySimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
+                                    <div className={"Run-icon"}>
+                                    </div>{" "}
+                                    {"assembly SIMULATION"}
+                                </button>
+                            } */}
                         </div>
                     </Row>
                 </>
@@ -520,6 +558,12 @@ function VerifySimulation(props) {
                     masterId={selectedMasterForSimulation.value}
                 />
             }
+            {/* {   // REJECTED ASSEMBLY
+                showAssemblyPage &&
+
+                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} isSurfaceTreatment={false} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
+
+            } */}
         </>
     );
 }

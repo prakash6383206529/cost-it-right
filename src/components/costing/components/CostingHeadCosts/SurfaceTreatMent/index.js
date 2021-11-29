@@ -9,7 +9,7 @@ import { Row, Col, } from 'reactstrap';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
-import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -92,6 +92,9 @@ function SurfaceTreatment(props) {
         "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
         "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +item.CostingPartDetails?.TotalBoughtOutPartCost+item.CostingPartDetails?.TotalConversionCost,
         "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+        "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
+        "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+        "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
         "SurfaceTreatmentCostPerAssembly":item.CostingPartDetails?.SurfaceTreatmentCost,
         "TransportationCostPerAssembly": item.CostingPartDetails?.TransportationCost,
         "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -114,6 +117,9 @@ function SurfaceTreatment(props) {
             "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
             "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
             "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
+          "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+          "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
             "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
             "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
             "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
