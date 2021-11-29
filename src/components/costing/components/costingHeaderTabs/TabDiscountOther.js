@@ -575,7 +575,7 @@ function TabDiscountOther(props) {
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <Row className="mx-0">
-                  <Col md="2">
+                    <Col md="2">
                       <SearchableSelectHookForm
                         label={"Other Cost Type"}
                         name={"OtherCostType"}
@@ -592,7 +592,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode ? true : false}
                       />
                     </Col>
-                    {otherCostType && otherCostType.value === 'Percentage' &&
+                    {
                       <Col md="2" >
                         <NumberFieldHookForm
                           label="Percentage(%)"
@@ -620,10 +620,10 @@ function TabDiscountOther(props) {
                           className=""
                           customClassName={"withBorder"}
                           errors={errors.PercentageOtherCost}
-                          disabled={CostingViewMode ? true : false}
+                          disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
                         />
                       </Col>}
-                      <Col md="4" >
+                    <Col md="4" >
                       <TextFieldHookForm
                         label="Other Cost Description"
                         name={"OtherCostDescription"}
@@ -668,8 +668,8 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
                       />
                     </Col>
-                    </Row>
-                    <Row className="mx-0">
+                  </Row>
+                  <Row className="mx-0">
                     <Col md="2">
                       <SearchableSelectHookForm
                         label={"Discount Type"}
@@ -688,7 +688,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     {
-                      hundiscountType && hundiscountType.value === 'Percentage' &&
+
 
                       <Col md="2" >
                         <TextFieldHookForm
@@ -717,7 +717,7 @@ function TabDiscountOther(props) {
                           className=""
                           customClassName={"withBorder"}
                           errors={errors.HundiOrDiscountPercentage}
-                          disabled={CostingViewMode ? true : false}
+                          disabled={CostingViewMode || !(hundiscountType && hundiscountType.value === 'Percentage') ? true : false}
                         />
                       </Col>
                     }
@@ -745,7 +745,7 @@ function TabDiscountOther(props) {
                         errors={errors.HundiOrDiscountValue}
                         disabled={CostingViewMode || hundiscountType.value === 'Percentage' || Object.keys(hundiscountType).length === 0 ? true : false}
                       />
-                    </Col>             
+                    </Col>
                     <Col md="4">
                       <TextFieldHookForm
                         label="Net PO Price (INR)"

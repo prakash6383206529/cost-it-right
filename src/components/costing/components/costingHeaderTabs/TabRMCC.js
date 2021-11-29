@@ -1066,7 +1066,7 @@ function TabRMCC(props) {
           let partTempObj = tempObj.CostingChildPartDetails[partTempIndex]
           // //PART CALCULATION WILL COME HERE
           let GrandTotalCost = checkForNull(partTempObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partTempObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(otherOperationGrid.NetConversionCost)
-
+          partTempObj.CostingPartDetails.TotalOtherOperationCost = otherOperationGrid.OtherOperationCostTotal
           partTempObj.CostingPartDetails.CostingConversionCost = { ...otherOperationGrid, CostingOtherOperationCostResponse: otherOperationGrid.CostingOtherOperationCostResponse };
           partTempObj.CostingPartDetails.TotalConversionCost = otherOperationGrid.NetConversionCost;
           partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;

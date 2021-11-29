@@ -3261,36 +3261,7 @@ opacity: 0.5;
     color: #fff !important;
   }
 }
-.costing-table-next{
-  &.costing-table-zbc{
-    thead{
-      tr{width: 100%;
-        th{
-          &:first-child{width: 30%;}
-          &:nth-child(2){width: 145px;min-width: 145px;}
-          &:nth-child(3){width: 21%;}
-          &:nth-child(4){width: 15%;}
-          &:nth-child(5){width: 10%;}
-        }
-      }
-    }
-  }
 
-  &.costing-table-vbc{
-    thead{
-      tr{width: 100%;
-        th{
-          &:first-child{width: 15%;}
-          &:nth-child(2){width: 15%;}
-          &:nth-child(3){width: 145px;min-width: 145px;}
-          &:nth-child(4){width: 21%;}
-          &:nth-child(5){width: 15%;}
-          &:nth-child(6){width: 10%;}
-        }
-      }
-    }
-  }
-}
 .dark-blue{color: #3D4465;}
 .height152-label{
   .dzu-dropzone{
@@ -6339,26 +6310,25 @@ left: 17rem;
 }
 .costing-table-container {
   table {
+    .vendor {min-width: 140px;}
+    .destination-plant {min-width: 165px;}
     .costing-version { min-width: 200px;}
+    .share-of-business {min-width: 110px;}
     .costing-status {min-width: 230px;}
     .costing-price {min-width: 115px;}
-    .costing-action {min-width: 280px;}
+    .costing-action {min-width: 240px;}
   }
   @media screen and (max-width:$miniDesktop) {
-    overflow-y: auto;
-    .costing-table-next {
-      min-width: 1399px;
-    }
+   td, th {
+      padding: 0.71rem 5px !important;
+      &:first-child {
+        padding-left: 10px !important;
+      }
+   }
   }
 
 }
 
-
   .update-vendor-loader {
     min-height: calc(100vh + 11rem);
   }
- 
-
-// .update-vendor-loader {
-//   height: calc(100vh + 10%);
-// }

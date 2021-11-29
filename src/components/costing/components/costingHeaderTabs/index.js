@@ -307,7 +307,6 @@ function CostingHeaderTabs(props) {
             <div className="form-group mb-0">
               <label>Costing Effective Date<span className="asterisk-required">*</span></label>
               <div className="inputbox date-section">
-                {console.log(effectiveDate, "newdate")}
                 <DatePicker
                   name="EffectiveDate"
                   //selected={effectiveDate ? new Date(effectiveDate) : ''}
