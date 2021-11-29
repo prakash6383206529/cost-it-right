@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, getFormValues, reduxForm } from "redux-form";
+import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
@@ -35,7 +35,6 @@ class AddIndivisualProduct extends Component {
             DropdownChanged: true,
             uploadAttachements: true,
             isSurfaceTreatment: false,
-            ProductGroupCode: "",
 
         }
     }

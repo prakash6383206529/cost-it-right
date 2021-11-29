@@ -30,7 +30,7 @@ import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
-import {Link } from 'react-scroll'
+import { Link } from 'react-scroll'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -112,12 +112,11 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,SenderReasonId } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setEffectiveDate(res.data.Data.EffectiveDate)
-
 
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
@@ -439,7 +438,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-               <Link  to="campare-costing" spy={true} smooth ={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>  
+                <Link to="campare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
             </>
         )
     }

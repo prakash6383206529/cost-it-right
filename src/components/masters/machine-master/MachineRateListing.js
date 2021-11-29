@@ -25,6 +25,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -500,13 +501,28 @@ class MachineRateListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, isSimulation } = this.props;
         const { isBulkUpload, isLoader } = this.state;
 
+        const isFirstColumn = (params) => {
+            if (isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -518,6 +534,21 @@ class MachineRateListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             renderPlantFormatter: this.renderPlantFormatter
         };
+        const onRowSelect = () => {
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (isSimulation) {
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(length)
+                this.props.apply(selectedRows)
+            }
+            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+            // this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
+        }
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -718,9 +749,13 @@ class MachineRateListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    onFilterModified={onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>
+                                    {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                     <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter' filter={true} floatingFilter={true}></AgGridColumn>
                                     <AgGridColumn field="MachineNumber" headerName="Machine Number"></AgGridColumn>
@@ -729,7 +764,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -799,6 +834,7 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectListByTechnology,
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

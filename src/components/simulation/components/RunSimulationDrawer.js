@@ -5,10 +5,17 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
+<<<<<<< HEAD
 import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
+=======
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting } from '../actions/Simulation';
+import { DatePickerHookForm } from '../../layout/HookFormInputs';
+import DayTime from '../../common/DayTimeWrapper'
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE } from '../../../config/constants';
+>>>>>>> f5ac53836 (Machine Rate Simulation | Merge conflict | mandatory)
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
@@ -234,6 +241,15 @@ function RunSimulationDrawer(props) {
                         runSimulationCosting()
                     }
                 }))
+                break;
+            case Number(MACHINERATE):
+                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        Toaster.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
                 break;
             default:
                 break;
