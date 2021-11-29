@@ -87,8 +87,9 @@ function SimulationApprovalSummary(props) {
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
-
-
+    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+    const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
@@ -741,7 +742,14 @@ function SimulationApprovalSummary(props) {
                             <Col md="12">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
-                        </Row> */}
+                        </Row>
+                        <Fgwiseimactdata
+                            DisplayCompareCosting={DisplayCompareCosting}
+                            SimulationId={simulationDetail.SimulationId}
+                            headerName={headerName}
+                            parentField={parentField}
+                            childField={childField}
+                        />
 
                         {/* <Row className="mb-3">
                             <Col md="12">
