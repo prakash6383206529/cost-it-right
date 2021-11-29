@@ -122,7 +122,7 @@ function AssemblyPart(props) {
           <td>{item?.CostingPartDetails?.TotalRawMaterialsCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item?.CostingPartDetails?.TotalBoughtOutPartCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
-            {item?.CostingPartDetails?.TotalConversionCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+            {(item?.CostingPartDetails?.TotalConversionCostWithQuantity || item?.CostingPartDetails?.TotalOperationCostPerAssembly) ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity) + checkForNull(item.CostingPartDetails.TotalOperationCostPerAssembly), initialConfiguration.NoOfDecimalForPrice) : 0}
             {
               item?.CostingPartDetails?.TotalOperationCostPerAssembly ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
