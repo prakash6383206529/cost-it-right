@@ -6,6 +6,7 @@ import PartCompoment from '../Part';
 import { getRMCCTabData, saveAssemblyBOPHandlingCharge, } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
@@ -14,6 +15,7 @@ function AssemblyPart(props) {
   const [Count, setCount] = useState(0);
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
 
+  const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
@@ -128,15 +130,15 @@ function AssemblyPart(props) {
           </td>
           <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
-          <td>{item?.CostingPartDetails?.TotalRawMaterialsCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCost ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          <td>{item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
             {item?.CostingPartDetails?.TotalConversionCostWithQuantity ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity), initialConfiguration.NoOfDecimalForPrice) : 0}
             {
               (item?.CostingPartDetails?.TotalOperationCostPerAssembly || item.CostingPartDetails?.TotalOperationCostSubAssembly) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
-                    {`Assembly's Conversion Cost:- ${item.CostingPartDetails.TotalOperationCostPerAssembly}`}
+                    {`Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
                     {`Sub Assembly's Conversion Cost:- ${checkForDecimalAndNull(item.CostingPartDetails?.TotalOperationCostSubAssembly, initialConfiguration.NoOfDecimalForPrice)}`}
                     <br></br>
@@ -166,7 +168,7 @@ function AssemblyPart(props) {
               type="button"
               className={'user-btn add-oprn-btn'}
               onClick={DrawerToggle}>
-              <div className={'plus'}></div>Add Operation</button>}
+              <div className={'plus'}></div>{`${CostingViewMode ? 'View Operation' : 'Add Operation'}`}</button>}
         </td>
       </tr>
 
