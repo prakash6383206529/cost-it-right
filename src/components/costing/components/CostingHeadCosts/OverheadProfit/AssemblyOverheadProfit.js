@@ -73,6 +73,7 @@ function AssemblyOverheadProfit(props) {
     const tabData = RMCCTabData[0]
     const surfaceTabData= SurfaceTabData[0]
     const overHeadAndProfitTabData=OverheadProfitTabData[0]
+    console.log('overHeadAndProfitTabData: ', overHeadAndProfitTabData);
     const discountAndOtherTabData =DiscountCostData[0]
     let reqData = {
       "CostingId": item.CostingId,
@@ -113,7 +114,7 @@ function AssemblyOverheadProfit(props) {
             "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
             "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
             "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
             "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
             "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
             "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
