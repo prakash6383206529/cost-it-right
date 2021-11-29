@@ -27,7 +27,7 @@ function ViewAssembly(props) {
                         <Row className="drawer-heading sticky-top-0">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{`Assembly Wise Simulation`}</h3>
+                                    <h3>{`Assembly Wise Impact`}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
