@@ -5,8 +5,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT,MACHINERATE } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting,runSimulationOnSelectedMachineRateCosting } from '../actions/Simulation';
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT,MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting,runSimulationOnSelectedMachineRateCosting,runSimulationOnSelectedBoughtOutPartCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
@@ -237,6 +237,24 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(MACHINERATE):
                 dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        Toaster.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            case Number(BOPDOMESTIC):
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    if (res.data.Result) {
+                        Toaster.success('Simulation process has been run successfully.')
+                        runSimulationCosting()
+                    }
+                }))
+                runSimulationCosting()
+                break;
+            case Number(BOPIMPORT):
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     if (res.data.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()

@@ -802,6 +802,3 @@ export function getAssemblySimulationList(token, plantId, rawMatrialId, callback
 
 
 
-
-
-

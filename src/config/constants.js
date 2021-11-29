@@ -875,6 +875,11 @@ export const API = {
   runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-surface-treatment-costing`,
   draftMachineRateSimulation: `${BASE_URL}/simulation/draft-simulation-machine-rate`,
   runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-machine-rate-costing`,
+  draftBoughtOutpartSimulation: `${BASE_URL}/simulation/draft-simulation-bought-out-part`,
+  runSimulationOnSelectedBoughtOutPartCosting: `${BASE_URL}/simulation/run-simulation-on-bought-out-part-costing`,
+  getverifyMachineRateSimulationList: `${BASE_URL}/simulation/get-all-machine-rate-impacted-simulation-costings`,
+  getverifyBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-boutght-out-part-impacted-simulation-costings`,
+  getAssemblySimulationList: `${BASE_URL}/simulation/get-all-impacted-assembly-simulation-costings`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
