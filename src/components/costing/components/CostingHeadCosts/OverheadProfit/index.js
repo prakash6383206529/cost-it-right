@@ -677,10 +677,10 @@ function OverheadProfit(props) {
 
 
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
-      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal : RMBOPCC;
+      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal+checkForNull(headerCosts.TotalOperationCostPerAssembly) + checkForNull(headerCosts.TotalOperationCostSubAssembly)
+      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal+checkForNull(headerCosts.TotalOperationCostPerAssembly) + checkForNull(headerCosts.TotalOperationCostSubAssembly) : RMBOPCC;
       const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0].NetSurfaceTreatmentCost);
-      const NetConversionCost = headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+      const NetConversionCost = headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal +checkForNull(headerCosts.TotalOperationCostPerAssembly) + checkForNull(headerCosts.TotalOperationCostSubAssembly)
       // START HERE ADD CC IN OVERHEAD
       if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
