@@ -187,7 +187,7 @@ const CostingSummaryTable = (props) => {
     let rejectData = viewCostingData[index].netRejectionCostView
     let modelType = viewCostingData[index].modelType
     let IccPaymentData = viewCostingData[index].netPaymentIccCostView
-    console.log(IccPaymentData, "datacosting");
+
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)

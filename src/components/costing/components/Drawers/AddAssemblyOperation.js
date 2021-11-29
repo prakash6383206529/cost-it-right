@@ -10,7 +10,7 @@ import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { loggedInUserId, checkForDecimalAndNull } from '../../../../helper';
 
 function AddAssemblyOperation(props) {
-  const { item, } = props;
+  const { item, CostingViewMode } = props;
 
   const [IsOpenTool, setIsOpenTool] = useState(false);
 
@@ -211,6 +211,7 @@ function AddAssemblyOperation(props) {
                   <div className={'cancel-icon'}></div> {'Cancel'}
                 </button>
                 <button
+                  disabled={CostingViewMode}
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >
