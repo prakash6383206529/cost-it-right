@@ -16,7 +16,6 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster ,EMPTY_DATA} from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
-import $ from 'jquery';
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 import { formViewData } from '../../../helper'
 
@@ -59,7 +58,6 @@ function ReportListing(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState(props.Ids);
     const [gridApi, setGridApi] = useState(null);
-    const [costingID, setCostingID] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [createDate, setCreateDate] = useState(Date);
@@ -79,24 +77,6 @@ function ReportListing(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
-
-
-
-    useEffect(() => {
-        if (costingID && Object.keys(costingID).length > 0) {
-            dispatch(getSingleCostingDetails(costingID, (res) => {
-                if (res.data.Data) {
-                    let dataFromAPI = res.data.Data
-
-                    const tempObj = formViewData(dataFromAPI)
-                    dispatch(setCostingViewData(tempObj))
-                }
-            },
-            ))
-        }
-
-    }, [costingID])
 
 
 
@@ -131,10 +111,6 @@ function ReportListing(props) {
         return cellValue != null ? cellValue : '';
     }
 
-    const approvedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        //   return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
-        return cell != null ? cell : '';
-    }
 
     const createDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -150,6 +126,9 @@ function ReportListing(props) {
     }
 
 
+
+
+    // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
 
     const hyperLinkableFormatter = (props) => {
 
@@ -167,10 +146,18 @@ function ReportListing(props) {
 
 
     const viewDetails = (UserId, cell, row) => {
-        $('html, body').animate({ scrollTop: 0 }, 'slow')
 
+        if (row.BaseCostingId && Object.keys(row.BaseCostingId).length > 0) {
+            dispatch(getSingleCostingDetails(row.BaseCostingId, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
 
-        setCostingID(row.BaseCostingId)
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+            },
+            ))
+        }
 
         setIsOpen(true)
         setUserId(UserId)
@@ -223,10 +210,7 @@ function ReportListing(props) {
         var t0 = performance.now();
 
         dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
-            //  props.getReportListing();   // <---- The function you're measuring time for 
 
-            // var t1 = performance.now();
-            // 
         }))
 
     }
@@ -252,11 +236,6 @@ function ReportListing(props) {
     useEffect(() => {
         var tempArr = []
 
-        // reportListingData && reportListingData.map(item => {
-        //     if (item.Value === '0') return false;
-        //     temp.push({ label: item.Text, value: item.Value })
-        //     return null;
-        // });
         const blank = () => { setWarningMessage(false) }
 
         setReportListingDataStateArray(reportListingData)
@@ -274,9 +253,6 @@ function ReportListing(props) {
 
 
         }
-
-
-
 
 
     }, [reportListingData])
@@ -351,8 +327,7 @@ function ReportListing(props) {
 
 
     const onGridReady = (params) => {
-        // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        // getDataList()
+
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
@@ -373,9 +348,6 @@ function ReportListing(props) {
 
     }, [tableData])
 
-    // const renderColumn = (fileName) => {
-    //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
-    // }
 
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
@@ -656,19 +628,6 @@ function ReportListing(props) {
             </div>
 
 
-
-            {/* {isOpen && 
-                // <ViewUserDetails
-                //     UserId={this.state.UserId}
-                //     isOpen={this.state.isOpen}
-                //     editItemDetails={this.editItemDetails}
-                //     closeUserDetails={this.closeUserDetails}
-                //     EditAccessibility={EditAccessibility}
-                //     anchor={"right"}
-                //     IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
-                // 
-            } */}
-
             {
                 isOpen &&
                 <CostingDetailSimulationDrawer
@@ -676,8 +635,6 @@ function ReportListing(props) {
                     closeDrawer={closeUserDetails}
                     anchor={"right"}
                     isReport={isOpen}
-                    //pricesDetail={pricesDetail}
-                    //simulationDetail={simulationDetail}
                     selectedRowData={selectedRowData}
                     isSimulation={true}
                 />

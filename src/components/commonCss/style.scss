@@ -6351,3 +6351,26 @@ left: 17rem;
     padding: 8px;
   }
 }
+
+  
+// FG-Wise table css Start
+.fgwise-table {
+  .cr-brdr-main {
+    width: 100% !important;
+  }
+  border: 1px solid #3333;
+  table {
+   th {
+     border: 1px solid #3333 !important;
+     border-top: none !important;
+     &:last-child {
+       border-left: none !important;
+       border-right: none !important;
+     }
+     &.second-last-child {
+      border-right: none !important;
+     }
+   }
+  }
+}
+// FG-Wise table css End

@@ -202,13 +202,13 @@ function ProcessCost(props) {
           UOMTypeId: el.UnitTypeId
         }
       })
-      
+
 
       let tempArr = [...gridData, ...rowArray]
-     
 
-      tempArr && tempArr.map((el,index)=>{
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`,el.ProcessCost)
+
+      tempArr && tempArr.map((el, index) => {
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, el.ProcessCost)
       })
 
       let ProcessCostTotal = 0
@@ -438,8 +438,8 @@ function ProcessCost(props) {
       setTabData(tempArr)
       setGridData(gridTempArr)
       setTimeout(() => {
-        setValue(`${ProcessGridFields}.${index}.Quantity`, 0)
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, 0)
+        setValue(`${ProcessGridFields}.${index}.Quantity`, "")
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, "")
       }, 200)
       //Toaster.warning('Please enter valid number.')
     }
@@ -616,7 +616,7 @@ function ProcessCost(props) {
                           </td>
 
                           <td style={{ width: 100 }}>
-                           
+
                             {
                               <TextFieldHookForm
                                 label=""

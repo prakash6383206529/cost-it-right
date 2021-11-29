@@ -57,27 +57,26 @@ export function Fgwiseimactdata(props) {
                     <div className={`table-responsive ${!showTableData ? 'fgwise-table' : ""}`}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
-                                {/* {loader && <LoaderCustom />} */}
+                                {loader && <LoaderCustom />}
+
                                 <tr>
                                     <th><span></span></th>
                                     <th className="text-center"><span>{headerName[0]}</span></th>
-                                    <th><span>{headerName[1]}</span></th>
-                                    <th><span>{headerName[2]}</span></th>
-                                    <th><span>{headerName[3]}</span></th>
-                                    <th><span>{headerName[4]}</span></th>
-                                    <th><span>{headerName[5]}</span></th>
+                                    {headerName[1] !== '' && <th><span>{headerName[1]}</span></th>}
+                                    {headerName[2] !== '' && <th><span>{headerName[2]}</span></th>}
+                                    {headerName[3] !== '' && <th><span>{headerName[3]}</span></th>}
+                                    {headerName[4] !== '' && <th><span>{headerName[4]}</span></th>}
+                                    {headerName[5] !== '' && <th><span>{headerName[5]}</span></th>}
+                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span></th>}
+                                    {headerName[7] !== '' && <th><span>{headerName[7]}</span></th>}
+                                    {headerName[8] !== '' && <th className="second-last-child"><span>{headerName[8]}</span></th>}
 
-
-                                    <th><span>{headerName[6]}</span></th>
-                                    <th><span>{headerName[7]}</span></th>
-                                    <th className="second-last-child"><span>{headerName[8]}</span></th>
-                                    <th><span></span></th>
                                 </tr>
                             </thead>
 
 
                             {/* {showTableData && impactData && impactData.map((item, index) => { */}
-                            {showTableData && [] && [].map((item, index) => {
+                            {showTableData && impactData && impactData.map((item, index) => {
 
                                 return (<>
                                     <tbody>
