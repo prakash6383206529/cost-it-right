@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
   const { viewBOPData } = props
-  const { BOPData, bopPHandlingCharges, bopHandlingPercentage } = viewBOPData
+  const { BOPData, bopPHandlingCharges, bopHandlingPercentage,childPartBOPHandlingCharges,IsAssemblyCosting } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   useEffect(() => {
@@ -48,7 +48,7 @@ function ViewBOP(props) {
                 ></div>
               </Col>
             </Row>
-
+  
             <Row className="mx-0">
               <Col md="12">
                 <Row>
@@ -98,13 +98,14 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-
+            {
+            IsAssemblyCosting &&       
             <Row className="mx-0">
               <Col md="12">
                 <hr />
                 <Row>
                   <Col md="12">
-                    <div className="left-border">{'Insert Handling Charge:'}</div>
+                    <div className="left-border">{'Assembly\'s Insert Handling Charge:'}</div>
                   </Col>
                 </Row>
                 <Table className="table cr-brdr-main" size="sm">
@@ -129,6 +130,45 @@ function ViewBOP(props) {
                         </tr>
                     }
 
+                  </tbody>
+                </Table>
+              </Col>
+            </Row>
+            }
+            <Row className="mx-0">
+              <Col md="12">
+                <hr />
+                <Row>
+                  <Col md="12">
+                    <div className="left-border">{'Part\'s Insert Handling Charge:'}</div>
+                  </Col>
+                </Row>
+                <Table className="table cr-brdr-main" size="sm">
+                  <thead>
+                    <tr>
+                      {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                      <th>{`Percentage`}</th>
+                      <th className="costing-border-right">{`Handling Charges`}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {childPartBOPHandlingCharges &&
+                      childPartBOPHandlingCharges.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                           {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>} 
+                            <td>{checkForDecimalAndNull(item.bopHandlingPercentage,initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>                          
+                          </tr>
+                        )
+                      })}
+                  {childPartBOPHandlingCharges && childPartBOPHandlingCharges.length === 0 && (
+                      <tr>
+                        <td colSpan={7}>
+                          <NoContentFound title={EMPTY_DATA} />
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
               </Col>
