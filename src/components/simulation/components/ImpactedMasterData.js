@@ -31,6 +31,7 @@ export function Impactedmasterdata(props) {
             case BOPIMPORT:
                 return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
 
+
             default:
                 break;
         }
