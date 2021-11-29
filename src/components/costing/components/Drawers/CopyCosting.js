@@ -653,7 +653,8 @@ function CopyCosting(props) {
                       <DatePicker
                         name="EffectiveDate"
                         //selected={effectiveDate}
-                        selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                         onChange={handleEffectiveDateChange}
                         showMonthDropdown
                         showYearDropdown
@@ -752,7 +753,8 @@ function CopyCosting(props) {
                       <DatePicker
                         name="EffectiveDate"
                         //selected={effectiveDate}
-                        selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                         onChange={handleEffectiveDateChange}
                         showMonthDropdown
                         showYearDropdown
