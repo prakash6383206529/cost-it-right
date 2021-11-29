@@ -236,7 +236,7 @@ function CostingHeaderTabs(props) {
           "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
           "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetOverheadAndProfits": overHeadAndProfitTabData && overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
           "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
           "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
           "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
