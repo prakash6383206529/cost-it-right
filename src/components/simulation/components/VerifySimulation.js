@@ -20,7 +20,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { node } from 'prop-types';
 import { debounce } from 'lodash'
-import AssemblySimulation from './AssemblySimulation';
+// import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
 
