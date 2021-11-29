@@ -961,12 +961,14 @@ function ApproveRejectDrawer(props) {
                                     <a href={fileURL} target="_blank">
                                       {f.OriginalFileName}
                                     </a>
-                                    <img
+                                    {(type === 'Sender' ? true : false) &&
+                                      <img
 
-                                      alt={""}
-                                      className="float-right"
-                                      onClick={() => deleteFile(f.FileId, f.FileName)} src={redcrossImg}
-                                    ></img>
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)} src={redcrossImg}
+                                      ></img>
+                                    }
                                   </div>
                                 );
                               })}
