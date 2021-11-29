@@ -180,7 +180,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
 
           }),
         )
@@ -299,7 +299,7 @@ function CostingDetails(props) {
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+              setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
 
@@ -1104,7 +1104,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate).isValid()? DayTime(Data.EffectiveDate).format('DD/MM/YYYY'): '')
+      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
     }))
 
   }
@@ -1639,7 +1639,7 @@ function CostingDetails(props) {
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
-
+                            {console.log(effectiveDate, "date")}
                             <DatePicker
                               name="EffectiveDate"
                               selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -1647,7 +1647,7 @@ function CostingDetails(props) {
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
+                              // maxDate={new Date()}
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"
