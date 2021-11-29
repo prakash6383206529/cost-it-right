@@ -283,10 +283,10 @@ function VerifySimulation(props) {
     }
 
     const runSimulation = debounce(() => {
-        // if (selectedRowData.length === 0) {
-        //     Toaster.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -419,7 +419,7 @@ function VerifySimulation(props) {
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
                                                 // columnDefs={c}
-                                                rowData={[]}
+                                                rowData={verifyList}
                                                 pagination={true}
                                                 paginationPageSize={10}
                                                 onGridReady={onGridReady}
