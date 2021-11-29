@@ -1863,6 +1863,34 @@ export const MachineRateSimulation = [
     { label: "EffectiveDate", value: "EffectiveDate" }
 ]
 
+export const BOPDomesticSimulation = [
+    { label: "CostingHead", value: "IsVendor" },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
+    { label: "DestinationPlant", value: "DestinationPlant", },
+    { label: "Vendor", value: "Vendor" },
+    { label: "NumberOfPieces", value: "NumberOfPieces" },
+    { label: "BasicRate", value: "BasicRate" },
+    { label: "NewBasicRate", value: "NewBasicRate" },
+    { label: "NetLandedCost", value: "NetLandedCost" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
+]
+
+export const BOPImportSimulation = [
+    { label: "CostingHead", value: "IsVendor" },
+    { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber" },
+    { label: "BoughtOutPartName", value: "BoughtOutPartName" },
+    { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory" },
+    { label: "DestinationPlant", value: "DestinationPlant", },
+    { label: "Vendor", value: "Vendor" },
+    { label: "NumberOfPieces", value: "NumberOfPieces" },
+    { label: "BasicRate", value: "BasicRate" },
+    { label: "NewBasicRate", value: "NewBasicRate" },
+    { label: "NetLandedCost", value: "NetLandedCost" },
+    { label: "EffectiveDate", value: "EffectiveDate" }
+]
+
 // Purchasing Group
 export const purchasingGroup = [
     { label: 'A01', value: '1001-Domestic PGrp' },

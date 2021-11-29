@@ -20,16 +20,12 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
-    const [showSimulation, setShowSimulation] = useState(false)
+    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -41,10 +37,7 @@ function ERSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-
-    const { filteredRMData } = useSelector(state => state.material)
 
     const cancelVerifyPage = () => {
 

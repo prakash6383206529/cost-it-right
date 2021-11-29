@@ -914,8 +914,6 @@ export function runSimulationOnSelectedMachineRateCosting(data, callback) {
     };
 }
 
-
-
 export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.runSimulationOnSelectedBoughtOutPartCosting, data, headers);
@@ -987,8 +985,6 @@ export function getAssemblySimulationList(token, plantId, rawMatrialId, callback
         })
     }
 }
-
-
 
 
 
