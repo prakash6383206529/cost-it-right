@@ -78,8 +78,9 @@ function SimulationApprovalSummary(props) {
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
-
-
+    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+    const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
@@ -687,7 +688,13 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata />
+                        <Fgwiseimactdata
+                            DisplayCompareCosting={DisplayCompareCosting}
+                            SimulationId={simulationDetail.SimulationId}
+                            headerName={headerName}
+                            parentField={parentField}
+                            childField={childField}
+                        />
 
                         {/* FG wise Impact section end */}
 
@@ -824,7 +831,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row>
                             <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
-                            <Col md="12" className="px-4">
+                            {false && <Col md="12" className="px-4">
                                 <label>Upload Attachment (upload up to 2 files)</label>
                                 {files && files.length > 2 ? (
                                     <div class="alert alert-danger" role="alert">
@@ -867,7 +874,7 @@ function SimulationApprovalSummary(props) {
                                         disabled={true}
                                     />
                                 )}
-                            </Col>
+                            </Col>}
                             <div className="w-100">
                                 <div className={"attachment-wrapper mt-0 mb-3 px-4"}>
                                     {files &&
@@ -879,12 +886,13 @@ function SimulationApprovalSummary(props) {
                                                     <a href={fileURL} target="_blank">
                                                         {f.OriginalFileName}
                                                     </a>
-                                                    <img
+                                                    {false && <img
                                                         alt={""}
                                                         className="float-right"
                                                         onClick={() => false ? deleteFile(f.FileId, f.FileName) : ""}
                                                         src={redcrossImg}
                                                     ></img>
+                                                    }
                                                 </div>
                                             );
                                         })}
