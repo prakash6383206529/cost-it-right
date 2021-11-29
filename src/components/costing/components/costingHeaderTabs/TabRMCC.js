@@ -442,8 +442,8 @@ function TabRMCC(props) {
         case 'CC':
 
           i.CostingPartDetails.TotalConversionCost = setConversionCostAssembly(i.CostingChildPartDetails) 
-          i.CostingPartDetails.TotalConversionCostWithQuantity = i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity
-          i.CostingPartDetails.TotalOperationCostPerAssembly = setOperationCostForAssembly(i.CostingChildPartDetails) 
+          i.CostingPartDetails.TotalOperationCostPerAssembly = setOperationCostForAssembly(i.CostingChildPartDetails) + i.CostingPartDetails.TotalOperationCostPerAssembly
+          i.CostingPartDetails.TotalConversionCostWithQuantity = (i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity) + i.CostingPartDetails.TotalOperationCostPerAssembly
           break;
         // case 'Assembly':
         //   i.CostingPartDetails.TotalBoughtOutPartCost = bopForAssembAndSubAssembly(i.CostingChildPartDetails) 
@@ -1442,7 +1442,6 @@ function TabRMCC(props) {
   }
 
   const setAssemblyOperationCostInDataList = (OperationGrid, params, arr, IsGridChanged) => {
-    console.log('params: ', params);
     console.log('OperationGrid: ', OperationGrid);
     let tempArr = [];
     try {

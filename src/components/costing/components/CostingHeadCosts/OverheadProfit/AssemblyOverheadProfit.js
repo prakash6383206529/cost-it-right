@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../../helper';
-import { getOverheadProfitTabData, saveAssemblyOverheadProfitTab } from '../../../actions/Costing';
+import { getOverheadProfitTabData, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
@@ -13,7 +13,7 @@ function AssemblyOverheadProfit(props) {
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate,RMCCTabData,SurfaceTabData,OverheadProfitTabData,PackageAndFreightTabData,DiscountCostData } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -70,6 +70,10 @@ function AssemblyOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = (values) => {
+    const tabData = RMCCTabData[0]
+    const surfaceTabData= SurfaceTabData[0]
+    const overHeadAndProfitTabData=OverheadProfitTabData[0]
+    const discountAndOtherTabData =DiscountCostData[0]
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
@@ -88,6 +92,41 @@ function AssemblyOverheadProfit(props) {
       "EffectiveDate": CostingEffectiveDate,
       "TotalCost": netPOPrice,
     }
+
+      let assemblyRequestedData = {        
+          "TopRow": {
+            "CostingId":tabData.CostingId,
+            "CostingNumber": tabData.CostingNumber,
+            "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity+ tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
+            "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
+            "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+            "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+            "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+            "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+            "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
+            "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
+            "NetDiscounts":discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
+            "TotalCostINR": netPOPrice,
+            "TabId": 3
+          },
+           "WorkingRows": [],
+          "LoggedInUserId": loggedInUserId()
+        
+      }
+  
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
     dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
       if (res.data.Result) {
         Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);

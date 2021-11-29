@@ -84,6 +84,7 @@ function CostingHeaderTabs(props) {
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        callAssemblyAPi(1)
         dispatch(CloseOpenAccordion())
         dispatch(setComponentItemData({}, () => { }))
         setIsCalledAPI(false)
@@ -117,13 +118,14 @@ function CostingHeaderTabs(props) {
         },
       }
       dispatch(saveComponentOverheadProfitTab(reqData, res => {
+        callAssemblyAPi(2)
         dispatch(setComponentOverheadItemData({}, () => { }))
         InjectDiscountAPICall()
       }))
     }
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4') {
+    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4'&&Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true  ) {
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
@@ -137,6 +139,7 @@ function CostingHeaderTabs(props) {
         "TotalCost": netPOPrice,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
+        callAssemblyAPi(3)
         dispatch(setComponentPackageFreightItemData({}, () => { }))
         InjectDiscountAPICall()
       }))
@@ -156,76 +159,90 @@ function CostingHeaderTabs(props) {
         "TotalCost": netPOPrice,
       }
       dispatch(saveToolTab(data, res => {
+        callAssemblyAPi(4)
         dispatch(setComponentToolItemData({}, () => { }))
         InjectDiscountAPICall()
       }))
     }
 
-    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode) {
-      let assemblyWorkingRow = []
-      const tabData = RMCCTabData && RMCCTabData[0]
-      const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
-      const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData
-      tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
-        let subAssemblyObj = {
-          "CostingId": item.CostingId,
-          "CostingNumber": "", // Need to find out how to get it.
-          "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
-          "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-          "SurfaceTreatmentCostPerAssembly": 0,
-          "TransportationCostPerAssembly": 0,
-          "TotalSurfaceTreatmentCostPerAssembly": 0,
-          "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity
-        }
-        assemblyWorkingRow.push(subAssemblyObj)
-        return assemblyWorkingRow
-      })
-      let assemblyRequestedData = {
-
-        "TopRow": {
-          "CostingId": tabData && tabData.CostingId,
-          "CostingNumber": tabData && tabData.CostingNumber,
-          "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerPC": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-          "NetRMCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "NetBOPCostAssembly": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "NetConversionCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "NetRMBOPCCCost": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-          "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-          "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
-          "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetOverheadAndProfits": overHeadAndProfitTabData && overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
-          "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-          "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
-          "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
-          "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
-          "TotalCostINR": netPOPrice,
-          "TabId": 1
-        },
-        "WorkingRows": assemblyWorkingRow,
-        "BOPHandlingCharges": {
-          "AssemblyCostingId": tabData && tabData.CostingId,
-          "IsApplyBOPHandlingCharges": true,
-          "BOPHandlingPercentage": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage,
-          "BOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges
-        },
-        "LoggedInUserId": loggedInUserId()
-
-      }
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-    }
+   
     // USED FOR SAVE OTHER DISCOUNT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     InjectDiscountAPICall()
 
   }, [activeTab])
+
+
+
+const callAssemblyAPi =(tabId)=>{
+  if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode) {
+    let assemblyWorkingRow = []
+    const tabData = RMCCTabData && RMCCTabData[0]
+    const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+    const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
+    const discountAndOtherTabData = DiscountCostData
+    tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
+      let subAssemblyObj = {
+        "CostingId": item.CostingId,
+        "CostingNumber": "", // Need to find out how to get it.
+        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+        "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+            "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+            "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+            "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+            "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
+            "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
+            "NetDiscounts":discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
+        "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity
+      }
+      assemblyWorkingRow.push(subAssemblyObj)
+      return assemblyWorkingRow
+    })
+    let assemblyRequestedData = {
+
+      "TopRow": {
+        "CostingId": tabData && tabData.CostingId,
+        "CostingNumber": tabData && tabData.CostingNumber,
+        "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+        "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostPerPC": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+        "NetRMCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+        "NetBOPCostAssembly": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+        "NetConversionCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+        "NetRMBOPCCCost": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+        "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+        "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
+        "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+        "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+        "NetOverheadAndProfits": overHeadAndProfitTabData && overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+        "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+        "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
+        "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
+        "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
+        "TotalCostINR": netPOPrice,
+        "TabId": tabId
+      },
+      "WorkingRows": assemblyWorkingRow,
+      "BOPHandlingCharges": {
+        "AssemblyCostingId": tabData && tabData.CostingId,
+        "IsApplyBOPHandlingCharges": true,
+        "BOPHandlingPercentage": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage,
+        "BOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges
+      },
+      "LoggedInUserId": loggedInUserId()
+
+    }
+    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+  }
+}
+
 
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && ComponentItemDiscountData.IsChanged === true && activeTab !== '6') {
