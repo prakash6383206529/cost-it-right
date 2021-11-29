@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
-import ViewAssembly from './ViewAssembly';
+// import ViewAssembly from './ViewAssembly';
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -489,7 +489,7 @@ function CostingSimulation(props) {
     }
     const errorBoxClass = () => {
         let temp
-        temp =status===(null && '')?  'd-none':''
+        temp = status === (null && '') ? 'd-none' : ''
         return temp
     }
 
@@ -533,7 +533,7 @@ function CostingSimulation(props) {
 
                                 <Row>
                                     <Col sm="12">
-                                    <Errorbox customClass={errorBoxClass()} errorText={status} />
+                                        <Errorbox customClass={errorBoxClass()} errorText={status} />
                                     </Col>
                                 </Row>
                                 <Row>
@@ -730,14 +730,14 @@ function CostingSimulation(props) {
                     isSimulation={true}
                 />
             }
-            {showViewAssemblyDrawer &&
+            {/* {showViewAssemblyDrawer &&
                 <ViewAssembly
                     isOpen={showViewAssemblyDrawer}
                     closeDrawer={closeAssemblyDrawer}
                     // approvalData={approvalData}
                     anchor={'bottom'}
                 />
-            }
+            } */}
         </>
 
     );
