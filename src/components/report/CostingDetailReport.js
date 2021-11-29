@@ -15,7 +15,8 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,EMPTY_DATA } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
-
+import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
+import { formViewData } from '../../../helper'
 
 
 
@@ -77,27 +78,6 @@ function ReportListing(props) {
 
 
 
-
-    const onBtFirst = () => {
-        gridApi.paginationGoToFirstPage();
-    };
-
-    const onBtLast = () => {
-        gridApi.paginationGoToLastPage();
-    };
-
-
-
-
-    const onBtPageFive = () => {
-        gridApi.paginationGoToPage(4);
-    };
-
-    const onBtPageFifty = () => {
-        gridApi.paginationGoToPage(49);
-    };
-
-
     const partSelectList = useSelector((state) => state.costing.partSelectList)
     let reportListingData = useSelector((state) => state.report.reportListing)
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
@@ -129,10 +109,6 @@ function ReportListing(props) {
         return cellValue != null ? cellValue : '';
     }
 
-    const approvedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        //   return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
-        return cell != null ? cell : '';
-    }
 
     const createDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -145,6 +121,51 @@ function ReportListing(props) {
         let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
         setCostingVersion(temp);
         return temp
+    }
+
+
+
+
+    // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
+
+    const hyperLinkableFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                <div
+                    onClick={() => viewDetails(row.UserId, cell, row)}
+                    className={'link'}
+                >{cell}</div>
+            </>
+        )
+    }
+
+
+    const viewDetails = (UserId, cell, row) => {
+
+        if (row.BaseCostingId && Object.keys(row.BaseCostingId).length > 0) {
+            dispatch(getSingleCostingDetails(row.BaseCostingId, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
+
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+            },
+            ))
+        }
+
+        setIsOpen(true)
+        setUserId(UserId)
+
+    }
+
+    const closeUserDetails = () => {
+        setIsOpen(false)
+        setUserId("")
+
     }
 
     const dateFormatter = (props) => {
@@ -187,7 +208,6 @@ function ReportListing(props) {
         var t0 = performance.now();
 
         dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
-            //  props.getReportListing();   // <---- The function you're measuring time for 
 
             // var t1 = performance.now();
         }))
@@ -215,11 +235,6 @@ function ReportListing(props) {
     useEffect(() => {
         var tempArr = []
 
-        // reportListingData && reportListingData.map(item => {
-        //     if (item.Value === '0') return false;
-        //     temp.push({ label: item.Text, value: item.Value })
-        //     return null;
-        // });
         const blank = () => { setWarningMessage(false) }
 
         setReportListingDataStateArray(reportListingData)
@@ -237,9 +252,6 @@ function ReportListing(props) {
 
 
         }
-
-
-
 
 
     }, [reportListingData])
@@ -314,8 +326,7 @@ function ReportListing(props) {
 
 
     const onGridReady = (params) => {
-        // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        // getDataList()
+
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
@@ -348,9 +359,6 @@ function ReportListing(props) {
 
     }, [tableData])
 
-    // const renderColumn = (fileName) => {
-    //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
-    // }
 
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
@@ -562,6 +570,20 @@ function ReportListing(props) {
                     </div>
                 </div>
             </div>
+
+
+            {
+                isOpen &&
+                <CostingDetailSimulationDrawer
+                    isOpen={isOpen}
+                    closeDrawer={closeUserDetails}
+                    anchor={"right"}
+                    isReport={isOpen}
+                    selectedRowData={selectedRowData}
+                    isSimulation={true}
+                />
+            }
+
 
         </div>
     );
