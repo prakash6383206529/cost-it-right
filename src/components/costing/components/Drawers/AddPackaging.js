@@ -113,7 +113,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), getConfigurationKey().No))
+          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), getConfigurationKey().NoOfDecimalForPrice))
         }
         break;
 
@@ -190,7 +190,7 @@ function AddPackaging(props) {
       PackagingDescription: data.PackagingDescription,
       PackagingCostFixed: 0,
       PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
-      PackagingCost: data.PackagingCost,
+      PackagingCost: checkForDecimalAndNull(data.PackagingCost, getConfigurationKey().NoOfDecimalForPrice),
       Applicability: applicability ? data.Applicability.value : '',
     }
     toggleDrawer('', formData)

@@ -127,8 +127,6 @@ export default function SimulationReducer(state = initialState, action) {
                 selectedRowCountForSimulationMessage: action.payload
             }
 
-<<<<<<< HEAD
-=======
         case GET_ASSEMBLY_SIMULATION_LIST:
             return {
                 ...state,
@@ -137,7 +135,6 @@ export default function SimulationReducer(state = initialState, action) {
             }
 
 
->>>>>>> 42949fbb0 (BOP SImulation in process)
         default:
             return state;
     }

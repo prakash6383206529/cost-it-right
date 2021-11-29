@@ -12,11 +12,7 @@ import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import NewReport from '../../report/CostingBenchmarkReport';
 import TooltipCustom from '../../common/Tooltip';
-<<<<<<< HEAD
-import { COMBINED_PROCESS, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-=======
-import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
->>>>>>> 42949fbb0 (BOP SImulation in process)
+import { COMBINED_PROCESS, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT,BOPDOMESTIC, BOPIMPORT, } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -418,17 +414,6 @@ class SimulationUploadDrawer extends Component {
                     //     }
                     //     return null;
                     // })
-<<<<<<< HEAD
-                    if (basicRateCount === 0) {
-                        Toaster.warning('Please fill at least one basic rate.')
-                        return false
-                    }
-                    // if (basicRateCount === 0) {
-                    //     toastr.warning('Please fill at least one basic rate.')
-                    //     return false
-                    // }
-=======
->>>>>>> 42949fbb0 (BOP SImulation in process)
                     this.setState({
                         fileData: fileData,
                         uploadfileName: uploadfileName,
