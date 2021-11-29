@@ -21,7 +21,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master } = props
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport } = props
 
     const dispatch = useDispatch()
 
@@ -82,65 +82,70 @@ function CostingDetailSimulationDrawer(props) {
                                         ></div>
                                     </Col>
                                 </Row>
-                                <Row className="ml-0 pb-3">
-                                    <Col md="12">
-                                        <h6 class="left-border d-inline-block mr-4">{pricesDetail.CostingHead}</h6>
-                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Plant Code:</span> <span>{pricesDetail.PlantCode}</span></div>
-                                        <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing ID:</span> <span>{pricesDetail.CostingNumber}</span></div>
-                                    </Col>
-                                </Row>
 
-                                <Row className="ml-0 pb-3">
-                                    {
-                                        Number(master) === Number(EXCHNAGERATE) ?
+                                {!isReport &&
+                                    <Row className="ml-0 pb-3">
+                                        <Col md="12">
+                                            <h6 class="left-border d-inline-block mr-4">{pricesDetail.CostingHead}</h6>
+                                            <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Plant Code:</span> <span>{pricesDetail.PlantCode}</span></div>
+                                            <div class=" d-inline-block mr-4"><span class="grey-textpr-2">Costing ID:</span> <span>{pricesDetail.CostingNumber}</span></div>
+                                        </Col>
+                                    </Row>
+                                }
+
+                                {!isReport &&
+                                    <Row className="ml-0 pb-3">
+                                        {
+                                            Number(master) === Number(EXCHNAGERATE) ?
+                                                <>
+                                                    <Col md="3">
+                                                        <label>PO Price Old(in Currency)</label>
+                                                        <label className={`${pricesDetail.OldNetPOPriceOtherCurrency > pricesDetail.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <label>PO Price New(in Currency)</label>
+                                                        <label className={`${pricesDetail.OldNetPOPriceOtherCurrency > pricesDetail.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    </Col>
+                                                </> :
+                                                <>
+                                                    <Col md="3">
+                                                        <label>PO Price Old</label>
+                                                        <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <label>PO Price New</label>
+                                                        <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    </Col>
+                                                </>
+                                        }
+                                        {
+                                            Number(master) === Number(RMDOMESTIC) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>PO Price Old(in Currency)</label>
-                                                    <label className={`${pricesDetail.OldNetPOPriceOtherCurrency > pricesDetail.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label>RM Cost Old</label>
+                                                    <label className={`${pricesDetail.OldRMPrice > pricesDetail.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>PO Price New(in Currency)</label>
-                                                    <label className={`${pricesDetail.OldNetPOPriceOtherCurrency > pricesDetail.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                                </Col>
-                                            </> :
-                                            <>
-                                                <Col md="3">
-                                                    <label>PO Price Old</label>
-                                                    <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                                </Col>
-                                                <Col md="3">
-                                                    <label>PO Price New</label>
-                                                    <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label>RM Cost New</label>
+                                                    <label className={`${pricesDetail.OldRMPrice > pricesDetail.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
-                                    }
-                                    {
-                                        Number(master) === Number(RMDOMESTIC) &&
-                                        <>
-                                            <Col md="3">
-                                                <label>RM Cost Old</label>
-                                                <label className={`${pricesDetail.OldRMPrice > pricesDetail.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                            <Col md="3">
-                                                <label>RM Cost New</label>
-                                                <label className={`${pricesDetail.OldRMPrice > pricesDetail.NewRMPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                        </>
-                                    }
-                                    {
-                                        Number(master) === Number(EXCHNAGERATE) &&
-                                        <>
-                                            <Col md="3">
-                                                <label>Exchange Rate Old</label>
-                                                <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                            <Col md="3">
-                                                <label>Exchange Rate New</label>
-                                                <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                        </>
-                                    }
-                                </Row>
+                                        }
+                                        {
+                                            Number(master) === Number(EXCHNAGERATE) &&
+                                            <>
+                                                <Col md="3">
+                                                    <label>Exchange Rate Old</label>
+                                                    <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                                <Col md="3">
+                                                    <label>Exchange Rate New</label>
+                                                    <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                            </>
+                                        }
+                                    </Row>
+                                }
 
                                 <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} simulationDrawer={true} />
 

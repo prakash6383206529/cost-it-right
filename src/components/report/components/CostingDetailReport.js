@@ -8,6 +8,7 @@ import NoContentFound from '../../common/NoContentFound'
 import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import { getReportListing } from '.././actions/ReportListing'
+import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -15,6 +16,11 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster ,EMPTY_DATA} from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
+import $ from 'jquery';
+import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
+import { EMPTY_GUID } from '../../../config/constants'
+import { formViewData } from '../../../helper'
+
 
 
 
@@ -57,12 +63,15 @@ function ReportListing(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState(props.Ids);
     const [gridApi, setGridApi] = useState(null);
+    const [costingID, setCostingID] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [rowData, setRowData] = useState(null);
     const [createDate, setCreateDate] = useState(Date);
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
+    const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(true)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
@@ -96,6 +105,24 @@ function ReportListing(props) {
     const onBtPageFifty = () => {
         gridApi.paginationGoToPage(49);
     };
+
+
+
+    useEffect(() => {
+        if (costingID && Object.keys(costingID).length > 0) {
+            dispatch(getSingleCostingDetails(costingID, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
+
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+            },
+            ))
+        }
+
+    }, [costingID])
+
 
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -147,6 +174,56 @@ function ReportListing(props) {
         return temp
     }
 
+
+
+    const hyperLinkableFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                <div
+                    onClick={() => viewDetails(row.UserId, cell, row)}
+                    className={'link'}
+                >{cell}</div>
+            </>
+        )
+    }
+
+
+    const viewDetails = (UserId, cell, row) => {
+        $('html, body').animate({ scrollTop: 0 }, 'slow')
+
+
+        setCostingID(row.BaseCostingId)
+
+
+        // let obj = {
+        //     simulationApprovalProcessSummaryId: EMPTY_GUID,
+        //     simulationId: simulationId,
+        //     costingId: data.CostingId
+        // }
+        // setId(id)
+        // setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
+        // dispatch(getComparisionSimulationData(obj, res => {
+        //     const Data = res.data.Data
+        //     const obj1 = formViewData(Data.OldCosting)
+        //     dispatch(setCostingViewData(obj1))
+        //     runCostingDetailSimulation()
+        // }))
+
+
+        setIsOpen(true)
+        setUserId(UserId)
+
+    }
+
+    const closeUserDetails = () => {
+        setIsOpen(false)
+        setUserId("")
+
+    }
+
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         let temp = DayTime(cellValue).format('DD/MM/YYYY h:m:s')
@@ -190,7 +267,7 @@ function ReportListing(props) {
             //  props.getReportListing();   // <---- The function you're measuring time for 
 
             // var t1 = performance.now();
-            // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
+            // 
         }))
 
     }
@@ -363,6 +440,8 @@ function ReportListing(props) {
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
         //customLoadingOverlay: LoaderCustom
+        hyperLinkableFormatter: hyperLinkableFormatter,
+
     };
 
     /**
@@ -574,7 +653,7 @@ function ReportListing(props) {
                         onSelectionChanged={onRowSelect}
                     >
 
-                        <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
+                        <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
                         <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -641,6 +720,38 @@ function ReportListing(props) {
                     </div>
                 </div>
             </div>
+
+
+
+            {/* {isOpen && 
+                // <ViewUserDetails
+                //     UserId={this.state.UserId}
+                //     isOpen={this.state.isOpen}
+                //     editItemDetails={this.editItemDetails}
+                //     closeUserDetails={this.closeUserDetails}
+                //     EditAccessibility={EditAccessibility}
+                //     anchor={"right"}
+                //     IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
+                // 
+            } */}
+
+            {
+                isOpen &&
+                <CostingDetailSimulationDrawer
+                    isOpen={isOpen}
+                    closeDrawer={closeUserDetails}
+                    anchor={"right"}
+                    isReport={isOpen}
+                    //pricesDetail={pricesDetail}
+                    //simulationDetail={simulationDetail}
+                    selectedRowData={selectedRowData}
+                    // costingArr={costingArr}
+                    // master={selectedMasterForSimulation ? selectedMasterForSimulation.value : master}
+                    // closeDrawer={closeDrawer}
+                    isSimulation={true}
+                />
+            }
+
 
         </div>
     );
