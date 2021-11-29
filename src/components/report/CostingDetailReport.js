@@ -15,8 +15,9 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,EMPTY_DATA } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
-import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
+import CostingDetailSimulationDrawer from '../simulation/components/CostingDetailSimulationDrawer'
 import { formViewData } from '../../../helper'
+import { getSingleCostingDetails, setCostingViewData } from '../costing/actions/Costing'
 
 
 
@@ -64,6 +65,7 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
     const [warningMessage, setWarningMessage] = useState(true)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
@@ -158,13 +160,11 @@ function ReportListing(props) {
         }
 
         setIsOpen(true)
-        setUserId(UserId)
 
     }
 
     const closeUserDetails = () => {
         setIsOpen(false)
-        setUserId("")
 
     }
 
