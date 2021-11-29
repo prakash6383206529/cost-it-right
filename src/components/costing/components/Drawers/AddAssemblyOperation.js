@@ -7,7 +7,7 @@ import Switch from "react-switch";
 import { saveAssemblyCostingRMCCTab } from '../../actions/Costing';
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
-import { loggedInUserId } from '../../../../helper';
+import { loggedInUserId, checkForDecimalAndNull } from '../../../../helper';
 
 function AddAssemblyOperation(props) {
   const { item, } = props;
@@ -19,6 +19,7 @@ function AddAssemblyOperation(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   /**
   * @method toggleDrawer
@@ -151,10 +152,10 @@ function AddAssemblyOperation(props) {
                   <div className="cr-process-costwrap">
                     <Row className="cr-innertool-cost">
 
-                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</span></Col>
+                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
                       {/* <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col> */}
                       <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{``}</span></Col>
-                      <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col>
+                      <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
 
                       <Col md="3" className="switch cr-costlabel text-right">
                         {/* <label className="switch-level d-inline-flex w-auto mb-0">
@@ -213,7 +214,7 @@ function AddAssemblyOperation(props) {
                   type={'button'}
                   className="submit-button mr15 save-btn"
                   onClick={saveData} >
-                                      <div className={'save-icon'}></div>
+                  <div className={'save-icon'}></div>
                   {'SAVE'}
                 </button>
               </div>
