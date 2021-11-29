@@ -1308,7 +1308,7 @@ function TabRMCC(props) {
   }else{
 
     let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData, item)
-    let arr1= assemblyCalculation(arr,'CC')
+    let arr1= assemblyCalculation(arr1,'CC')
     dispatch(setRMCCData(arr, () => { }))
   }
   }
