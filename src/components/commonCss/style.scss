@@ -6166,7 +6166,7 @@ body{
   .costing-header-table {
     table {
       @media screen and (max-width:$miniDesktop) {
-        min-width: 1920px;
+        // min-width: 1920px;
       }
     }
   }
@@ -6332,3 +6332,22 @@ left: 17rem;
   .update-vendor-loader {
     min-height: calc(100vh + 11rem);
   }
+.costing-detail-tabs {
+  .nav-item {
+    .nav-link {
+      border-left: none;
+    }
+  }
+}
+.view-conversion-header {
+  flex: 0 0 10.1%;
+    max-width: 10.1%;
+    height: fit-content;
+}
+.view-conversion-container {
+  flex: 0 0 89.9%;
+  max-width: 89.9%;
+  .left-border {
+    padding: 8px;
+  }
+}
