@@ -414,7 +414,7 @@ class AddRMImport extends Component {
           } else {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
@@ -474,7 +474,7 @@ class AddRMImport extends Component {
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
+                  effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '',
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,

@@ -91,7 +91,7 @@ class AddFuel extends Component {
                 StateLabel: item.StateName,
                 StateId: item.StateId,
                 //effectiveDate: moment(item.EffectiveDate).format('DD/MM/YYYY'),
-                effectiveDate: DayTime(item.EffectiveDate)._d,
+                effectiveDate: DayTime(item.EffectiveDate),
                 Rate: item.Rate,
               }
             })

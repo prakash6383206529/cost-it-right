@@ -62,12 +62,13 @@ class AddIndivisualProduct extends Component {
 
                     const Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+
+                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
-                            effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
+                            effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                         }, () => this.setState({ isLoader: false }))
                     }, 500)
@@ -94,7 +95,7 @@ class AddIndivisualProduct extends Component {
     * @description Handle Effective Date
     */
     handleEffectiveDateChange = (date) => {
-        this.setState({ effectiveDate: DayTime(date)._isValid ? DayTime(date)._d : '', });
+        this.setState({ effectiveDate: DayTime(date).isValid ? DayTime(date) : '', });
         this.setState({ DropdownChanged: false })
     };
 
@@ -402,7 +403,7 @@ class AddIndivisualProduct extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={false}
                                                                 />
                                                             </Col>
                                                         )}
@@ -490,7 +491,7 @@ class AddIndivisualProduct extends Component {
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={false}
                                                                 //minDate={moment()}
                                                                 />
 

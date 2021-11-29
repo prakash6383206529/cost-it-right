@@ -329,6 +329,8 @@ class AddRMDomestic extends Component {
 
   handleScrapRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
+
+
     if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
@@ -436,7 +438,7 @@ class AddRMDomestic extends Component {
 
                 const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
                 const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
-                this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+                this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
                 this.setState({
                   isEditFlag: true,
                   // isLoader: false,
@@ -453,7 +455,7 @@ class AddRMDomestic extends Component {
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
+                  effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
@@ -957,12 +959,14 @@ class AddRMDomestic extends Component {
     if (isEditFlag) {
       this.setState({ showPopup: true, updatedObj: requestData })
       if (isSourceChange) {
+
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
           if (res.data.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
             // this.cancel()
+
           }
         })
       }

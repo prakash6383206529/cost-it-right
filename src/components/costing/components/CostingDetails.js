@@ -96,10 +96,10 @@ function CostingDetails(props) {
 
   const fieldValues = IsolateReRender(control);
   const [showPopup, setShowPopup] = useState(false)
-  const [costingObj, setCostingObj ] = useState({
-    item:{},
-    type:'',
-    index:[]
+  const [costingObj, setCostingObj] = useState({
+    item: {},
+    type: '',
+    index: []
   })
   const dispatch = useDispatch()
 
@@ -180,7 +180,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           }),
         )
@@ -298,7 +298,7 @@ function CostingDetails(props) {
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+              setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
               setShowNextBtn(true)
 
             }),
@@ -956,8 +956,8 @@ function CostingDetails(props) {
   * @description CONFIRM DELETE COSTINGS
   */
   const deleteItem = (Item, index, type) => {
-     setShowPopup(true)
-      setCostingObj({item:Item, type:type,index:index})
+    setShowPopup(true)
+    setCostingObj({ item: Item, type: type, index: index })
     const toastrConfirmOptions = {
       onOk: () => {
         deleteCosting(Item, index, type);
@@ -1102,7 +1102,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
     }))
 
   }
@@ -1398,7 +1398,7 @@ function CostingDetails(props) {
   }
 
   const onPopupConfirm = () => {
-    const {item, type,  index} =costingObj;
+    const { item, type, index } = costingObj;
     deleteCosting(item, index, type);
   }
 

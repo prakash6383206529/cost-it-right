@@ -175,7 +175,7 @@ class AddInterestRate extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: DayTime(date)._isValid ? DayTime(date)._d : '', });
+    this.setState({ effectiveDate: DayTime(date).isValid ? DayTime(date) : '', });
     this.setState({ DropdownChanged: false })
   };
 
@@ -195,7 +195,7 @@ class AddInterestRate extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           this.setState({ Data: Data })
-          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, plantSelectList } = this.props;
 
