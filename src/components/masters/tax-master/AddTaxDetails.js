@@ -46,12 +46,12 @@ class AddTaxDetails extends Component {
             let Data = res.data.Data;
             this.setState({ DataToCheck: Data })
 
-            this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : '')
+            this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
             setTimeout(() => {
               this.setState({
                 country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
-                effectiveDate: DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate) : ''
+                effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
               }, () => this.setState({ isLoader: false })
               )
             }, 500)
