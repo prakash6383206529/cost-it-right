@@ -328,7 +328,7 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-    const { initialConfiguration } = this.props
+    const { initialConfiguration } = props
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
   }
