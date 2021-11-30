@@ -185,8 +185,8 @@ function AddAssemblyOperation(props) {
         "BOPHandlingCharges": {
           "AssemblyCostingId": tabData.CostingId,
           "IsApplyBOPHandlingCharges": true,
-          "BOPHandlingPercentage": getAssemBOPCharge.BOPHandlingPercentage,
-          "BOPHandlingCharges": getAssemBOPCharge.BOPHandlingCharges
+          "BOPHandlingPercentage": getAssemBOPCharge &&getAssemBOPCharge.BOPHandlingPercentage,
+          "BOPHandlingCharges": getAssemBOPCharge &&getAssemBOPCharge.BOPHandlingCharges
         },
         "LoggedInUserId": loggedInUserId()
 

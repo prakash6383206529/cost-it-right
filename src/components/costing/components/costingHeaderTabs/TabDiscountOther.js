@@ -157,7 +157,8 @@ function TabDiscountOther(props) {
             setValue('AnyOtherCost', OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '')
             setValue('PercentageOtherCost', OtherCostDetails.PercentageOtherCost !== null ? OtherCostDetails.PercentageOtherCost : '')
             setValue('OtherCostType', OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : '')
-
+            setValue('HundiDiscountType', OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : '')
+            
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
@@ -413,7 +414,12 @@ function TabDiscountOther(props) {
         { label: 'Percentage', value: 'Percentage' },
       ];
     }
-
+    if (label === 'HundiDiscountType') {
+      return [
+        { label: 'Fixed', value: 'Fixed' },
+        { label: 'Percentage', value: 'Percentage' },
+      ];
+    }
   }
 
   // specify upload params and url for your files
