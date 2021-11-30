@@ -435,7 +435,7 @@ function TabRMCC(props) {
           break;
         case 'BOP':
           i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly(i.CostingChildPartDetails)
-          i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = (i.CostingPartDetails.TotalBoughtOutPartCost * i.CostingPartDetails.Quantity) + checkForNull(getAssemBOPCharge.BOPHandlingCharges)
+          i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = (i.CostingPartDetails.TotalBoughtOutPartCost * i.CostingPartDetails.Quantity) + checkForNull(getAssemBOPCharge?.BOPHandlingCharges)
 
           break;
         case 'CC':
@@ -1180,7 +1180,7 @@ function TabRMCC(props) {
     console.log('Children in assembly: ', Children);
     let arr = setAssembly(BOMLevel, PartNumber, Children, RMCCTabData)
     let arr1 = assemblyCalculation(arr, 'BOP')
-    dispatch(setRMCCData(arr1, () => { }))
+    dispatch(setRMCCData(arr, () => { }))
   }
 
   /**
@@ -1301,16 +1301,16 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (BOMLevel, PartNumber, Data, item) => {
-  if(item.PartType === 'Component'){
     let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData, item)
-    dispatch(setRMCCData(arr, () => { }))
+   dispatch(setRMCCData(arr, () => { }))
+  // if(item.PartType === 'Component'){
 
-  }else{
+  // }else{
 
-    let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData, item)
-    let arr1= assemblyCalculation(arr,'CC')
-    dispatch(setRMCCData(arr1, () => { }))
-  }
+  //   let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData, item)
+  //   let arr1= assemblyCalculation(arr,'CC')
+  //   dispatch(setRMCCData(arr1, () => { }))
+  // }
   }
 
   /**
@@ -1330,11 +1330,11 @@ function TabRMCC(props) {
         if (i.IsAssemblyPart === true) {
           console.log(i,"iiii");
           i.CostingPartDetails.TotalRawMaterialsCost = item.CostingPartDetails.TotalRawMaterialsCost
-          i.CostingPartDetails.TotalConversionCost = getProcessTotalCost(i.CostingChildPartDetails, Data.TotalProcessCost, params) +
-            getOperationTotalCost(i.CostingChildPartDetails, Data.TotalOperationCost, params) + getOtherOperationTotalCost(i.CostingChildPartDetails, Data.TotalOtherOperationCost, params)
-          console.log(i.CostingPartDetails.TotalConversionCost, "i.CostingPartDetails.TotalConversionCost");
-          i.CostingPartDetails.TotalConversionCostWithQuantity = i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity
-          console.log('i.CostingPartDetails.TotalConversionCostWithQuantity: ', i.CostingPartDetails.TotalConversionCostWithQuantity);
+          // i.CostingPartDetails.TotalConversionCost = getProcessTotalCost(i.CostingChildPartDetails, Data.TotalProcessCost, params) +
+          //   getOperationTotalCost(i.CostingChildPartDetails, Data.TotalOperationCost, params) + getOtherOperationTotalCost(i.CostingChildPartDetails, Data.TotalOtherOperationCost, params)
+          // console.log(i.CostingPartDetails.TotalConversionCost, "i.CostingPartDetails.TotalConversionCost");
+          // i.CostingPartDetails.TotalConversionCostWithQuantity = i.CostingPartDetails.TotalConversionCost * i.CostingPartDetails.Quantity
+          // console.log('i.CostingPartDetails.TotalConversionCostWithQuantity: ', i.CostingPartDetails.TotalConversionCostWithQuantity);
 
 
           i.CostingPartDetails.TotalCalculatedRMBOPCCCost =checkForNull(i.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(i.CostingPartDetails.TotalConversionCostWithQuantity)

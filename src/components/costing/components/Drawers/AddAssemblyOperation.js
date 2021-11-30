@@ -109,6 +109,11 @@ function AddAssemblyOperation(props) {
         "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
         "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
 
+        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails.TotalRawMaterialsCostWithQuantity,
+        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity,
+        "TotalConversionCostWithQuantity": item.CostingPartDetails.TotalConversionCostWithQuantity,
+        "TotalCalculatedRMBOPCCCostWithQuantity": item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity,
+
         "Quantity": item.CostingPartDetails.Quantity,
         "IsOpen": true,
         "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,
@@ -118,6 +123,7 @@ function AddAssemblyOperation(props) {
         "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse,
       }
     }
+
     dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]

@@ -78,7 +78,6 @@ function CostingDetailStepTwo(props) {
         ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
         TotalCost: OverAllCost,
       }
-
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
       dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {
@@ -267,7 +266,7 @@ function CostingDetailStepTwo(props) {
           data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
         }
 
-        const discountedCost = checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice);
+        const discountedCost =data.DiscountCostType==='Percentage'? checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice):data.DiscountsAndOtherCost;
         const discountValues = {
           NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
           HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
@@ -352,7 +351,7 @@ function CostingDetailStepTwo(props) {
                         <tr>
                           <th style={{ width: '140px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/Assembly' : 'RM Cost/Pc'}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Insert Cost/Assembly' : 'Insert Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/Assembly' : 'BOP Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net RM + CC Cost`}</span></th>
                           <th style={{ width: '190px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
