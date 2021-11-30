@@ -20,6 +20,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { Redirect } from 'react-router'
+import WarningMessage from '../../../common/WarningMessage'
 
 const gridOptions = {};
 
@@ -541,6 +542,9 @@ function ApprovalListing(props) {
                         <option value="50">50</option>
                         <option value="100">100</option>
                       </select>
+                    </div>
+                    <div className="text-right w-100 pb-3 warning-section">
+                      <WarningMessage message="It may take 5 minutes to update the status, please refresh." />
                     </div>
                   </div>
                 </div>
