@@ -24,7 +24,7 @@ function ViewConversionCost(props) {
     props.closeDrawer('')
   }
   const { viewConversionCostData } = props
-  const { conversionData, netTransportationCostView, surfaceTreatmentDetails } = viewConversionCostData
+  const { conversionData, netTransportationCostView, surfaceTreatmentDetails, IsAssemblyCosting } = viewConversionCostData
   const { CostingOperationCostResponse, CostingProcessCostResponse, CostingToolsCostResponse, IsShowToolCost, CostingOtherOperationCostResponse } = conversionData
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
@@ -39,7 +39,6 @@ function ViewConversionCost(props) {
   const [partNumberList,setPartNumberList]= useState([])
   const [index,setIndex] = useState(0)
 const [loader,setLoader] = useState(false)
-
   useEffect(() => {
     if (IsShowToolCost) {
       setIsShowToolCost(IsShowToolCost)
@@ -55,7 +54,6 @@ const [loader,setLoader] = useState(false)
     CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.map(item =>{
       temp.push(item.PartNumber)
     })
-    console.log(netTransportationCostView,"netTransportationCostView");
     // netTransportationCostView  && netTransportationCostView.map(item=>{
     //   if(item.PartNumber !== null){
     //     temp.push(item.PartNumber)
@@ -64,13 +62,9 @@ const [loader,setLoader] = useState(false)
     surfaceTreatmentDetails &&surfaceTreatmentDetails.map(item =>{
       temp.push(item.PartNumber)
     })
-    console.log(temp,"TEMP");
       uniqueTemp = Array.from(new Set(temp))
-      console.log('uniqueTemp: ', uniqueTemp);
       setPartNumberList(uniqueTemp)
       let partNo = uniqueTemp[index]
-      console.log('partNo: ', partNo);
-      console.log(CostingProcessCostResponse,"processCost");
       let processCost  = CostingProcessCostResponse && CostingProcessCostResponse.filter(item=> item.PartNumber ===partNo)
       let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
       let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber ===partNo)
@@ -103,13 +97,9 @@ const [loader,setLoader] = useState(false)
 
 
     const setPartDetail = (index,partNumber)=>{
-      console.log('partNumber: ', partNumber);
-      console.log('index: ', index);
       setActiveTab(index)
       setIndex(index)
       let partNo = partNumberList[index]
-      console.log('partNo: ', partNo);
-      console.log();
       let processCost  = CostingProcessCostResponse && CostingProcessCostResponse.filter(item=> item.PartNumber ===partNo )
       let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
       let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber ===partNo)
@@ -127,7 +117,6 @@ const [loader,setLoader] = useState(false)
     },[costingProcessCost,costingOperationCost,othercostingOperationCost])
 
 
-    // console.log(costingProcessCost, "costingProcessCost");
   //  checkMultiplePart()
   return (
     <>
@@ -151,7 +140,7 @@ const [loader,setLoader] = useState(false)
             </Row>
             {loader && <LoaderCustom />}
             <div className=" row">
-               <Nav tabs className="subtabs cr-subtabs-head view-conversion-header col-md-1">
+              {IsAssemblyCosting && partNumberList[0]!==null && partNumberList.length > 0 && <Nav tabs className="subtabs cr-subtabs-head view-conversion-header col-md-1">
                     {partNumberList && partNumberList.map((item, index)=> {
                      return (
                       <NavItem>
@@ -161,8 +150,8 @@ const [loader,setLoader] = useState(false)
                     </NavItem>
                      )
                   })}
-               </Nav>
-                <TabContent activeTab={activeTab} className="col-md-11 view-conversion-container">
+               </Nav> }
+                <TabContent activeTab={activeTab} className={`${IsAssemblyCosting && partNumberList[0]!==null && partNumberList.length > 0 ? 'col-md-11' : 'col-md-12'}  view-conversion-container`}>
                   <TabPane tabId={index}>
               <Row>
                 <Col md="12">
@@ -175,7 +164,7 @@ const [loader,setLoader] = useState(false)
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th>{`Part No`}</th>
+                        {partNumberList.length ===0 && <th>{`Part No`}</th>} 
                         <th>{`Process Name`}</th>
                         <th>{`Process Description`}</th>
                         <th>{`Machine Name`}</th>
@@ -194,7 +183,7 @@ const [loader,setLoader] = useState(false)
                         costingProcessCost.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
+                              {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
                               <td>{item.ProcessName ? item.ProcessName : '-'}</td>
                               <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
                               <td>{item.MachineName ? item.MachineName : '-'}</td>
@@ -236,7 +225,7 @@ const [loader,setLoader] = useState(false)
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th>{`Part No`}</th>
+                        {partNumberList.length ===0 && <th>{`Part No`}</th>} 
                           <th>{`Operation Name`}</th>
                           <th>{`Operation Code`}</th>
                           <th>{`UOM`}</th>
@@ -253,7 +242,7 @@ const [loader,setLoader] = useState(false)
                           costingOperationCost.map((item, index) => {
                             return (
                               <tr key={index}>
-                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
+                                {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
                                 <td>
                                   {item.OperationName ? item.OperationName : '-'}
                                 </td>
@@ -307,7 +296,7 @@ const [loader,setLoader] = useState(false)
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th>{`Part No`}</th>
+                        {partNumberList.length ===0 && <th>{`Part No`}</th>} 
                           <th>{`Operation Name`}</th>
                           <th>{`Operation Code`}</th>
                           <th>{`UOM`}</th>
@@ -324,7 +313,7 @@ const [loader,setLoader] = useState(false)
                           othercostingOperationCost.map((item, index) => {
                             return (
                               <tr key={index}>
-                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
+                                {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
                                 <td>
                                   {item.OtherOperationName ? item.OtherOperationName : '-'}
                                 </td>
@@ -428,7 +417,7 @@ const [loader,setLoader] = useState(false)
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th>{`Part No`}</th>
+                      {partNumberList.length ===0 && <th>{`Part No`}</th>} 
                         <th>{`Operation Name`}</th>
                         <th>{`Surface Area`}</th>
                         <th>{`UOM`}</th>
@@ -441,7 +430,7 @@ const [loader,setLoader] = useState(false)
                         surfaceTreatmentDetails.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
+                              {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
                               <td>{item.OperationName ? item.OperationName : '-'}</td>
                               <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                               <td>{item.UOM ? item.UOM : '-'}</td>
@@ -474,7 +463,7 @@ const [loader,setLoader] = useState(false)
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th>{`Part No`}</th>
+                      {partNumberList.length ===0 && <th>{`Part No`}</th>} 
                         <th>{`UOM`}</th>
                         <th>{`Rate`}</th>
                         <th>{`Quantity`}</th>
@@ -489,7 +478,7 @@ const [loader,setLoader] = useState(false)
                           </td>
                         </tr> :
                         <tr>
-                          <td>{netTransportationCostView.PartNumber !== null || netTransportationCostView.PartNumber !== "" ? netTransportationCostView.PartNumber : ""}</td>
+                          {/* <td>{netTransportationCostView.PartNumber !== null || netTransportationCostView.PartNumber !== "" ? netTransportationCostView.PartNumber : ""}</td> */}
                           <td>{netTransportationCostView && netTransportationCostView.UOM ? netTransportationCostView.UOM : '-'}</td>
                           <td>{netTransportationCostView && netTransportationCostView.Rate ? checkForDecimalAndNull(netTransportationCostView.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                           <td>{netTransportationCostView && netTransportationCostView.Quantity ? checkForDecimalAndNull(netTransportationCostView.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
