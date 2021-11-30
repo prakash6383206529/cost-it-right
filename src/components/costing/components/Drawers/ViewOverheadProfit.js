@@ -40,6 +40,7 @@ function ViewOverheadProfit(props) {
     props.closeDrawer('')
   }
 
+
   return (
     <>
       <Drawer
@@ -113,7 +114,7 @@ function ViewOverheadProfit(props) {
                                 {viewOverheadData.OverheadFixedCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost.initialConfiguration.NoOfDecimalForPrice) : "-"}
+                                {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost,initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}
@@ -133,7 +134,7 @@ function ViewOverheadProfit(props) {
                           )}
                           {viewOverheadData.IsOverheadBOPApplicable && (
                             <tr>
-                              <td>{`Insert`}</td>
+                              <td>{`BOP`}</td>
                               <td>
                                 {viewOverheadData.OverheadBOPPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
@@ -243,7 +244,7 @@ function ViewOverheadProfit(props) {
                             )}
                             {viewProfitData.IsProfitBOPApplicable && (
                               <tr>
-                                <td>{`Insert`}</td>
+                                <td>{`BOP`}</td>
                                 <td>
                                   {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                                 </td>

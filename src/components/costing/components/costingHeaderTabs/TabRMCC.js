@@ -1657,7 +1657,7 @@ function TabRMCC(props) {
   }
 
   useEffect(() => {
-    if (Object.keys(getAssemBOPCharge).length > 0) {
+    if (getAssemBOPCharge && Object.keys(getAssemBOPCharge).length > 0) {
       setBOPCostWithAsssembly()
     }
   }, [getAssemBOPCharge])
