@@ -141,7 +141,9 @@ const CostingSummaryTable = (props) => {
       let data = viewCostingData[index].netBOPCostView
       let bopPHandlingCharges = viewCostingData[index].bopPHandlingCharges
       let bopHandlingPercentage = viewCostingData[index].bopHandlingPercentage
-      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage })
+      let childPartBOPHandlingCharges = viewCostingData[index].childPartBOPHandlingCharges
+      let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
+      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage,childPartBOPHandlingCharges:childPartBOPHandlingCharges,IsAssemblyCosting:IsAssemblyCosting })
     }
   }
 
@@ -830,7 +832,7 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 0 ? checkForDecimalAndNull(data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : 0 : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 0 && data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                             </td>
                           )

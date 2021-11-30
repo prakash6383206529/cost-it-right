@@ -114,7 +114,7 @@ function ViewOverheadProfit(props) {
                                 {viewOverheadData.OverheadFixedCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost.initialConfiguration.NoOfDecimalForPrice) : "-"}
+                                {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost,initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}

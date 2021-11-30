@@ -41,9 +41,9 @@ function AddBOPHandling(props) {
               if(RMCCTabData[0].CostingPartDetails.IsApplyBOPHandlingCharges ){
                 setValue('BOPHandlingPercentage',RMCCTabData[0].CostingPartDetails.BOPHandlingPercentage)
                 setValue('BOPHandlingCharges',RMCCTabData[0].CostingPartDetails.BOPHandlingCharges)
-            }else if(Object.keys(getAssemBOPCharge).length>0){
-                  setValue('BOPHandlingPercentage',getAssemBOPCharge.BOPHandlingPercentage)
-                  setValue('BOPHandlingCharges',getAssemBOPCharge.BOPHandlingCharges)
+            }else if(getAssemBOPCharge && Object.keys(getAssemBOPCharge).length>0){
+                  setValue('BOPHandlingPercentage',getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage)
+                  setValue('BOPHandlingCharges',getAssemBOPCharge &&getAssemBOPCharge.BOPHandlingCharges)
 
               }
               
@@ -157,7 +157,7 @@ function AddBOPHandling(props) {
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
           "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
           "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
           "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
           "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,

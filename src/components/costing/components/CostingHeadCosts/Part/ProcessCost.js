@@ -197,6 +197,7 @@ function ProcessCost(props) {
           UOM: el.UnitOfMeasurement,
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           Tonnage: el.MachineTonnage,
+          Quantity:1,
           ProcessCost: el.MachineRate * 1,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId
@@ -209,6 +210,7 @@ function ProcessCost(props) {
 
       tempArr && tempArr.map((el, index) => {
         setValue(`${ProcessGridFields}.${index}.ProcessCost`, el.ProcessCost)
+        setValue(`${ProcessGridFields}.${index}.Quantity`,el.Quantity)
       })
 
       let ProcessCostTotal = 0
@@ -275,6 +277,7 @@ function ProcessCost(props) {
       setTabData(tempArr2)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, el.ProcessCost)
+        setValue(`${ProcessGridFields}.${i}.Quantity`,el.Quantity)
       })
     }, 200)
   }
