@@ -111,7 +111,7 @@ function AssemblySurfaceTreatment(props) {
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
             {item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-            {
+            {/* {
               item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
@@ -120,7 +120,7 @@ function AssemblySurfaceTreatment(props) {
                     {`Child Parts Surface Treatment Cost:- ${item.CostingPartDetails.NetSurfaceTreatmentCost - (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly + item.CostingPartDetails.TotalTransportationCostPerAssembly)}`}
                   </span>
                 </div> : ''
-            }
+            } */}
           </td>
         </div>
         <td>

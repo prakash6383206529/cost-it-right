@@ -22,7 +22,7 @@ function SurfaceTreatment(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate,RMCCTabData,SurfaceTabData,OverheadProfitTabData,PackageAndFreightTabData,DiscountCostData } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
@@ -55,9 +55,10 @@ function SurfaceTreatment(props) {
 
     if (props.IsAssemblyCalculation) {
       const tabData = RMCCTabData[0]
-      const surfaceTabData = SurfaceTabData[0]
-      const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData[0]
+      const surfaceTabData= SurfaceTabData[0]
+      const overHeadAndProfitTabData=OverheadProfitTabData[0]
+      const discountAndOtherTabData =DiscountCostData[0]
+      console.log('tabData: ', tabData);
       let requestData = {
         "CostingId": item.CostingId,
         "PartId": item.PartId,
@@ -93,7 +94,7 @@ function SurfaceTreatment(props) {
         "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
         "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
         "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
-        "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
+        "TotalOperationCostComponent": item.CostingPartDetails?.TotalOperationCostComponent,
         "SurfaceTreatmentCostPerAssembly":item.CostingPartDetails?.SurfaceTreatmentCost,
         "TransportationCostPerAssembly": item.CostingPartDetails?.TransportationCost,
         "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -116,7 +117,7 @@ function SurfaceTreatment(props) {
             "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
             "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
             "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-            "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
+            "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
           "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
           "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
             "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
@@ -135,7 +136,8 @@ function SurfaceTreatment(props) {
           "LoggedInUserId": loggedInUserId()
         
       }
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      console.log(assemblyRequestedData,"assemblyRequestedData");
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
