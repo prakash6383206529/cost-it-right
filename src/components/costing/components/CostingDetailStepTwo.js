@@ -78,7 +78,6 @@ function CostingDetailStepTwo(props) {
         ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
         TotalCost: OverAllCost,
       }
-
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
       dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {
@@ -267,7 +266,7 @@ function CostingDetailStepTwo(props) {
           data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
         }
 
-        const discountedCost = checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice);
+        const discountedCost =data.DiscountCostType==='Percentage'? checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice):data.DiscountsAndOtherCost;
         const discountValues = {
           NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
           HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),

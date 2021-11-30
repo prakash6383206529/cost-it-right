@@ -262,6 +262,7 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountCostChange = (event) => {
+    console.log("COMING IN discount", event.target.value);
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
         let topHeaderData = {
@@ -270,7 +271,9 @@ function TabDiscountOther(props) {
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
           DiscountCostType: hundiscountType.value
         }
-        props.setHeaderCost(topHeaderData)
+    
+      props.setHeaderCost(topHeaderData)
+ 
 
       } else {
         Toaster.warning('Please enter valid number.')
