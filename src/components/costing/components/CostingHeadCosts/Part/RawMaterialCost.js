@@ -951,7 +951,7 @@ function RawMaterialCost(props) {
                                 />
                               </td>
                             }
-                            <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                            <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
                             <td>
                               {item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
