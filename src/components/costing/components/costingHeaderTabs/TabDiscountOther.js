@@ -761,7 +761,7 @@ function TabDiscountOther(props) {
                         />
                       </Col>
                     }
-                    <Col md="4" >
+                    <Col md="2" >
                       <TextFieldHookForm
                         label="Hundi/Discount Value"
                         name={'HundiOrDiscountValue'}
@@ -786,10 +786,27 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode || hundiscountType.value === 'Percentage' || Object.keys(hundiscountType).length === 0 ? true : false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="2">
                       <TextFieldHookForm
                         label="Net PO Price (INR)"
                         name={'NetPOPriceINR'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{}}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.SANumber}
+                        disabled={CostingViewMode ? true : false}
+                      />
+                    </Col>
+                    <Col md="2">
+                      <TextFieldHookForm
+                        label="SA Number"
+                        name={'SANumber'}
                         Controller={Controller}
                         control={control}
                         register={register}
