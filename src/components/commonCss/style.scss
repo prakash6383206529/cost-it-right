@@ -6394,19 +6394,26 @@ left: 17rem;
     min-height: calc(100vh + 11rem);
   }
 .view-conversion-header {
+  
   flex: 0 0 9.78%;
     max-width: 9.78%;
-    height: fit-content;
+    display: block;
     .nav-item {
       .nav-link {
         border-left: none;
         border-bottom: 0;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        text-align: center;
+        @media  screen and (max-width: $miniDesktop) {
+          font-size: 14px !important;
+        }
       }
     }
 }
-.view-conversion-container {
-  flex: 0 0 90.22%;
-  max-width: 90.22%;
+.view-conversion-container.col-md-11 {
+    flex: 0 0 90.22%;
+    max-width: 90.22%;
   .left-border {
     padding: 8px;
   }

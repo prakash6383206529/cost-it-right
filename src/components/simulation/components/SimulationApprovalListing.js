@@ -21,7 +21,6 @@ import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { HorizontalScroll } from '../../common/HorizontalScroll';
 
 const gridOptions = {};
 
@@ -53,7 +52,6 @@ function SimulationApprovalListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
-    const scrollRef=HorizontalScroll();
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -536,7 +534,7 @@ function SimulationApprovalListing(props) {
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div
-                                className="ag-theme-material" ref={scrollRef}
+                                className="ag-theme-material"
                             >
                                 <AgGridReact
                                     style={{ height: '100%', width: '100%',  }}
