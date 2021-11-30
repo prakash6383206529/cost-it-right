@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, saveAssemblyBOPHandlingCharge, } from '../../../actions/Costing';
+import { getRMCCTabData, saveAssemblyBOPHandlingCharge, setAllCostingInArray, } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -41,6 +41,8 @@ function AssemblyPart(props) {
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
           }
+        
+          dispatch(setAllCostingInArray(Data.CostingChildPartDetails))
           props.toggleAssembly(BOMLevel, PartNumber, Data)
         }
       }))

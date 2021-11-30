@@ -16,6 +16,7 @@ import {
   EMPTY_GUID,
   SET_PLASTIC_ARR,
   SET_ASSEM_BOP_CHARGE,
+  SET_ARRAY_FOR_COSTING,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2208,6 +2209,16 @@ export function saveAssemblyBOPHandlingCharge(data,callback){
     dispatch({
       type: SET_ASSEM_BOP_CHARGE,
       payload: data
+    })
+  }
+}
+
+
+export function setAllCostingInArray(data){
+  return (dispatch)=>{
+    dispatch({
+      type:SET_ARRAY_FOR_COSTING,
+      payload:data
     })
   }
 }

@@ -67,6 +67,7 @@ import {
   GET_COSTING_SPECIFIC_TECHNOLOGY,
   SET_PLASTIC_ARR,
   SET_ASSEM_BOP_CHARGE,
+  SET_ARRAY_FOR_COSTING
 } from '../../../config/constants';
 
 const initialState = {
@@ -86,6 +87,7 @@ const initialState = {
   SurfaceCostData: {},
   RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' },
   getAssemBOPCharge:{},
+  setArrayForCosting:[]
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -553,6 +555,14 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading:false,
         getAssemBOPCharge:action.payload
+      }
+    case SET_ARRAY_FOR_COSTING:
+      console.log(...state.setArrayForCosting,"...state.setArrayForCosting");
+      let tempArray= [...state.setArrayForCosting,action.payload]
+      return {
+        ...state,
+        loading:false,
+        setArrayForCosting:tempArray
       }
     default:
       return state
