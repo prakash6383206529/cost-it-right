@@ -58,7 +58,7 @@ function SurfaceTreatment(props) {
       const surfaceTabData= SurfaceTabData[0]
       const overHeadAndProfitTabData=OverheadProfitTabData[0]
       const discountAndOtherTabData =DiscountCostData[0]
-      console.log('tabData: ', tabData);
+      console.log('item: ', item);
       let requestData = {
         "CostingId": item.CostingId,
         "PartId": item.PartId,
@@ -118,8 +118,8 @@ function SurfaceTreatment(props) {
             "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
             "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
             "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
-          "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-          "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
+            "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
             "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
             "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
             "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
