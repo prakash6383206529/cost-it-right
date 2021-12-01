@@ -620,7 +620,7 @@ export function formViewData(costingSummary) {
   }
   obj.nPOPrice = dataFromAPI.NetPOPrice && dataFromAPI.NetPOPrice !== null ? dataFromAPI.NetPOPrice : 0
   obj.effectiveDate = dataFromAPI.EffectiveDate ? dataFromAPI.EffectiveDate : ''
-  // // // obj.attachment = "Attachment";
+ 
   obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : []
   obj.approvalButton = ''
   // //RM
@@ -629,7 +629,7 @@ export function formViewData(costingSummary) {
   obj.netBOPCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingBoughtOutPartCost : []
   // //COnversion Cost
   obj.netConversionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingConversionCost : '-'
-  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.TransportationDetails : ''
+  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.ChildPartTransportationDetails ??[] : []
   obj.surfaceTreatmentDetails = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingOverheadDetail : '-'
