@@ -15,7 +15,7 @@ import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
-import { debounce } from '@material-ui/core';
+import { debounce } from 'lodash'
 
 
 
