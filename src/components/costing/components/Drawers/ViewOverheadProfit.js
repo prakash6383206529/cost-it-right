@@ -93,11 +93,11 @@ function ViewOverheadProfit(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                        <th>{`Applicability`}</th>
                         <th>{`Overhead On`}</th>
                         <th>{`Percentage(%)`}</th>
                         <th>{`Cost (Applicability)`}</th>
                         <th>{`Overhead`}</th>
+
                       </tr>
                     </thead>
                     <tbody>
@@ -114,7 +114,7 @@ function ViewOverheadProfit(props) {
                                 {viewOverheadData.OverheadFixedCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost,initialConfiguration.NoOfDecimalForPrice) : "-"}
+                                {viewOverheadData.OverheadFixedTotalCost ? checkForDecimalAndNull(viewOverheadData.OverheadFixedTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
                               </td>
                             </tr>
                           )}
@@ -203,11 +203,11 @@ function ViewOverheadProfit(props) {
                       <thead>
                         { }
                         <tr>
-                          <th>{`Applicability`}</th>
-                          <th>{`Profits (Fixed)`}</th>
+                          <th>{`Profit On`}</th>
                           <th>{`Percentage(%)`}</th>
                           <th>{`Cost (Applicability)`}</th>
                           <th>{`Profit`}</th>
+
                         </tr>
                       </thead>
                       <tbody>
