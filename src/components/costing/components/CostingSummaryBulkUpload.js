@@ -215,7 +215,7 @@ class CostingSummaryBulkUpload extends Component {
 
                                     <button
                                         type="button"
-                                        className={'user-btn'}
+                                        className={'user-btn min-width-btn'}
                                         onClick={this.bulkToggle}>
                                         <div className={'upload'}></div>Bulk Upload
                                     </button>

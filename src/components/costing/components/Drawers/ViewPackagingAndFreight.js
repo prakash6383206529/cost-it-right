@@ -105,7 +105,7 @@ function ViewPackagingAndFreight(props) {
                 </Col>
               </Row>
 
-              <hr />
+              <br />
               <div>
                 <Row>
                   <Col md="8">
