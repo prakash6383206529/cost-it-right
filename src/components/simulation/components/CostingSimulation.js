@@ -191,7 +191,7 @@ function CostingSimulation(props) {
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
-                <button className="View" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }} />
+                <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
 
             </>
         )
@@ -611,7 +611,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='New Other Cost'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={150} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
                                                     {/* </>} */}
                                                 </AgGridReact>
 

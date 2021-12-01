@@ -20,7 +20,7 @@ import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const gridOptions = {};
 
@@ -539,7 +539,7 @@ function SimulationApprovalListing(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
-                                    style={{ height: '100%', width: '100%' }}
+                                    style={{ height: '100%', width: '100%',  }}
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
@@ -559,6 +559,9 @@ function SimulationApprovalListing(props) {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
+                                    
+                                    
+                                   
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}

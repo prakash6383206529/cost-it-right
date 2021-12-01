@@ -899,6 +899,16 @@ input.form-control{
   opacity: 1;
   border: none;
 }
+.hirarchy-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/hirarchy-btn.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  background-color: #cef2fb;
+  border-radius: 4px;
+  margin-left: 5px !important;
+}
 
 .Download {
   width: 32px;
@@ -952,7 +962,8 @@ input.form-control{
 .Add-file,
 .SaveIcon,
 .CancelIcon,
-.CalculatorIcon {
+.CalculatorIcon,
+.hirarchy-btn {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;
@@ -1686,7 +1697,6 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
-
 .react-bs-table-container.client-table {
   position: relative;
 }
@@ -6384,19 +6394,26 @@ left: 17rem;
     min-height: calc(100vh + 11rem);
   }
 .view-conversion-header {
+  
   flex: 0 0 9.78%;
     max-width: 9.78%;
-    height: fit-content;
+    display: block;
     .nav-item {
       .nav-link {
         border-left: none;
         border-bottom: 0;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        text-align: center;
+        @media  screen and (max-width: $miniDesktop) {
+          font-size: 14px !important;
+        }
       }
     }
 }
-.view-conversion-container {
-  flex: 0 0 90.22%;
-  max-width: 90.22%;
+.view-conversion-container.col-md-11 {
+    flex: 0 0 90.22%;
+    max-width: 90.22%;
   .left-border {
     padding: 8px;
   }
