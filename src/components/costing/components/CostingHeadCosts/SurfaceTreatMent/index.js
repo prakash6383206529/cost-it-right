@@ -59,7 +59,7 @@ function SurfaceTreatment(props) {
       const surfaceTabData= SurfaceTabData[0]
       const overHeadAndProfitTabData=OverheadProfitTabData[0]
       const discountAndOtherTabData =DiscountCostData[0]
-      console.log('tabData: ', tabData);
+      console.log('item: ', item);
       let requestData = {
         "CostingId": item.CostingId,
         "PartId": item.PartId,
@@ -77,8 +77,8 @@ function SurfaceTreatment(props) {
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
           "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
           "TransportationCost": item.CostingPartDetails.TransportationCost,
-          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly,
-          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TotalTransportationCostPerAssembly,
+          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TransportationCost,
           "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
