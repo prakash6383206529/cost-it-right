@@ -25,6 +25,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -436,11 +438,24 @@ class BOPImportListing extends Component {
 
         };
 
+        const isFirstColumn = (params) => {
+            if (this.props.isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -451,6 +466,21 @@ class BOPImportListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter
         };
+
+        const onRowSelect = () => {
+
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (this.props.isSimulation) {
+                let len = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(len)
+                this.props.apply(selectedRows)
+            }
+            this.setState({ selectedRowData: selectedRows })
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
+        }
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -637,6 +667,9 @@ class BOPImportListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    onFilterModified={onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -708,7 +741,8 @@ export default connect(mapStateToProps, {
     getBOPCategorySelectList,
     getPlantSelectList,
     getAllVendorSelectList,
-    getVendorWithVendorCodeSelectList
+    getVendorWithVendorCodeSelectList,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

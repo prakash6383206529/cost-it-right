@@ -51,11 +51,11 @@ class UsersListing extends Component {
 			gridApi: null,
 			gridColumnApi: null,
 			rowData: null,
-			showPopup:false,
-			showPopup2:false,
-			deletedId:'',
-			cell:[],
-			row:[]
+			showPopup: false,
+			showPopup2: false,
+			deletedId: '',
+			cell: [],
+			row: []
 		}
 	}
 
@@ -192,32 +192,58 @@ class UsersListing extends Component {
 		this.closeUserDetails()
 		this.props.getUserDetail(data)
 	}
-	onPopupConfirm =() => {
-		
-		this.deleteItem(this.state.row, this.state.cell);
-	   
+	onPopupConfirm = () => {
+
+
+		let data = {
+			Id: this.state.row.UserId,
+			ModifiedBy: loggedInUserId(),
+			IsActive: !this.state.cell, //Status of the Reason.
+		}
+		this.props.activeInactiveUser(data, (res) => {
+			if (res && res.data && res.data.Result) {
+				if (this.state.cell == true) {
+					Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
+				} else {
+					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
+				}
+				this.getUsersListData(null, null);
+			}
+		})
+
+
+		this.setState({ showPopup: false })
+		this.setState({ showPopup2: false })
+
+
 	}
-	onPopupConfirm2 =() => {	
+	onPopupConfirm2 = () => {
 		this.deleteItem(this.state.deletedId);
-	   
+
 	}
-	closePopUp= () =>{
-		this.setState({showPopup:false})
-		this.setState({showPopup2:false})
-	  }
+	closePopUp = () => {
+		this.setState({ showPopup: false })
+		this.setState({ showPopup2: false })
+	}
 	/**
 	* @method deleteItem
 	* @description confirm delete part
 	*/
 	deleteItem = (Id) => {
-		this.setState({showPopup2:true, deletedId:Id })
+
+		this.setState({ showPopup2: true, deletedId: Id })
 		const toastrConfirmOptions = {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
+				this.setState({ showPopup: false })
+				this.setState({ showPopup2: false })
 			},
-			onCancel: () => { }
+			onCancel: () => {
+				this.setState({ showPopup: false })
+				this.setState({ showPopup2: false })
+			}
 		};
-		// return toastr.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
+		return toastr.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -274,7 +300,7 @@ class UsersListing extends Component {
 			ModifiedBy: loggedInUserId(),
 			IsActive: !cell, //Status of the user.
 		}
-		this.setState({showPopup:true, row:row, cell:cell })
+		this.setState({ showPopup: true, row: row, cell: cell })
 		const toastrConfirmOptions = {
 
 			onOk: () => {
@@ -353,7 +379,13 @@ class UsersListing extends Component {
 	* @method linkableFormatter
 	* @description Renders Name link
 	*/
-	linkableFormatter = (cell, row, enumObject, rowIndex) => {
+
+
+
+	linkableFormatter = (props) => {
+
+		const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 		return (
 			<>
 				<div
@@ -363,6 +395,18 @@ class UsersListing extends Component {
 			</>
 		)
 	}
+
+
+	// linkableFormatter = (cell, row, enumObject, rowIndex) => {
+	// 	return (
+	// 		<>
+	// 			<div
+	// 				onClick={() => this.viewDetails(row.UserId)}
+	// 				className={'link'}
+	// 			>{cell}</div>
+	// 		</>
+	// 	)
+	// }
 
 	viewDetails = (UserId) => {
 		$('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -498,6 +542,7 @@ class UsersListing extends Component {
 			statusButtonFormatter: this.statusButtonFormatter,
 			hyphenFormatter: this.hyphenFormatter,
 			departmentFormatter: this.departmentFormatter,
+			linkableFormatter: this.linkableFormatter
 		};
 
 		return (
@@ -623,7 +668,7 @@ class UsersListing extends Component {
 								frameworkComponents={frameworkComponents}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-								<AgGridColumn field="FullName" headerName="Name"></AgGridColumn>
+								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
 								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 								) : null}
@@ -645,7 +690,7 @@ class UsersListing extends Component {
 							</div>
 						</div>
 					</div>
-                   
+
 					{this.state.isOpen && (
 						<ViewUserDetails
 							UserId={this.state.UserId}
@@ -657,16 +702,16 @@ class UsersListing extends Component {
 							IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
 						/>
 					)}
-					
+
 				</>
 				{
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${this.state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`}  />
-                }
+					this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${this.state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />
+				}
 				{/* {
                 this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`${MESSAGES.USER_DELETE_ALERT}`}  />
                 } */}
 			</div>
-			
+
 		);
 	}
 }

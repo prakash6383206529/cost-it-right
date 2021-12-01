@@ -70,6 +70,7 @@ const CostingSummaryTable = (props) => {
 
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [iccPaymentData, setIccPaymentData] = useState("")
 
   const [warningMsg, setShowWarningMsg] = useState(false)
 
@@ -140,7 +141,9 @@ const CostingSummaryTable = (props) => {
       let data = viewCostingData[index].netBOPCostView
       let bopPHandlingCharges = viewCostingData[index].bopPHandlingCharges
       let bopHandlingPercentage = viewCostingData[index].bopHandlingPercentage
-      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage })
+      let childPartBOPHandlingCharges = viewCostingData[index].childPartBOPHandlingCharges
+      let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
+      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage,childPartBOPHandlingCharges:childPartBOPHandlingCharges,IsAssemblyCosting:IsAssemblyCosting })
     }
   }
 
@@ -185,10 +188,13 @@ const CostingSummaryTable = (props) => {
     let profitData = viewCostingData[index].netProfitCostView
     let rejectData = viewCostingData[index].netRejectionCostView
     let modelType = viewCostingData[index].modelType
+    let IccPaymentData = viewCostingData[index].netPaymentIccCostView
+
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
     setViewProfitData(profitData)
+    setIccPaymentData(IccPaymentData)
     setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
   }
 
@@ -826,7 +832,7 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && data.netRMCostView.length > 0 ? checkForDecimalAndNull(data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : 0 : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 0 && data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                             </td>
                           )
@@ -1361,6 +1367,7 @@ const CostingSummaryTable = (props) => {
             overheadData={viewOverheadData}
             profitData={viewProfitData}
             rejectAndModelType={viewRejectAndModelType}
+            iccPaymentData={iccPaymentData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
           />

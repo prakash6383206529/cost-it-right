@@ -119,7 +119,7 @@ class AddExchangeRate extends Component {
               isEditFlag: true,
               // isLoader: false,
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -455,7 +455,7 @@ function mapStateToProps(state) {
       BankCommissionPercentage: exchangeRateData.BankCommissionPercentage ? exchangeRateData.BankCommissionPercentage : '',
       CustomRate: exchangeRateData.CustomRate ? exchangeRateData.CustomRate : '',
       // EffectiveDate: exchangeRateData.EffectiveDate ? exchangeRateData.EffectiveDate : ''
-      EffectiveDate: DayTime(exchangeRateData.EffectiveDate).utc._isValid ? DayTime(exchangeRateData.EffectiveDate) : ''
+      EffectiveDate: DayTime(exchangeRateData.EffectiveDate).isValid() ? DayTime(exchangeRateData.EffectiveDate) : ''
       // effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
 
     }

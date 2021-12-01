@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { checkForNull } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded } from '../../../actions/Costing';
@@ -21,6 +21,7 @@ function PackageCost(props) {
   const dispatch = useDispatch()
 
   const CostingViewMode = useContext(ViewCostingContext);
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
     props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
@@ -128,7 +129,7 @@ function PackageCost(props) {
                           <tr key={index}>
                             <td>{item.PackagingDescription}</td>
                             <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
-                            <td>{item.PackagingCost}</td>
+                            <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}

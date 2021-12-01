@@ -88,7 +88,7 @@ function CostingSummary(props) {
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', Data.Price)
           setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-          setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId
           newValue.technologyName = costingData.TechnologyName
@@ -200,7 +200,7 @@ function CostingSummary(props) {
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
                   setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-                  setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+                  setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value
                   newValue.technologyName = technology.label
@@ -526,7 +526,8 @@ function CostingSummary(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate}
+                              //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown

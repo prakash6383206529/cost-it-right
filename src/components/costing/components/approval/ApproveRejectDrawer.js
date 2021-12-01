@@ -898,7 +898,7 @@ function ApproveRejectDrawer(props) {
                             <div className="inputbox date-section">
                               <DatePicker
                                 name="EffectiveDate"
-                                selected={simulationDetail?.EffectiveDate && DayTime(simulationDetail.EffectiveDate).isValid ? DayTime(simulationDetail.EffectiveDate)._d : ''}
+                                selected={simulationDetail?.EffectiveDate && DayTime(simulationDetail.EffectiveDate).isValid() ? new Date(simulationDetail.EffectiveDate) : ''}
                                 // onChange={handleEffectiveDateChange}
                                 showMonthDropdown
                                 showYearDropdown
@@ -1051,12 +1051,14 @@ function ApproveRejectDrawer(props) {
                                     <a href={fileURL} target="_blank">
                                       {f.OriginalFileName}
                                     </a>
-                                    <img
+                                    {(type === 'Sender' ? true : false) &&
+                                      <img
 
-                                      alt={""}
-                                      className="float-right"
-                                      onClick={() => deleteFile(f.FileId, f.FileName)} src={redcrossImg}
-                                    ></img>
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)} src={redcrossImg}
+                                      ></img>
+                                    }
                                   </div>
                                 );
                               })}

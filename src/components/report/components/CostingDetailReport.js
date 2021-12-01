@@ -8,6 +8,7 @@ import NoContentFound from '../../common/NoContentFound'
 import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import { getReportListing } from '.././actions/ReportListing'
+import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -15,8 +16,8 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster ,EMPTY_DATA} from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
-
-
+import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
+import { formViewData } from '../../../helper'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -63,6 +64,8 @@ function ReportListing(props) {
     const [costingVersionChange, setCostingVersion] = useState('');
     const [tableData, setTableData] = useState([])
     const [isLoader, setLoader] = useState(true)
+    const [isOpen, setIsOpen] = useState(false)
+    const [userId, setUserId] = useState(false)
     const [warningMessage, setWarningMessage] = useState(true)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
@@ -75,27 +78,6 @@ function ReportListing(props) {
         reValidateMode: 'onChange',
     })
 
-
-
-
-    const onBtFirst = () => {
-        gridApi.paginationGoToFirstPage();
-    };
-
-    const onBtLast = () => {
-        gridApi.paginationGoToLastPage();
-    };
-
-
-
-
-    const onBtPageFive = () => {
-        gridApi.paginationGoToPage(4);
-    };
-
-    const onBtPageFifty = () => {
-        gridApi.paginationGoToPage(49);
-    };
 
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
@@ -129,10 +111,6 @@ function ReportListing(props) {
         return cellValue != null ? cellValue : '';
     }
 
-    const approvedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        //   return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
-        return cell != null ? cell : '';
-    }
 
     const createDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -145,6 +123,51 @@ function ReportListing(props) {
         let temp = `${DayTime(tempDate).format('DD/MM/YYYY')}-${cellValue}`
         setCostingVersion(temp);
         return temp
+    }
+
+
+
+
+    // @method hyperLinkFormatter( This function will make the first column details into hyperlink )
+
+    const hyperLinkableFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                <div
+                    onClick={() => viewDetails(row.UserId, cell, row)}
+                    className={'link'}
+                >{cell}</div>
+            </>
+        )
+    }
+
+
+    const viewDetails = (UserId, cell, row) => {
+
+        if (row.BaseCostingId && Object.keys(row.BaseCostingId).length > 0) {
+            dispatch(getSingleCostingDetails(row.BaseCostingId, (res) => {
+                if (res.data.Data) {
+                    let dataFromAPI = res.data.Data
+
+                    const tempObj = formViewData(dataFromAPI)
+                    dispatch(setCostingViewData(tempObj))
+                }
+            },
+            ))
+        }
+
+        setIsOpen(true)
+        setUserId(UserId)
+
+    }
+
+    const closeUserDetails = () => {
+        setIsOpen(false)
+        setUserId("")
+
     }
 
     const dateFormatter = (props) => {
@@ -187,10 +210,7 @@ function ReportListing(props) {
         var t0 = performance.now();
 
         dispatch(getReportListing(index, take, isPagination, filterData, (res) => {
-            //  props.getReportListing();   // <---- The function you're measuring time for 
 
-            // var t1 = performance.now();
-            // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         }))
 
     }
@@ -216,11 +236,6 @@ function ReportListing(props) {
     useEffect(() => {
         var tempArr = []
 
-        // reportListingData && reportListingData.map(item => {
-        //     if (item.Value === '0') return false;
-        //     temp.push({ label: item.Text, value: item.Value })
-        //     return null;
-        // });
         const blank = () => { setWarningMessage(false) }
 
         setReportListingDataStateArray(reportListingData)
@@ -238,9 +253,6 @@ function ReportListing(props) {
 
 
         }
-
-
-
 
 
     }, [reportListingData])
@@ -315,26 +327,12 @@ function ReportListing(props) {
 
 
     const onGridReady = (params) => {
-        // this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        // getDataList()
+
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
 
-        //setGridApi(params.api);
-        // setGridColumnApi(params.columnApi);
-
-        // const updateData = (data) => {
-        //     setRowData(data);
-        // };
-
-       
-
-
-        // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-        //     .then((resp) => resp.json())
-        //     .then((data) => updateData(data));
 
     };
 
@@ -350,9 +348,6 @@ function ReportListing(props) {
 
     }, [tableData])
 
-    // const renderColumn = (fileName) => {
-    //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
-    // }
 
     const frameworkComponents = {
         linkableFormatter: linkableFormatter,
@@ -363,6 +358,8 @@ function ReportListing(props) {
         dateFormatter: dateFormatter,
         statusFormatter: statusFormatter,
         //customLoadingOverlay: LoaderCustom
+        hyperLinkableFormatter: hyperLinkableFormatter,
+
     };
 
     /**
@@ -504,7 +501,7 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before">
+                <Row className="pt-4 blue-before btn-index">
 
 
                 <Col md="8" lg="8" className="search-user-block mb-3">
@@ -528,18 +525,6 @@ function ReportListing(props) {
                     </Col>
                 </Row>
             </form>
-
-            <div>
-                {/* <button onClick={() => onBtFirst()}>To First</button>
-                <button onClick={() => onBtLast()} id="btLast">
-                    To Last
-                </button> */}
-                {/* <button onClick={onBtPrevious}>To Previous</button>
-                <button onClick={onBtNext}>To Next</button> */}
-                {/* // <button onClick={() => onBtPageFive()}>To Page 5</button>
-                //<button onClick={() => onBtPageFifty()}>To Page 50</button> */}
-
-            </div>
 
 
             <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
@@ -574,7 +559,7 @@ function ReportListing(props) {
                         onSelectionChanged={onRowSelect}
                     >
 
-                        <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
+                        <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
                         <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -641,6 +626,20 @@ function ReportListing(props) {
                     </div>
                 </div>
             </div>
+
+
+            {
+                isOpen &&
+                <CostingDetailSimulationDrawer
+                    isOpen={isOpen}
+                    closeDrawer={closeUserDetails}
+                    anchor={"right"}
+                    isReport={isOpen}
+                    selectedRowData={selectedRowData}
+                    isSimulation={true}
+                />
+            }
+
 
         </div>
     );

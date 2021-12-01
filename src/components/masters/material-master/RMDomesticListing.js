@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
+import { useState, useEffect, } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, setFilterForRM
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
@@ -25,11 +26,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } from '../../../helper';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
@@ -212,9 +208,8 @@ function RMDomesticListing(props) {
                     settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
-
                     // if (isSimulation) {
-                    //     props.apply(Data)
+                    //     apply(Data)
                     // }
 
                     // const func = () => {
@@ -455,40 +450,10 @@ function RMDomesticListing(props) {
         }
     }
 
-    /**
-    * @method handleGradeChange
-    * @description  used to handle row material grade selection
-    */
-    const handleGradeChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setRMGrade(newValue);
-
-            const fun = () => {
-
-                dispatch(getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { }))
-                dispatch(getVendorFilterByGradeSelectList(RMGrade.value, () => { }))
-            }
-            fun();
-        } else {
-            setRMGrade([]);
-        }
-    }
-
-    /**
-     * @method handleVendorName
-     * @description called
-     */
-    const handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setvendorName(newValue);
-            dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
-            dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }))
 
 
-        } else {
-            setvendorName([]);
-        }
-    }
+
+
 
     /**
     * @method filterList
@@ -685,12 +650,11 @@ function RMDomesticListing(props) {
     }
 
     const onRowSelect = () => {
-
         var selectedRows = gridApi.getSelectedRows();
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         if (isSimulation) {
-            let len = gridApi.getSelectedRows().length
-            dispatch(setSelectedRowCountForSimulationMessage(len, res => { }))
+            let length = gridApi.getSelectedRows().length
+            dispatch(setSelectedRowCountForSimulationMessage(length))
 
             apply(selectedRows)
         }

@@ -18,7 +18,7 @@ import {
   getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -96,10 +96,10 @@ function CostingDetails(props) {
 
   const fieldValues = IsolateReRender(control);
   const [showPopup, setShowPopup] = useState(false)
-  const [costingObj, setCostingObj ] = useState({
-    item:{},
-    type:'',
-    index:[]
+  const [costingObj, setCostingObj] = useState({
+    item: {},
+    type: '',
+    index: []
   })
   const dispatch = useDispatch()
 
@@ -180,7 +180,7 @@ function CostingDetails(props) {
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', Data.Price)
-            setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
 
           }),
         )
@@ -292,13 +292,15 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
+              console.log('Data: ', Data);
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
               setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
-              setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+              setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
+              //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
 
             }),
@@ -956,8 +958,8 @@ function CostingDetails(props) {
   * @description CONFIRM DELETE COSTINGS
   */
   const deleteItem = (Item, index, type) => {
-     setShowPopup(true)
-      setCostingObj({item:Item, type:type,index:index})
+    setShowPopup(true)
+    setCostingObj({ item: Item, type: type, index: index })
     const toastrConfirmOptions = {
       onOk: () => {
         deleteCosting(Item, index, type);
@@ -1074,6 +1076,9 @@ function CostingDetails(props) {
 
     }))
 
+    dispatch(setRMCCData([],()=>{}))                            //THIS WILL CLEAR RM CC REDUCER
+    dispatch(setComponentItemData({},()=>{}))
+
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
 
@@ -1102,7 +1107,7 @@ function CostingDetails(props) {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+      setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
     }))
 
   }
@@ -1398,7 +1403,7 @@ function CostingDetails(props) {
   }
 
   const onPopupConfirm = () => {
-    const {item, type,  index} =costingObj;
+    const { item, type, index } = costingObj;
     deleteCosting(item, index, type);
   }
 
@@ -1432,11 +1437,6 @@ function CostingDetails(props) {
     new Promise(resolve => {
       resolve(filterList(inputValue));
     });
-
-  useEffect(() => {
-    renderListing('PartList')
-  }, [partSelectListByTechnology])
-
 
 
   return (
@@ -1642,14 +1642,15 @@ function CostingDetails(props) {
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
+                            {console.log(effectiveDate, "date")}
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
+                              // maxDate={new Date()}
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"
@@ -1691,19 +1692,19 @@ function CostingDetails(props) {
 
                         {/* ZBC PLANT GRID FOR COSTING */}
                         <Row>
-                          <Col md="12">
+                          <Col md="12" className={"costing-table-container"}>
                             <Table
                               className="table cr-brdr-main costing-table-next costing-table-zbc"
                               size="sm"
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Plant`}</th>
-                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
-                                  <th style={{}}>{`Costing Version`}</th>
-                                  <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
-                                  <th style={{ minWidth: "115px" }}>{`Price`}</th>
-                                  <th style={{ minWidth: "280px" }}>{`Actions`}</th>
+                                  <th className='vendor'>{`Plant`}</th>
+                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
+                                  <th className="costing-version" >{`Costing Version`}</th>
+                                  <th className="text-center costing-status" >{`Status`}</th>
+                                  <th className="costing-price">{`Price`}</th>
+                                  <th className="costing-action">{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1829,20 +1830,20 @@ function CostingDetails(props) {
 
                         {/* VBC PLANT GRID FOR COSTING */}
                         <Row>
-                          <Col md="12">
+                          <Col md="12" className={"costing-table-container"}>
                             <Table
                               className="table cr-brdr-main costing-table-next costing-table-vbc"
                               size="sm"
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Vendor`}</th>
-                                  {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
-                                  <th style={{}}>{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
-                                  <th style={{}}>{`Costing Version`}</th>
-                                  <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
-                                  <th style={{ minWidth: "115px" }}>{`Price`}</th>
-                                  <th style={{ minWidth: "280px" }}>{`Actions`}</th>
+                                  <th className='vendor'>{`Vendor`}</th>
+                                  {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant`}</th>}
+                                  <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
+                                  <th className="costing-version">{`Costing Version`}</th>
+                                  <th className="text-center costing-status">{`Status`}</th>
+                                  <th className= "costing-price">{`Price`}</th>
+                                  <th className="costing-action">{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>

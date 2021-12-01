@@ -522,9 +522,10 @@ class OperationListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (isSimulation) {
                 let len = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(len, res => { })
+                this.props.setSelectedRowCountForSimulationMessage(len)
                 this.props.apply(selectedRows)
             }
+            // console.log(setSelectedRowCountForSimulationMessage, 'nn (selectedRowCountForSimulationMessage !== 0) && ')
             // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
             this.setState({ selectedRowData: selectedRows })
 

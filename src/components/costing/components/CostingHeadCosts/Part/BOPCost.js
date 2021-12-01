@@ -47,25 +47,25 @@ function BOPCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
+        props.setBOPCost(gridData, Params,item)
       }
     }, 100)
     selectedIds(gridData)
   }, [gridData]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const Params = {
-        index: props.index,
-        BOMLevel: props.item.BOMLevel,
-        PartNumber: props.item.PartNumber,
-      }
-      if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
-      }
-    }, 100)
-    selectedIds(gridData)
-  }, [props.data]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const Params = {
+  //       index: props.index,
+  //       BOMLevel: props.item.BOMLevel,
+  //       PartNumber: props.item.PartNumber,
+  //     }
+  //     if (!CostingViewMode) {
+  //       props.setBOPCost(gridData, Params)
+  //     }
+  //   }, 100)
+  //   selectedIds(gridData)
+  // }, [props.data]);
 
   /**
   * @method DrawerToggle
@@ -279,7 +279,7 @@ function BOPCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'Insert Cost:'}
+                {'BOP Cost:'}
               </div>
             </Col>
             <Col md={'2'}>
@@ -287,7 +287,7 @@ function BOPCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD INSERT</button>}
+                <div className={'plus'}></div>ADD BOP</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -298,11 +298,11 @@ function BOPCost(props) {
                 <Table className="table cr-brdr-main costing-bop-cost-section" size="sm" >
                   <thead>
                     <tr>
-                      <th>{`Insert Part No.`}</th>
-                      <th>{`Insert Part Name`}</th>
-                      <th style={{ width: "220px" }} >{`Insert Cost (INR)`}</th>
+                      <th>{`BOP Part No.`}</th>
+                      <th>{`BOP Part Name`}</th>
+                      <th style={{ width: "220px" }} >{`BOP Cost (INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
-                      <th style={{ width: "220px" }} >{`Net Insert Cost`}</th>
+                      <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
@@ -384,7 +384,7 @@ function BOPCost(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}
                   >
-                    Apply Insert Handling Charges
+                    Apply BOP Handling Charges
                     <input
                       type="checkbox"
                       checked={IsApplyBOPHandlingCharges}

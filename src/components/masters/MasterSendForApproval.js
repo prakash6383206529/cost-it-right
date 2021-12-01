@@ -171,7 +171,7 @@ function MasterSendForApproval(props) {
             //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
             dispatch(masterApprovalRequestBySender(senderObj, res => {
                 if (res.data.Result) {
-                    Toaster.success('Token has been sent for approval.')
+                    Toaster.success('Raw Material has been sent for approval.')
                     props.closeDrawer('', 'submit')
                 }
             }))
@@ -313,7 +313,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
@@ -417,7 +417,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
@@ -480,7 +480,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
@@ -525,7 +525,7 @@ function MasterSendForApproval(props) {
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid ? DayTime(approvalObj.EffectiveDate)._d : ''}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown

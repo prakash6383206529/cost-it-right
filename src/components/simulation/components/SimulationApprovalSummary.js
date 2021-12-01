@@ -30,6 +30,7 @@ import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
+import { Link } from 'react-scroll'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -86,8 +87,9 @@ function SimulationApprovalSummary(props) {
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
-
-
+    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+    const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
@@ -111,12 +113,11 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,SenderReasonId } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setEffectiveDate(res.data.Data.EffectiveDate)
-
 
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
@@ -438,7 +439,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+                <Link to="campare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
             </>
         )
     }
@@ -692,7 +693,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
+                                                <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</span>
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
@@ -741,7 +742,14 @@ function SimulationApprovalSummary(props) {
                             <Col md="12">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
-                        </Row> */}
+                        </Row>
+                        <Fgwiseimactdata
+                            DisplayCompareCosting={DisplayCompareCosting}
+                            SimulationId={simulationDetail.SimulationId}
+                            headerName={headerName}
+                            parentField={parentField}
+                            childField={childField}
+                        />
 
                         {/* <Row className="mb-3">
                             <Col md="12">
@@ -966,7 +974,7 @@ function SimulationApprovalSummary(props) {
 
                         <Row className="mt-3">
                             <Col md="10">
-                                <div className="left-border">{'Compare Costing:'}</div>
+                                <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
@@ -984,7 +992,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row>
                             <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
-                            <Col md="12" className="px-4">
+                            {false && <Col md="12" className="px-4">
                                 <label>Upload Attachment (upload up to 2 files)</label>
                                 {files && files.length > 2 ? (
                                     <div class="alert alert-danger" role="alert">
@@ -1027,7 +1035,7 @@ function SimulationApprovalSummary(props) {
                                         disabled={true}
                                     />
                                 )}
-                            </Col>
+                            </Col>}
                             <div className="w-100">
                                 <div className={"attachment-wrapper mt-0 mb-3 px-4"}>
                                     {files &&
@@ -1039,12 +1047,13 @@ function SimulationApprovalSummary(props) {
                                                     <a href={fileURL} target="_blank">
                                                         {f.OriginalFileName}
                                                     </a>
-                                                    <img
+                                                    {false && <img
                                                         alt={""}
                                                         className="float-right"
                                                         onClick={() => false ? deleteFile(f.FileId, f.FileName) : ""}
                                                         src={redcrossImg}
                                                     ></img>
+                                                    }
                                                 </div>
                                             );
                                         })}

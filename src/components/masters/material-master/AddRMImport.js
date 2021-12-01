@@ -40,7 +40,7 @@ import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { animateScroll as scroll} from 'react-scroll';
 
 const selector = formValueSelector('AddRMImport');
 
@@ -414,7 +414,7 @@ class AddRMImport extends Component {
           } else {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
@@ -474,7 +474,7 @@ class AddRMImport extends Component {
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
-                  effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '',
+                  effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,
@@ -1776,6 +1776,7 @@ class AddRMImport extends Component {
                             (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
+                                onClick={()=>scroll.scrollToTop()}
                                 disabled={this.state.isFinalApprovar}
                               >
                                 <div className="send-for-approval"></div>

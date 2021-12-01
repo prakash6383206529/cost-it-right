@@ -7,7 +7,7 @@ import {
   checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
-import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
+import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
@@ -201,7 +201,7 @@ class AddMachineRate extends Component {
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
           }
-          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Description', Data.Description)
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
@@ -241,7 +241,7 @@ class AddMachineRate extends Component {
               remarks: Data.Remark,
               // Description: Data.Description,
               files: Data.Attachements,
-              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
             }, () => this.setState({ isLoader: false }))
           }, 100)
         }
@@ -919,11 +919,11 @@ class AddMachineRate extends Component {
   }
   onPopupConfirm = () => {
     this.props.reset()
-    this.props.updateExchangeRate(this.state.updatedObj, (res) => {
+    this.props.updateMachine(this.state.updatedObj, (res) => {
       if (res.data.Result) {
-        Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+        Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
         this.cancel()
-        console.log("called")
+
       }
     });
   }
@@ -943,7 +943,7 @@ class AddMachineRate extends Component {
       this.props.getPlantBySupplier(data.VendorId, () => { })
     }
 
-    this.props.change('EffectiveDate', DayTime(data.EffectiveDate)._isValid ? DayTime(data.EffectiveDate)._d : '')
+    this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import DayTime from '../components/common/DayTimeWrapper';
 import Toaster from '../components/common/Toaster';
 
 export const minLength = min => value =>
@@ -316,7 +316,7 @@ export const isGuid = (value) => {
 }
 
 export const getJsDateFromExcel = excelDate => {
-    return moment((excelDate - (25567 + 2)) * 86400 * 1000).local().format('YYYY-MM-DD HH:mm:ss');
+    return DayTime((excelDate - (25567 + 2)) * 86400 * 1000).format('YYYY-MM-DD HH:mm:ss');
 };
 
 //CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 
@@ -330,7 +330,7 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
 
 //CHECK IS COSTING EFFECTIVE DATE SELECTED
 export const CheckIsCostingDateSelected = (costingDate) => {
-    const IsSelected = moment(costingDate)._isValid ? true : false;
+    const IsSelected = DayTime(costingDate).isValid() ? true : false;
     if (!IsSelected) {
         Toaster.warning('Please select Costing effective date.')
     }

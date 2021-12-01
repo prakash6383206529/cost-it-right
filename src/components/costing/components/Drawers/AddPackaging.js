@@ -189,7 +189,7 @@ function AddPackaging(props) {
       PackagingDescription: data.PackagingDescription,
       PackagingCostFixed: 0,
       PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
-      PackagingCost: data.PackagingCost,
+      PackagingCost: checkForDecimalAndNull(data.PackagingCost, getConfigurationKey().NoOfDecimalForPrice),
       Applicability: applicability ? data.Applicability.value : '',
     }
     toggleDrawer('', formData)

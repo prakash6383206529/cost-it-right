@@ -38,6 +38,7 @@ function OperationCost(props) {
       index: 0,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
+      PartType:props.item.PartType
     }
     if (!CostingViewMode) {
       if (props.IsAssemblyCalculation) {
@@ -70,6 +71,7 @@ function OperationCost(props) {
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
         const OperationCost = WithLaboutCost + WithOutLabourCost;
+        console.log('OperationCost: ', OperationCost);
 
         return {
           IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
@@ -87,6 +89,7 @@ function OperationCost(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
+      console.log('tempArr: ', tempArr);
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
