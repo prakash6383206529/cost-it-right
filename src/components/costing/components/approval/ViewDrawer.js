@@ -91,7 +91,7 @@ function ViewDrawer(props) {
                               </div>
                               <div className="d-flex">
                                 <span className="small-grey-text left">Remark:</span>
-                                <span className=" right">{item.Remark ? item.Remark : '-'}</span>
+                                <span className=" right remark-wrapper">{item.Remark ? item.Remark : '-'}</span>
                               </div>
                             </div>
                             {/* bottom */}

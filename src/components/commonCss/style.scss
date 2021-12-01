@@ -2143,6 +2143,26 @@ body {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+        &.remark-wrapper {             // view description when user hover it 
+          &:hover {                         
+          position: absolute;
+          background-color: #ffffff;
+          white-space: pre-wrap;
+          overflow: visible;
+          left: 80px;
+          width: calc(100% - 80px);
+          // max-width: 80%;
+          padding: 5px;
+          top: 77%;
+          z-index: 10;
+          @media screen and (max-width:$miniDesktop) {
+            // max-width: 70%;
+          }
+          @media screen and (max-width:$middleDesktop) and (min-width:1367px) {
+            // max-width: 75%;
+          }
+        }
+      }
 		}
 	}
 }
@@ -6393,20 +6413,31 @@ left: 17rem;
   .update-vendor-loader {
     min-height: calc(100vh + 11rem);
   }
-.view-conversion-header {
+.view-conversion-header.cr-subtabs-head {
   
   flex: 0 0 9.78%;
     max-width: 9.78%;
     display: block;
     .nav-item {
       .nav-link {
-        border-left: none;
-        border-bottom: 0;
+        border-top: none;
         padding-left: 4px !important;
         padding-right: 4px !important;
+        border-left: 2px solid transparent;
+        border-bottom: 0;
         text-align: center;
         @media  screen and (max-width: $miniDesktop) {
           font-size: 14px !important;
+        }
+        &:hover {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
+        } 
+        &.active {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
         }
       }
     }
@@ -6441,3 +6472,9 @@ left: 17rem;
   }
 }
 // FG-Wise table css End
+.warning-section {
+ position:absolute;
+ bottom: 0;
+ left: -190px;
+ white-space: wr;
+}
