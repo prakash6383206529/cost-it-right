@@ -30,7 +30,7 @@ function ViewConversionCost(props) {
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [othercostingOperationCost, setOtherCostingOperationCostResponse] = useState([])
   const [surfaceTreatmentCost,setSurfaceTreatmentCost] =useState([])
-  const[transportCost,setTransportCost]= useState([])
+  const [transportCost,setTransportCost]= useState([])
   const [isShowToolCost, setIsShowToolCost] = useState(false)
   const [costingToolsCost, setcostingToolsCost] = useState(false)
   const [activeTab, setActiveTab] = useState(0);
@@ -54,11 +54,11 @@ const [loader,setLoader] = useState(false)
     CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.map(item =>{
       temp.push(item.PartNumber)
     })
-    // netTransportationCostView  && netTransportationCostView.map(item=>{
-    //   if(item.PartNumber !== null){
-    //     temp.push(item.PartNumber)
-    //   }
-    // })
+    netTransportationCostView  && netTransportationCostView.map(item=>{
+  
+        temp.push(item.PartNumber)
+      
+    })
     surfaceTreatmentDetails &&surfaceTreatmentDetails.map(item =>{
       temp.push(item.PartNumber)
     })
@@ -68,12 +68,12 @@ const [loader,setLoader] = useState(false)
       let processCost  = CostingProcessCostResponse && CostingProcessCostResponse.filter(item=> item.PartNumber ===partNo)
       let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
       let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber ===partNo)
-      // let transportCost = netTransportationCostView && netTransportationCostView.filter(item=> item.PartNumber === partNo)
+      let transportCost = netTransportationCostView && netTransportationCostView.filter(item=> item.PartNumber === partNo)
       let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter(item => item.PartNumber === partNo)
       setCostingProcessCost(processCost)
       setCostingOperationCostResponse(operationCost)
       setOtherCostingOperationCostResponse(otherOperationCost)
-      // setTransportCost(transportCost)
+      setTransportCost(transportCost)
       setSurfaceTreatmentCost(surfaceCost)
     // setCostingProcessCost(CostingProcessCostResponse[1])
     // setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
@@ -103,12 +103,12 @@ const [loader,setLoader] = useState(false)
       let processCost  = CostingProcessCostResponse && CostingProcessCostResponse.filter(item=> item.PartNumber ===partNo )
       let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
       let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber ===partNo)
-      // let transportCost = netTransportationCostView && netTransportationCostView.filter(item=> item.PartNumber === partNo)
+      let transportCost = netTransportationCostView && netTransportationCostView.filter(item=> item.PartNumber === partNo)
       let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter(item => item.PartNumber === partNo)
         setCostingProcessCost(processCost)
         setCostingOperationCostResponse(operationCost)
         setOtherCostingOperationCostResponse(otherOperationCost)
-        // setTransportCost(transportCost)
+        setTransportCost(transportCost)
         setSurfaceTreatmentCost(surfaceCost)
     }
 
@@ -426,8 +426,8 @@ const [loader,setLoader] = useState(false)
                       </tr>
                     </thead>
                     <tbody>
-                      {surfaceTreatmentDetails &&
-                        surfaceTreatmentDetails.map((item, index) => {
+                      {surfaceTreatmentCost &&
+                        surfaceTreatmentCost.map((item, index) => {
                           return (
                             <tr key={index}>
                               {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
@@ -440,7 +440,7 @@ const [loader,setLoader] = useState(false)
                             </tr>
                           )
                         })}
-                      {surfaceTreatmentDetails && surfaceTreatmentDetails.length === 0 && (
+                      {surfaceTreatmentCost && surfaceTreatmentCost.length === 0 && (
                         <tr>
                           <td colSpan={12}>
                             <NoContentFound title={EMPTY_DATA} />
@@ -463,29 +463,35 @@ const [loader,setLoader] = useState(false)
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
-                      {partNumberList.length ===0 && <th>{`Part No`}</th>} 
-                        <th>{`UOM`}</th>
+                      {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
+                        <th>{`Type`}</th>
                         <th>{`Rate`}</th>
                         <th>{`Quantity`}</th>
                         <th className="costing-border-right">{`Cost`}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {netTransportationCostView && netTransportationCostView.UOM === null ?
+                      
+                      {transportCost &&
+                        transportCost.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
+                              <td>{item.UOM ? item.UOM : '-'}</td>
+                              <td>{item.Rate ? item.Rate : '-'}</td>
+                              <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                              <td>{item.TransportationCost ? checkForDecimalAndNull(item.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+
+                            </tr>
+                          )
+                        })}
+                      {transportCost && transportCost.length === 0 && (
                         <tr>
                           <td colSpan={12}>
                             <NoContentFound title={EMPTY_DATA} />
                           </td>
-                        </tr> :
-                        <tr>
-                          {/* <td>{netTransportationCostView.PartNumber !== null || netTransportationCostView.PartNumber !== "" ? netTransportationCostView.PartNumber : ""}</td> */}
-                          <td>{netTransportationCostView && netTransportationCostView.UOM ? netTransportationCostView.UOM : '-'}</td>
-                          <td>{netTransportationCostView && netTransportationCostView.Rate ? checkForDecimalAndNull(netTransportationCostView.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                          <td>{netTransportationCostView && netTransportationCostView.Quantity ? checkForDecimalAndNull(netTransportationCostView.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
-                          <td>{netTransportationCostView && netTransportationCostView.TransportationCost ? checkForDecimalAndNull(netTransportationCostView.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         </tr>
-                      }
-
+                      )}
                     </tbody>
                   </Table>
                 </Col>
