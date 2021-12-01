@@ -211,7 +211,7 @@ const [loader,setLoader] = useState(false)
                 </Col>
               </Row>
 
-              <hr />
+             <br />
               <div>
                 <Row>
                   <Col md="8">
@@ -282,7 +282,7 @@ const [loader,setLoader] = useState(false)
                 </Row>
               </div>
 
-              <hr />
+             <br />
               <div>
                 <Row>
                   <Col md="8">
@@ -353,7 +353,7 @@ const [loader,setLoader] = useState(false)
                 </Row>
               </div>
 
-              <hr />
+             <br />
               {isShowToolCost && (
                 <div>
                   <Row>
@@ -451,7 +451,7 @@ const [loader,setLoader] = useState(false)
                   </Table>
                 </Col>
               </Row>
-              <hr />
+             <br />
               <Row>
                 <Col md="12">
                   <div className="left-border">{'Transportation Cost:'}</div>
