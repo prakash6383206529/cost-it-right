@@ -44,6 +44,20 @@ export default function SimulationReducer(state = initialState, action) {
                 costingSimulationList: action.payload
             }
         case GET_SIMULATION_APPROVAL_LIST:
+
+            action.payload && action.payload.map(item => {            //if status is draft then we have to show 'Y' in amendment status column & similarly for approved & other.
+                if (item.Status === 'Draft') {
+                    item.Status = 'Y'
+                }
+                else if (item.Status === 'Approved') {
+                    item.Status = 'R'
+                } else {
+                    item.Status = 'U'
+                }
+                return null;
+
+            })
+
             return {
                 ...state,
                 loading: false,
