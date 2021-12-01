@@ -22,6 +22,7 @@ import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
+import { debounce } from '@material-ui/core'
 
 const gridOptions = {};
 
@@ -478,10 +479,12 @@ function SimulationApprovalListing(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
-    const resetState = () => {
+    const resetState = debounce(() => {
+     getTableData()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-    }
+   
+    },500)
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
