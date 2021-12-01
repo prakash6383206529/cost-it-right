@@ -85,11 +85,11 @@ class BOPImportListing extends Component {
         this.props.getBOPImportDataList(filterData, (res) => {
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                this.setState({ tableData: Data, loader: false })
             } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], loader: false })
             } else {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], loader: false })
             }
         })
     }
