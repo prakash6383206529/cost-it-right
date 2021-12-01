@@ -448,9 +448,7 @@ function SimulationApprovalListing(props) {
 
 
     const frameworkComponents = {
-        // totalValueRenderer: this.buttonFormatter,
-        // effectiveDateRenderer: this.effectiveDateFormatter,
-        // costingHeadRenderer: this.costingHeadFormatter,
+
         linkableFormatter: linkableFormatter,
         renderVendor: renderVendor,
         requestedByFormatter: requestedByFormatter,
