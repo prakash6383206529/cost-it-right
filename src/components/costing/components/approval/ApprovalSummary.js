@@ -113,6 +113,10 @@ function ApprovalSummary(props) {
       }
     }
   }
+  const dataSend=[
+    approvalDetails,
+    partDetail
+  ]
 
   if (showListing) {
     return <Redirect to="/approval-listing" />
@@ -450,6 +454,7 @@ function ApprovalSummary(props) {
       )}
       {pushButton && (
         <PushButtonDrawer
+        dataSend={dataSend}
           isOpen={pushButton}
           closeDrawer={closePushButton}
           dataSend={[approvalDetails, partDetail]}
