@@ -98,7 +98,7 @@ const CostingSummaryTable = (props) => {
       obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
       obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
       obj.LoggedInUserId = userDetails().LoggedInUserId
-      console.log(viewCostingData, " viewCostingData viewCostingData")
+
       dispatch(isFinalApprover(obj, res => {
         if (res.data.Result) {
           setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
@@ -1219,7 +1219,8 @@ const CostingSummaryTable = (props) => {
                     {
                       !simulationDrawer &&
                       <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
-                        <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}) </th>
+                        <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}) </th>
+
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
