@@ -130,6 +130,7 @@ function TabOverheadProfit(props) {
           i.IsOpen = !i.IsOpen;
 
         } else {
+
           setAssembly(params, Children, i.CostingChildPartDetails)
         }
         return i;
