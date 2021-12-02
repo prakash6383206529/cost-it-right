@@ -901,6 +901,16 @@ input.form-control{
   opacity: 1;
   border: none;
 }
+.hirarchy-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/hirarchy-btn.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  background-color: #cef2fb;
+  border-radius: 4px;
+  margin-left: 5px !important;
+}
 
 .Download {
   width: 32px;
@@ -954,7 +964,8 @@ input.form-control{
 .Add-file,
 .SaveIcon,
 .CancelIcon,
-.CalculatorIcon {
+.CalculatorIcon,
+.hirarchy-btn {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;
@@ -1690,7 +1701,6 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
-
 .react-bs-table-container.client-table {
   position: relative;
 }
