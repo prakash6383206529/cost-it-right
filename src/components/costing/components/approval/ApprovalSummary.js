@@ -284,7 +284,7 @@ function ApprovalSummary(props) {
                           {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}
                         </td> */}
                       <td>
-                        {approvalDetails.OldPOPrice !== null ? approvalDetails.OldPOPrice : '-'}
+                        {approvalDetails.OldPOPrice !== null ? checkForDecimalAndNull(approvalDetails.OldPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
                         {approvalDetails.NewPOPrice !== null ? checkForDecimalAndNull(approvalDetails.NewPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}
