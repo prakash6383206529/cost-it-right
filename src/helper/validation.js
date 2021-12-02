@@ -333,6 +333,7 @@ export const CheckIsCostingDateSelected = (costingDate) => {
     const IsSelected = DayTime(costingDate).isValid() ? true : false;
     if (!IsSelected) {
         Toaster.warning('Please select Costing effective date.')
+
     }
     return !IsSelected;
 }

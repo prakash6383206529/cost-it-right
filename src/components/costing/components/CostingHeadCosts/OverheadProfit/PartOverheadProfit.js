@@ -30,6 +30,7 @@ function PartOverheadProfit(props) {
       BOMLevel: BOMLevel,
       PartNumber: PartNumber,
     }
+
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {

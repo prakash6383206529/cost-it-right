@@ -98,7 +98,7 @@ const CostingSummaryTable = (props) => {
       obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
       obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
       obj.LoggedInUserId = userDetails().LoggedInUserId
-
+      console.log(viewCostingData, " viewCostingData viewCostingData")
       dispatch(isFinalApprover(obj, res => {
         if (res.data.Result) {
           setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
@@ -143,7 +143,7 @@ const CostingSummaryTable = (props) => {
       let bopHandlingPercentage = viewCostingData[index].bopHandlingPercentage
       let childPartBOPHandlingCharges = viewCostingData[index].childPartBOPHandlingCharges
       let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
-      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage,childPartBOPHandlingCharges:childPartBOPHandlingCharges,IsAssemblyCosting:IsAssemblyCosting })
+      setViewBOPData({ BOPData: data, bopPHandlingCharges: bopPHandlingCharges, bopHandlingPercentage: bopHandlingPercentage, childPartBOPHandlingCharges: childPartBOPHandlingCharges, IsAssemblyCosting: IsAssemblyCosting })
     }
   }
 
@@ -159,7 +159,7 @@ const CostingSummaryTable = (props) => {
       let netTransportationCostView = viewCostingData[index].netTransportationCostView
       let surfaceTreatmentDetails = viewCostingData[index].surfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting:IsAssemblyCosting  })
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting })
     }
   }
 
@@ -615,7 +615,7 @@ const CostingSummaryTable = (props) => {
       return accumulator + currentValue.GrossWeight
     }, 0)
 
-    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForPrice)
+    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
   }
 
 
@@ -624,7 +624,7 @@ const CostingSummaryTable = (props) => {
       return accumulator + currentValue.FinishWeight
     }, 0)
 
-    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForPrice)
+    return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
   }
   // useEffect(() => {
   //   
@@ -750,10 +750,12 @@ const CostingSummaryTable = (props) => {
                       !isApproval ?
                         <tr>
                           <td>
-                            <span class="d-block">Costing Version</span>
-                            <span class="d-block">PO Price</span>
-                            <span class="d-block">Part Number</span>
-                            <span class="d-block">Part Name</span>
+                            <span className="d-block">Costing Version</span>
+                            <span className="d-block">PO Price</span>
+                            <span className="d-block">Part Number</span>
+                            <span className="d-block">Part Name</span>
+                            <span className="d-block">Plant Name</span>
+
                           </td>
                           {viewCostingData &&
                             viewCostingData.map((data, index) => {
@@ -774,6 +776,7 @@ const CostingSummaryTable = (props) => {
                                   <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   <span class="d-block">{data.partId}</span>
                                   <span class="d-block">{data.partName}</span>
+                                  <span class="d-block">{data.plantName}</span>
 
                                 </td>
                               )
@@ -815,10 +818,10 @@ const CostingSummaryTable = (props) => {
                             < td >
                               <span class="d-block small-grey-text">{data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : data.rm : ''}</span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].RMRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView && data.netRMCostView[0] && data.netRMCostView[0].ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                               <span class="d-block small-grey-text">
                                 {/* try with component */}

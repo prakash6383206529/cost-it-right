@@ -101,7 +101,7 @@ function ViewBOP(props) {
                
             <Row className="mx-0">
               <Col md="12">
-                <hr />
+               <br />
                 <Row>
                   <Col md="12">
                     <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s Insert Handling Charge:':'Insert Handling Charge:'}`}</div>
@@ -138,7 +138,7 @@ function ViewBOP(props) {
             IsAssemblyCosting &&   
             <Row className="mx-0">
               <Col md="12">
-                <hr />
+                <br />
                 <Row>
                   <Col md="12">
                     <div className="left-border">{'Part\'s Insert Handling Charge:'}</div>
