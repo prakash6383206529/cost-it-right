@@ -157,8 +157,8 @@ function ViewBOP(props) {
                         return (
                           <tr key={index}>
                            {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>} 
-                            <td>{checkForDecimalAndNull(item.bopHandlingPercentage,initialConfiguration.NoOfDecimalForPrice)}</td>
-                            <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>                          
+                            <td>{checkForDecimalAndNull(item.BOPHandlingPercentage,initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>                          
                           </tr>
                         )
                       })}
