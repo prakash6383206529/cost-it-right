@@ -98,7 +98,7 @@ const CostingSummaryTable = (props) => {
       obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
       obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
       obj.LoggedInUserId = userDetails().LoggedInUserId
-
+      console.log( viewCostingData, " viewCostingData viewCostingData")
       dispatch(isFinalApprover(obj, res => {
         if (res.data.Result) {
           setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
@@ -750,10 +750,12 @@ const CostingSummaryTable = (props) => {
                       !isApproval ?
                         <tr>
                           <td>
-                            <span class="d-block">Costing Version</span>
-                            <span class="d-block">PO Price</span>
-                            <span class="d-block">Part Number</span>
-                            <span class="d-block">Part Name</span>
+                            <span className="d-block">Costing Version</span>
+                            <span className="d-block">PO Price</span>
+                            <span className="d-block">Part Number</span>
+                            <span className="d-block">Part Name</span>
+                            <span className="d-block">Plant Name</span>
+                            
                           </td>
                           {viewCostingData &&
                             viewCostingData.map((data, index) => {
@@ -774,6 +776,7 @@ const CostingSummaryTable = (props) => {
                                   <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   <span class="d-block">{data.partId}</span>
                                   <span class="d-block">{data.partName}</span>
+                                  <span class="d-block">{data.plantName}</span>
 
                                 </td>
                               )
