@@ -64,7 +64,7 @@ function ApprovalWorkFlow(props) {
                     </div>
                     <div className="d-flex">
                       <span className="small-grey-text left">Remark:</span>
-                      <span className=" right">{item.Comments ? item.Comments : '-'}</span>
+                      <span className=" right  remark-wrapper">{item.Comments ? item.Comments : '-'}</span>
                     </div>
                   </div>
                   {/* bottom */}
