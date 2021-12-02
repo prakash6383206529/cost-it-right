@@ -194,7 +194,7 @@ function AddBOPHandling(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD BOP Handling Charge'}</h3>
+                    <h3>{'ADD Insert Handling Charge'}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -209,7 +209,7 @@ function AddBOPHandling(props) {
                   <Row>
                     <Col md="12">
                       <TextFieldHookForm
-                        label="BOP Cost"
+                        label="Insert Cost"
                         name={'BOPCost'}
                         Controller={Controller}
                         control={control}

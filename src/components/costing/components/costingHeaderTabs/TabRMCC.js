@@ -1696,7 +1696,7 @@ function TabRMCC(props) {
                             <th className="py-3 align-middle" style={{ minWidth: '70px' }}>{`Level`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Type`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM Cost`}</th>
-                            <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`BOP Cost`}</th>
+                            <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Insert Cost`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Conversion Cost`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM + CC Cost/Pc`}</th>
@@ -1707,7 +1707,7 @@ function TabRMCC(props) {
                                   type="button"
                                   className={'user-btn add-oprn-btn'}
                                   onClick={bopHandlingDrawer}>
-                                  <div className={'plus'}></div>{`${CostingViewMode ? 'View BOP Handling' : 'Add BOP Handling'}`}</button>}
+                                  <div className={'plus'}></div>{`${CostingViewMode ? 'View Insert Handling' : 'Add Insert Handling'}`}</button>}
                               </th>
                             }
                           </tr>
