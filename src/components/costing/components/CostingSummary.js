@@ -42,6 +42,7 @@ function CostingSummary(props) {
   const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology,)
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
+  const [titleObj, setTitleObj] = useState({})
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
@@ -199,6 +200,7 @@ function CostingSummary(props) {
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
+                  setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
                   setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
                   setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
@@ -430,6 +432,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
+                          title ={titleObj.partNameTitle}
                           label="Assembly Name/Part Name"
                           name={'PartName'}
                           Controller={Controller}
@@ -448,6 +451,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
+                          title={titleObj.descriptionTitle}
                           label="Assembly/Part Description"
                           name={'Description'}
                           Controller={Controller}
