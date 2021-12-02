@@ -43,7 +43,7 @@ function AddBOPHandling(props) {
                 setValue('BOPHandlingCharges',RMCCTabData[0].CostingPartDetails.BOPHandlingCharges)
             }else if(getAssemBOPCharge && Object.keys(getAssemBOPCharge).length>0){
                   setValue('BOPHandlingPercentage',getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage)
-                  setValue('BOPHandlingCharges',getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges)
+                  setValue('BOPHandlingCharges',getAssemBOPCharge &&getAssemBOPCharge.BOPHandlingCharges)
 
               }
               
