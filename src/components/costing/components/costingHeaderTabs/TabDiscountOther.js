@@ -262,6 +262,7 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountCostChange = (event) => {
+    console.log("COMING IN discount", event.target.value);
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
         let topHeaderData = {
@@ -270,7 +271,9 @@ function TabDiscountOther(props) {
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
           DiscountCostType: hundiscountType.value
         }
-        props.setHeaderCost(topHeaderData)
+    
+      props.setHeaderCost(topHeaderData)
+ 
 
       } else {
         Toaster.warning('Please enter valid number.')
@@ -566,7 +569,7 @@ function TabDiscountOther(props) {
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
           "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails?.NetOverheadAndProfitCost,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
           "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
           "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
           "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,

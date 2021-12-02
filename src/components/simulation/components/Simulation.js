@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation,MachineRateSimulation } from '../../../config/masterData';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation,MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
@@ -30,6 +30,7 @@ import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import TooltipCustom from '../../common/Tooltip';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
+import BDSimulation from './SimulationPages/BDSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -171,6 +172,26 @@ function Simulation(props) {
             case Number(MACHINERATE):
                 temp = TempData
                 break;
+            case Number(BOPDOMESTIC):
+                temp = TempData && TempData.map((item) => {
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
+                break;
+            case Number(BOPIMPORT):
+                temp = TempData && TempData.map((item) => {
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
+                break;
             default:
                 break;
         }
@@ -221,6 +242,10 @@ function Simulation(props) {
                 return returnExcelColumn(OperationSimulation, tableData && tableData.length > 0 ? tableData : [])
             case MACHINERATE:
                 return returnExcelColumn(MachineRateSimulation, tableData && tableData.length > 0 ? tableData : [])
+            case BOPDOMESTIC:
+                return returnExcelColumn(BOPDomesticSimulation, tableData && tableData.length > 0 ? tableData : [])
+            case BOPIMPORT:
+                return returnExcelColumn(BOPImportSimulation, tableData && tableData.length > 0 ? tableData : [])
             default:
                 return 'foo';
         }
@@ -291,7 +316,7 @@ function Simulation(props) {
         if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
-
+        // console.log(selectedRowCountForSimulationMessage, 'selectedRowCountForSimulationMessageselectedRowCountForSimulationMessage')
         switch (master.value) {
             case RMDOMESTIC:
                 if (Data.length === 0) {
@@ -415,12 +440,17 @@ function Simulation(props) {
                         //     return false
                         // }
                     }
-                })
-                if (flag === true && vendorFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
+                });
+                if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                } if (flag === false && vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
             case MACHINERATE:
@@ -452,7 +482,6 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                     (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
@@ -460,6 +489,94 @@ function Simulation(props) {
                     (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
                     (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                } if (flag === false && vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                }
+                //  else {
+                //     setEditWarning(true)
+                // }
+                break;
+            case BOPDOMESTIC:
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
+                Data && Data.forEach((element, index) => {
+                    if (index !== 0) {
+                        if (element.IsVendor !== Data[index - 1].IsVendor) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+                            setEditWarning(true);
+                            flag = false
+                            // return false
+                        }
+                        if (element.Vendor !== Data[index - 1].Vendor) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
+                            vendorFlag = false
+                            // return false
+                        }
+                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                            setEditWarning(true);
+                            plantFlag = false
+                            // return false
+                        }
+                    }
+                });
+                if (flag === true && vendorFlag === true && plantFlag === true) {
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                } if (flag === false && vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                }
+                //  else {
+                //     setEditWarning(true)
+                // }
+                break;
+            case BOPIMPORT:
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
+                Data && Data.forEach((element, index) => {
+                    if (index !== 0) {
+                        if (element.IsVendor !== Data[index - 1].IsVendor) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+                            setEditWarning(true);
+                            flag = false
+                            // return false
+                        }
+                        if (element.Vendor !== Data[index - 1].Vendor) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                            // toastr.warning('Please select one vendor at a time.')
+                            setEditWarning(true);
+                            vendorFlag = false
+                            // return false
+                        }
+                        if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                            setEditWarning(true);
+                            plantFlag = false
+                            // return false
+                        }
+                    }
+                });
+                if (flag === true && vendorFlag === true && plantFlag === true) {
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                } if (flag === false && vendorFlag === false && plantFlag === false) {
+                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 //  else {
                 //     setEditWarning(true)
@@ -529,6 +646,10 @@ function Simulation(props) {
                 return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             case MACHINERATE:
                 return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            case BOPDOMESTIC:
+                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            case BOPIMPORT:
+                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }

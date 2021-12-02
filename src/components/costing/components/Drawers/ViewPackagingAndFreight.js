@@ -69,6 +69,7 @@ function ViewPackagingAndFreight(props) {
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
+                        <th>{`Part No`}</th>
                         <th>{`Packaging Description`}</th>
                         <th>{`Packaging Type/Percentage`}</th>
                         <th className="costing-border-right">{`Cost`}</th>
@@ -79,6 +80,7 @@ function ViewPackagingAndFreight(props) {
                         viewPackaging.map((item, index) => {
                           return (
                             <tr key={index}>
+                              <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                               <td>
                                 {item.PackagingDescription ? item.PackagingDescription : '-'}
                               </td>
@@ -117,6 +119,7 @@ function ViewPackagingAndFreight(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
+                          <th>{`Part No`}</th>
                           <th>{`Freight Type`}</th>
                           <th>{`Criteria`}</th>
                           <th>{`Rate`}</th>
@@ -129,6 +132,7 @@ function ViewPackagingAndFreight(props) {
                           viewFrieght.map((item, index) => {
                             return (
                               <tr key={index}>
+                                <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                                 <td>{item.FreightType ? item.FreightType : '-'}</td>
                                 <td>{item.Criteria ? item.Criteria : '-'}</td>
                                 <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>

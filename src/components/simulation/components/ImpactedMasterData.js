@@ -9,9 +9,11 @@ import LoaderCustom from '../../common/LoaderCustom';
 import NoContentFound from '../../common/NoContentFound';
 import { useDispatch, useSelector } from 'react-redux';
 import ERSimulation from './SimulationPages/ERSimulation';
-import { COMBINED_PROCESS, EXCHNAGERATE, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
+import { BOPDOMESTIC, COMBINED_PROCESS, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import RMSimulation from './SimulationPages/RMSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
+import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
+import MRSimulation from './SimulationPages/MRSimulation';
 
 const gridOptions = {};
 
@@ -186,6 +188,19 @@ export function Impactedmasterdata(props) {
                 return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} isSimulationImpactMaster={isSimulationImpactMaster} />
             case COMBINED_PROCESS:
                     return <CPSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} isSimulationImpactMaster={isSimulationImpactMaster} />
+             
+            case SURFACETREATMENT:
+                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+            case OPERATIONS:
+                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+            case MACHINERATE:
+                return <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+            // case BOPDOMESTIC:
+            //     return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+            // case BOPIMPORT:
+            //     return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+
+
             default:
                 break;
         }

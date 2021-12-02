@@ -10,6 +10,7 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
+import { data } from 'react-dom-factories';
 
 
 
@@ -641,6 +642,9 @@ export function formViewData(costingSummary) {
   // // Rejection
   obj.netRejectionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingRejectionDetail : '-'
 
+    //payment terms and ICC
+    obj.netPaymentIccCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail : '-'
+    
   // //Net Packaging and Freight
   obj.netPackagingCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingPackagingDetail : []
   obj.netFreightCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingFreightDetail : []
@@ -672,8 +676,8 @@ export function formViewData(costingSummary) {
   obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
   obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
-
-
+  obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
+  obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges:[]
 
   // temp = [...temp, obj]
   temp.push(obj)

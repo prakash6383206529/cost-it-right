@@ -15,6 +15,7 @@ import {
     GET_FG_WISE_IMPACT_DATA,
     SET_SELECTED_VENDOR_SIMULATION,
     SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+    GET_ASSEMBLY_SIMULATION_LIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -125,6 +126,14 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 selectedRowCountForSimulationMessage: action.payload
             }
+
+        case GET_ASSEMBLY_SIMULATION_LIST:
+            return {
+                ...state,
+                loading: false,
+                simulationAssemblyList: action.payload
+            }
+
 
         default:
             return state;

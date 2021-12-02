@@ -190,7 +190,7 @@ function AddProcess(props) {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    gridApi.setQuickFilter(e.target.value);
+    this.state.gridApi.setQuickFilter(e.target.value);
   }
 
   const frameworkComponents = {
@@ -209,7 +209,7 @@ function AddProcess(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.MachineRateId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.ProcessId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -244,28 +244,7 @@ function AddProcess(props) {
 
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  {/* <BootstrapTable
-                  data={processDrawerList}
-                  striped={false}
-                  bordered={false}
-                  hover={false}
-                  options={options}
-                  selectRow={selectRowProp}
-                  search
-                  multiColumnSearch={true}
-                  //exportCSV
-                  //ignoreSinglePage
-                  //ref={'table'}
-                  pagination>
-                  <TableHeaderColumn dataField="MachineRateId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ProcessName"  >{'Process Name'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineNumber" >{'Machine No.'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineName" >{'Machine Name'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineTypeName" >{'Machine Type'}</TableHeaderColumn>
-                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="MachineTonnage" >{'Machine Tonnage'}</TableHeaderColumn>
-                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineRate" searchable={false} >{'Machine Rate'}</TableHeaderColumn>
-                </BootstrapTable> */}
+                
                   <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -275,6 +254,7 @@ function AddProcess(props) {
                     </div>
                     <div
                       className="ag-theme-material"
+                      style={{ height: '100%', width: '100%' }}
                     >
                       <AgGridReact
                         style={{ height: '100%', width: '100%' }}

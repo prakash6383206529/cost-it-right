@@ -41,7 +41,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR, SIMULATION_APPROVAL_SUM,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
-  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster, SHEET_METAL,CUSTOMER
+  config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster, SHEET_METAL, CUSTOMER
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -52,13 +52,13 @@ import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
 import { formatLoginResult, getAuthToken, userDetails } from '../helper'
 import axios from 'axios';
-import CostingDetailReport from './report/CostingDetailReport'
+import CostingDetailReport from './report/components/CostingDetailReport'
 import SimulationApprovalListing from './simulation/components/SimulationApprovalListing'
 import SimulationApprovalSummary from './simulation/components/SimulationApprovalSummary'
 import productMaster from './masters/product-master'
 import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
-import CostingBenchmarkReport from './report/CostingBenchmarkReport'
+import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
 import ToasterBoXWrapper from './common/ToasterBoXWrapper'
 
 const CustomHeader = {
@@ -419,7 +419,7 @@ class Main extends Component {
           />
 
           <ToasterBoXWrapper />
-         
+
           {this.handleUserData()}
         </div>
       </Suspense>

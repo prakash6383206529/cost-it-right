@@ -526,7 +526,7 @@ const SendForApproval = (props) => {
                                     <div className={'form-group inputbox withBorder'}>
                                       <label>Effective Date</label>
                                       <DatePicker
-                                        selected={DayTime(data.effectiveDate).isValid() ? DayTime(data.effectiveDate) : ''}
+                                        selected={DayTime(data.effectiveDate).isValid() ? new Date(data.effectiveDate) : ''}
                                         dateFormat="dd/MM/yyyy"
                                         showMonthDropdown
                                         showYearDropdown
