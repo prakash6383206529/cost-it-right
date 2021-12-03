@@ -1182,7 +1182,6 @@ function CostingDetails(props) {
     //   onCancel: () => { setPreviousSOBValue() },
     //   component: () => <ConfirmComponent />
     // }
-    // return Toaster.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**

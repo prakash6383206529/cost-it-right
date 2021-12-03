@@ -86,14 +86,6 @@ class VBCPlantListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({showPopup:true, deletedId:Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -141,14 +133,6 @@ closePopUp= () =>{
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeactivateItem(data, cell)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
     }
 
     confirmDeactivateItem = (data, cell) => {
@@ -567,30 +551,6 @@ closePopUp= () =>{
                         </Col>
                     </Row>
                 </form>
-                {/* <BootstrapTable
-                    data={this.props.plantDataList}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${PlantVbc}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="VendorName" dataAlign="left" dataSort={true}>Vendor Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantName" dataAlign="left" dataSort={true}>Plant Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantCode" dataAlign="left" dataSort={true}>Plant Code</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CountryName" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="StateName" dataAlign="left" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CityName" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" dataAlign="left" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
-
                 <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

@@ -637,41 +637,6 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					{/* <BootstrapTable
-					data={this.props.userDataList}
-					striped={false}
-					bordered={false}
-					hover={false}
-					options={options}
-					search
-					// exportCSV
-					// ignoreSinglePage
-
-					ref={"table"}
-					trClassName={"userlisting-row"}
-					tableHeaderClass="my-custom-header"
-					pagination
-				> */}
-					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField="FullName" csvHeader="Full-Name" dataFormat={this.linkableFormatter} dataAlign="left" dataSort={true}>Name</TableHeaderColumn>
-					{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
-						<TableHeaderColumn dataField="UserName" width={"150"} dataSort={true}>User name</TableHeaderColumn>
-					) : null}
-					<TableHeaderColumn dataField="EmailAddress" columnTitle width={"220"} dataSort={true}>Email Id </TableHeaderColumn>
-					<TableHeaderColumn dataField="Mobile" width={"110"} dataSort={false}>Mobile No.</TableHeaderColumn>
-					<TableHeaderColumn dataField="PhoneNumber" width={"110"} dataSort={false}>Phone No.</TableHeaderColumn>
-					<TableHeaderColumn dataField="DepartmentName" dataSort={true}>Company</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
-                                		filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField="RoleName" dataSort={true}>Role</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
-                                filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn> */}
-					{/* <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter} width={80}>Status</TableHeaderColumn>
-					<TableHeaderColumn width={80} className="action" dataField="UserId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-				</BootstrapTable> */}
-
 					<div className="ag-grid-wrapper height-width-wrapper">
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
