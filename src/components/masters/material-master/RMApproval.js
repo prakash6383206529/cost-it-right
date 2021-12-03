@@ -15,6 +15,7 @@ import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
+import { debounce } from '@material-ui/core';
 
 
 
@@ -234,11 +235,11 @@ function RMApproval(props) {
         return thisIsFirstColumn;
     }
 
-    const resetState = () => {
+    const resetState = debounce(() => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
         getTableData()
-    }
+     },500)
 
     const sendForApproval = () => {
         setApprovalDrawer(true)
