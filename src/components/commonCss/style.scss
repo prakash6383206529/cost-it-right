@@ -5716,7 +5716,8 @@ body{
         .Approved,
         .ApprovedBySimulation,
         .Rejected,
-        .History {
+        .History,
+        .ApprovedByAssembly {
           min-width: calc(90px * 80 / 100);
           height: calc(30px * 80 / 100);
           font-size: calc(14px * 80 / 100);
@@ -6505,4 +6506,10 @@ left: 17rem;
       border: 1px solid #3333;
     }
   }
+}
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
 }
