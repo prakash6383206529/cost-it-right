@@ -90,7 +90,7 @@ function ViewOverheadProfit(props) {
               <Row className="px-3">
                 {/* OVERHEAD RENDERING */}
                 <Col md="12">
-                  <Table className="table cr-brdr-main" size="sm">
+                  <Table className="table cr-brdr-main add-min-width" size="sm">
                     <thead>
                       <tr>
                         <th>{`Overhead On`}</th>
@@ -198,7 +198,7 @@ function ViewOverheadProfit(props) {
                   {/*PROFIT RENDERING */}
 
                   <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
                       <thead>
                         { }
                         <tr>
@@ -313,7 +313,7 @@ function ViewOverheadProfit(props) {
                   {/*REJECTION RENDERING */}
 
                   <Col md="12">
-                    <Table className="table cr-brdr-main " size="sm">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
                       <thead>
                         <tr>
 
@@ -372,7 +372,7 @@ function ViewOverheadProfit(props) {
                   {/*REJECTION RENDERING */}
 
                   <Col md="12">
-                    <Table className="table cr-brdr-main " size="sm">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
                       <thead>
                         <tr>
 
@@ -419,7 +419,7 @@ function ViewOverheadProfit(props) {
                   {/*REJECTION RENDERING */}
 
                   <Col md="12">
-                    <Table className="table cr-brdr-main " size="sm">
+                    <Table className="table cr-brdr-main add-min-width" size="sm">
                       <thead>
                         <tr>
 

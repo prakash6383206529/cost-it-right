@@ -6487,3 +6487,10 @@ left: 17rem;
 .child-component-tooltip {
   bottom: 23px;
 }
+
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
+}
