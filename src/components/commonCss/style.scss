@@ -4279,6 +4279,10 @@ body{
   min-height: inherit;
   .empty-table-paecholder{
     min-height: calc(100vh - 350px);
+    @media screen and (max-width:$miniDesktop) {
+      min-height: calc(100vh - 300px);
+      
+    }
   }
   .filter-row-large{
     z-index: 11;
@@ -6475,8 +6479,8 @@ left: 17rem;
 // FG-Wise table css End
 .warning-section {
  position:absolute;
+ right: 190px;
  bottom: 0;
- left: -190px;
 }
 .min-width-btn {
   min-width: 143px;

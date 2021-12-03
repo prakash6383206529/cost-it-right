@@ -198,14 +198,6 @@ class LevelsListing extends Component {
 	*/
 	deleteItem = (Id) => {
 		this.setState({showPopup:true, deletedId:Id })
-		const toastrConfirmOptions = {
-			onOk: () => {
-				this.confirmDeleteItem(Id)
-			},
-			onCancel: () => { },
-			component: () => <ConfirmComponent />
-		};
-		// return Toaster.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -256,14 +248,6 @@ class LevelsListing extends Component {
 			ModifiedBy: loggedInUserId(),
 			IsActive: !cell, //Status of the user.
 		}
-		const toastrConfirmOptions = {
-			onOk: () => {
-				this.confirmDeactivateItem(data, cell)
-			},
-			onCancel: () => { },
-			component: () => <ConfirmComponent />,
-		};
-		// return Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
 	}
 
 	confirmDeactivateItem = (data, cell) => {

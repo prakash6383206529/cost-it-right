@@ -988,23 +988,6 @@ class AddRMDomestic extends Component {
           Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
             values.cutOffPrice === undefined) || uploadAttachements === false)) {
           if (!isEditFlag) {
-
-
-            const ToasterConfirmOptions = {
-              onOk: () => {
-                this.props.reset()
-                this.props.updateRMDomesticAPI(requestData, (res) => {
-                  if (res.data.Result) {
-                    Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-                    this.clearForm()
-                    // this.cancel()
-                  }
-                })
-              },
-              onCancel: () => { },
-              component: () => <ConfirmComponent />,
-            }
-            // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, ToasterConfirmOptions,)
           }
         }
       }
