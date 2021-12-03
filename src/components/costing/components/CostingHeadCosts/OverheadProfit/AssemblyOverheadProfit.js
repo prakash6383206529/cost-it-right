@@ -73,6 +73,7 @@ function AssemblyOverheadProfit(props) {
     const tabData = RMCCTabData[0]
     const surfaceTabData= SurfaceTabData[0]
     const overHeadAndProfitTabData=OverheadProfitTabData[0]
+    console.log('overHeadAndProfitTabData: ', overHeadAndProfitTabData);
     const discountAndOtherTabData =DiscountCostData[0]
     let reqData = {
       "CostingId": item.CostingId,
