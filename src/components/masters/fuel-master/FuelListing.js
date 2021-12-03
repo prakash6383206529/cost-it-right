@@ -106,7 +106,6 @@ class FuelListing extends Component {
             },
             onCancel: () => { }
         };
-        // return Toaster.confirm(`${MESSAGES.FUEL_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -142,7 +141,6 @@ class FuelListing extends Component {
         return (
             <>
                 {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />} */}
             </>
         )
     };

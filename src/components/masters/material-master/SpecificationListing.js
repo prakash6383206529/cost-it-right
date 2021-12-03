@@ -140,14 +140,6 @@ class SpecificationListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({showPopup:true, deletedId:Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />
-        };
-        // return Toaster.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -244,13 +236,6 @@ class SpecificationListing extends Component {
     */
     densityAlert = () => {
         this.setState({showPopup2:true})
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDensity()
-            },
-            onCancel: () => { }
-        };
-        // return Toaster.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
 
     /**

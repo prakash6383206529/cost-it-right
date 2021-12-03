@@ -399,13 +399,6 @@ function RMImportListing(props) {
   */
   const densityAlert = () => {
     setShowPopupBulk(true)
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmDensity()
-      },
-      onCancel: () => { }
-    };
-    // return Toaster.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
   }
 
 
