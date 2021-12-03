@@ -110,6 +110,7 @@ class AddExchangeRate extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           this.setState({ DataToChange: Data })
+
           setTimeout(() => {
             const { currencySelectList } = this.props;
 
@@ -364,6 +365,8 @@ class AddExchangeRate extends Component {
                             Effective Date
                             <span className="asterisk-required">*</span>
                           </label>
+                          { }
+
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"

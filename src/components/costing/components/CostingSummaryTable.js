@@ -158,7 +158,8 @@ const CostingSummaryTable = (props) => {
       let data = viewCostingData[index].netConversionCostView
       let netTransportationCostView = viewCostingData[index].netTransportationCostView
       let surfaceTreatmentDetails = viewCostingData[index].surfaceTreatmentDetails
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails })
+      let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting:IsAssemblyCosting  })
     }
   }
 

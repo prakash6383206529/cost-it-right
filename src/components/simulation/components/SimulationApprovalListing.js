@@ -20,7 +20,7 @@ import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const gridOptions = {};
 
