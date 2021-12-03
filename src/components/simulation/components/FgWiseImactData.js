@@ -14,6 +14,7 @@ export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType } = props
+    console.log(vendorIdState, "VENDOR ID")
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
@@ -75,6 +76,7 @@ export function Fgwiseimactdata(props) {
         props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
 
     }
+
     return (
         <>
             {/* FG wise Impact section start */}
