@@ -186,9 +186,8 @@ function ViewOverheadProfit(props) {
                     </tbody>
                   </Table>
                 </Col>
-                <Col md="12"><hr /></Col>
               </Row>
-
+              <br />
               <div>
                 <Row className="px-3">
                   <Col md="8">
@@ -301,9 +300,9 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
-                  <Col md="12"><hr /></Col>
                 </Row>
               </div>
+                  <br />
               <div>
                 <Row className="px-3">
                   <Col md="10">
@@ -358,10 +357,10 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
-                  <Col md="12"><hr /></Col>
                 </Row>
               </div>
 
+                  <br />
 
               <div>
                 <Row className="px-3">
@@ -403,11 +402,11 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
-                  <Col md="12"><hr /></Col>
+                
                 </Row>
               </div>
 
-
+              <br />
 
 
               <div>
