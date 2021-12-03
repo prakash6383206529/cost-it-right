@@ -114,7 +114,7 @@ function ApprovalSummary(props) {
       }
     }
   }
-  const dataSend=[
+  const dataSend = [
     approvalDetails,
     partDetail
   ]
@@ -413,7 +413,7 @@ function ApprovalSummary(props) {
                 <Fragment>
                   <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
                     <div className={"save-icon"}></div>
-                    {"Push"}
+                    {"Repush"}
                   </button>
                 </Fragment>
               </div>
@@ -455,7 +455,7 @@ function ApprovalSummary(props) {
       )}
       {pushButton && (
         <PushButtonDrawer
-        dataSend={dataSend}
+          dataSend={dataSend}
           isOpen={pushButton}
           closeDrawer={closePushButton}
           dataSend={[approvalDetails, partDetail]}

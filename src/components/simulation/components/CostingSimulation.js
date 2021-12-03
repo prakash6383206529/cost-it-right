@@ -191,7 +191,7 @@ function CostingSimulation(props) {
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
-                <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
+                {/* <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button> */}
 
             </>
         )
@@ -608,13 +608,13 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PlantCode" headerName='Plant Code'></AgGridColumn>
                                                     <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>
                                                     <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>
-                                                
+
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
-                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn> 
+                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
                                                     <AgGridColumn width={130} field="RMSpec" headerName='RM Specs' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RMCode" headerName='RM Code.' cellRenderer='revisionFormatter'></AgGridColumn>
 
@@ -680,7 +680,7 @@ function CostingSimulation(props) {
                                         {"Go to History"}
                                     </button>
                                     {/* DO NOT UNCOMMENT THIS CODE UNTIL SAID BY TR */}
-{/*                                     
+                                    {/*                                     
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
