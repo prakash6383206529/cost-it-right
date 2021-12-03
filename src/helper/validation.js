@@ -335,7 +335,7 @@ export const CheckIsCostingDateSelected = (costingDate) => {
         Toaster.warning('Please select Costing effective date.')
 
     }
-    return !IsSelected;
+    return IsSelected;
 }
 
 
