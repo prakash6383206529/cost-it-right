@@ -340,29 +340,6 @@ class RMListing extends Component {
 
                 <Row>
                     <Col>
-                        {/*
-                        <BootstrapTable
-                            data={this.props.rawMaterialTypeDataList}
-                            striped={false}
-                            bordered={false}
-                            hover={false}
-                            options={options}
-                            search
-                            // exportCSV={DownloadAccessibility}
-                            // csvFileName={`${RmMaterial}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            className={'RM-table'}
-                            pagination>
-                            
-                            <TableHeaderColumn dataField="RawMaterial" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}>{this.renderDensity()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>{'Raw Material'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMGrade" dataAlign="center" dataSort={true}>{'Grade'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialId" searchable={false} dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-                        </BootstrapTable> */}
-
                         <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
