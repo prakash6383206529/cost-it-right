@@ -6486,3 +6486,23 @@ left: 17rem;
 .child-component-tooltip {
   bottom: 23px;
 }
+.with-border-table {
+  border: none;
+  td {
+    border: 1px solid #C2CBE8 ;
+  }
+
+}
+.hide-border {
+  border: none;
+  table {
+    margin-bottom: 0;
+    border: 1px solid #3333 !important;
+    th {
+      border-bottom: none !important;
+    }
+    td {
+      border: 1px solid #3333;
+    }
+  }
+}
