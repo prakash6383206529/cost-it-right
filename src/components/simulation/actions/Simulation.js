@@ -760,7 +760,6 @@ export function getSimulatedAssemblyWiseImpactDate(token, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?costingHead=${token.costingHead}&impactPartNumber=${token.impactPartNumber}&plantCode=${token.plantCode}&vendorId=${token.vendorId}&delta=${token.delta}&quntity=${token.quntity}`, headers);
         request.then((response) => {
-            console.log(response.data, 'response.data      response.data')
             if (response.data.Result) {
                 dispatch({
                     type: GET_ASSEMBLY_SIMULATION_LIST,
