@@ -75,6 +75,7 @@ export function Fgwiseimactdata(props) {
         props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
 
     }
+
     return (
         <>
             {/* FG wise Impact section start */}
