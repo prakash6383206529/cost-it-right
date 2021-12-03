@@ -194,7 +194,7 @@ if(costData.IsAssemblyPart === true){
     "LoggedInUserId": loggedInUserId()
   
 }
-console.log(assemblyRequestedData,"assemblyRequestedData");
+
 dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
 }
 

@@ -11,7 +11,6 @@ import { loggedInUserId, checkForDecimalAndNull, checkForNull } from '../../../.
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode } = props;
-  console.log('item: ', item);
 
   const [IsOpenTool, setIsOpenTool] = useState(false);
 
