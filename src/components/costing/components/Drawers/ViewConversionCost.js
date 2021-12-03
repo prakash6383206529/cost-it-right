@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { checkForDecimalAndNull } from '../../../../../src/helper'
-import { Container, Row, Col, Table } from 'reactstrap'
+import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
+import classnames from 'classnames';
+import LoaderCustom from '../../../common/LoaderCustom'
 
 function ViewConversionCost(props) {
 
@@ -27,19 +29,106 @@ function ViewConversionCost(props) {
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [othercostingOperationCost, setOtherCostingOperationCostResponse] = useState([])
+  const [surfaceTreatmentCost,setSurfaceTreatmentCost] =useState([])
+  const[transportCost,setTransportCost]= useState([])
   const [isShowToolCost, setIsShowToolCost] = useState(false)
   const [costingToolsCost, setcostingToolsCost] = useState(false)
+  const [activeTab, setActiveTab] = useState(0);
+  const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const [partNumberList,setPartNumberList]= useState([])
+  const [index,setIndex] = useState(0)
+const [loader,setLoader] = useState(false)
 
   useEffect(() => {
     if (IsShowToolCost) {
       setIsShowToolCost(IsShowToolCost)
     }
-    setCostingProcessCost(CostingProcessCostResponse)
-    setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
-    setcostingToolsCost(CostingToolsCostResponse)
-    setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
+    let temp=[]
+    let uniqueTemp=[]
+    CostingProcessCostResponse && CostingProcessCostResponse.map(item=> {       
+      temp.push(item.PartNumber)
+    })
+    CostingOperationCostResponse && CostingOperationCostResponse.map(item=>{
+      temp.push(item.PartNumber)
+    })
+    CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.map(item =>{
+      temp.push(item.PartNumber)
+    })
+    console.log(netTransportationCostView,"netTransportationCostView");
+    // netTransportationCostView  && netTransportationCostView.map(item=>{
+    //   if(item.PartNumber !== null){
+    //     temp.push(item.PartNumber)
+    //   }
+    // })
+    surfaceTreatmentDetails &&surfaceTreatmentDetails.map(item =>{
+      temp.push(item.PartNumber)
+    })
+    console.log(temp,"TEMP");
+      uniqueTemp = Array.from(new Set(temp))
+      console.log('uniqueTemp: ', uniqueTemp);
+      setPartNumberList(uniqueTemp)
+      let partNo = uniqueTemp[index]
+      console.log('partNo: ', partNo);
+      console.log(CostingProcessCostResponse,"processCost");
+      let processCost  = CostingProcessCostResponse && CostingProcessCostResponse.filter(item=> item.PartNumber ===partNo)
+      let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
+      let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber ===partNo)
+      // let transportCost = netTransportationCostView && netTransportationCostView.filter(item=> item.PartNumber === partNo)
+      let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter(item => item.PartNumber === partNo)
+      setCostingProcessCost(processCost)
+      setCostingOperationCostResponse(operationCost)
+      setOtherCostingOperationCostResponse(otherOperationCost)
+      // setTransportCost(transportCost)
+      setSurfaceTreatmentCost(surfaceCost)
+    // setCostingProcessCost(CostingProcessCostResponse[1])
+    // setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
+    // setcostingToolsCost(CostingToolsCostResponse)
+    // setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
   }, [])
+    /**
+  * @method toggle
+  * @description toggling the tabs
+  */
+     const toggle = (tab) => {
+      if (activeTab !== tab) {
+        setActiveTab(tab);
+  
+        if (tab === '1') {
+          setIsCalledAPI(true)
+        }
+  
+      }
+    }
+
+
+    const setPartDetail = (index,partNumber)=>{
+      console.log('partNumber: ', partNumber);
+      console.log('index: ', index);
+      setActiveTab(index)
+      setIndex(index)
+      let partNo = partNumberList[index]
+      console.log('partNo: ', partNo);
+      console.log();
+      let processCost  = CostingProcessCostResponse && CostingProcessCostResponse.filter(item=> item.PartNumber ===partNo )
+      let operationCost = CostingOperationCostResponse && CostingOperationCostResponse.filter(item => item.PartNumber === partNo)
+      let otherOperationCost = CostingOtherOperationCostResponse && CostingOtherOperationCostResponse.filter(item => item.PartNumber ===partNo)
+      // let transportCost = netTransportationCostView && netTransportationCostView.filter(item=> item.PartNumber === partNo)
+      let surfaceCost = surfaceTreatmentDetails && surfaceTreatmentDetails.filter(item => item.PartNumber === partNo)
+        setCostingProcessCost(processCost)
+        setCostingOperationCostResponse(operationCost)
+        setOtherCostingOperationCostResponse(otherOperationCost)
+        // setTransportCost(transportCost)
+        setSurfaceTreatmentCost(surfaceCost)
+    }
+
+    useEffect(()=>{
+      setLoader(false)
+    },[costingProcessCost,costingOperationCost,othercostingOperationCost])
+
+
+    // console.log(costingProcessCost, "costingProcessCost");
+  //  checkMultiplePart()
   return (
     <>
       <Drawer
@@ -60,10 +149,21 @@ function ViewConversionCost(props) {
                 ></div>
               </Col>
             </Row>
-
-            <div className="px-3"
-            // className="cr-process-costwrap"
-            >
+            {loader && <LoaderCustom />}
+            <div className=" row">
+               <Nav tabs className="subtabs cr-subtabs-head view-conversion-header col-md-1">
+                    {partNumberList && partNumberList.map((item, index)=> {
+                     return (
+                      <NavItem>
+                      <NavLink className={classnames({ active: activeTab === index })} onClick={() => setPartDetail(index,item) }>
+                      {item}
+                      </NavLink>
+                    </NavItem>
+                     )
+                  })}
+               </Nav>
+                <TabContent activeTab={activeTab} className="col-md-11 view-conversion-container">
+                  <TabPane tabId={index}>
               <Row>
                 <Col md="12">
                   <div className="left-border">{'Process Cost:'}</div>
@@ -201,7 +301,7 @@ function ViewConversionCost(props) {
                   </Col>
                 </Row>
                 <Row>
-                  {/*OPERATION COST GRID */}
+                  {/*OTHER OPERATION COST GRID */}
 
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
@@ -401,6 +501,12 @@ function ViewConversionCost(props) {
                   </Table>
                 </Col>
               </Row>
+           
+                </TabPane>
+           
+           
+           </TabContent>
+              
             </div>
           </div>
         </Container>
