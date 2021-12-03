@@ -59,7 +59,7 @@ function Rejection(props) {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
-                "RejectionCost": applicability ? getValues('RejectionCost') : '',
+                "RejectionCost": applicability ? checkForDecimalAndNull(getValues('RejectionCost'), initialConfiguration.NoOfDecimalForPrice) : '',
                 "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
                 "IsSurfaceTreatmentApplicable": true,
             }
@@ -114,7 +114,7 @@ function Rejection(props) {
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: headerCosts.NetRawMaterialsCost,
+                        RejectionCost: checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice),
                         RejectionTotalCost: checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
                     })
                     break;
