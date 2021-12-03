@@ -7,7 +7,7 @@ import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFil
 import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import {EMPTY_GUID, INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
+import { EMPTY_GUID, INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import PushSection from '../../../common/PushSection'
@@ -24,7 +24,7 @@ import Toaster from '../../../common/Toaster'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType ,isSimulationApprovalListing} = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing } = props
 
 
   const userLoggedIn = loggedInUserId()
@@ -924,7 +924,12 @@ function ApproveRejectDrawer(props) {
                           <div className="left-border">{"SAP-Push Details"}</div>
                         </Col>
                         <div className="w-100">
-                          <PushSection />
+                          <PushSection
+                            errors={errors}
+                            register={register}
+                            control={control}
+                            Controller={Controller}
+                          />
                         </div>
 
                       </Row>
@@ -989,7 +994,7 @@ function ApproveRejectDrawer(props) {
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
                 {
-                  isSimulation && type==='Sender' &&
+                  isSimulation && type === 'Sender' &&
                   <div className="col-md-12 drawer-attachment">
                     <div className="d-flex w-100 flex-wrap">
                       <Col md="8" className="p-0"><h6 className="mb-0">Attachment</h6></Col>
