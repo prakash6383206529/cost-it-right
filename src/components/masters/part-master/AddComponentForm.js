@@ -173,12 +173,13 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
-          <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+          
           <Row>
 
             <Col md="6">
               <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
+              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
               <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {/* <Field
                 name="PartNumber"
