@@ -263,6 +263,7 @@ function SimulationApprovalListing(props) {
 
         const status = props.node.data.Status;
 
+
         if (status === DRAFT) {
             return `Y`;
         }
@@ -492,6 +493,7 @@ function SimulationApprovalListing(props) {
         gridOptions.api.setFilterModel(null);
     }
 
+
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
         // effectiveDateRenderer: this.effectiveDateFormatter,
@@ -585,6 +587,9 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
 
 
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="Status" headerName='Amendment Status'  ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
 
 
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' cellRenderer='conditionFormatter' pinned="right" ></AgGridColumn>}
