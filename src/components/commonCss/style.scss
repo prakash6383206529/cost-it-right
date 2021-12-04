@@ -4279,6 +4279,10 @@ body{
   min-height: inherit;
   .empty-table-paecholder{
     min-height: calc(100vh - 350px);
+    @media screen and (max-width:$miniDesktop) {
+      min-height: calc(100vh - 300px);
+      
+    }
   }
   .filter-row-large{
     z-index: 11;
@@ -5716,7 +5720,8 @@ body{
         .Approved,
         .ApprovedBySimulation,
         .Rejected,
-        .History {
+        .History,
+        .ApprovedByAssembly {
           min-width: calc(90px * 80 / 100);
           height: calc(30px * 80 / 100);
           font-size: calc(14px * 80 / 100);
@@ -6474,7 +6479,41 @@ left: 17rem;
 // FG-Wise table css End
 .warning-section {
  position:absolute;
+ right: 190px;
  bottom: 0;
- left: -190px;
- white-space: wr;
+}
+.min-width-btn {
+  min-width: 143px;
+}
+.bs-tooltip-auto {
+  z-index: 1300;
+}
+.child-component-tooltip {
+  bottom: 23px;
+}
+.with-border-table {
+  border: none;
+  td {
+    border: 1px solid #C2CBE8 ;
+  }
+
+}
+.hide-border {
+  border: none;
+  table {
+    margin-bottom: 0;
+    border: 1px solid #3333 !important;
+    th {
+      border-bottom: none !important;
+    }
+    td {
+      border: 1px solid #3333;
+    }
+  }
+}
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
 }

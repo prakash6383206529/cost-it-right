@@ -43,13 +43,6 @@ class RMGradeDetail extends Component {
     * @description confirm delete RM Grade
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { }
-        };
-        // return Toaster.confirm(`${MESSAGES.RM_GRADE_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**

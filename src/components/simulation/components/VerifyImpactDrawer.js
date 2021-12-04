@@ -130,6 +130,7 @@ function VerifyImpactDrawer(props) {
                     headerName={headerName}
                     parentField={parentField}
                     childField={childField}
+                    impactType={'FgWise'}
                   />
                 </Col>
               </Row>

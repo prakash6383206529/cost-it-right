@@ -130,14 +130,6 @@ class TaxListing extends Component {
   */
   deleteItem = (Id) => {
     this.setState({ showPopup: true, deletedId: Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDelete(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    };
-    // return Toaster.confirm(MESSAGES.TAX_DELETE_ALERT, toastrConfirmOptions);
   }
 
   /**
@@ -263,26 +255,6 @@ class TaxListing extends Component {
 
           <Row>
             <Col>
-              {/* <BootstrapTable
-                data={this.props.taxDataList}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                // exportCSV
-                //ignoreSinglePage
-                ref={'table'}
-                trClassName={'userlisting-row'}
-                tableHeaderClass='my-custom-class'
-                pagination>
-                <TableHeaderColumn dataField="TaxName" dataSort={true}>Tax Name</TableHeaderColumn>
-                <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
-                <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
-                <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataSort={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                <TableHeaderColumn dataAlign="right" searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-              </BootstrapTable> */}
               <div className="ag-grid-react">
                 <div className="ag-grid-wrapper height-width-wrapper">
                   <div className="ag-grid-header">

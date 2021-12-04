@@ -596,20 +596,6 @@ class AddOverhead extends Component {
       }
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateOverhead(requestData, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
-                this.cancel();
-              }
-            })
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 

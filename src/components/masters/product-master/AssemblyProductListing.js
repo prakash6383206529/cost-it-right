@@ -96,14 +96,6 @@ class AssemblyProductListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -442,36 +434,6 @@ class AssemblyProductListing extends Component {
                         </div>
                     </Col>
                 </Row>
-
-                {/* <BootstrapTable
-                    data={this.props.partsListing}
-                    striped={false}
-                    bordered={false}
-                    hover={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${AssemblyPart}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMNumber" width={'100'} >BOM NO.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" width={'100'} >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} export={false} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
-
                 <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

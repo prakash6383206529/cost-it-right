@@ -1133,14 +1133,6 @@ class UserRegistration extends Component {
 
       if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
         this.setState({showPopup:true,updatedObj: updatedData})
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.confirmUpdateUser(updatedData, true)
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
 
       } else {
 

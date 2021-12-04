@@ -419,7 +419,6 @@ function TabToolCost(props) {
                 {IsApplicableProcessWise &&
                   <Row>
                     <Col>
-                   
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
                         <div className="ag-grid-wrapper height-width-wrapper">
