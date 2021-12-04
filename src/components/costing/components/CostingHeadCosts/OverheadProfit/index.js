@@ -526,7 +526,7 @@ function OverheadProfit(props) {
     * @description  USED TO HANDLE MODEL TYPE CHANGE
     */
   const handleModelTypeChange = (newValue, IsDropdownClicked) => {
-    if (IsDropdownClicked && !CostingViewMode && CheckIsCostingDateSelected(CostingEffectiveDate)) {
+    if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
 
 
       setOverheadObj({})
