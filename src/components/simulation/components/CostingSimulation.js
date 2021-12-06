@@ -77,6 +77,7 @@ function CostingSimulation(props) {
     })
     const [amendmentDetails, setAmendmentDetails] = useState({})
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
+    const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
 
     const dispatch = useDispatch()
 
@@ -182,6 +183,8 @@ function CostingSimulation(props) {
     }
 
     const viewAssembly = (cell, row, rowIndex) => {
+        const data = { row: row }
+        setDataForAssemblyImpact(data)
         setShowViewAssemblyDrawer(true)
     }
 
@@ -720,7 +723,8 @@ function CostingSimulation(props) {
                     closeDrawer={closeAssemblyDrawer}
                     // approvalData={approvalData}
                     anchor={'bottom'}
-                />
+                    dataForAssemblyImpact={dataForAssemblyImpact}
+                    vendorIdState={vendorIdState} />
             }
         </>
 

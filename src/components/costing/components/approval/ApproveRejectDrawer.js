@@ -871,15 +871,6 @@ function ApproveRejectDrawer(props) {
 
 
 
-
-
-
-
-
-
-
-
-
                 <div className="input-group form-group col-md-12">
                   <TextAreaHookForm
                     label="Remark"
