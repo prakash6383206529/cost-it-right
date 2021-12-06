@@ -169,12 +169,7 @@ class LabourListing extends Component {
     this.props.deleteLabour(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
-        console.log("deleted");
-        //this.getTableListData(null, null, null, null)
         this.filterList()
-      }
-      else {
-        console.log("not deleted");
       }
     })
     this.setState({ showPopup: false })

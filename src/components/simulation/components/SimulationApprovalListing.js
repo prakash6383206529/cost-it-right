@@ -188,7 +188,6 @@ function SimulationApprovalListing(props) {
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        console.log(cell,"CEll")
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={cell} >{row.DisplayStatus}</div>
     }

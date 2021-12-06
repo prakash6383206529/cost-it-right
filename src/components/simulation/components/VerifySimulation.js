@@ -263,8 +263,6 @@ function VerifySimulation(props) {
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
-        console.log(selectedRows, 'ROW')
-
     }
 
     const onRowSelected = (e) => {

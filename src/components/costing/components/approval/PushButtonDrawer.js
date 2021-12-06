@@ -106,7 +106,7 @@ function PushButtonDrawer(props) {
         props.closeDrawer('', 'Push')
       }))
     } else {
-      console.log(dataSend[0].EffectiveDate,"dataSend[0].EffectiveDate");
+      
       const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
       let pushdata = {
         effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',

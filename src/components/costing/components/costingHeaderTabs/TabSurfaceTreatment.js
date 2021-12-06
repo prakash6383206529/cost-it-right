@@ -134,9 +134,9 @@ function TabSurfaceTreatment(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (Params, Data, aar) => {
-    console.log('aar: ', aar);
-    console.log('Data: ', Data);
-    console.log('Params: ', Params);
+    
+    
+    
     let tempArr = [];
     try {
       tempArr = aar && aar.map(i => {
@@ -166,7 +166,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TransportationCost = checkForNull(Data.TransportationCost);
           i.CostingPartDetails.SurfaceTreatmentDetails = Data.SurfaceTreatmentDetails;
           i.CostingPartDetails.TransportationDetails = Data.TransportationDetails;
-          console.log(' i: ',  i);
+          
           i.IsOpen = !Data.IsOpen;
 
         } else {
