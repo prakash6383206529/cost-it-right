@@ -464,6 +464,8 @@ export const API = {
   getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
+  getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
+  createNCCCosting:`${BASE_URL}/costing/create-ncc-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -1563,6 +1565,7 @@ export const WDM = 'WDM'
 
 export const ZBC = 'ZBC'
 export const VBC = 'VBC'
+export const NCC='NCC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'

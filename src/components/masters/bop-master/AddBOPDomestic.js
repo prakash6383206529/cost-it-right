@@ -25,11 +25,8 @@ import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableBOPUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-import { CheckApprovalApplicableMaster } from '../../../helper'
+import { CheckApprovalApplicableMaster } from '../../../helper'   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
@@ -164,7 +161,6 @@ class AddBOPDomestic extends Component {
       })
       this.props.getBOPDomesticById(data.Id, res => {
         if (res && res.data && res.data.Result) {
-          let vendorObj
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
@@ -178,10 +174,9 @@ class AddBOPDomestic extends Component {
           //this.props.getCityBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, UOMSelectList, plantSelectList } = this.props;
+            const { cityList, bopCategorySelectList, UOMSelectList, plantSelectList } = this.props;
             let plantObj;
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
-            let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
               plantObj = { label: obj.Text, value: obj.Value }
@@ -200,7 +195,7 @@ class AddBOPDomestic extends Component {
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               // selectedPartAssembly: partArray,
               selectedPlants: plantObj,
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
@@ -221,7 +216,6 @@ class AddBOPDomestic extends Component {
   applySuperScriptFormatter = (cell) => {
     if (cell && cell.indexOf('^') !== -1) {
       const capIndex = cell && cell.indexOf('^');
-      const superNumber = cell.substring(capIndex + 1, capIndex + 2);
       const capWithNumber = cell.substring(capIndex, capIndex + 2);
       // return cell.replace(capWithNumber, superNumber.sup());
       // return cell.replace(capWithNumber, ' &sup2;');
@@ -409,7 +403,7 @@ class AddBOPDomestic extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
+    // const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0; // MAY BE USED LATER IF USED IN CALCULATION
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     // const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) //COMMENTED FOR MINDA
     const NetLandedCost = checkForNull(BasicRate) //THIS IS ONLY FOR MINDA
@@ -498,7 +492,6 @@ class AddBOPDomestic extends Component {
   }
 
   Preview = ({ meta }) => {
-    const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
         {/* {Math.round(percent)}% */}
@@ -532,13 +525,12 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
+    const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, DropdownChanged, uploadAttachements } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, uploadAttachements } = this.state;
 
-    const { initialConfiguration } = this.props;
 
-    let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
+
     let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -550,13 +542,13 @@ class AddBOPDomestic extends Component {
 
 
       if (DataToCheck.IsVendor) {
-        if (DataToCheck.BasicRate == values.BasicRate && uploadAttachements) {
+        if (Number(DataToCheck.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
           this.cancel()
           return false;
         }
       }
-      else if (DataToCheck.IsVendor == false) {
-        if (DataToCheck.BasicRate == values.BasicRate && uploadAttachements) {
+      else if (DataToCheck.IsVendor === false) {
+        if (Number(DataToCheck.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -661,7 +653,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
     return (
