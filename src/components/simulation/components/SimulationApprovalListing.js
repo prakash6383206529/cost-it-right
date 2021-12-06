@@ -597,7 +597,7 @@ function SimulationApprovalListing(props) {
                                     </select>
                                 </div>
                                 <div className="text-right w-100 pb-3 warning-section">
-                                    <WarningMessage message="It may take 5 minutes to update the status, please refresh." />
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
