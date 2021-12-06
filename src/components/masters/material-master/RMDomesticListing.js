@@ -209,9 +209,9 @@ function RMDomesticListing(props) {
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
 
-                    if (isSimulation) {
-                        props.apply(Data)
-                    }
+                    // if (isSimulation) {
+                    //     props.apply(Data)
+                    // }
 
                     // const func = () => {
                     // }

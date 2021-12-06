@@ -189,11 +189,11 @@ class BOPMaster extends Component {
 
 
 
-                <NavItem>
+                {/* <NavItem>
                   <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
                     Approval Status
                   </NavLink>
-                </NavItem>
+                </NavItem> */}
 
               </Nav>
 
