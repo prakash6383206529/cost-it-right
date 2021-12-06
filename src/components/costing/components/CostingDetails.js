@@ -1829,6 +1829,7 @@ function CostingDetails(props) {
                                     item.Status === WAITING_FOR_APPROVAL ||
                                     item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
+                                    let displayAddButton = userDetails().Role === 'SuperAdmin' ?true:false
                                   let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
@@ -1890,7 +1891,7 @@ function CostingDetails(props) {
                                       </td>
                                       <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
-                                        {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
+                                        {AddAccessibility && displayAddButton && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
                                         {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}

@@ -20,6 +20,7 @@ import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
+import WarningMessage from '../../common/WarningMessage'
 
 const gridOptions = {};
 
@@ -573,6 +574,9 @@ function SimulationApprovalListing(props) {
                                         <option value="50">50</option>
                                         <option value="100">100</option>
                                     </select>
+                                </div>
+                                <div className="text-right w-100 pb-3 warning-section">
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
