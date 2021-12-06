@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './ResetPassword.css';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../common/Toaster';
 import { Field, reduxForm } from 'redux-form';
 import { renderPasswordInputField, focusOnError } from '../layout/FormInputs'
 import { connect } from 'react-redux';
@@ -39,12 +39,12 @@ class ResetPassword extends Component {
             if (response && response.data) {
                 if (response.data.success !== true) {
                     if (response.data.success === false) {
-                        toastr.error(response.data.errors[0]);
+                        Toaster.error(response.data.errors[0]);
                     } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
+                        Toaster.error(MESSAGES.SOME_ERROR);
                     }
                 } else {
-                    toastr.success(MESSAGES.UPDATE_PASSWORD_SUCCESS);
+                    Toaster.success(MESSAGES.UPDATE_PASSWORD_SUCCESS);
                     setTimeout(() => {
                         window.location.assign('/dashboard');
                     }, 3000)

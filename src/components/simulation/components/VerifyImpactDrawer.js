@@ -5,7 +5,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
 
 
@@ -17,6 +17,9 @@ function VerifyImpactDrawer(props) {
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
   const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
+  const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
   const dispatch = useDispatch()
 
@@ -96,7 +99,7 @@ function VerifyImpactDrawer(props) {
 
                   <span class="d-inline-block mr-2 mb-4 pl-3">
                     <span class="cr-tbl-label d-block">Effective Date:</span>
-                    <span>{moment(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
+                    <span>{DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                   </span>
 
                 </Col>
@@ -121,7 +124,13 @@ function VerifyImpactDrawer(props) {
 
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
-                  <Fgwiseimactdata />
+                  <Fgwiseimactdata
+                    // DisplayCompareCosting={DisplayCompareCosting}
+                    // SimulationId={simulationDetail.SimulationId}
+                    headerName={headerName}
+                    parentField={parentField}
+                    childField={childField}
+                  />
                 </Col>
               </Row>
 

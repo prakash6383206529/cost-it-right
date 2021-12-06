@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName } from '../actions/Material';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -69,7 +69,7 @@ class AddRawMaterial extends Component {
       this.props.reset()
       this.props.updateRawMaterialChildName(formData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+          Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
           this.toggleDrawer('', values)
         }
       })
@@ -79,7 +79,7 @@ class AddRawMaterial extends Component {
       this.props.reset()
       this.props.createRawMaterialNameChild(values, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
           this.toggleDrawer('', values)
         }
       });

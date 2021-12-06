@@ -59,7 +59,7 @@ function Rejection(props) {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
-                "RejectionCost": applicability ? getValues('RejectionCost') : '',
+                "RejectionCost": applicability ? checkForDecimalAndNull(getValues('RejectionCost'), initialConfiguration.NoOfDecimalForPrice) : '',
                 "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
                 "IsSurfaceTreatmentApplicable": true,
             }
@@ -107,20 +107,20 @@ function Rejection(props) {
 
             switch (Text) {
                 case 'RM':
-                    setValue('RejectionCost', headerCosts.NetRawMaterialsCost)
+                    setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: headerCosts.NetRawMaterialsCost,
+                        RejectionCost: checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice),
                         RejectionTotalCost: checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
                     })
                     break;
 
                 case 'BOP':
-                    setValue('RejectionCost', headerCosts.NetBoughtOutPartCost)
+                    setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
@@ -133,7 +133,7 @@ function Rejection(props) {
                     break;
 
                 case 'CC':
-                    setValue('RejectionCost', headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal)
+                    setValue('RejectionCost', checkForDecimalAndNull(headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice))
                     setValue('RejectionTotalCost', checkForDecimalAndNull(((headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,

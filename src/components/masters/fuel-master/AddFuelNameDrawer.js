@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { alphaNumeric, checkWhiteSpaces, required, } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createFuel } from '../actions/Fuel';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 
@@ -69,7 +69,7 @@ class AddFuelNameDrawer extends Component {
       this.props.reset()
       this.props.createFuel(reqData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.FUEL_ADD_SUCCESS);
+          Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
           this.toggleDrawer('');
         }
       });

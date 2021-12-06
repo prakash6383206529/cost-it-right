@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getRowMaterialDataAPI, deleteRMGradeAPI } from '../../actions/Material';
@@ -6,8 +7,9 @@ import { Loader } from '../../../../common/Loader';
 import { MATERIAL, GRADE, TYPE, DATE, EMPTY_DATA } from '../../../config/constants';
 import { convertISOToUtcDate, } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 class RMGradeDetail extends Component {
     constructor(props) {
@@ -15,6 +17,8 @@ class RMGradeDetail extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            showPopup:false,
+            deletedId:''
         }
     }
 
@@ -45,7 +49,7 @@ class RMGradeDetail extends Component {
             },
             onCancel: () => { }
         };
-        return toastr.confirm(`${MESSAGES.RM_GRADE_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.RM_GRADE_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -55,12 +59,18 @@ class RMGradeDetail extends Component {
     confirmDelete = (ID) => {
         this.props.deleteRMGradeAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_RM_GRADE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_RM_GRADE_SUCCESS);
                 this.props.getRowMaterialDataAPI(res => { });
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method render
     * @description Renders the component
@@ -104,6 +114,9 @@ class RMGradeDetail extends Component {
                         </Table>
                     </Col>
                 </Row>
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.RM_GRADE_DELETE_ALERT}`}  />
+         }
             </div>
         );
     }

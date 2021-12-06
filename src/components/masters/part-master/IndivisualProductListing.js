@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { } from '../../../actions/Common';
 import { getProductDataList, deleteProduct, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -20,6 +20,7 @@ import { INDIVIDUALPART_DOWNLOAD_EXCEl, INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl } from
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -41,6 +42,8 @@ class IndivisualProductListing extends Component {
 
             isBulkUpload: false,
             ActivateAccessibility: true,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -92,6 +95,7 @@ class IndivisualProductListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -99,7 +103,7 @@ class IndivisualProductListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
     /**
@@ -113,12 +117,18 @@ class IndivisualProductListing extends Component {
         }
         this.props.deleteProduct(obj, (res) => {
             // if (res.data.Result === true) {
-            //     toastr.success(MESSAGES.PART_DELETE_SUCCESS);
-            //     // this.getTableListData();
+            //     Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
+            //     this.getTableListData();
             // }
         });
+        this.setState({ showPopup: false })
     }
-
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -160,9 +170,9 @@ class IndivisualProductListing extends Component {
         this.props.activeInactivePartStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 // if (cell === true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 // }
                 this.getTableListData()
             }
@@ -229,7 +239,7 @@ class IndivisualProductListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -308,7 +318,7 @@ class IndivisualProductListing extends Component {
                 return false
             }
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })
@@ -486,6 +496,9 @@ class IndivisualProductListing extends Component {
                     messageLabel={'Product'}
                     anchor={'right'}
                 />}
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
+                }
             </div >
         );
     }

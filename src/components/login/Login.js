@@ -6,7 +6,7 @@ import {
   renderText
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
-import { loginUserAPI, getMenuByUser, getLeftMenu, TokenAPI } from "../../actions/auth/AuthActions";
+import { loginUserAPI, getMenuByUser, TokenAPI } from "../../actions/auth/AuthActions";
 import { maxLength70, maxLength25, required, email } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";
@@ -222,6 +222,5 @@ export default reduxForm({
 })(connect(mapStateToProps, {
   loginUserAPI,
   getMenuByUser,
-  getLeftMenu,
   TokenAPI,
 })(Login));

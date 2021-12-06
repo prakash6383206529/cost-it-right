@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, decimalLengthFour, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, positiveAndDecimalNumber } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../actions/Material';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -80,7 +80,7 @@ class AddMaterialType extends Component {
       this.props.reset()
       this.props.updateMaterialtypeAPI(updateData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
+          Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
           this.toggleDrawer('', updateData)
@@ -98,7 +98,7 @@ class AddMaterialType extends Component {
       this.props.reset()
       this.props.createMaterialTypeAPI(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
           this.toggleDrawer('', formData)

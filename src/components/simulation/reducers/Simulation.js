@@ -11,6 +11,8 @@ import {
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     GET_AMMENDENT_STATUS_COSTING,
     GET_SELECTLIST_SIMULATION_TOKENS,
+    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+    GET_ASSEMBLY_SIMULATION_LIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -43,6 +45,20 @@ export default function SimulationReducer(state = initialState, action) {
                 costingSimulationList: action.payload
             }
         case GET_SIMULATION_APPROVAL_LIST:
+
+            action.payload && action.payload.map(item => {            //if status is draft then we have to show 'Y' in amendment status column & similarly for approved & other.
+                if (item.Status === 'Draft') {
+                    item.ProvisionalStatus = 'Y' // THIS KEY IS FOR DISLAYING AMMENDEMNT STATUS COLUMN
+                }
+                else if (item.Status === 'Approved') {
+                    item.ProvisionalStatus = 'R'
+                } else {
+                    item.ProvisionalStatus = 'U'
+                }
+                return null;
+
+            })
+
             return {
                 ...state,
                 loading: false,
@@ -85,6 +101,21 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 TokensList: action.payload
             }
+
+        case SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE:
+            return {
+                ...state,
+                loading: false,
+                selectedRowCountForSimulationMessage: action.payload
+            }
+
+        case GET_ASSEMBLY_SIMULATION_LIST:
+            return {
+                ...state,
+                loading: false,
+                simulationAssemblyList: action.payload
+            }
+
 
         default:
             return state;

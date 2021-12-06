@@ -12,8 +12,8 @@ import {
 } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import moment from 'moment';
+import Toaster from '../../common/Toaster';
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
@@ -25,6 +25,8 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,7 +51,9 @@ class BOPDomesticListing extends Component {
             gridColumnApi: null,
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
-            showData: false
+            showData: false,
+            showPopup: false,
+            deletedId: ''
 
         }
     }
@@ -106,14 +110,7 @@ class BOPDomesticListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -123,10 +120,17 @@ class BOPDomesticListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteBOP(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.BOP_DELETE_SUCCESS);
+                Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.getDataList()
             }
         });
+        this.setState({ showPopup: false })
+    }
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
     }
 
     bulkToggle = () => {
@@ -379,7 +383,7 @@ class BOPDomesticListing extends Component {
             }
 
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
             return item
@@ -424,11 +428,24 @@ class BOPDomesticListing extends Component {
 
         };
 
+        const isFirstColumn = (params) => {
+            if (this.props.isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -440,19 +457,30 @@ class BOPDomesticListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter
         };
 
+        const onRowSelect = () => {
 
-        const selectRow = {
-            mode: 'checkbox',  // multi select
-            clickToSelect: true,
-            hideSelectColumn: true,
-        };
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (this.props.isSimulation) {
+                let len = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(len)
+                this.props.apply(selectedRows)
+            }
+            // console.log(setSelectedRowCountForSimulationMessage, 'nn (selectedRowCountForSimulationMessage !== 0) && ')
+            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
+        }
 
         return (
             // <div>
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
                 {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         {this.state.shown && (
                             <Col md="12" lg="10" className="filter-block ">
@@ -600,7 +628,7 @@ class BOPDomesticListing extends Component {
                         </Col>
                     </Row>
 
-                </form>
+                </form >
                 <Row>
                     <Col>
 
@@ -630,6 +658,9 @@ class BOPDomesticListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    onFilterModified={onFloatingFilterChanged}
                                 >
 
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -659,15 +690,20 @@ class BOPDomesticListing extends Component {
 
                     </Col>
                 </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'InsertDomestic'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'Insert Domestic'}
-                    anchor={'right'}
-                />}
+                {
+                    isBulkUpload && <BulkUpload
+                        isOpen={isBulkUpload}
+                        closeDrawer={this.closeBulkUploadDrawer}
+                        isEditFlag={false}
+                        fileName={'BOPDomestic'}
+                        isZBCVBCTemplate={true}
+                        messageLabel={'BOP Domestic'}
+                        anchor={'right'}
+                    />
+                }
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
+                }
             </div >
         );
     }
@@ -698,7 +734,8 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getPlantSelectListByVendor,
-    getVendorWithVendorCodeSelectList
+    getVendorWithVendorCodeSelectList,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,

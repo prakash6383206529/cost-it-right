@@ -5,7 +5,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { checkForDecimalAndNull } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
@@ -42,7 +42,7 @@ function ViewRM(props) {
   const getWeightData = (index) => {
     setIndex(index)
     if (viewRM[index].WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
-      toastr.warning('Data is not avaliabe for calculator')
+      Toaster.warning('Data is not avaliabe for calculator')
       return false
     }
     const tempData = viewCostingData[props.index]
@@ -111,6 +111,7 @@ function ViewRM(props) {
                     <th>{`Scrap Recovery %`}</th>
                     <th>{`Gross Weight (Kg)`}</th>
                     <th>{`Finish Weight (Kg)`}</th>
+                    <th>{`Scrap Weight`}</th>
                     <th>{`Calculator`}</th>
                     <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th>
@@ -122,22 +123,23 @@ function ViewRM(props) {
                   {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td>{'-'}</td>
+                        <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                         <td>{item.RMName}</td>
-                        <td>{item.RMRate}</td>
-                        <td>{item.ScrapRate}</td>
-                        <td>{item.ScrapRecoveryPercentage}</td>
-                        <td>{item.GrossWeight}</td>
-                        <td>{item.FinishWeight}</td>
+                        <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                         <td><button
                           className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                           type={"button"}
                           disabled={item.WeightCalculationId === EMPTY_GUID}
                           onClick={() => { getWeightData(index) }}
                         /></td>
-                        <td>{item.FreightCost ? item.FreightCost : '-'}</td>
-                        <td>{item.ShearingCost ? item.ShearingCost : '-'}</td>
-                        <td>{item.BurningLossWeight ? item.BurningLossWeight : '-'}</td>
+                        <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                        <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                        <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
                       </tr>

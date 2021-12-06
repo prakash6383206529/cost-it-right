@@ -4,8 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
-import { toastr } from 'react-redux-toastr'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
@@ -45,6 +44,7 @@ function CostingSummary(props) {
   const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology,)
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
+  const [titleObj, setTitleObj] = useState({})
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
@@ -90,7 +90,7 @@ function CostingSummary(props) {
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', Data.Price)
           setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-          setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId
           newValue.technologyName = costingData.TechnologyName
@@ -201,8 +201,9 @@ function CostingSummary(props) {
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
+                  setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
                   setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-                  setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                  setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value
                   newValue.technologyName = technology.label
@@ -397,7 +398,7 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                        
+
                         {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
@@ -420,6 +421,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
+                          title ={titleObj.partNameTitle}
                           label="Assembly Name/Part Name"
                           name={'PartName'}
                           Controller={Controller}
@@ -438,6 +440,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
+                          title={titleObj.descriptionTitle}
                           label="Assembly/Part Description"
                           name={'Description'}
                           Controller={Controller}
@@ -528,7 +531,8 @@ function CostingSummary(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate}
+                              //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown

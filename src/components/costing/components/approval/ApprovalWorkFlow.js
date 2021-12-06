@@ -1,4 +1,4 @@
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 import React, { useEffect, useState } from 'react'
 import { APPROVED, REJECTED, PENDING, WAITING_FOR_APPROVAL } from '../../../../config/constants'
 
@@ -60,11 +60,11 @@ function ApprovalWorkFlow(props) {
                   <div className="bottom">
                     <div className="d-flex mb-3">
                       <span className="small-grey-text left">Date:</span>
-                      <span className=" right">{item.Date ? moment(item.Date).format('DD/MM/YYYY') : '-'}</span>
+                      <span className=" right">{item.Date ? DayTime(item.Date).format('DD/MM/YYYY') : '-'}</span>
                     </div>
                     <div className="d-flex">
                       <span className="small-grey-text left">Remark:</span>
-                      <span className=" right">{item.Comments ? item.Comments : '-'}</span>
+                      <span className=" right  remark-wrapper" title={item.Comments}>{item.Comments ? item.Comments : '-'}</span>
                     </div>
                   </div>
                   {/* bottom */}

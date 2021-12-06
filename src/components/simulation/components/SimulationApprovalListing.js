@@ -6,10 +6,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED } from '../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -20,6 +20,9 @@ import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import WarningMessage from '../../common/WarningMessage'
+import { debounce } from 'lodash'
 
 const gridOptions = {};
 
@@ -47,7 +50,8 @@ function SimulationApprovalListing(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
     const userList = useSelector(state => state.auth.userList)
-
+    const [deletedId, setDeletedId] = useState('')
+    const [showPopup, setShowPopup] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -150,7 +154,7 @@ function SimulationApprovalListing(props) {
 
     const createdOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '-';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
     const priceFormatter = (props) => {
@@ -175,7 +179,7 @@ function SimulationApprovalListing(props) {
 
     const requestedOnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
     const reasonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -216,12 +220,13 @@ function SimulationApprovalListing(props) {
             simulationId: rowData.SimulationId
         }
 
-
+        setShowPopup(true)
+        setDeletedId(data)
         const toastrConfirmOptions = {
             onOk: () => {
                 dispatch(deleteDraftSimulation(data, res => {
                     if (res.data.Result) {
-                        toastr.success("Simulation token deleted successfully.")
+                        Toaster.success("Simulation token deleted successfully.")
                         getTableData()
                     }
                 }))
@@ -229,10 +234,22 @@ function SimulationApprovalListing(props) {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
 
     }
+    const onPopupConfirm = () => {
+        dispatch(deleteDraftSimulation(deletedId, res => {
+            if (res.data.Result) {
+                Toaster.success("Simulation token deleted successfully.")
+                getTableData()
+            }
+        }))
+        setShowPopup(false)
 
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
     const requestedByFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell !== null ? cell : '-'
@@ -242,7 +259,7 @@ function SimulationApprovalListing(props) {
 
         // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        const status = props.node.data.DisplayStatus;
+        const status = props.node.data.Status;
 
         if (status === DRAFT) {
             return `Y`;
@@ -290,7 +307,7 @@ function SimulationApprovalListing(props) {
         })
 
         if (!allEqual(arr)) {
-            toastr.warning('Please select token of similar Status.')
+            Toaster.warning('Please select costing of similar Status.')
             gridApi.deselectAll()
         }
 
@@ -351,7 +368,7 @@ function SimulationApprovalListing(props) {
         let technologyCount = 0
 
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one token to send for approval.')
+            Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
 
@@ -380,12 +397,12 @@ function SimulationApprovalListing(props) {
         // })
 
         // if (technologyCount > 0) {
-        //     return toastr.warning("Technology should be same for sending multiple costing for approval")
+        //     return Toaster.warning("Technology should be same for sending multiple costing for approval")
         // }
 
         if (count > 0) {
-             toastr.warning("Reason should be same for sending multiple token for approval")
-             return false
+            Toaster.warning("Reason should be same for sending multiple costing for approval")
+            return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
             setApproveDrawer(true)
@@ -462,10 +479,12 @@ function SimulationApprovalListing(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
-    const resetState = () => {
+    const resetState = debounce(() => {
+        getTableData()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-    }
+   
+    },500)
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
@@ -522,7 +541,7 @@ function SimulationApprovalListing(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
-                                    style={{ height: '100%', width: '100%' }}
+                                    style={{ height: '100%', width: '100%',  }}
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
@@ -541,6 +560,9 @@ function SimulationApprovalListing(props) {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
+                                    
+                                    
+                                   
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
@@ -559,7 +581,7 @@ function SimulationApprovalListing(props) {
 
 
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' cellRenderer='conditionFormatter' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
 
 
@@ -573,6 +595,9 @@ function SimulationApprovalListing(props) {
                                         <option value="50">50</option>
                                         <option value="100">100</option>
                                     </select>
+                                </div>
+                                <div className="text-right w-100 pb-3 warning-section">
+                                    <WarningMessage message="It may take 5 minutes to update the status, please refresh." />
                                 </div>
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
@@ -593,12 +618,16 @@ function SimulationApprovalListing(props) {
                             </div>
                         </div>
                     </div>
+
                 </div>
                 // :
                 // <SimulationApprovalSummary
                 //     approvalNumber={approvalData.approvalNumber}
                 //     approvalId={approvalData.approvalProcessId}
                 // /> //TODO list
+            }
+            {
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`} />
             }
         </Fragment>
     )

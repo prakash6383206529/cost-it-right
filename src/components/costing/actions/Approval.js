@@ -5,7 +5,7 @@ import {
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 
 const headers = config
 // const headers = {
@@ -30,7 +30,7 @@ export function getSendForApprovalByCostingId(CostingId, callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -58,7 +58,7 @@ export function getAllApprovalDepartment(callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -87,7 +87,7 @@ export function getAllApprovalUserByDepartment(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -120,7 +120,7 @@ export function getAllApprovalUserFilterByDepartment(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -147,7 +147,7 @@ export function sendForApproval(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -172,7 +172,7 @@ export function approvalProcess(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -197,7 +197,7 @@ export function finalApprovalProcess(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -225,7 +225,7 @@ export function getReasonSelectList(callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -250,7 +250,7 @@ export function sendForApprovalBySender(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -280,7 +280,7 @@ export function getApprovalList(filterData, callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -304,7 +304,7 @@ export function approvalRequestByApprove(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -328,7 +328,7 @@ export function rejectRequestByApprove(data, callback) {
         } else {
           dispatch({ type: API_FAILURE })
           if (response.data.Message) {
-            toastr.error(response.data.Message)
+            Toaster.error(response.data.Message)
           }
         }
       })
@@ -362,7 +362,7 @@ export function getApprovalSummary(
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {

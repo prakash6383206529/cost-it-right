@@ -899,6 +899,16 @@ input.form-control{
   opacity: 1;
   border: none;
 }
+.hirarchy-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/hirarchy-btn.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  background-color: #cef2fb;
+  border-radius: 4px;
+  margin-left: 5px !important;
+}
 
 .Download {
   width: 32px;
@@ -952,7 +962,8 @@ input.form-control{
 .Add-file,
 .SaveIcon,
 .CancelIcon,
-.CalculatorIcon {
+.CalculatorIcon,
+.hirarchy-btn {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;
@@ -1686,7 +1697,6 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
-
 .react-bs-table-container.client-table {
   position: relative;
 }
@@ -2133,6 +2143,26 @@ body {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+        &.remark-wrapper {             // view description when user hover it 
+          &:hover {                         
+          position: absolute;
+          background-color: #ffffff;
+          white-space: pre-wrap;
+          overflow: visible;
+          left: 80px;
+          width: calc(100% - 80px);
+          // max-width: 80%;
+          padding: 5px;
+          top: 77%;
+          z-index: 10;
+          @media screen and (max-width:$miniDesktop) {
+            // max-width: 70%;
+          }
+          @media screen and (max-width:$middleDesktop) and (min-width:1367px) {
+            // max-width: 75%;
+          }
+        }
+      }
 		}
 	}
 }
@@ -3286,36 +3316,7 @@ opacity: 0.5;
     color: #fff !important;
   }
 }
-.costing-table-next{
-  &.costing-table-zbc{
-    thead{
-      tr{width: 100%;
-        th{
-          &:first-child{width: 30%;}
-          &:nth-child(2){width: 145px;min-width: 145px;}
-          &:nth-child(3){width: 21%;}
-          &:nth-child(4){width: 15%;}
-          &:nth-child(5){width: 10%;}
-        }
-      }
-    }
-  }
 
-  &.costing-table-vbc{
-    thead{
-      tr{width: 100%;
-        th{
-          &:first-child{width: 15%;}
-          &:nth-child(2){width: 15%;}
-          &:nth-child(3){width: 145px;min-width: 145px;}
-          &:nth-child(4){width: 21%;}
-          &:nth-child(5){width: 15%;}
-          &:nth-child(6){width: 10%;}
-        }
-      }
-    }
-  }
-}
 .dark-blue{color: #3D4465;}
 .height152-label{
   .dzu-dropzone{
@@ -5723,7 +5724,8 @@ body{
         .Approved,
         .ApprovedBySimulation,
         .Rejected,
-        .History {
+        .History,
+        .ApprovedByAssembly {
           min-width: calc(90px * 80 / 100);
           height: calc(30px * 80 / 100);
           font-size: calc(14px * 80 / 100);
@@ -6254,7 +6256,7 @@ body{
   .costing-header-table {
     table {
       @media screen and (max-width:$miniDesktop) {
-        min-width: 1920px;
+        // min-width: 1920px;
       }
     }
   }
@@ -6376,4 +6378,127 @@ left: 17rem;
     left: 1rem;
     top: 1rem;
   }
+}
+// <------START popup CSS-------->
+.popup-container {
+  height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+}
+.main-modal-container {
+  z-index: 1040 !important;
+}
+.view-conversion-cost-drawer {
+  @media screen and (max-width:$miniDesktop) {
+    max-width: 1140px;
+  }
+}
+.report-listing-page {
+  .loader_container {
+    z-index: 99;
+  }
+}
+.costing-table-container {
+  table {
+    .vendor {min-width: 140px;}
+    .destination-plant {min-width: 165px;}
+    .costing-version { min-width: 200px;}
+    .share-of-business {min-width: 110px;}
+    .costing-status {min-width: 230px;}
+    .costing-price {min-width: 115px;}
+    .costing-action {min-width: 240px;}
+  }
+  @media screen and (max-width:$miniDesktop) {
+   td, th {
+      padding: 0.71rem 5px !important;
+      &:first-child {
+        padding-left: 10px !important;
+      }
+   }
+  }
+
+}
+
+  .update-vendor-loader {
+    min-height: calc(100vh + 11rem);
+  }
+.view-conversion-header.cr-subtabs-head {
+  
+  flex: 0 0 9.78%;
+    max-width: 9.78%;
+    display: block;
+    .nav-item {
+      .nav-link {
+        border-top: none;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        border-left: 2px solid transparent;
+        border-bottom: 0;
+        text-align: center;
+        @media  screen and (max-width: $miniDesktop) {
+          font-size: 14px !important;
+        }
+        &:hover {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
+        } 
+        &.active {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
+        }
+      }
+    }
+}
+.view-conversion-container.col-md-11 {
+    flex: 0 0 90.22%;
+    max-width: 90.22%;
+  .left-border {
+    padding: 8px;
+  }
+}
+
+  
+// FG-Wise table css Start
+.fgwise-table {
+  .cr-brdr-main {
+    width: 100% !important;
+  }
+  border: 1px solid #3333;
+  table {
+   th {
+     border: 1px solid #3333 !important;
+     border-top: none !important;
+     &:last-child {
+       border-left: none !important;
+       border-right: none !important;
+     }
+     &.second-last-child {
+      border-right: none !important;
+     }
+   }
+  }
+}
+// FG-Wise table css End
+.warning-section {
+ position:absolute;
+ bottom: 0;
+ left: -190px;
+}
+.min-width-btn {
+  min-width: 143px;
+}
+.bs-tooltip-auto {
+  z-index: 1300;
+}
+.child-component-tooltip {
+  bottom: 23px;
+}
+
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
 }

@@ -82,8 +82,11 @@ function AssemblySurfaceTreatment(props) {
       item={el}
       children={el.CostingChildPartDetails}
       toggleAssembly={props.toggleAssembly}
+      setPartDetails={props.setPartDetails}
       setSurfaceCost={props.setSurfaceCost}
       setTransportationCost={props.setTransportationCost}
+      setAssemblySurfaceCost={props.setAssemblySurfaceCost}
+      setAssemblyTransportationCost={props.setAssemblyTransportationCost}
     />
   })
 
@@ -95,7 +98,7 @@ function AssemblySurfaceTreatment(props) {
     <>
       <tr>
         <div className="accordian-row" style={{ display: 'contents' }} onClick={() => {
-          // toggle(item.BOMLevel, item.PartNumber, true)
+          toggle(item.BOMLevel, item.PartNumber, true)
         }}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
@@ -139,7 +142,7 @@ function AssemblySurfaceTreatment(props) {
               //onClick={DrawerToggle}
               onClick={() => {
                 toggle(item.BOMLevel, item.PartNumber, false)
-                //DrawerToggle()
+                // DrawerToggle()
               }}
             >
               <div className={'plus'}></div>Add Surface Treatment</button>)

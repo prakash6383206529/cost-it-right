@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 // import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
@@ -52,7 +52,7 @@ function OperationSTSimulation(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
     useEffect(() => {
@@ -117,12 +117,12 @@ function OperationSTSimulation(props) {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
-                toastr.warning("Value should not be more than 8")
+                Toaster.warning("Value should not be more than 8")
                 return false
             }
             return true
         } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            toastr.warning('Please enter a valid positive numbers.')
+            Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
@@ -218,7 +218,7 @@ function OperationSTSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
@@ -247,6 +247,7 @@ function OperationSTSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
+        setShowVerifyPage(true)
     }, 500);
 
     return (
@@ -332,6 +333,9 @@ function OperationSTSimulation(props) {
                                                 onSelectionChanged={onRowSelect}
                                             >
                                                 <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 {
                                                     !isImpactedMaster &&
@@ -345,13 +349,13 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 {/* {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>} */}
-                                                {
+                                                {/* {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
                                                         <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
                                                         <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewRate + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                     </AgGridColumn>
-                                                }
+                                                } */}
 
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}

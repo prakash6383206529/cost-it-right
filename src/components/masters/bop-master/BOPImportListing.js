@@ -10,8 +10,8 @@ import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendor
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import moment from 'moment';
+import Toaster from '../../common/Toaster';
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
@@ -24,6 +24,8 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,7 +51,9 @@ class BOPImportListing extends Component {
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            loader: true
+            loader: true,
+            showPopup: false,
+            deletedId: ''
 
         }
     }
@@ -108,6 +112,7 @@ class BOPImportListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id);
@@ -115,7 +120,7 @@ class BOPImportListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
+        // return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -123,14 +128,22 @@ class BOPImportListing extends Component {
     * @description confirm delete BOP
     */
     confirmDelete = (ID) => {
+
         this.props.deleteBOP(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.BOP_DELETE_SUCCESS);
+                Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.getDataList()
             }
         });
+        this.setState({ showPopup: false })
     }
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
 
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     bulkToggle = () => {
         this.setState({ isBulkUpload: true })
     }
@@ -374,7 +387,7 @@ class BOPImportListing extends Component {
             }
 
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })
@@ -424,11 +437,24 @@ class BOPImportListing extends Component {
 
         };
 
+        const isFirstColumn = (params) => {
+            if (this.props.isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+        }
+
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
-
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -439,6 +465,21 @@ class BOPImportListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter
         };
+
+        const onRowSelect = () => {
+
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (this.props.isSimulation) {
+                let len = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(len)
+                this.props.apply(selectedRows)
+            }
+            this.setState({ selectedRowData: selectedRows })
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
+        }
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -625,6 +666,9 @@ class BOPImportListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                    onFilterModified={onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -651,7 +695,9 @@ class BOPImportListing extends Component {
                                 </div>
                             </div>
                         </div>
-
+                        {
+                            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
+                        }
                     </Col>
                 </Row>
                 {isBulkUpload && <BulkUpload
@@ -694,7 +740,8 @@ export default connect(mapStateToProps, {
     getBOPCategorySelectList,
     getPlantSelectList,
     getAllVendorSelectList,
-    getVendorWithVendorCodeSelectList
+    getVendorWithVendorCodeSelectList,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

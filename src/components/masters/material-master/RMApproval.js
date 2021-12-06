@@ -7,13 +7,15 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { EMPTY_DATA } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
+import WarningMessage from '../../common/WarningMessage';
+import { debounce } from 'lodash'
 
 
 
@@ -42,7 +44,7 @@ function RMApproval(props) {
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
-            var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
             if (dateAsString == null) return -1;
             var dateParts = dateAsString.split('/');
             var cellDate = new Date(
@@ -147,7 +149,7 @@ function RMApproval(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/yyyy') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -233,11 +235,11 @@ function RMApproval(props) {
         return thisIsFirstColumn;
     }
 
-    const resetState = () => {
+    const resetState = debounce(() => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
         getTableData()
-    }
+     },500)
 
     const sendForApproval = () => {
         setApprovalDrawer(true)
@@ -387,6 +389,9 @@ function RMApproval(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
+                                <div className="text-right w-100 pb-3 warning-section">
+                                  <WarningMessage message="It may take 5 minutes to update the status, please refresh." />
+                                 </div>
                             </div>
                         </div>
                     </div>

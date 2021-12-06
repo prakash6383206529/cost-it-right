@@ -7,7 +7,7 @@ import {
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 
 function PartOverheadProfit(props) {
@@ -30,6 +30,7 @@ function PartOverheadProfit(props) {
       BOMLevel: BOMLevel,
       PartNumber: PartNumber,
     }
+
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
@@ -84,7 +85,7 @@ function PartOverheadProfit(props) {
     }
     dispatch(saveComponentOverheadProfitTab(reqData, res => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+        Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
         dispatch(setComponentOverheadItemData({}, () => { }))
         InjectDiscountAPICall()
       }

@@ -13,7 +13,6 @@ import {
 
 } from '../actions/BoughtOutParts';
 
-import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 
@@ -21,7 +20,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
-import moment from 'moment';
+
 
 class AddPackaging extends Component {
     constructor(props) {

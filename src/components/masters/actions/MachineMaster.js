@@ -174,12 +174,16 @@ export function getMachineDataList(data, callback) {
         const queryParams = `costing_head=${data.costing_head}&technology_id=${data.technology_id}&vendor_id=${data.vendor_id}&machine_type_id=${data.machine_type_id}&process_id=${data.process_id}&plant_id=${data.plant_id}`
         axios.get(`${API.getMachineDataList}?${queryParams}`, headers)
             .then((response) => {
+
+                const value = response.data.DataList.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
+
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
                         type: GET_MACHINE_DATALIST_SUCCESS,
-                        payload: response.status === 204 ? [] : response.data.DataList,
+                        payload: response.status === 204 ? [] : value,
                     });
                     callback(response);
+
                 }
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

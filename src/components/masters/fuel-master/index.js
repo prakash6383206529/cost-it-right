@@ -10,7 +10,6 @@ import { ADDITIONAL_MASTERS, FUEL_AND_POWER } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 
 class FuelMaster extends Component {
     constructor(props) {
@@ -195,9 +194,5 @@ function mapStateToProps({ auth }) {
 }
 
 
-export default connect(
-    mapStateToProps, {
-    getLeftMenu
-}
-)(FuelMaster);
+export default connect(mapStateToProps, {})(FuelMaster);
 

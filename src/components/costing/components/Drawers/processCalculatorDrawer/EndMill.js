@@ -7,7 +7,7 @@ import { clampingTime, feedByMin, findRpm, totalMachineTime, } from './CommonFor
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 
 function EndMill(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -151,7 +151,7 @@ function EndMill(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))

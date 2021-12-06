@@ -10,8 +10,7 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import MachineApproval from './MachineApproval'
+import MachineApproval from './MachineApproval';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -268,6 +267,6 @@ function mapStateToProps({ auth }) {
 
 
 export default connect(mapStateToProps,
-    { getLeftMenu, }
+    {}
 )(MachineMaster);
 

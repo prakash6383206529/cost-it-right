@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
-import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -21,16 +20,12 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
-    const [showSimulation, setShowSimulation] = useState(false)
+    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -42,10 +37,7 @@ function ERSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-
-    const { filteredRMData } = useSelector(state => state.material)
 
     const cancelVerifyPage = () => {
 
@@ -55,7 +47,7 @@ function ERSimulation(props) {
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
     const newERFormatter = (props) => {
@@ -110,12 +102,12 @@ function ERSimulation(props) {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
-                toastr.warning("Value should not be more than 8")
+                Toaster.warning("Value should not be more than 8")
                 return false
             }
             return true
         } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            toastr.warning('Please enter a valid positive numbers.')
+            Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
@@ -186,7 +178,7 @@ function ERSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
 
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
+            Toaster.warning('Please select atleast one costing.')
             return false
         }
         let obj = {}

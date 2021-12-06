@@ -40,7 +40,7 @@ import {
     GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, VBC, ZBC, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import { loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 
@@ -63,7 +63,7 @@ export function createMaterialAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_MATERIAL_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -158,7 +158,7 @@ export function createRMCategoryAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_MATERIAL_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -251,7 +251,7 @@ export function createRMGradeAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_MATERIAL_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -611,7 +611,7 @@ export function createMaterialTypeAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_MATERIAL_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -705,7 +705,7 @@ export function createRMDetailAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_MATERIAL_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -1614,7 +1614,7 @@ export function getAllMasterApprovalDepartment(callback) {
                     })
                     callback(response)
                 } else {
-                    toastr.error(MESSAGES.SOME_ERROR)
+                    Toaster.error(MESSAGES.SOME_ERROR)
                 }
             })
             .catch((error) => {
@@ -1645,7 +1645,7 @@ export function getAllMasterApprovalUserByDepartment(data, callback) {
                 } else {
                     dispatch({ type: API_FAILURE })
                     if (response.data.Message) {
-                        toastr.error(response.data.Message)
+                        Toaster.error(response.data.Message)
                     }
                 }
             })
@@ -1671,7 +1671,7 @@ export function masterApprovalRequestBySender(data, callback) {
             } else {
                 dispatch({ type: API_FAILURE })
                 if (response.data.Message) {
-                    toastr.error(response.data.Message)
+                    Toaster.error(response.data.Message)
                 }
             }
         }).catch((error) => {
@@ -1696,7 +1696,7 @@ export function approvalRequestByMasterApprove(data, callback) {
                 } else {
                     dispatch({ type: API_FAILURE })
                     if (response.data.Message) {
-                        toastr.error(response.data.Message)
+                        Toaster.error(response.data.Message)
                     }
                 }
             })
@@ -1721,7 +1721,7 @@ export function rejectRequestByMasterApprove(data, callback) {
                 } else {
                     dispatch({ type: API_FAILURE })
                     if (response.data.Message) {
-                        toastr.error(response.data.Message)
+                        Toaster.error(response.data.Message)
                     }
                 }
             })
@@ -1751,7 +1751,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
                     })
                     callback(response)
                 } else {
-                    toastr.error(MESSAGES.SOME_ERROR)
+                    Toaster.error(MESSAGES.SOME_ERROR)
                 }
             })
             .catch((error) => {
@@ -1775,7 +1775,7 @@ export function masterFinalLevelUser(data, callback) {
                 } else {
                     dispatch({ type: API_FAILURE })
                     if (response.data.Message) {
-                        toastr.error(response.data.Message)
+                        Toaster.error(response.data.Message)
                     }
                 }
             })

@@ -9,7 +9,7 @@ import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/Ho
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../../helper'
 import { getUOMSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import { G, KG, MG, } from '../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../config/masterData'
 import { ViewCostingContext } from '../CostingDetails'
@@ -310,7 +310,7 @@ let obj = {
 dispatch(saveRawMaterialCalciData(data, res => {
     if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
-        toastr.success("Calculation saved successfully")
+        Toaster.success("Calculation saved successfully")
         props.toggleDrawer('', data, obj)
     }
 }))

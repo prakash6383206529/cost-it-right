@@ -5,7 +5,6 @@ import classnames from 'classnames';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
 import OperationApproval from './OperationApproval'
@@ -141,9 +140,5 @@ function mapStateToProps({ auth }) {
 }
 
 
-export default connect(
-    mapStateToProps, {
-    getLeftMenu
-}
-)(OperationsMaster);
+export default connect(mapStateToProps, {})(OperationsMaster);
 

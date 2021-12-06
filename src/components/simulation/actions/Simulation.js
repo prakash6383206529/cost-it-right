@@ -19,7 +19,11 @@ import {
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
-    SET_ATTACHMENT_FILE_DATA
+    SET_ATTACHMENT_FILE_DATA,
+    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+    GET_ASSEMBLY_SIMULATION_LIST,
+    GET_VERIFY_MACHINERATE_SIMULATION_LIST,
+    GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -636,4 +640,165 @@ export function getImpactedMasterData(simulationId, callback) {
         });
     };
 }
+
+export function runVerifySurfaceTreatmentSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftSurfaceTreatmentSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getVerifySurfaceTreatmentSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifySurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedSurfaceTreatmentCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function setSelectedRowCountForSimulationMessage(selectedMaster) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+            payload: selectedMaster,
+        });
+    }
+}
+
+export function runVerifyMachineRateSimulation(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftMachineRateSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function runSimulationOnSelectedMachineRateCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedMachineRateCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedBoughtOutPartCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
+export function getVerifyMachineRateSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifyMachineRateSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_MACHINERATE_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function getVerifyBoughtOutPartSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifyBoughtOutPartSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function getAssemblySimulationList(token, plantId, rawMatrialId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getAssemblySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_ASSEMBLY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+
+
 

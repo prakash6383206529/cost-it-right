@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { loggedInUserId } from '../../../helper';
 import { APPROVED, PENDING } from '../../../config/constants';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
@@ -148,7 +148,7 @@ class CostingSummaryBulkUpload extends Component {
         obj.LoggedInUserId = loggedInUserId()
         this.props.sendForApprovalFromBulkUpload(obj, res => {
             if (res.data.Result) {
-                toastr.success(res.data.Message)
+                Toaster.success(res.data.Message)
                 this.props.getCostingBulkUploadList(() => { })
             } else {
                 this.props.getCostingBulkUploadList(() => { })
@@ -212,7 +212,7 @@ class CostingSummaryBulkUpload extends Component {
 
                                     <button
                                         type="button"
-                                        className={'user-btn'}
+                                        className={'user-btn min-width-btn'}
                                         onClick={this.bulkToggle}>
                                         <div className={'upload'}></div>Bulk Upload
                                     </button>
@@ -276,7 +276,7 @@ class CostingSummaryBulkUpload extends Component {
                                     <AgGridColumn field="CorrectCostingCount" headerName="No. of Correct Row"></AgGridColumn>
                                     <AgGridColumn field="IncorrectCostingCount" headerName="No. of Incorrect Row"></AgGridColumn>
                                     <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
-                                    <AgGridColumn field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
+                                    <AgGridColumn minWidth="230" field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

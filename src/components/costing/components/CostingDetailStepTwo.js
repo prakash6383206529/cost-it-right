@@ -6,7 +6,7 @@ import {
   setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index'
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
@@ -78,7 +78,6 @@ function CostingDetailStepTwo(props) {
         ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
         TotalCost: OverAllCost,
       }
-
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
       dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => {
@@ -267,7 +266,7 @@ function CostingDetailStepTwo(props) {
           data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
         }
 
-        const discountedCost = checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice);
+        const discountedCost =data.DiscountCostType==='Percentage'? checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice):data.DiscountsAndOtherCost;
         const discountValues = {
           NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
           HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
@@ -341,7 +340,7 @@ function CostingDetailStepTwo(props) {
                       {costingData.IsVendor && initialConfiguration?.IsDestinationPlantConfigure && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Destination Plant:</span><span className="dark-blue pl-1"> {costingData.DestinationPlantName}</span></p></div></td>}
                       {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
                     </tbody>
                   </Table>
 
@@ -352,15 +351,15 @@ function CostingDetailStepTwo(props) {
                         <tr>
                           <th style={{ width: '140px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/Assembly' : 'RM Cost/Pc'}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Insert Cost/Assembly' : 'Insert Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/Assembly' : 'BOP Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net RM + CC Cost`}</span></th>
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
+                          <th style={{ width: '190px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Discounts`}</span></th>
+                          <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost(INR)`}</span></th>
                         </tr>
                       </thead>

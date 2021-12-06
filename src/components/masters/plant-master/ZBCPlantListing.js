@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { ZBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -40,6 +41,12 @@ class ZBCPlantListing extends Component {
             city: [],
             country: [],
             state: [],
+            showPopup:false,
+            deletedId:'',
+           
+            cellData:{},
+            cellValue:'',
+            showPopupToggle:false
         }
     }
 
@@ -81,6 +88,7 @@ class ZBCPlantListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
+        this.setState({showPopup:true, deletedId:Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -88,7 +96,7 @@ class ZBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -98,13 +106,23 @@ class ZBCPlantListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deletePlantAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
+                Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.filterList()
                 //this.getTableListData();
             }
         });
+        this.setState({showPopup:false})
     }
-
+    onPopupConfirm =() => {        
+            this.confirmDeleteItem(this.state.deletedId);         
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+        this.setState({showPopupToggle:false})
+      }
+      onPopupConfirmToggle =() => {        
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)      
+     }
     /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -127,6 +145,7 @@ class ZBCPlantListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
+        this.setState({showPopupToggle:true, cellData:data, cellValue:cell})
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeactivateItem(data, cell)
@@ -134,24 +153,26 @@ class ZBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-
-        return (
-            toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
-        )
+// this.setState({isTogglePopup:true})
+    //     return (
+    //     //     Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
+    //  <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${cell?MESSAGES.PLANT_DEACTIVE_ALERT:MESSAGES.PLANT_ACTIVE_ALERT}`}  />
+    //     )
     }
 
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell == true) {
-                    toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 } else {
-                    toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 }
                 // this.getTableListData()
                 this.filterList()
             }
         })
+        this.setState({showPopupToggle:false})
     }
 
     /**
@@ -423,7 +444,7 @@ class ZBCPlantListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor, } = this.state;
+        const { isEditFlag, isOpenVendor,isDeletePopoup,isTogglePopup } = this.state;
         const options = {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
@@ -626,6 +647,14 @@ class ZBCPlantListing extends Component {
                         anchor={"right"}
                     />
                 )}
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`}  />
+            
+            // `${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`
+        }
+        {
+            this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`}  />
+        }
             </div>
         );
     }

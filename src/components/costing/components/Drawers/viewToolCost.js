@@ -63,7 +63,7 @@ function ViewToolCost(props) {
                       viewToolCost.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{'-'}</td>
+                            <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
                             <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.Life ? item.Life : "-"}</td>

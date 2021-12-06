@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSelectListOfMasters } from '../actions/Simulation';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 
 function SimulationUpload(props) {
@@ -49,7 +49,7 @@ function SimulationUpload(props) {
 
     const handleBulkUpload = () => {
         if (Object.keys(master).length === 0) {
-            toastr.warning('Please select master to upload the data.')
+            Toaster.warning('Please select master to upload the data.')
         } else {
 
             switch (master) {

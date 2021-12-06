@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG } from '../../../../../config/constants'
 
@@ -81,7 +81,7 @@ function StandardRub(props) {
         dispatch(saveRawMaterialCalciData(obj, res => {
             if (res.data.Result) {
                 obj.WeightCalculationId = res.data.Identity
-                toastr.success("Calculation saved successfully")
+                Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', obj, obj)
             }
         }))

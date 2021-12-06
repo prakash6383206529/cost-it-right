@@ -7,7 +7,7 @@
 // import redcrossImg from '../../../../assests/images/red-cross.png'
 // import { fileDeleteCosting, fileUploadCosting } from '../../actions/Costing'
 // import { setAttachmentFileData, uploadSimulationAttachmentByCategory, uploadSimulationAttachmentonFTP } from '../../../simulation/actions/Simulation'
-// import { toastr } from 'react-redux-toastr';
+// import Toaster from "../../../common/Toaster";
 // import { loggedInUserId } from '../../../../helper';
 
 
@@ -100,7 +100,7 @@
 //         }
 
 //         if (status === 'rejected_file_type') {
-//             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+//             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
 //         }
 //     }
 
@@ -133,7 +133,7 @@
 //         }
 
 //         if (status === 'rejected_file_type') {
-//             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+//             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
 //         }
 //     }
 
@@ -162,7 +162,7 @@
 //         }
 
 //         if (status === 'rejected_file_type') {
-//             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+//             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
 //         }
 //     }
 //     const handleOtherChangeStatus = ({ meta, file }, status) => {
@@ -193,7 +193,7 @@
 //         }
 
 //         if (status === 'rejected_file_type') {
-//             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+//             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
 //         }
 //     }
 //     const handleChangeAttachment = ({ meta, file }, status) => {
@@ -224,7 +224,7 @@
 //         }
 
 //         if (status === 'rejected_file_type') {
-//             toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+//             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
 //         }
 //     }
 
@@ -240,7 +240,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 toastr.success('File has been deleted successfully.')
+//                 Toaster.success('File has been deleted successfully.')
 //                 let tempArr = files && files.filter(item => item.FileId !== FileId)
 //                 setFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -259,7 +259,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 toastr.success('File has been deleted successfully.')
+//                 Toaster.success('File has been deleted successfully.')
 //                 let tempArr = otherFiles && otherFiles.filter(item => item.FileId !== FileId)
 //                 setOtherFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -279,7 +279,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 toastr.success('File has been deleted successfully.')
+//                 Toaster.success('File has been deleted successfully.')
 //                 let tempArr = supplierFiles && supplierFiles.filter(item => item.FileId !== FileId)
 //                 setSupplierFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -299,7 +299,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 toastr.success('File has been deleted successfully.')
+//                 Toaster.success('File has been deleted successfully.')
 //                 let tempArr = invoiceFiles && invoiceFiles.filter(item => item.FileId !== FileId)
 //                 setInvoiceFiles(tempArr)
 //                 setIsOpen(!IsOpen)
@@ -319,7 +319,7 @@
 //                 DeletedBy: loggedInUserId(),
 //             }
 //             dispatch(fileDeleteCosting(deleteData, (res) => {
-//                 toastr.success('File has been deleted successfully.')
+//                 Toaster.success('File has been deleted successfully.')
 //                 let tempArr = attachmentFiles && attachmentFiles.filter(item => item.FileId !== FileId)
 //                 setAttachmentFiles(tempArr)
 //                 setIsOpen(!IsOpen)

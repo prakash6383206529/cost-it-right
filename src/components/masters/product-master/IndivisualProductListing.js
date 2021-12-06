@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -21,6 +21,7 @@ import { INDIVIDUALPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -42,6 +43,8 @@ class IndivisualProductListing extends Component {
 
             isBulkUpload: false,
             ActivateAccessibility: true,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -91,6 +94,7 @@ class IndivisualProductListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id);
@@ -98,7 +102,7 @@ class IndivisualProductListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
     /**
@@ -108,12 +112,19 @@ class IndivisualProductListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deletePart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+                Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({ showPopup: false })
     }
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
 
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -155,9 +166,9 @@ class IndivisualProductListing extends Component {
         this.props.activeInactivePartStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 // if (cell === true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 // }
                 this.getTableListData()
             }
@@ -224,7 +235,7 @@ class IndivisualProductListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -457,12 +468,11 @@ class IndivisualProductListing extends Component {
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
+
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-domLayout='autoHeight'
-domLayout='autoHeight'
+                            domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.newPartsListing}
                             pagination={true}
@@ -483,7 +493,7 @@ domLayout='autoHeight'
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="Action"  type="rightAligned"   cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -505,6 +515,9 @@ domLayout='autoHeight'
                     messageLabel={'Part'}
                     anchor={'right'}
                 />}
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
+                }
             </div >
         );
     }

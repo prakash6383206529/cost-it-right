@@ -7,7 +7,7 @@ import { clampingTime, feedByMin, findRpm, passesNo, totalMachineTime, } from '.
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 
 
 function Turning(props) {
@@ -169,7 +169,7 @@ function Turning(props) {
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
-        toastr.success('Calculation saved sucessfully.')
+        Toaster.success('Calculation saved sucessfully.')
         calculateMachineTime(totalMachiningTime, obj)
       }
     }))

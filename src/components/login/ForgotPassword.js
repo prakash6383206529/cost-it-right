@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { Link } from "react-router-dom";
 import { renderEmailInputField, focusOnError } from "../layout/FormInputs";
 import { required, email } from "../../helper/validation";
@@ -48,10 +48,10 @@ class ForgotPassword extends Component {
       this.setState({ isLoader: false })
       if (res && res.data) {
         if (res.data.success !== true) {
-          toastr.error(MESSAGES.INVALID_EMAIL);
+          Toaster.error(MESSAGES.INVALID_EMAIL);
         } else {
           reactLocalStorage.setObject("userData", userData);
-          toastr.success(res.data.message);
+          Toaster.success(res.data.message);
           setTimeout(() => {
             window.location.assign("/login");
           }, 3000);

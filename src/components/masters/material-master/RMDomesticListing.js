@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
+import { useState, useEffect, } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-    getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM
+    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, setFilterForRM
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import InputRange from 'react-input-range';
-import 'react-input-range/lib/css/index.css';
-import moment from 'moment';
+import 'react-input-range/lib/css/index.css'
+import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -24,13 +25,9 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
-
+import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } from '../../../helper';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -39,7 +36,7 @@ const gridOptions = {};
 
 var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
         if (dateAsString == null) return -1;
         var dateParts = dateAsString.split('/');
         var cellDate = new Date(
@@ -87,6 +84,9 @@ function RMDomesticListing(props) {
     const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
     const [selectedRowData, setSelectedRowData] = useState([]);
+    const [showPopup, setShowPopup] = useState(false)
+    const [deletedId, setDeletedId] = useState('')
+    const [showPopupBulk, setShowPopupBulk] = useState(false)
 
 
     /**
@@ -208,9 +208,8 @@ function RMDomesticListing(props) {
                     settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
-
                     // if (isSimulation) {
-                    //     props.apply(Data)
+                    //     apply(Data)
                     // }
 
                     // const func = () => {
@@ -249,6 +248,8 @@ function RMDomesticListing(props) {
     * @description confirm delete Raw Material details
     */
     const deleteItem = (Id) => {
+        setShowPopup(true)
+        setDeletedId(Id)
         const toastrConfirmOptions = {
             onOk: () => {
                 confirmDelete(Id)
@@ -256,7 +257,7 @@ function RMDomesticListing(props) {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
+        // return Toaster.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -266,14 +267,25 @@ function RMDomesticListing(props) {
     const confirmDelete = (ID) => {
         dispatch(deleteRawMaterialAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                toastr.warning(res.data.Message)
+                Toaster.warning(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
                 getDataList()
             }
         }));
+        setShowPopup(false)
     }
 
+    const onPopupConfirm = () => {
+        confirmDelete(deletedId);
+    }
+    const onPopupConfirmBulk = () => {
+        confirmDensity()
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+        setShowPopupBulk(false)
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -341,7 +353,7 @@ function RMDomesticListing(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     const hyphenFormatter = (props) => {
@@ -438,40 +450,10 @@ function RMDomesticListing(props) {
         }
     }
 
-    /**
-    * @method handleGradeChange
-    * @description  used to handle row material grade selection
-    */
-    const handleGradeChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setRMGrade(newValue);
-
-            const fun = () => {
-
-                dispatch(getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { }))
-                dispatch(getVendorFilterByGradeSelectList(RMGrade.value, () => { }))
-            }
-            fun();
-        } else {
-            setRMGrade([]);
-        }
-    }
-
-    /**
-     * @method handleVendorName
-     * @description called
-     */
-    const handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setvendorName(newValue);
-            dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
-            dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }))
 
 
-        } else {
-            setvendorName([]);
-        }
-    }
+
+
 
     /**
     * @method filterList
@@ -551,13 +533,14 @@ function RMDomesticListing(props) {
     * @description confirm Redirection to Material tab.
     */
     const densityAlert = () => {
+
         const toastrConfirmOptions = {
             onOk: () => {
                 confirmDensity()
             },
             onCancel: () => { }
         };
-        return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
+        // return Toaster.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
 
     const handleHeadChange = (newValue, actionMeta) => {
@@ -667,12 +650,12 @@ function RMDomesticListing(props) {
     }
 
     const onRowSelect = () => {
-
         var selectedRows = gridApi.getSelectedRows();
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         if (isSimulation) {
-            let len = gridApi.getSelectedRows().length
-            props.isRowSelected(len)
+            let length = gridApi.getSelectedRows().length
+            dispatch(setSelectedRowCountForSimulationMessage(length))
+
             apply(selectedRows)
         }
         setSelectedRowData(selectedRows)
@@ -880,6 +863,12 @@ function RMDomesticListing(props) {
                         anchor={"right"}
                     />
                 )
+            }
+            {
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
+            }
+            {
+                showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
             }
         </div >
     );

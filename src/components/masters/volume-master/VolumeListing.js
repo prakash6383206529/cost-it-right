@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { focusOnError, searchableSelect } from '../../layout/FormInputs'
 import { required } from '../../../helper/validation'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
@@ -16,9 +16,6 @@ import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
-import { reactLocalStorage } from 'reactjs-localstorage'
-import { loggedInUserId } from '../../../helper/auth'
-import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -26,6 +23,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -132,7 +130,9 @@ class VolumeListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      showPopup:false,
+      deletedId:''
 
     }
   }
@@ -221,6 +221,7 @@ class VolumeListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
+    this.setState({showPopup:true, deletedId:Id })
     const toastrConfirmOptions = {
       onOk: () => {
         this.confirmDeleteItem(Id)
@@ -228,7 +229,7 @@ class VolumeListing extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     }
-    return toastr.confirm(MESSAGES.VOLUME_DELETE_ALERT, toastrConfirmOptions)
+    // return Toaster.confirm(MESSAGES.VOLUME_DELETE_ALERT, toastrConfirmOptions)
   }
 
   /**
@@ -238,12 +239,18 @@ class VolumeListing extends Component {
   confirmDeleteItem = (ID) => {
     this.props.deleteVolume(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_VOLUME_SUCCESS)
+        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS)
         this.getTableListData(null, null, null, null, null, null)
       }
     })
+    this.setState({showPopup:false})
   }
-
+  onPopupConfirm =() => {
+    this.confirmDeleteItem(this.state.deletedId);
+}
+closePopUp= () =>{
+    this.setState({showPopup:false})
+  }
   /**
 * @method buttonFormatter
 * @description Renders buttons
@@ -607,6 +614,9 @@ class VolumeListing extends Component {
               anchor={'right'}
             />
           )}
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`}  />
+         }
         </div>
       </>
     )
@@ -647,7 +657,6 @@ export default connect(mapStateToProps, {
   getVolumeDataList,
   deleteVolume,
   getFinancialYearSelectList,
-  getLeftMenu,
   getVendorWithVendorCodeSelectList
 })(
   reduxForm({
