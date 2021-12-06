@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
 import Switch from "react-switch";
@@ -115,15 +115,13 @@ function PaymentTerms(props) {
       */
     const checkPaymentTermApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '') {
-            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
+            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
-            const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
-            console.log('RepaymentPeriodPercentage: ', RepaymentPeriodPercentage);
+            const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')         
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
-            console.log(headerCosts.NetRawMaterialsCost, 'RepaymentCost: ', RepaymentCost);
-            console.log(headerCosts.NetRawMaterialsCost * RepaymentCost, "HEADER");
             switch (Text) {
                 case 'RM':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))

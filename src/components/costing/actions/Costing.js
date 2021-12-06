@@ -2211,3 +2211,41 @@ export function saveAssemblyBOPHandlingCharge(data,callback){
     })
   }
 }
+
+/**
+ * @method getVBCExistingCosting
+ * @description get VBC Costing Select List By Part
+ */
+ export function getNCCExistingCosting(PartId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getNCCCExistingCosting}/${PartId}`, headers)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      //apiErrors(error);
+    })
+  }
+}
+
+
+/**
+ * @method createZBCCosting
+ * @description CREATE ZBC COSTING
+ */
+ export function createNCCCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createNCCCosting, data, headers)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
