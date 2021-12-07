@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthFour, decimalLength6, decimalLengthsix } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import {
@@ -27,16 +27,13 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { EMPTY_GUID, FILE_URL, ZBC, RM_MASTER_ID } from '../../../config/constants'
+import {  FILE_URL, ZBC, RM_MASTER_ID } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
-import { toast } from 'react-toastify';
-import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll} from 'react-scroll';
 
@@ -383,6 +380,8 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
+
+          
           this.setState({ DataToChange: Data }, () => { })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
@@ -400,7 +399,7 @@ class AddRMDomestic extends Component {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
 
               setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, technologySelectList, plantSelectList } = this.props
 
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
@@ -420,8 +419,7 @@ class AddRMDomestic extends Component {
                   return plantArray
                 })
 
-                const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Value === Data.Vendor)
-
+            
                 let vendorPlantArray = []
                 Data && Data.VendorPlant.map((item) => {
                   vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId, })
@@ -443,7 +441,7 @@ class AddRMDomestic extends Component {
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                   selectedPlants: plantArray,
                   Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
-                  vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                  vendorName:Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
@@ -638,7 +636,7 @@ class AddRMDomestic extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, plantList, filterPlantList, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
+    const { gradeSelectList, rmSpecification, filterPlantList, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
     const temp = []
 
     if (label === 'material') {
@@ -951,9 +949,8 @@ class AddRMDomestic extends Component {
       RawMaterialCode: values.Code
     }
     if (isEditFlag) {
-      this.setState({ showPopup: true, updatedObj: requestData })
+      this.setState({ updatedObj: requestData })
       if (isSourceChange) {
-
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
           if (res.data.Result) {
@@ -965,7 +962,6 @@ class AddRMDomestic extends Component {
         })
       }
       if (isDateChange) {
-
         this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
           if (res.data.Result) {
@@ -987,8 +983,7 @@ class AddRMDomestic extends Component {
         if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
           Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
             values.cutOffPrice === undefined) || uploadAttachements === false)) {
-          if (!isEditFlag) {
-          }
+              this.setState({ showPopup: true, updatedObj: requestData })
         }
       }
     }
@@ -1084,7 +1079,7 @@ class AddRMDomestic extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state
 
     return (
       <>
@@ -1835,7 +1830,7 @@ function mapStateToProps(state) {
 
   const { initialConfiguration } = auth;
 
-  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, loader } = material
+  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType } = material
 
 
   let initialValues = {}
