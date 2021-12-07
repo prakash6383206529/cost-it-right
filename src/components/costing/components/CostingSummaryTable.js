@@ -1236,7 +1236,6 @@ const CostingSummaryTable = (props) => {
                       !simulationDrawer &&
                       <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
                         <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}) </th>
-                        {console.log(viewCostingData, "viewww")}
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>

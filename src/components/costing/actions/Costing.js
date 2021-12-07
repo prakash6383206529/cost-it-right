@@ -460,7 +460,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
-  console.log('TabData: ', TabData);
+  
 
 
   return (dispatch) => {
@@ -2129,7 +2129,7 @@ export function gridDataAdded(IsCostingDateDisabled) {
  * @description SET OVERHEAD PROFIT TAB DATA  
  */
 export function setRMCutOff(cutOffObj) {
-  console.log('cutOffObj: ', cutOffObj);
+  
   return (dispatch) => {
     dispatch({
       type: SET_CUTOFF_RMC,
