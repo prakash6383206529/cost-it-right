@@ -27,6 +27,7 @@ import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import TooltipCustom from '../../common/Tooltip';
+import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 export const ViewCostingContext = React.createContext()
@@ -101,7 +102,6 @@ function CostingDetails(props) {
     type: '',
     index: []
   })
-  const [titleObj, setTitleObj] = useState({})
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -299,7 +299,6 @@ function CostingDetails(props) {
               setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
-              setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
 
             }),
             )
@@ -824,6 +823,7 @@ function CostingDetails(props) {
       onCancel: () => { },
       component: () => <ConfirmComponent />
     }
+    // return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -960,7 +960,16 @@ function CostingDetails(props) {
   const deleteItem = (Item, index, type) => {
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
+    const toastrConfirmOptions = {
+      onOk: () => {
+        deleteCosting(Item, index, type);
+      },
+      onCancel: () => { },
+      component: () => <ConfirmComponent />,
+    };
+    // return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
   }
+
   /**
    * @method deleteCosting
    * @description USED FOR DELETE COSTING
@@ -1182,6 +1191,7 @@ function CostingDetails(props) {
     //   onCancel: () => { setPreviousSOBValue() },
     //   component: () => <ConfirmComponent />
     // }
+    // return Toaster.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -1505,7 +1515,6 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          title ={titleObj.partNameTitle}
                           label="Assembly Name/Part Name"
                           name={"PartName"}
                           Controller={Controller}
@@ -1533,7 +1542,6 @@ function CostingDetails(props) {
                         <TextFieldHookForm
                           label="Assembly/Part Description"
                           name={"Description"}
-                          title={titleObj.descriptionTitle}
                           Controller={Controller}
                           control={control}
                           register={register}
