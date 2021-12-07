@@ -1249,7 +1249,7 @@ const CostingSummaryTable = (props) => {
                     }
 
                     <tr>
-                      <td>Attachment</td>
+                      <td>Attachments</td>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
