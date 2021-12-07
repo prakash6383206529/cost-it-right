@@ -278,7 +278,7 @@ export default function costingReducer(state = initialState, action) {
       };
     case SET_RMCC_TAB_DATA:
       const tempRMData = [...action.payload]
-      console.log(action.payload, "action.payloadaction.payload");
+      
       return {
         ...state,
         loading: false,
