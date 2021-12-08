@@ -14,7 +14,7 @@ import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
-import { gridDataAdded, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
@@ -41,6 +41,7 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
+  const[oldGridData,setOldGridData] =useState(data && data.CostingProcessCostResponse)
   const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
@@ -70,6 +71,10 @@ function ProcessCost(props) {
     }
     if (!CostingViewMode) {
       selectedIds(gridData)
+ 
+      if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+        dispatch(isDataChange(true))
+      }
       props.setProcessCost(tabData, Params, item)
     }
   }, [tabData]);
