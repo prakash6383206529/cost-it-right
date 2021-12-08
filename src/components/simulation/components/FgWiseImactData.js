@@ -15,6 +15,7 @@ export function Fgwiseimactdata(props) {
     const [showTableData, setshowTableData] = useState(false)
     const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType } = props
     const [loader, setLoader] = useState(false)
+    const [count, setCount] = useState(0)
 
     const impactData = useSelector((state) => state.simulation.impactData)
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
@@ -23,28 +24,30 @@ export function Fgwiseimactdata(props) {
 
     useEffect(() => {
         setLoader(true)
-
         // if (SimulationId) {
         switch (impactType) {
             case 'Assembly':
-                const requestData = {
-                    costingHead: dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
-                    impactPartNumber: dataForAssemblyImpact?.row?.PartNo,
-                    plantCode: dataForAssemblyImpact?.row?.PlantCode,
-                    vendorId: dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? vendorIdState : EMPTY_GUID,
-                    delta: dataForAssemblyImpact?.row?.Variance,
-                    quntity: 1,
+                if (dataForAssemblyImpact !== undefined && Object.keys(dataForAssemblyImpact).length !== 0 && count === 0) {
+                    const requestData = {
+                        costingHead: dataForAssemblyImpact?.CostingHead,
+                        impactPartNumber: dataForAssemblyImpact?.impactPartNumber,
+                        plantCode: dataForAssemblyImpact?.plantCode,
+                        vendorId: dataForAssemblyImpact?.vendorId,
+                        delta: dataForAssemblyImpact?.delta,
+                        quantity: 1,
+                    }
+                    setCount(1)
+                    dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
+
+                        if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
+                            setshowTableData(true)
+                        }
+                        else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
+                            setshowTableData(false)
+                        }
+                    }))
+
                 }
-                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
-
-                    if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
-                        setshowTableData(true)
-                    }
-                    else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
-                        setshowTableData(false)
-                    }
-                }))
-
                 break;
             case 'FgWise':
                 // dispatch(getFgWiseImpactData(SimulationId, (res) => {
@@ -65,7 +68,7 @@ export function Fgwiseimactdata(props) {
 
 
 
-    }, [])
+    }, [dataForAssemblyImpact])
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -86,15 +89,18 @@ export function Fgwiseimactdata(props) {
                     <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
-                                {/* {loader && <LoaderCustom />} */}
+                                {loader && <LoaderCustom />}
 
                                 <tr>
-                                    <th><span></span></th>
+                                    {impactType === 'Assembly' ?
+                                        (<th className="text-center"><span>{headerName[9]}</span></th>)
+                                        : <th><span></span></th>
+                                    }
                                     <th className="text-center"><span>{headerName[0]}</span></th>
                                     {headerName[1] !== '' && <th><span>{headerName[1]}</span></th>}
                                     {headerName[2] !== '' && <th><span>{headerName[2]}</span></th>}
                                     {headerName[3] !== '' && <th><span>{headerName[3]}</span></th>}
-                                    {headerName[4] !== '' && <th><span>{headerName[4]}</span></th>}
+                                    {impactType === 'Assembly' ? '' : <th><span>{headerName[4]}</span></th>}
                                     {headerName[5] !== '' && <th><span>{headerName[5]}</span></th>}
                                     {headerName[6] !== '' && <th><span>{headerName[6]}</span></th>}
                                     {headerName[7] !== '' && <th><span>{headerName[7]}</span></th>}
@@ -115,7 +121,7 @@ export function Fgwiseimactdata(props) {
                                                         <td><span>{item.PartName}</span></td>
                                                         <td><span>{item.Level}</span></td>
                                                         <td><span>{item.OldPrice}</span></td>
-                                                        <td><span>{item.NewPrice}</span></td>
+                                                        {/* <td><span>{item.NewPrice}</span></td> */}
                                                         <td><span>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
 
                                                         <td><span>{item.Variance == null ? "" : item.Variance}</span></td>

@@ -1310,7 +1310,7 @@ const CostingSummaryTable = (props) => {
                           return (
 
                             <td class="text-center costing-summary">
-                              {
+                              {(!viewMode && !isFinalApproverShow) &&
                                 data.status === DRAFT &&
                                 <button
                                   class="user-btn"
