@@ -147,7 +147,7 @@ function ViewRM(props) {
                   })}
                   {viewRM.length === 0 && (
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={13}>
                         <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>
