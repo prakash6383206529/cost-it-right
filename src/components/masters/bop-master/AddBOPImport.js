@@ -18,7 +18,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -27,15 +26,11 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
-import { AcceptableBOPUOM, AcceptableRMUOM } from '../../../config/masterData'
+import { AcceptableBOPUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
@@ -45,6 +40,7 @@ class AddBOPImport extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
       IsVendor: false,
@@ -217,6 +213,13 @@ class AddBOPImport extends Component {
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            this.dropzone.current.files = files
           }, 500)
         }
       })
@@ -556,10 +559,13 @@ class AddBOPImport extends Component {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
     }
+
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
-    const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
         {/* {Math.round(percent)}% */}
@@ -595,8 +601,6 @@ class AddBOPImport extends Component {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements } = this.state;
 
-    const { initialConfiguration } = this.props;
-
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -609,14 +613,14 @@ class AddBOPImport extends Component {
 
 
       if (DataToChange.IsVendor) {
-        if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
-          DataToChange.BasicRate == values.BasicRate && uploadAttachements) {
+        if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
+          Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
           this.cancel()
           return false;
         }
       }
-      if (DataToChange.IsVendor == false) {
-        if (DataToChange.NumberOfPieces == values.NumberOfPieces && DataToChange.BasicRate == values.BasicRate && uploadAttachements) {
+      if (Boolean(DataToChange.IsVendor) === false) {
+        if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -726,7 +730,7 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
     return (
@@ -1136,13 +1140,18 @@ class AddBOPImport extends Component {
                             <label>
                               Upload Files (upload up to 3 files)
                             </label>
-                            {this.state.files &&
+                            {/* {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
-                            ) : (
+                            ) : ( */}
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
+                                ref={this.dropzone}
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
@@ -1178,7 +1187,8 @@ class AddBOPImport extends Component {
                                 }}
                                 classNames="draper-drop"
                               />
-                            )}
+                            </div>
+                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>

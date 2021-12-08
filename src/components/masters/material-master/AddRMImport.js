@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -32,15 +32,12 @@ import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import WarningMessage from '../../common/WarningMessage';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { animateScroll as scroll} from 'react-scroll';
+import { animateScroll as scroll } from 'react-scroll';
 
 const selector = formValueSelector('AddRMImport');
 
@@ -48,6 +45,7 @@ class AddRMImport extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
       RawMaterialID: '',
@@ -312,7 +310,6 @@ class AddRMImport extends Component {
   */
   handleCurrency = (newValue) => {
     if (newValue && newValue !== '') {
-      const { fieldsObj } = this.props
       if (newValue.label === INR) {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
@@ -478,6 +475,14 @@ class AddRMImport extends Component {
                   netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
 
                 }, () => this.setState({ isLoader: false }))
+                let files = Data.FileList && Data.FileList.map((item) => {
+                  item.meta = {}
+                  item.meta.id = item.FileId
+                  item.meta.status = 'done'
+                  return item
+                })
+                this.dropzone.current.files = files
+
               }, 200);
             });
 
@@ -634,7 +639,7 @@ class AddRMImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, plantList, filterPlantList,
+    const { gradeSelectList, rmSpecification, filterPlantList,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
       UOMSelectList, currencySelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props;
     const temp = [];
@@ -859,7 +864,6 @@ class AddRMImport extends Component {
   }
 
   deleteFile = (FileId, OriginalFileName) => {
-    console.log('sss')
     if (FileId != null) {
       let deleteData = {
         Id: FileId,
@@ -872,8 +876,15 @@ class AddRMImport extends Component {
       })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.OriginalFileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
+    }
+
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+      console.log('this.dropzone.current.files: ', this.dropzone.current.files);
     }
   }
 
@@ -968,10 +979,10 @@ class AddRMImport extends Component {
             }
           })
         } else {
-          if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate &&
-            Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost &&
-            DataToChange.Remark == values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice ||
-              values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
+          if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+            Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+            String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+              values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
             this.cancel()
             return false
           }
@@ -1068,7 +1079,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, effectiveDate, RawMaterial } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag } = this.state;
 
     return (
       <>
@@ -1628,12 +1639,17 @@ class AddRMImport extends Component {
                             <label>
                               Upload Files (Upload up to 3 files)
                             </label>
-                            {this.state.files.length >= 3 ? (
+                            {/* {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
-                            ) : (
+                            ) : ( */}
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
+                                ref={this.dropzone}
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
@@ -1669,7 +1685,8 @@ class AddRMImport extends Component {
                                 }}
                                 classNames="draper-drop"
                               />
-                            )}
+                            </div>
+                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1724,7 +1741,7 @@ class AddRMImport extends Component {
                             (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                onClick={()=>scroll.scrollToTop()}
+                                onClick={() => scroll.scrollToTop()}
                                 disabled={this.state.isFinalApprovar}
                               >
                                 <div className="send-for-approval"></div>

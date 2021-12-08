@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
@@ -15,7 +15,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
@@ -23,6 +22,7 @@ class AddIndivisualPart extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
       isLoader: false,
@@ -85,6 +85,14 @@ class AddIndivisualPart extends Component {
               ProductGroup: productArray,
               oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            this.dropzone.current.files = files
+
           }, 500)
         }
       })
@@ -129,6 +137,7 @@ class AddIndivisualPart extends Component {
       plantSelectList && plantSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ Text: item.Text, Value: item.Value })
+        return null;
       });
       return temp;
     }
@@ -136,6 +145,7 @@ class AddIndivisualPart extends Component {
       productGroupSelectList && productGroupSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ Text: item.Text, Value: item.Value })
+        return null;
       })
       return temp;
     }
@@ -208,10 +218,13 @@ class AddIndivisualPart extends Component {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
     }
+
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
-    const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
         {/* {Math.round(percent)}% */}
@@ -248,9 +261,9 @@ class AddIndivisualPart extends Component {
     if (isEditFlag) {
 
 
-      if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
-        DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
-        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber && oldProductGroup === ProductGroup
+      if (DropdownChanged && String(DataToCheck.PartName) === String(values.PartName) && String(DataToCheck.Description) === String(values.Description) &&
+        String(DataToCheck.GroupCode) === String(values.GroupCode) && String(DataToCheck.ECNNumber) === String(values.ECNNumber) &&
+        String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) && String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(oldProductGroup) === String(ProductGroup)
         && uploadAttachements) {
         this.cancel()
         return false;
@@ -598,20 +611,25 @@ class AddIndivisualPart extends Component {
                             <label>
                               Upload Files (upload up to 3 files)
                             </label>
-                            {this.state.files &&
+                            {/* {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
-                            ) : (
+                            ) : ( */}
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
+                                ref={this.dropzone}
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 //onSubmit={this.handleSubmit}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={isEditFlag ? 3 - (this.state.files.length) : 3}
+                                maxFiles={3}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
@@ -640,7 +658,8 @@ class AddIndivisualPart extends Component {
                                 }}
                                 classNames="draper-drop"
                               />
-                            )}
+                            </div>
+                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>

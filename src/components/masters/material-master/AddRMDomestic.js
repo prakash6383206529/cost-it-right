@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthFour, decimalLength6, decimalLengthsix } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import {
@@ -27,18 +27,15 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { EMPTY_GUID, FILE_URL, ZBC, RM_MASTER_ID } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
-import { toast } from 'react-toastify';
-import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { animateScroll as scroll} from 'react-scroll';
+import { animateScroll as scroll } from 'react-scroll';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -46,6 +43,7 @@ class AddRMDomestic extends Component {
   constructor(props) {
     super(props)
     this.child = React.createRef()
+    this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
       RawMaterialID: '',
@@ -454,6 +452,14 @@ class AddRMDomestic extends Component {
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
                   netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : ''
                 }, () => this.setState({ isLoader: false }))
+                let files = Data.FileList && Data.FileList.map((item) => {
+                  item.meta = {}
+                  item.meta.id = item.FileId
+                  item.meta.status = 'done'
+                  return item
+                })
+                this.dropzone.current.files = files
+
               }, 200)
             })
           })
@@ -638,7 +644,7 @@ class AddRMDomestic extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, plantList, filterPlantList, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
+    const { gradeSelectList, rmSpecification, filterPlantList, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
     const temp = []
 
     if (label === 'material') {
@@ -885,6 +891,10 @@ class AddRMDomestic extends Component {
       )
       this.setState({ files: tempArr })
     }
+
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
@@ -1084,7 +1094,7 @@ class AddRMDomestic extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag } = this.state
 
     return (
       <>
@@ -1586,12 +1596,17 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <label>Upload Files (upload up to 3 files)</label>
-                            {this.state.files.length >= 3 ? (
+                            {/* {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
-                            ) : (
+                            ) : ( */}
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
+                                ref={this.dropzone}
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
@@ -1627,7 +1642,8 @@ class AddRMDomestic extends Component {
                                 }}
                                 classNames="draper-drop"
                               />
-                            )}
+                            </div>
+                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1675,11 +1691,11 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                           {
+                          {
                             (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                              <button type="submit" 
+                              <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                onClick={()=>scroll.scrollToTop()}
+                                onClick={() => scroll.scrollToTop()}
                                 // onClick={this.sendForMasterApproval}
                                 disabled={this.state.isFinalApprovar}
                               >
@@ -1835,7 +1851,7 @@ function mapStateToProps(state) {
 
   const { initialConfiguration } = auth;
 
-  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, loader } = material
+  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType } = material
 
 
   let initialValues = {}
