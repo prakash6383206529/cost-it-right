@@ -41,7 +41,7 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
-  const[oldTabData,setOldtabData] =useState(props.data)
+  const[oldGridData,setOldGridData] =useState(data && data.CostingProcessCostResponse)
   const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
@@ -71,7 +71,8 @@ function ProcessCost(props) {
     }
     if (!CostingViewMode) {
       selectedIds(gridData)
-      if(JSON.stringify(tabData) !== JSON.stringify(oldTabData)){
+ 
+      if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
         dispatch(isDataChange(true))
       }
       props.setProcessCost(tabData, Params, item)
