@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
@@ -94,10 +94,11 @@ function Icc(props) {
       */
     const checkInventoryApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '') {
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
 
-            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
+            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
             switch (Text) {

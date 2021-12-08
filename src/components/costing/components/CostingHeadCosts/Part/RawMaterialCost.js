@@ -12,9 +12,9 @@ import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, 
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
-import { EMPTY_GUID, G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
+import {  G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, getTechnologyForRecoveryPercent, technologyForDensity } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 
 let counter = 0;
@@ -549,8 +549,7 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight / 1000000
       }
       const FinishWeight = finishWeight
-      const GrossWeight = grossWeight
-      const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+      const GrossWeight = grossWeight    
       const RecoveryPercentage = weightData.RecoveryPercentage
 
       const scrapWeight = weightData.scrapWeight? weightData.scrapWeight : checkForNull(GrossWeight - FinishWeight)
@@ -981,9 +980,9 @@ function RawMaterialCost(props) {
             <Row >
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData.TechnologyName === PLASTIC &&
-                <Col md="2" className="py-3 ">
+                <Col md="2" className="py-3  mb-width">
                   <label
-                    className={`custom-checkbox mb-0 w-auto`}
+                    className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
                   >
                     Apply Master Batch(MB)
@@ -1005,7 +1004,7 @@ function RawMaterialCost(props) {
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
-                  <Col md="2">
+                  <Col md="3">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={CostingViewMode} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </Col>
                   {/* <Col md="2" > */}

@@ -179,10 +179,9 @@ class AddBOPImport extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, currencySelectList, UOMSelectList, plantSelectList } = this.props;
+            const { cityList, bopCategorySelectList, currencySelectList, UOMSelectList, plantSelectList } = this.props;
             let plantObj;
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
-            let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
             let currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
             // let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
@@ -205,7 +204,7 @@ class AddBOPImport extends Component {
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantObj,
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
@@ -448,8 +447,8 @@ class AddBOPImport extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     // COMMENTED FOR MINDA
+    // const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0; 
     // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     // const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
     // this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
@@ -598,10 +597,9 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
+    const { IsVendor, BOPCategory, selectedPlants, vendorName, currency,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements } = this.state;
 
-    let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 

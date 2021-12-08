@@ -25,7 +25,6 @@ import AddUOM from '../uom-master/AddUOM';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
-
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, INR, ZBC, RM_MASTER_ID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
@@ -407,13 +406,11 @@ class AddRMImport extends Component {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
 
               setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList,
-                  vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList } = this.props;
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList, technologySelectList, plantSelectList } = this.props;
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
                 const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
@@ -438,7 +435,6 @@ class AddRMImport extends Component {
                   return plantArray;
                 })
 
-                const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.Vendor)
 
                 let vendorPlantArray = [];
                 Data && Data.VendorPlant.map((item) => {
@@ -461,7 +457,7 @@ class AddRMImport extends Component {
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                   Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
                   selectedPlants: plantArray,
-                  vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                  vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],

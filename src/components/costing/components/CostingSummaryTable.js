@@ -1088,18 +1088,31 @@ const CostingSummaryTable = (props) => {
 
                     <tr>
                       <td>
-                        <span class="d-block small-grey-text">
-                          Tool Maintenance Cost
-                        </span>
+
+                        <span class="d-block small-grey-text mt-2"></span>
+                        <span class="d-block small-grey-text">Tool Cost Type</span>
+                        <span class="d-block small-grey-text">Tool Maintenance Cost</span>
                         <span class="d-block small-grey-text">Tool Price</span>
-                        <span class="d-block small-grey-text">
-                          Amortization Quantity (Tool Life)
-                        </span>
+                        <span class="d-block small-grey-text">Amortization Quantity (Tool Life)</span>
+                        <span class="d-block small-grey-text">Tool Amortization Cost</span>
                       </td>
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
                             <td>
+                              <div class="d-flex">
+                                <span class="d-inline-block w-50">
+                                  {data.CostingHeading !== VARIANCE ? data.toolApplicability.applicability : ''}
+                                </span>{' '}
+                                &nbsp;{' '}
+                                <span class="d-inline-block w-50">
+                                  {data.CostingHeading !== VARIANCE ? data.toolApplicability.value : ''}
+                                </span>
+                              </div>
+                              <div className="d-flex">
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.toolApplicabilityValue.toolTitle : ''}</span> &nbsp;{' '}
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.toolApplicabilityValue.toolValue : ''}</span>
+                              </div>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
@@ -1108,6 +1121,9 @@ const CostingSummaryTable = (props) => {
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? data.amortizationQty : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? data.toolAmortizationCost : ''}
                               </span>
                             </td>
                           )
@@ -1220,20 +1236,22 @@ const CostingSummaryTable = (props) => {
                       !simulationDrawer &&
                       <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
                         <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}) </th>
-                        {console.log(viewCostingData, "viewww")}
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
                         })} */}
+
+
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
-                            return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull((viewCostingData[0]?.currency?.currencyTitle) !== "-" ? (data.nPOPriceWithCurrency) : data.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+
+                            return <td>{data.nPOPriceWithCurrency !== null ? checkForDecimalAndNull((viewCostingData[0]?.currency?.currencyTitle) !== "-" ? (data.nPOPriceWithCurrency) : data.nPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                           })}
                       </tr>
                     }
 
                     <tr>
-                      <td>Attachment</td>
+                      <td>Attachments</td>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
