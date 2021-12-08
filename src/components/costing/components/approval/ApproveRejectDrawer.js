@@ -893,7 +893,7 @@ function ApproveRejectDrawer(props) {
                   isSimulation &&
                   <div className="col-md-12 drawer-attachment">
                     <div className="d-flex w-100 flex-wrap">
-                      <Col md="8" className="p-0"><h6 className="mb-0">Attachment</h6></Col>
+                      <Col md="8" className="p-0"><h6 className="mb-0">Attachments</h6></Col>
                     </div>
                     <div className="d-flex w-100 flex-wrap pt-2">
                       {<>
