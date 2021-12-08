@@ -13,7 +13,7 @@ import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
 import {  G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
-import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
+import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 
@@ -46,6 +46,7 @@ function RawMaterialCost(props) {
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
   const [Ids, setIds] = useState([])
   const [editCalculation, setEditCalculation] = useState(true)
+  const [oldGridData,setOldGridData]= useState(props.data)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -80,7 +81,11 @@ function RawMaterialCost(props) {
       }
 
       if (!CostingViewMode) {
+
         props.setRMCost(gridData, Params, item)
+        if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+          dispatch(isDataChange(true))
+        }
       }
       selectedIds(gridData)
 

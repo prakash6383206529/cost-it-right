@@ -528,7 +528,7 @@ function Tool(props) {
                 <>
                    <Col md="3">
                       <SearchableSelectHookForm
-                        label={"Tool Cost Type"}
+                        label={"Tool Maintenance Applicability"}
                         name={"toolCostType"}
                         placeholder={"-Select-"}
                         Controller={Controller}

@@ -16,6 +16,7 @@ import {
   EMPTY_GUID,
   SET_PLASTIC_ARR,
   SET_ASSEM_BOP_CHARGE,
+  CHECK_IS_DATA_CHANGE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2246,6 +2247,15 @@ export function saveAssemblyBOPHandlingCharge(data,callback){
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
+    })
+  }
+}
+
+export function isDataChange(isDataChange){
+  return (dispatch) =>{
+    dispatch({
+      type:CHECK_IS_DATA_CHANGE,
+      payload:isDataChange
     })
   }
 }
