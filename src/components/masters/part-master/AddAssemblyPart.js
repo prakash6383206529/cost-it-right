@@ -31,6 +31,7 @@ class AddAssemblyPart extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
@@ -105,7 +106,8 @@ class AddAssemblyPart extends Component {
               ProductGroup: productArray,
               oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
-            let files = Data.Attachements && Data.Attachements.map((item) => {
+                              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+  let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
               item.meta.id = item.FileId
               item.meta.status = 'done'
@@ -411,6 +413,7 @@ class AddAssemblyPart extends Component {
       this.setState({ files: tempArr })
     }
 
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
     if (this.dropzone?.current !== null) {
       this.dropzone.current.files.pop()
     }

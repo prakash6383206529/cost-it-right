@@ -44,6 +44,7 @@ class AddRMImport extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
@@ -471,6 +472,7 @@ class AddRMImport extends Component {
                   netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
 
                 }, () => this.setState({ isLoader: false }))
+                // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
                 let files = Data.FileList && Data.FileList.map((item) => {
                   item.meta = {}
                   item.meta.id = item.FileId
@@ -878,9 +880,9 @@ class AddRMImport extends Component {
       this.setState({ files: tempArr })
     }
 
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
     if (this.dropzone?.current !== null) {
       this.dropzone.current.files.pop()
-      console.log('this.dropzone.current.files: ', this.dropzone.current.files);
     }
   }
 

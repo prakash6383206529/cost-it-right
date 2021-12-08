@@ -21,6 +21,7 @@ import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 
 function TabDiscountOther(props) {
+  // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
     mode: 'onChange',
@@ -188,6 +189,7 @@ function TabDiscountOther(props) {
                 DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : ''
               }
               props.setHeaderCost(topHeaderData)
+              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
               let files = Data.Attachements && Data.Attachements.map((item) => {
                 item.meta = {}
                 item.meta.id = item.FileId
@@ -483,6 +485,7 @@ function TabDiscountOther(props) {
       setIsOpen(!IsOpen)
     }
 
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
     if (dropzone?.current !== null) {
       dropzone.current.files.pop()
     }
