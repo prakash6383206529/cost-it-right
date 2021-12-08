@@ -36,7 +36,7 @@ import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { animateScroll as scroll} from 'react-scroll';
+import { animateScroll as scroll } from 'react-scroll';
 
 const selector = formValueSelector('AddRMImport');
 
@@ -44,6 +44,8 @@ class AddRMImport extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
+    this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
       RawMaterialID: '',
@@ -409,7 +411,7 @@ class AddRMImport extends Component {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
 
               setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList , currencySelectList, technologySelectList, plantSelectList } = this.props;
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, currencySelectList, technologySelectList, plantSelectList } = this.props;
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
                 const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
@@ -470,6 +472,15 @@ class AddRMImport extends Component {
                   netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
 
                 }, () => this.setState({ isLoader: false }))
+                // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+                let files = Data.FileList && Data.FileList.map((item) => {
+                  item.meta = {}
+                  item.meta.id = item.FileId
+                  item.meta.status = 'done'
+                  return item
+                })
+                this.dropzone.current.files = files
+
               }, 200);
             });
 
@@ -851,7 +862,6 @@ class AddRMImport extends Component {
   }
 
   deleteFile = (FileId, OriginalFileName) => {
-    console.log('sss')
     if (FileId != null) {
       let deleteData = {
         Id: FileId,
@@ -864,8 +874,15 @@ class AddRMImport extends Component {
       })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.OriginalFileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
+    }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
     }
   }
 
@@ -961,9 +978,9 @@ class AddRMImport extends Component {
           })
         } else {
           if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-            Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === values.NetLandedCost &&
-            DataToChange.Remark === values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice ||
-              values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
+            Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+            String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+              values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
             this.cancel()
             return false
           }
@@ -1620,12 +1637,17 @@ class AddRMImport extends Component {
                             <label>
                               Upload Files (Upload up to 3 files)
                             </label>
-                            {this.state.files.length >= 3 ? (
+                            {/* {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
-                            ) : (
+                            ) : ( */}
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
+                                ref={this.dropzone}
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
@@ -1661,7 +1683,8 @@ class AddRMImport extends Component {
                                 }}
                                 classNames="draper-drop"
                               />
-                            )}
+                            </div>
+                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1716,7 +1739,7 @@ class AddRMImport extends Component {
                             (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                onClick={()=>scroll.scrollToTop()}
+                                onClick={() => scroll.scrollToTop()}
                                 disabled={this.state.isFinalApprovar}
                               >
                                 <div className="send-for-approval"></div>
