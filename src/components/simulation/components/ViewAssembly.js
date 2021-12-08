@@ -2,12 +2,18 @@ import React from 'react';
 import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
 import { Fgwiseimactdata } from './FgWiseImactData';
+import { EMPTY_GUID } from '../../../config/constants';
 function ViewAssembly(props) {
 
-    const headerName = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Quantity', 'Variance', '', '', '']
-    const parentField = ['PartNumber', 'RevisionNumber', 'PartName', 'Level', 'OldPrice', 'NewPrice', 'Quantity', 'Variance', '-', '-']
-    const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
-
+    const headerName = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
+    const dataForAssemblyImpact = {
+        CostingHead: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
+        impactPartNumber: props.dataForAssemblyImpact?.row?.PartNo,
+        plantCode: props.dataForAssemblyImpact?.row?.PlantCode,
+        vendorId: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? props.vendorIdState : EMPTY_GUID,
+        delta: props.dataForAssemblyImpact?.row?.Variance,
+        quantity: 1,
+    }
     /**
     * @method toggleDrawer
     * @description TOGGLE DRAWER
@@ -18,7 +24,6 @@ function ViewAssembly(props) {
         }
         props.closeDrawer('')
     };
-
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -41,9 +46,7 @@ function ViewAssembly(props) {
                         </div> */}
                         <Fgwiseimactdata
                             headerName={headerName}
-                            parentField={parentField}
-                            childField={childField}
-                            dataForAssemblyImpact={props.dataForAssemblyImpact}
+                            dataForAssemblyImpact={dataForAssemblyImpact}
                             vendorIdState={props.vendorIdState}
                             impactType={'Assembly'}
                         />
