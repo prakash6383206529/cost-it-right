@@ -901,6 +901,16 @@ input.form-control{
   opacity: 1;
   border: none;
 }
+.hirarchy-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/hirarchy-btn.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  background-color: #cef2fb;
+  border-radius: 4px;
+  margin-left: 5px !important;
+}
 
 .Download {
   width: 32px;
@@ -954,7 +964,8 @@ input.form-control{
 .Add-file,
 .SaveIcon,
 .CancelIcon,
-.CalculatorIcon {
+.CalculatorIcon,
+.hirarchy-btn {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;
@@ -1690,7 +1701,6 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
-
 .react-bs-table-container.client-table {
   position: relative;
 }
@@ -2137,6 +2147,26 @@ body {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+        &.remark-wrapper {             // view description when user hover it 
+          &:hover {                         
+          position: absolute;
+          background-color: #ffffff;
+          white-space: pre-wrap;
+          overflow: visible;
+          left: 80px;
+          width: calc(100% - 80px);
+          // max-width: 80%;
+          padding: 5px;
+          top: 77%;
+          z-index: 10;
+          @media screen and (max-width:$miniDesktop) {
+            // max-width: 70%;
+          }
+          @media screen and (max-width:$middleDesktop) and (min-width:1367px) {
+            // max-width: 75%;
+          }
+        }
+      }
 		}
 	}
 }
@@ -5635,7 +5665,8 @@ body{
         .Approved,
         .ApprovedBySimulation,
         .Rejected,
-        .History {
+        .History,
+        .ApprovedByAssembly {
           min-width: calc(90px * 80 / 100);
           height: calc(30px * 80 / 100);
           font-size: calc(14px * 80 / 100);
@@ -6332,21 +6363,38 @@ left: 17rem;
   .update-vendor-loader {
     min-height: calc(100vh + 11rem);
   }
-.costing-detail-tabs {
-  .nav-item {
-    .nav-link {
-      border-left: none;
+.view-conversion-header.cr-subtabs-head {
+  
+  flex: 0 0 9.78%;
+    max-width: 9.78%;
+    display: block;
+    .nav-item {
+      .nav-link {
+        border-top: none;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        border-left: 2px solid transparent;
+        border-bottom: 0;
+        text-align: center;
+        @media  screen and (max-width: $miniDesktop) {
+          font-size: 14px !important;
+        }
+        &:hover {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
+        } 
+        &.active {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
+        }
+      }
     }
-  }
 }
-.view-conversion-header {
-  flex: 0 0 10.1%;
-    max-width: 10.1%;
-    height: fit-content;
-}
-.view-conversion-container {
-  flex: 0 0 89.9%;
-  max-width: 89.9%;
+.view-conversion-container.col-md-11 {
+    flex: 0 0 90.22%;
+    max-width: 90.22%;
   .left-border {
     padding: 8px;
   }
@@ -6374,3 +6422,24 @@ left: 17rem;
   }
 }
 // FG-Wise table css End
+.warning-section {
+ position:absolute;
+ bottom: 0;
+ left: -190px;
+}
+.min-width-btn {
+  min-width: 143px;
+}
+.bs-tooltip-auto {
+  z-index: 1300;
+}
+.child-component-tooltip {
+  bottom: 23px;
+}
+
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
+}

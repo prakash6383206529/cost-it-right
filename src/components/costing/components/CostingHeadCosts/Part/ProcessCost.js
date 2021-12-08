@@ -277,6 +277,7 @@ function ProcessCost(props) {
       setTabData(tempArr2)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
         setValue(`${ProcessGridFields}.${i}.ProcessCost`, el.ProcessCost)
+        setValue(`${ProcessGridFields}.${i}.Quantity`,el.Quantity)
       })
     }, 200)
   }

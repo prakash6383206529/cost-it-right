@@ -110,6 +110,7 @@ class AddExchangeRate extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           this.setState({ DataToChange: Data })
+
           setTimeout(() => {
             const { currencySelectList } = this.props;
 
@@ -119,7 +120,7 @@ class AddExchangeRate extends Component {
               isEditFlag: true,
               // isLoader: false,
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(new Date(Data.EffectiveDate)).format('MM/DD/YYYY') : '',
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -364,10 +365,12 @@ class AddExchangeRate extends Component {
                             Effective Date
                             <span className="asterisk-required">*</span>
                           </label>
+                          { }
+
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={this.state.effectiveDate}
+                              selected={DayTime(this.state.effectiveDate).isValid() ? new Date(this.state.effectiveDate) : null}
                               onChange={this.handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown

@@ -45,6 +45,20 @@ export default function SimulationReducer(state = initialState, action) {
                 costingSimulationList: action.payload
             }
         case GET_SIMULATION_APPROVAL_LIST:
+
+            action.payload && action.payload.map(item => {            //if status is draft then we have to show 'Y' in amendment status column & similarly for approved & other.
+                if (item.Status === 'Draft') {
+                    item.ProvisionalStatus = 'Y' // THIS KEY IS FOR DISLAYING AMMENDEMNT STATUS COLUMN
+                }
+                else if (item.Status === 'Approved') {
+                    item.ProvisionalStatus = 'R'
+                } else {
+                    item.ProvisionalStatus = 'U'
+                }
+                return null;
+
+            })
+
             return {
                 ...state,
                 loading: false,

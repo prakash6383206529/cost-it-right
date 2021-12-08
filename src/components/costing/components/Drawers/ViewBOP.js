@@ -98,14 +98,13 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-            {
-            IsAssemblyCosting &&       
+               
             <Row className="mx-0">
               <Col md="12">
-                <hr />
+               <br />
                 <Row>
                   <Col md="12">
-                    <div className="left-border">{'Assembly\'s Insert Handling Charge:'}</div>
+                    <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s Insert Handling Charge:':'Insert Handling Charge:'}`}</div>
                   </Col>
                 </Row>
                 <Table className="table cr-brdr-main" size="sm">
@@ -134,10 +133,12 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-            }
+           
+            {
+            IsAssemblyCosting &&   
             <Row className="mx-0">
               <Col md="12">
-                <hr />
+                <br />
                 <Row>
                   <Col md="12">
                     <div className="left-border">{'Part\'s Insert Handling Charge:'}</div>
@@ -157,8 +158,8 @@ function ViewBOP(props) {
                         return (
                           <tr key={index}>
                            {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>} 
-                            <td>{checkForDecimalAndNull(item.bopHandlingPercentage,initialConfiguration.NoOfDecimalForPrice)}</td>
-                            <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>                          
+                            <td>{checkForDecimalAndNull(item.BOPHandlingPercentage,initialConfiguration.NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>                          
                           </tr>
                         )
                       })}
@@ -173,7 +174,8 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-          </div>
+          }
+         </div>
         </Container>
       </Drawer>
     </Fragment>

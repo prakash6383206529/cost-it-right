@@ -26,7 +26,6 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import TooltipCustom from '../../common/Tooltip';
-import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 export const ViewCostingContext = React.createContext()
@@ -101,6 +100,7 @@ function CostingDetails(props) {
     type: '',
     index: []
   })
+  const [titleObj, setTitleObj] = useState({})
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -292,7 +292,6 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
-              console.log('Data: ', Data);
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
@@ -302,6 +301,7 @@ function CostingDetails(props) {
               setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
+              setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
 
             }),
             )
@@ -823,7 +823,6 @@ function CostingDetails(props) {
       onCancel: () => { },
       component: () => <ConfirmComponent />
     }
-    // return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -960,16 +959,7 @@ function CostingDetails(props) {
   const deleteItem = (Item, index, type) => {
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        deleteCosting(Item, index, type);
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    // return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
   }
-
   /**
    * @method deleteCosting
    * @description USED FOR DELETE COSTING
@@ -1534,6 +1524,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
+                          title ={titleObj.partNameTitle}
                           label="Assembly Name/Part Name"
                           name={"PartName"}
                           Controller={Controller}
@@ -1561,6 +1552,7 @@ function CostingDetails(props) {
                         <TextFieldHookForm
                           label="Assembly/Part Description"
                           name={"Description"}
+                          title={titleObj.descriptionTitle}
                           Controller={Controller}
                           control={control}
                           register={register}
@@ -1642,7 +1634,6 @@ function CostingDetails(props) {
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
-                            {console.log(effectiveDate, "date")}
                             <DatePicker
                               name="EffectiveDate"
                               selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -1853,6 +1844,7 @@ function CostingDetails(props) {
                                     item.Status === WAITING_FOR_APPROVAL ||
                                     item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
+                                    let displayAddButton = userDetails().Role === 'SuperAdmin' ?true:false
                                   let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
@@ -1914,7 +1906,7 @@ function CostingDetails(props) {
                                       </td>
                                       <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                       <td>
-                                        {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
+                                        {AddAccessibility && displayAddButton && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />}
                                         {ViewAccessibility && !item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
                                         {CopyAccessibility && !item.IsNewCosting && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}

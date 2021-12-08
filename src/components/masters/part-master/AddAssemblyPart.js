@@ -764,12 +764,12 @@ class AddAssemblyPart extends Component {
                               options={this.renderListing("ProductGroup")}
                               selectionChanged={this.handleProductGroup}
                               validate={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : []}
                               required={true}
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
-                              mendatory={true}
+                              mendatory={false}
                               className="multiselect-with-border"
                             // disabled={this.state.IsVendor || isEditFlag ? true : false}
                             />

@@ -47,25 +47,25 @@ function BOPCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
+        props.setBOPCost(gridData, Params,item)
       }
     }, 100)
     selectedIds(gridData)
   }, [gridData]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const Params = {
-        index: props.index,
-        BOMLevel: props.item.BOMLevel,
-        PartNumber: props.item.PartNumber,
-      }
-      if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
-      }
-    }, 100)
-    selectedIds(gridData)
-  }, [props.data]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const Params = {
+  //       index: props.index,
+  //       BOMLevel: props.item.BOMLevel,
+  //       PartNumber: props.item.PartNumber,
+  //     }
+  //     if (!CostingViewMode) {
+  //       props.setBOPCost(gridData, Params)
+  //     }
+  //   }, 100)
+  //   selectedIds(gridData)
+  // }, [props.data]);
 
   /**
   * @method DrawerToggle
@@ -279,7 +279,7 @@ function BOPCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'Insert Cost:'}
+                {'BOP Cost:'}
               </div>
             </Col>
             <Col md={'2'}>

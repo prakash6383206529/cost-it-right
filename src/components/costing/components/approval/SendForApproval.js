@@ -535,7 +535,7 @@ const SendForApproval = (props) => {
                                     <div className={'form-group inputbox withBorder'}>
                                       <label>Effective Date</label>
                                       <DatePicker
-                                          selected={DayTime(data.effectiveDate).isValid() ? new Date(data.effectiveDate) : ''}
+                                        selected={DayTime(data.effectiveDate).isValid() ? new Date(data.effectiveDate) : ''}
                                         dateFormat="dd/MM/yyyy"
                                         showMonthDropdown
                                         showYearDropdown
@@ -659,7 +659,14 @@ const SendForApproval = (props) => {
                           <div className="left-border">{"SAP-Push Details"}</div>
                         </Col>
                         <div className="w-100">
-                          <PushSection />
+                          <PushSection
+                            Controller={Controller}
+                            register={register}
+                            errors={errors}
+                            control={control}
+
+
+                          />
                         </div>
                       </Row>
                       <Row className="px-3">

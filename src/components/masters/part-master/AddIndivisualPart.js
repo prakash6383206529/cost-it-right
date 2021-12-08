@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512,maxLength85 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList } from '../actions/Part';
@@ -395,7 +395,7 @@ class AddIndivisualPart extends Component {
                               name={"PartName"}
                               type="text"
                               placeholder={""}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85]}
                               component={renderText}
                               required={true}
                               className=""
@@ -445,12 +445,12 @@ class AddIndivisualPart extends Component {
                                 options={this.renderListing("ProductGroup")}
                                 selectionChanged={this.handleProductGroup}
                                 validate={
-                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [required] : []}
+                                  this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : []}
                                 required={true}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
-                                mendatory={true}
+                                mendatory={false}
                                 className="multiselect-with-border"
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
@@ -462,9 +462,9 @@ class AddIndivisualPart extends Component {
                                 name={"GroupCode"}
                                 type="text"
                                 placeholder={""}
-                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
+                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                 component={renderText}
-                                required={true}
+                                required={false}
                                 className=""
                                 customClassName={"withBorder"}
                               />

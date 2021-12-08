@@ -212,7 +212,7 @@ class CostingSummaryBulkUpload extends Component {
 
                                     <button
                                         type="button"
-                                        className={'user-btn'}
+                                        className={'user-btn min-width-btn'}
                                         onClick={this.bulkToggle}>
                                         <div className={'upload'}></div>Bulk Upload
                                     </button>
@@ -276,7 +276,7 @@ class CostingSummaryBulkUpload extends Component {
                                     <AgGridColumn field="CorrectCostingCount" headerName="No. of Correct Row"></AgGridColumn>
                                     <AgGridColumn field="IncorrectCostingCount" headerName="No. of Incorrect Row"></AgGridColumn>
                                     <AgGridColumn field="OriginalFileName" headerName="File Name"></AgGridColumn>
-                                    <AgGridColumn field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
+                                    <AgGridColumn minWidth="230" field="CostingBulkUploadFileId" headerName="Actions" cellRenderer='totalValueRenderer'></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
