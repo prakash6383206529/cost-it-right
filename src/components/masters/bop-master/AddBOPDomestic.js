@@ -26,7 +26,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableBOPUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
-import { CheckApprovalApplicableMaster } from '../../../helper'   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
@@ -37,6 +36,8 @@ class AddBOPDomestic extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
+    this.dropzone = React.createRef();
     this.state = {
       BOPID: '',
       isEditFlag: false,
@@ -202,6 +203,15 @@ class AddBOPDomestic extends Component {
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            this.dropzone.current.files = files
+
           }, 500)
         }
       })
@@ -432,6 +442,7 @@ class AddBOPDomestic extends Component {
 
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
+
     const { files, } = this.state;
 
     this.setState({ uploadAttachements: false })
@@ -489,6 +500,11 @@ class AddBOPDomestic extends Component {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
     }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
@@ -542,13 +558,13 @@ class AddBOPDomestic extends Component {
 
 
       if (DataToCheck.IsVendor) {
-        if (Number(DataToCheck.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
+        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
           this.cancel()
           return false;
         }
       }
-      else if (DataToCheck.IsVendor === false) {
-        if (Number(DataToCheck.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
+      else if (Boolean(DataToCheck.IsVendor) === false) {
+        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -1029,13 +1045,18 @@ class AddBOPDomestic extends Component {
                             <label>
                               Upload Files (upload up to 3 files)
                             </label>
-                            {this.state.files &&
+                            {/* {this.state.files &&
                               this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
-                            ) : (
+                            ) : ( */}
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
+                                ref={this.dropzone}
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
@@ -1073,7 +1094,8 @@ class AddBOPDomestic extends Component {
                                 }
                                 classNames="draper-drop"
                               />
-                            )}
+                            </div>
+                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
