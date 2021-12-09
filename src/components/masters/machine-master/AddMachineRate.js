@@ -28,11 +28,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
-import { CheckApprovalApplicableMaster } from '../../../helper'
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import attachClose from '../../../assests/images/red-cross.png'
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddMachineRate');
@@ -41,6 +37,7 @@ class AddMachineRate extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    this.dropzone = React.createRef();
     this.state = {
       MachineID: '',
       isEditFlag: false,
@@ -243,6 +240,14 @@ class AddMachineRate extends Component {
               files: Data.Attachements,
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
             }, () => this.setState({ isLoader: false }))
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            this.dropzone.current.files = files
+
           }, 100)
         }
       })
@@ -767,6 +772,10 @@ class AddMachineRate extends Component {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
     }
+
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
@@ -784,10 +793,8 @@ class AddMachineRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange, effectiveDate } = this.state;
-
-
+    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
+      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements } = this.state;
 
     if (isViewFlag) {
       this.cancel();
@@ -1210,7 +1217,6 @@ class AddMachineRate extends Component {
                                 validate={[required]}
                                 autoComplete={'off'}
                                 required={true}
-                                disabled={false}
                                 changeHandler={(e) => {
                                   //e.preventDefault()
                                 }}
@@ -1288,7 +1294,6 @@ class AddMachineRate extends Component {
                             placeholder={'Select'}
                             options={this.renderListing('UOM')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [] : []}
                             //required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}
@@ -1409,12 +1414,17 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files.length >= 3 ? (
+                          {/* {this.state.files.length >= 3 ? (
                             <div class="alert alert-danger" role="alert">
                               Maximum file upload limit has been reached.
                             </div>
-                          ) :
+                          ) : */}
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={this.dropzone}
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
@@ -1440,7 +1450,9 @@ class AddMachineRate extends Component {
                                 inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
                               }}
                               classNames="draper-drop"
-                            />}
+                            />
+                          </div>
+                          {/* )} */}
                         </Col>
                         <Col md="3">
                           <div className={'attachment-wrapper'}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
@@ -10,7 +10,6 @@ import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
-import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -21,25 +20,24 @@ import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/acti
 import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
+import PushSection from '../../../common/PushSection'
 
 function ApproveRejectDrawer(props) {
+  const dropzone = useRef(null);
 
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing } = props
 
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
-  const partNo = useSelector((state) => state.costing.partNo)
   const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onChange', reValidateMode: 'onChange',
   })
 
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
-  const [reason, setReason] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
   const [selectedDate, setSelectedDate] = useState('')
   const [linkingTokenDropDown, setLinkingTokenDropDown] = useState('')
@@ -105,9 +103,20 @@ function ApproveRejectDrawer(props) {
         files.push(item)
         setFiles(files)
         setIsOpen(!IsOpen)
+        return null;
       })
+      let filesList = files && files.map((item) => {
+        item.meta = {}
+        item.meta.id = item.FileId
+        item.meta.status = 'done'
+        return item
+      })
+      if (dropzone.current !== null) {
+        dropzone.current.files = filesList
 
-      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing && getConfigurationKey().IsProvisionalSimulation) {
+      }
+      console.log('dropzone.current.files: ', dropzone);
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing&& getConfigurationKey().IsProvisionalSimulation) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
     }
@@ -199,6 +208,7 @@ function ApproveRejectDrawer(props) {
           },
           ),
         )
+        return null;
       })
 
 
@@ -344,6 +354,7 @@ function ApproveRejectDrawer(props) {
           IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
 
         })
+        return null;
       })
       if (type === 'Approve') {
         reset()
@@ -437,6 +448,7 @@ function ApproveRejectDrawer(props) {
             SimulationApprovalProcessSummaryId: item?.SimulationApprovalProcessSummaryId,
             IsMultiSimulation: isSimulationApprovalListing ? true : false
           })
+          return null;
         })
       } else {
         approverObject = [{
@@ -491,6 +503,7 @@ function ApproveRejectDrawer(props) {
               SimulationId: item.SimulationId, SimulationTokenNumber: item.ApprovalNumber,
               SimulationAppliedOn: item.SimulationTechnologyId
             })
+            return null;
           })
           senderObj.SimulationList = temp
         } else {
@@ -608,7 +621,6 @@ function ApproveRejectDrawer(props) {
 
     let tempDropdownList = []
     let obj
-    let simObj
     if (!isSimulation) {
 
       obj = {
@@ -679,6 +691,7 @@ function ApproveRejectDrawer(props) {
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
+    console.log('file: ', file);
 
 
 
@@ -708,7 +721,6 @@ function ApproveRejectDrawer(props) {
   }
 
   const Preview = ({ meta }) => {
-    const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
         {/* {Math.round(percent)}% */}
@@ -721,13 +733,6 @@ function ApproveRejectDrawer(props) {
 
 
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      // dispatch(fileDeleteCosting(deleteData, (res) => {
-      //     Toaster.success('File has been deleted successfully.')
-      //   }))
       let tempArr = files && files.filter(item => item.FileId !== FileId)
       setFiles(tempArr)
       setIsOpen(!IsOpen)
@@ -738,7 +743,9 @@ function ApproveRejectDrawer(props) {
       setIsOpen(!IsOpen)
     }
 
-
+    if (dropzone?.current !== null) {
+      dropzone.current.files.pop()
+    }
   }
   return (
     <>
@@ -1003,12 +1010,17 @@ function ApproveRejectDrawer(props) {
                       {<>
                         <Col md="12" className="p-0">
                           <label>Upload Attachment (upload up to 2 files)</label>
-                          {files && files.length >= 2 ? (
+                          {/* {files && files.length >= 2 ? (
                             <div class="alert alert-danger" role="alert">
                               Maximum file upload limit has been reached.
                             </div>
-                          ) : (
+                          ) : ( */}
+                          <div className={`alert alert-danger mt-2 ${files.length === 2 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${files.length >= 2 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={dropzone}
                               getUploadParams={getUploadParams}
                               onChangeStatus={handleChangeStatus}
                               PreviewComponent={Preview}
@@ -1043,7 +1055,8 @@ function ApproveRejectDrawer(props) {
                               classNames="draper-drop"
                               disabled={type === 'Sender' ? false : true}
                             />
-                          )}
+                          </div>
+                          {/* )} */}
                         </Col>
                         <div className="w-100">
                           <div className={"attachment-wrapper mt-0 mb-3"}>

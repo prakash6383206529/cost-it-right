@@ -16,15 +16,15 @@ import 'react-dropzone-uploader/dist/styles.css'
 import { FILE_URL,ZBC } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import attachClose from '../../../assests/images/red-cross.png'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    this.dropzone = React.createRef();
     this.state = {
       ProfitID: '',
       costingHead: 'zero',
@@ -161,6 +161,13 @@ class AddProfit extends Component {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
             })
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            this.dropzone.current.files = files
           }, 500)
         }
       })
@@ -506,6 +513,9 @@ class AddProfit extends Component {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
     }
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
@@ -541,30 +551,30 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant,uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
 
 
 
-      if (values.ProfitBOPPercentage == '') {
+      if (values.ProfitBOPPercentage === '') {
         values.ProfitBOPPercentage = null
       }
-      if (values.ProfitMachiningCCPercentage == '') {
+      if (values.ProfitMachiningCCPercentage === '') {
         values.ProfitMachiningCCPercentage = null
       }
-      if (values.ProfitPercentage == '') {
+      if (values.ProfitPercentage === '') {
         values.ProfitPercentage = null
       }
-      if (values.ProfitRMPercentage == '') {
+      if (values.ProfitRMPercentage === '') {
         values.ProfitRMPercentage = null
       }
 
       if (
-        DropdownChanged && DataToChange.ProfitBOPPercentage == values.ProfitBOPPercentage && DataToChange.ProfitMachiningCCPercentage == values.ProfitMachiningCCPercentage
-        && DataToChange.ProfitPercentage == values.ProfitPercentage && DataToChange.ProfitRMPercentage == values.ProfitRMPercentage
-        && DataToChange.Remark == values.Remark) {
+        DropdownChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
+        && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
+        && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
         this.cancel()
         return false
@@ -975,12 +985,17 @@ class AddProfit extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files.length >= 3 ? (
+                          {/* {this.state.files.length >= 3 ? (
                             <div class="alert alert-danger" role="alert">
                               Maximum file upload limit has been reached.
                             </div>
-                          ) : (
+                          ) : ( */}
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={this.dropzone}
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
@@ -1016,7 +1031,9 @@ class AddProfit extends Component {
                               }}
                               classNames="draper-drop"
                             />
-                          )}
+                          </div>
+
+                          {/* )} */}
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>

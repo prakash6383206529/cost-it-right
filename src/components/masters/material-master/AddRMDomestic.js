@@ -35,7 +35,7 @@ import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { animateScroll as scroll} from 'react-scroll';
+import { animateScroll as scroll } from 'react-scroll';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -43,6 +43,7 @@ class AddRMDomestic extends Component {
   constructor(props) {
     super(props)
     this.child = React.createRef()
+    this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
       RawMaterialID: '',
@@ -461,6 +462,14 @@ class AddRMDomestic extends Component {
                   netLandedCost: Data.NetLandedCost ? Data.NetLandedCost : '',
                   showExtraCost: technologyObj.Text === SHEET_METAL ? true : false,
                 }, () => this.setState({ isLoader: false }))
+                let files = Data.FileList && Data.FileList.map((item) => {
+                  item.meta = {}
+                  item.meta.id = item.FileId
+                  item.meta.status = 'done'
+                  return item
+                })
+                this.dropzone.current.files = files
+
               }, 200)
             })
           })
@@ -889,6 +898,10 @@ class AddRMDomestic extends Component {
       )
       this.setState({ files: tempArr })
     }
+
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
@@ -1084,7 +1097,7 @@ class AddRMDomestic extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag } = this.state
 
     return (
       <>
@@ -1623,12 +1636,17 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <label>Upload Files (upload up to 3 files)</label>
-                            {this.state.files.length >= 3 ? (
+                            {/* {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
                                 Maximum file upload limit has been reached.
                               </div>
-                            ) : (
+                            ) : ( */}
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
+                                ref={this.dropzone}
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
@@ -1664,7 +1682,8 @@ class AddRMDomestic extends Component {
                                 }}
                                 classNames="draper-drop"
                               />
-                            )}
+                            </div>
+                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1712,11 +1731,11 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                           {
+                          {
                             (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                              <button type="submit" 
+                              <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                onClick={()=>scroll.scrollToTop()}
+                                onClick={() => scroll.scrollToTop()}
                                 // onClick={this.sendForMasterApproval}
                                 disabled={this.state.isFinalApprovar}
                               >
