@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, getProductGroupSelectList } from '../actions/Part';
@@ -383,7 +383,7 @@ class AddIndivisualPart extends Component {
                               name={"PartName"}
                               type="text"
                               placeholder={""}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85]}
                               component={renderText}
                               required={true}
                               className=""
@@ -452,7 +452,7 @@ class AddIndivisualPart extends Component {
                                 placeholder={""}
                                 validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                 component={renderText}
-                                required={true}
+                                required={false}
                                 className=""
                                 customClassName={"withBorder"}
                               />
