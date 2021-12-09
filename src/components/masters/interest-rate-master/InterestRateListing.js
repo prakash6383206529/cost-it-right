@@ -154,14 +154,6 @@ class InterestRateListing extends Component {
   */
   deleteItem = (Id) => {
     this.setState({ showPopup: true, deletedId: Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteItem(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    };
-    // return Toaster.confirm(MESSAGES.INTEREST_DELETE_ALERT, toastrConfirmOptions);
   }
 
   /**

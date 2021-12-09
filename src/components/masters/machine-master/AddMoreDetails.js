@@ -1578,7 +1578,6 @@ class AddMoreDetails extends Component {
           },
           onCancel: () => { },
         }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 

@@ -972,20 +972,6 @@ class AddRMImport extends Component {
             Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
               values.cutOffPrice === undefined) || uploadAttachements === false)) {
             this.setState({ showPopup: true, updatedObj: requestData })
-            const toastrConfirmOptions = {
-              onOk: () => {
-                this.props.reset()
-                this.props.updateRMImportAPI(requestData, (res) => {
-                  if (res.data.Result) {
-                    Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-                    this.clearForm();
-                  }
-                })
-              },
-              onCancel: () => { },
-              component: () => <ConfirmComponent />,
-            }
-            // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
           }
 
         }

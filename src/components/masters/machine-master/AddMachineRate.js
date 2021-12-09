@@ -851,21 +851,6 @@ class AddMachineRate extends Component {
             return false
           }
           this.setState({ showPopup: true, updatedObj: requestData })
-          const toastrConfirmOptions = {
-            onOk: () => {
-              this.props.reset()
-              this.props.updateMachine(requestData, (res) => {
-                if (res.data.Result) {
-                  Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-                  this.cancel();
-                }
-              })
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-
-          }
-          // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
 
 

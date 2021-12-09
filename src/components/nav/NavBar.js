@@ -121,16 +121,6 @@ class SideBar extends Component {
     };
     this.setState({showPopup:true, updatedObj:requestData})
     
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.props.logoutUserAPI(requestData, () => this.props.logUserOut());
-        //this.props.logUserOut();
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    };
-
-    // return Toaster.confirm(`Are you sure do you want to logout?`, toastrConfirmOptions);
   };
  
   onPopupConfirm = (e)=> {

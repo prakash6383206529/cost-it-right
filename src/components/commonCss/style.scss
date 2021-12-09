@@ -4246,6 +4246,10 @@ body{
   min-height: inherit;
   .empty-table-paecholder{
     min-height: calc(100vh - 350px);
+    @media screen and (max-width:$miniDesktop) {
+      min-height: calc(100vh - 300px);
+      
+    }
   }
   .filter-row-large{
     z-index: 11;
