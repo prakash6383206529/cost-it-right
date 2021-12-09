@@ -251,14 +251,6 @@ function RMImportListing(props) {
   const deleteItem = (Id) => {
     setShowPopup(true)
     setDeletedId(Id)
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmDelete(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    // return Toaster.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
