@@ -18,6 +18,7 @@ import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
+import { Link } from 'react-scroll'
 
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -606,7 +607,7 @@ function TabDiscountOther(props) {
 
   return (
     <>
-      <div className="login-container signup-form">
+      <div className="login-container signup-form" id="discount-costing-tab">
         <div className="p-3 costing-border w-100 border-top-0">
           <Row>
             <Col md="12">
@@ -1021,14 +1022,14 @@ function TabDiscountOther(props) {
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
-                      {!CostingViewMode && <button
+                      {!CostingViewMode &&<Link  to="discount-costing-tab" spy={true} smooth={true} offset={-280} duration={600}> <button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
                         onClick={() => setGoToNext(false)}
                       >
                         <div className={"save-icon"}></div>
                         {"Save"}
-                      </button>}
+                      </button> </Link>}
 
                       {!CostingViewMode && <button
                         type="submit"

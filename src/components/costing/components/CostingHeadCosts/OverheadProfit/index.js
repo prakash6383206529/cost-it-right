@@ -13,6 +13,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
+import { Link } from 'react-scroll'
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -1747,12 +1748,12 @@ function OverheadProfit(props) {
 
             <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
-                {!CostingViewMode && <button
+                {!CostingViewMode && <Link  to="assembly-costing-header" spy={true} smooth={true} offset={-380}> <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}
-                </button>}
+                </button> </Link>}
               </div>
             </Row>
           </form>

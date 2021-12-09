@@ -31,6 +31,7 @@ import { Impactedmasterdata } from './ImpactedMasterData';
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import { Link } from 'react-scroll'
+import AssemblyWiseImpact from './AssemblyWiseImpact';
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -766,7 +767,13 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'Assembly wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata
+                        {/* <Fgwiseimactdata
+                            headerName={headerNameAssembly}
+                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                            vendorIdState={costingList[0]?.VendorId}
+                            impactType={'AssemblySummary'}
+                        /> */}
+                        <AssemblyWiseImpact
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}
                             vendorIdState={costingList[0]?.VendorId}
