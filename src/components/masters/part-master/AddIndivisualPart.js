@@ -450,7 +450,7 @@ class AddIndivisualPart extends Component {
                                 name={"GroupCode"}
                                 type="text"
                                 placeholder={""}
-                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
+                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                 component={renderText}
                                 required={false}
                                 className=""
