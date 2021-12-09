@@ -23,6 +23,7 @@ import Toaster from '../../../common/Toaster'
 import PushSection from '../../../common/PushSection'
 
 function ApproveRejectDrawer(props) {
+  // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing } = props
@@ -111,11 +112,12 @@ function ApproveRejectDrawer(props) {
         item.meta.status = 'done'
         return item
       })
+      // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
       if (dropzone.current !== null) {
         dropzone.current.files = filesList
 
       }
-      console.log('dropzone.current.files: ', dropzone);
+    
       if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing&& getConfigurationKey().IsProvisionalSimulation) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
@@ -691,7 +693,6 @@ function ApproveRejectDrawer(props) {
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
-    console.log('file: ', file);
 
 
 
@@ -743,6 +744,7 @@ function ApproveRejectDrawer(props) {
       setIsOpen(!IsOpen)
     }
 
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
     if (dropzone?.current !== null) {
       dropzone.current.files.pop()
     }

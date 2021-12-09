@@ -39,6 +39,7 @@ class AddBOPDomestic extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
     this.state = {
       BOPID: '',
@@ -193,6 +194,7 @@ class AddBOPDomestic extends Component {
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
               item.meta.id = item.FileId
@@ -488,6 +490,7 @@ class AddBOPDomestic extends Component {
       this.setState({ files: tempArr })
     }
 
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
     if (this.dropzone?.current !== null) {
       this.dropzone.current.files.pop()
     }
