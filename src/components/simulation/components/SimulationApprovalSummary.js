@@ -33,6 +33,7 @@ import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import { Link } from 'react-scroll'
+import AssemblyWiseImpact from './AssemblyWiseImpact';
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -85,7 +86,8 @@ function SimulationApprovalSummary(props) {
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
-
+    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
 
 
     const { setValue, getValues } = useForm({
@@ -721,7 +723,23 @@ function SimulationApprovalSummary(props) {
                             DisplayCompareCosting={DisplayCompareCosting}
 
                             SimulationId={simulationDetail.SimulationId} />
-
+                        <Row >
+                            <Col md="12">
+                                <div className="left-border">{'Assembly wise Impact:'}</div>
+                            </Col>
+                        </Row>
+                        {/* <Fgwiseimactdata
+                            headerName={headerNameAssembly}
+                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                            vendorIdState={costingList[0]?.VendorId}
+                            impactType={'AssemblySummary'}
+                        /> */}
+                        <AssemblyWiseImpact
+                            headerName={headerNameAssembly}
+                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                            vendorIdState={costingList[0]?.VendorId}
+                            impactType={'AssemblySummary'}
+                        />
                         {/* FG wise Impact section end */}
 
                         <Row>
