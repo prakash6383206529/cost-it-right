@@ -463,6 +463,8 @@ function TabDiscountOther(props) {
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      Toaster.warning("File size greater than 5mb not allowed")
     }
   }
 
@@ -932,7 +934,7 @@ function TabDiscountOther(props) {
                           accept="*"
                           initialFiles={initialFiles}
                           maxFiles={4}
-                          maxSizeBytes={2000000000}
+                          maxSizeBytes={20000000}
                           inputContent={(files, extra) =>
                             extra.reject ? (
                               "Image, audio and video files only"
