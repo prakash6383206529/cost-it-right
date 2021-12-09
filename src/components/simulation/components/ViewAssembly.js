@@ -5,7 +5,7 @@ import { Fgwiseimactdata } from './FgWiseImactData';
 function ViewAssembly(props) {
 
     const headerName = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Quantity', 'Variance', '', '', '']
-    const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+    const parentField = ['PartNumber', 'RevisionNumber', 'PartName', 'Level', 'OldPrice', 'NewPrice', 'Quantity', 'Variance', '-', '-']
     const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
     /**
@@ -43,6 +43,9 @@ function ViewAssembly(props) {
                             headerName={headerName}
                             parentField={parentField}
                             childField={childField}
+                            dataForAssemblyImpact={props.dataForAssemblyImpact}
+                            vendorIdState={props.vendorIdState}
+                            impactType={'Assembly'}
                         />
 
                     </div>
