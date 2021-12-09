@@ -27,6 +27,7 @@ export function Fgwiseimactdata(props) {
         // if (SimulationId) {
 
         switch (impactType) {
+            // ********** FOR THESE 2 CASES THE CODE BELOW THEM WILL BE EXECUTED **********
             case 'AssemblySummary':
             case 'Assembly':
                 if (dataForAssemblyImpact !== undefined && Object.keys(dataForAssemblyImpact).length !== 0 && count === 0) {
