@@ -3561,11 +3561,17 @@ body {
   .form-control[disabled]{
     max-width: 280px;
     width: 280px;
+    @media screen and (max-width:$miniDesktop) {
+      width: 260px;
+    }
   }
   .form-group.inputbox.withBorder{
     input.form-control{
       max-width: 280px;
       width: 280px;
+      @media screen and (max-width:$miniDesktop) {
+        width: 260px;
+      }
     }
     label{
       display: none;

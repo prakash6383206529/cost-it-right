@@ -1581,6 +1581,7 @@ export const WDM = 'WDM'
 
 export const ZBC = 'ZBC'
 export const VBC = 'VBC'
+export const NCC='NCC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'
