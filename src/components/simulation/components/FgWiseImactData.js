@@ -25,7 +25,9 @@ export function Fgwiseimactdata(props) {
     useEffect(() => {
         setLoader(true)
         // if (SimulationId) {
+
         switch (impactType) {
+            case 'AssemblySummary':
             case 'Assembly':
                 if (dataForAssemblyImpact !== undefined && Object.keys(dataForAssemblyImpact).length !== 0 && count === 0) {
                     const requestData = {
@@ -92,7 +94,7 @@ export function Fgwiseimactdata(props) {
                                 {loader && <LoaderCustom />}
 
                                 <tr>
-                                    {impactType === 'Assembly' ?
+                                    {(impactType === 'Assembly' || impactType === 'AssemblySummary') ?
                                         (<th className="text-center"><span>{headerName[9]}</span></th>)
                                         : <th><span></span></th>
                                     }
@@ -128,6 +130,29 @@ export function Fgwiseimactdata(props) {
                                                         {/* <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                         <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                         <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
+
+                                                    </tr>
+                                                </tbody>
+                                            </>)
+                                        break;
+                                    case 'AssemblySummary':
+                                        return (
+                                            <>
+                                                {/* 'Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance', '', '', '', 'Assembly Number'   */}
+                                                <tbody className="with-border-table">
+                                                    <tr >
+                                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                                        <td><span>{item.RevisionNumber}</span></td>
+                                                        <td><span>{item.PartName}</span></td>
+                                                        <td><span>{item.OldPrice}</span></td>
+                                                        <td><span>{item.NewPrice}</span></td>
+                                                        <td><span>{item.Level}</span></td>
+                                                        <td><span>{item.Variance == null ? "" : item.Variance}</span></td>
+
+                                                        {/* <td><span>{item.Variance == null ? "" : item.Variance}</span></td> */}
+                                                        {/* <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                            <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                            <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
 
                                                     </tr>
                                                 </tbody>

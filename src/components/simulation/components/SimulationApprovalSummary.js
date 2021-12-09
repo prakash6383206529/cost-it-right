@@ -80,7 +80,7 @@ function SimulationApprovalSummary(props) {
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-    const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
+    const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
@@ -715,7 +715,7 @@ function SimulationApprovalSummary(props) {
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}
                             vendorIdState={costingList[0]?.VendorId}
-                            impactType={'Assembly'}
+                            impactType={'AssemblySummary'}
                         />
                         {/* FG wise Impact section end */}
 
