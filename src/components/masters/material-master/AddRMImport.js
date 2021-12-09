@@ -894,7 +894,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -975,22 +975,10 @@ class AddRMImport extends Component {
             this.cancel()
             return false
           }
-          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
-             this.setState({showPopup:true, updatedObj:requestData})
-            const toastrConfirmOptions = {
-              onOk: () => {
-                this.props.reset()
-                this.props.updateRMImportAPI(requestData, (res) => {
-                  if (res.data.Result) {
-                    Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-                    this.clearForm();
-                  }
-                })
-              },
-              onCancel: () => { },
-              component: () => <ConfirmComponent />,
-            }
-            // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+            Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+              values.cutOffPrice === undefined) || uploadAttachements === false)) {
+            this.setState({ showPopup: true, updatedObj: requestData })
           }
 
         }

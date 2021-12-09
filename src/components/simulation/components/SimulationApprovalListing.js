@@ -222,19 +222,6 @@ function SimulationApprovalListing(props) {
 
         setShowPopup(true)
         setDeletedId(data)
-        const toastrConfirmOptions = {
-            onOk: () => {
-                dispatch(deleteDraftSimulation(data, res => {
-                    if (res.data.Result) {
-                        Toaster.success("Simulation token deleted successfully.")
-                        getTableData()
-                    }
-                }))
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
 
     }
     const onPopupConfirm = () => {

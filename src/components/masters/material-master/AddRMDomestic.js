@@ -916,7 +916,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state
     const { initialConfiguration } = this.props
 
     let plantArray = []
@@ -988,22 +988,10 @@ class AddRMDomestic extends Component {
           this.cancel()
           return false
         }
-        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate || Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice || values.cutOffPrice === undefined))) {
-
-          this.setState({showPopup:true, updatedObj:requestData})
-          const ToasterConfirmOptions = {
-            onOk: () => {
-              this.props.reset()
-              this.props.updateRMDomesticAPI(requestData, (res) => {
-                if (res.data.Result) {
-                  Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-                  this.clearForm()
-                  // this.cancel()
-                }
-              })
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
+        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+          Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+            values.cutOffPrice === undefined) || uploadAttachements === false)) {
+          if (!isEditFlag) {
           }
         }
       }

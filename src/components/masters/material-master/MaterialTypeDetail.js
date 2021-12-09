@@ -48,13 +48,6 @@ class MaterialTypeDetail extends Component {
     */
     deleteItem = (Id) => {
         this.setState({showPopup:true, deletedId:Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { }
-        };
-        // return Toaster.confirm(`${MESSAGES.MATERIAL_TYPE_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**

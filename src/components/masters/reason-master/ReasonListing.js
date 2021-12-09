@@ -135,13 +135,6 @@ class ReasonListing extends Component {
    */
   deleteItem = (Id) => {
     this.setState({showPopup:true, deletedId:Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteItem(Id)
-      },
-      onCancel: () => { },
-    }
-    // return Toaster.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions)
   }
 
   /**
