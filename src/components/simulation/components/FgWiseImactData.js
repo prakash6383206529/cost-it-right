@@ -47,7 +47,7 @@ export function Fgwiseimactdata(props) {
 
 
 
-    }, [])
+    }, [dataForAssemblyImpact])
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
