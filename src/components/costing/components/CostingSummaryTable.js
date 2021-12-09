@@ -1090,7 +1090,7 @@ const CostingSummaryTable = (props) => {
                       <td>
 
                         <span class="d-block small-grey-text mt-2"></span>
-                        <span class="d-block small-grey-text">Tool Cost Type</span>
+                        <span class="d-block small-grey-text">Tool Maintenance Applicability</span>
                         <span class="d-block small-grey-text">Tool Maintenance Cost</span>
                         <span class="d-block small-grey-text">Tool Price</span>
                         <span class="d-block small-grey-text">Amortization Quantity (Tool Life)</span>
