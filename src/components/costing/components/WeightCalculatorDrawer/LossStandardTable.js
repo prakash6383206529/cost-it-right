@@ -115,6 +115,7 @@ function LossStandardTable(props) {
       tempArray.push(obj)
       setTableData(tempArray)
     }
+
     if (LossOfType === 2) {
       setBurningWeight(LossWeight)
       props.burningLoss(LossWeight)
@@ -168,6 +169,7 @@ function LossStandardTable(props) {
       weight = netWeight - tempObj.LossWeight //FIXME Calculation going wrong need to ask Harish sir.
     }
 
+
     setNetWeight(weight)
     props.calculation(weight)
     let tempData = tableData.filter((item, i) => {
@@ -176,6 +178,13 @@ function LossStandardTable(props) {
       }
       return true
     })
+
+
+
+    if (Number(tempObj.LossOfType) === 2) {
+      setBurningWeight(0)
+      props.burningLoss(0)
+    }
 
     dispatch(setPlasticArray(tempData))
     props.tableValue(tempData)

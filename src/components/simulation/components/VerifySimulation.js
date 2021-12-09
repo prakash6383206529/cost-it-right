@@ -432,6 +432,7 @@ function VerifySimulation(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: EMPTY_DATA,
+                                                    imagClass: "verify-simulation-overlay"
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 // suppressRowClickSelection={true}
