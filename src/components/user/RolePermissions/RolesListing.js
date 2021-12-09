@@ -235,22 +235,6 @@ closePopUp= () =>{
           </Row>
           <Row class="">
             <Col className="table-mt-0">
-              {/* <BootstrapTable
-              data={this.state.tableData}
-              striped={false}
-              bordered={false}
-              hover={false}
-              options={options}
-              //search
-              ignoreSinglePage
-              ref={'table'}
-              trClassName={'userlisting-row'}
-              tableHeaderClass='my-custom-header'
-              pagination>
-              <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="left" dataSort={true}>Role</TableHeaderColumn>
-              <TableHeaderColumn dataField="RoleId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
-
               <div className="ag-grid-wrapper height-width-wrapper">
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

@@ -258,24 +258,6 @@ closePopUp= () =>{
 
           <Row>
             <Col>
-              {/* <BootstrapTable
-              data={this.state.tableData}
-              striped={false}
-              bordered={false}
-              hover={false}
-              options={options}
-              search
-              ignoreSinglePage
-              ref={"table"}
-              trClassName={"userlisting-row"}
-              tableHeaderClass="my-custom-header"
-              pagination
-            >
-              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>{getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="DepartmentCode" dataAlign="left" dataSort={true}>Purchase Group Code</TableHeaderColumn>
-              <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
-
               <div className="ag-grid-wrapper height-width-wrapper">
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />

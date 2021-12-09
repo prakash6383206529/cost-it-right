@@ -406,52 +406,6 @@ closePopUp= () =>{
               </div>
             </Col>
           </Row>
-          {/* <BootstrapTable
-            data={this.props.reasonDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${Reasonmaster}.csv`}
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass="my-custom-header"
-            pagination
-          > */}
-          {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-          {/* <TableHeaderColumn
-              dataField="Reason"
-              dataAlign="left"
-              dataSort={true}
-            >
-              Reason
-          </TableHeaderColumn>
-            <TableHeaderColumn
-              width={100}
-              dataField="IsActive"
-              export={false}
-              dataAlign="center"
-              dataFormat={this.statusButtonFormatter}
-            >
-              Status
-          </TableHeaderColumn>
-            <TableHeaderColumn
-              width={80}
-              className="action"
-              dataField="ReasonId"
-              export={false}
-              searchable={false}
-              dataAlign="right"
-              isKey={true}
-              dataFormat={this.buttonFormatter}
-            >
-              Actions
-            </TableHeaderColumn>
-          </BootstrapTable> */}
-
           <div className="ag-grid-wrapper height-width-wrapper">
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
