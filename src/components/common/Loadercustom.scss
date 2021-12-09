@@ -209,8 +209,8 @@
 @media(max-width:1366px){
     .blue-box{
         .main-section{
-            > .left-side-menu + .content-page{
-                min-height: calc(100vh - 109px);
+            > .left-side-menu{
+                min-height: calc(100vh - 160px);
             }
         }
     }

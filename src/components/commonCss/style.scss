@@ -2909,6 +2909,7 @@ button:disabled{pointer-events: none;}
   .costing-table-next{
     tbody{
       td{
+        word-break: break-all;
         .mb-15{
           margin-bottom: 0px;
         }
