@@ -199,7 +199,7 @@ console.log(checkIsDataChange,"checkIsDataChange");
   return (
     <>
   
-      <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+      <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} id={`${item && item.PartNumber}`}>
         
         <td>
           <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
