@@ -137,7 +137,7 @@ function SimulationApprovalSummary(props) {
             }, 500);
 
             const valueTemp = {
-                costingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
+                CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
                 impactPartNumber: SimulatedCostingList[0].PartNo,
                 plantCode: SimulatedCostingList[0].PlantCode,
                 vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,

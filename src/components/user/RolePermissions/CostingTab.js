@@ -69,17 +69,49 @@ class CostingTab extends Component {
   */
   renderActionHeads = (actionHeads) => {
     const { actionData } = this.state;
+    let count = 0;
     let actionNames = actionData && actionData.find(el => el.ModuleName === COSTING)
     if (actionNames !== undefined) {
       return actionHeads && actionHeads.map((item, index) => {
         if (item.Value == 0) return false;
         if (actionNames.ActionItems && actionNames.ActionItems.includes(item.Text)) {
-          return (
-            <th className="crud-label">
-              <div className={item.Text}></div>
-              {item.Text}
-            </th>
-          )
+
+          if (item.Text == "Reject" || item.Text == "Bulk Upload") { return false }
+          else {
+            if (item.Text == 'SOB') { count++; }
+
+            if (count > 0) {
+              return (
+                <>
+                  <th className="crud-label">
+                    <div className={item.Text}></div>
+                    {item.Text}
+                  </th>
+
+                  <th className="crud-label">
+                    <div className='Bulk Upload'></div>
+                    Bulk Upload
+                  </th>
+
+                  <th className="crud-label">
+                    <div className='CancelIcon'></div>
+                    Reject
+                  </th>
+                </>
+              )
+
+            }
+            else {
+              return (
+                <th className="crud-label">
+                  <div className={item.Text}></div>
+                  {item.Text}
+                </th>
+              )
+
+            }
+
+          }
         }
       })
     }
@@ -281,8 +313,8 @@ class CostingTab extends Component {
     const { actionSelectList } = this.state;
     return (
       <div>
-        <div className="row form-group grant-user-grid">
-          <div className="col-md-12">
+        <div className="row form-group grant-user-grid user-costing-tab">
+          <div className="col-md-12 px-0">
             <Table className="table table-bordered" size="sm">
               <thead>
                 <tr>

@@ -15,6 +15,7 @@ export function Fgwiseimactdata(props) {
     const [showTableData, setshowTableData] = useState(false)
     const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType } = props
     const [loader, setLoader] = useState(false)
+    const [count, setCount] = useState(0)
 
     const impactData = useSelector((state) => state.simulation.impactData)
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
@@ -26,17 +27,16 @@ export function Fgwiseimactdata(props) {
         // if (SimulationId) {
         switch (impactType) {
             case 'Assembly':
-                let count = 0
                 if (dataForAssemblyImpact !== undefined && Object.keys(dataForAssemblyImpact).length !== 0 && count === 0) {
                     const requestData = {
-                        costingHead: dataForAssemblyImpact?.costingHead,
+                        costingHead: dataForAssemblyImpact?.CostingHead,
                         impactPartNumber: dataForAssemblyImpact?.impactPartNumber,
                         plantCode: dataForAssemblyImpact?.plantCode,
                         vendorId: dataForAssemblyImpact?.vendorId,
                         delta: dataForAssemblyImpact?.delta,
                         quantity: 1,
                     }
-                    count++
+                    setCount(1)
                     dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
 
                         if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
@@ -89,7 +89,7 @@ export function Fgwiseimactdata(props) {
                     <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
-                                {/* {loader && <LoaderCustom />} */}
+                                {loader && <LoaderCustom />}
 
                                 <tr>
                                     {impactType === 'Assembly' ?
