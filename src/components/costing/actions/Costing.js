@@ -16,6 +16,7 @@ import {
   EMPTY_GUID,
   SET_PLASTIC_ARR,
   SET_ASSEM_BOP_CHARGE,
+  CHECK_IS_DATA_CHANGE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -460,6 +461,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
+  
 
 
   return (dispatch) => {
@@ -2128,6 +2130,7 @@ export function gridDataAdded(IsCostingDateDisabled) {
  * @description SET OVERHEAD PROFIT TAB DATA  
  */
 export function setRMCutOff(cutOffObj) {
+  
   return (dispatch) => {
     dispatch({
       type: SET_CUTOFF_RMC,
@@ -2206,6 +2209,58 @@ export function saveAssemblyBOPHandlingCharge(data, callback) {
     dispatch({
       type: SET_ASSEM_BOP_CHARGE,
       payload: data
+    })
+  }
+}
+
+/**
+ * @method getVBCExistingCosting
+ * @description get VBC Costing Select List By Part
+ */
+ export function getNCCExistingCosting(PartId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getNCCCExistingCosting}/${PartId}`, headers)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      //apiErrors(error);
+    })
+  }
+}
+
+
+/**
+ * @method createZBCCosting
+ * @description CREATE ZBC COSTING
+ */
+ export function createNCCCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createNCCCosting, data, headers)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isDataChange(isDataChange){
+  return (dispatch) =>{
+    dispatch({
+      type:CHECK_IS_DATA_CHANGE,
+      payload:isDataChange
     })
   }
 }

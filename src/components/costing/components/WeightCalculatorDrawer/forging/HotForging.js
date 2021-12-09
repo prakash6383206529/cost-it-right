@@ -197,19 +197,19 @@ function HotForging(props) {
   const dropDown = [
     {
       label: 'Scale Loss',
-      value: 'scaleLoss',
+      value: 5,
     },
     {
       label: 'Trimming Loss',
-      value: 'trimmingLoss',
+      value: 6,
     },
     {
       label: 'Billet Heating Loss',
-      value: 'HeatingLoss',
+      value: 7,
     },
     {
       label: 'Bar Cutting Allowance',
-      value: 'cuttingAllowance',
+      value: 8,
     },
   ]
   return (

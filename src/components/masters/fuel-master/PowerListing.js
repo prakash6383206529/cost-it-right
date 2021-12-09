@@ -125,14 +125,6 @@ class PowerListing extends Component {
   */
   deleteItem = (Id) => {
     this.setState({ showPopup: true, deletedId: Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDelete(Id);
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    // return Toaster.confirm(`${MESSAGES.POWER_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**

@@ -4,28 +4,31 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getFgWiseImpactData } from '../actions/Simulation'
 import { getConfigurationKey } from '../../../helper'
 import { checkForDecimalAndNull } from '../../../helper'
-import { EMPTY_GUID } from '../../../config/constants'
 import SimulationApprovalSummary from './SimulationApprovalSummary'
 import { Callbacks } from 'jquery'
 import { sortedLastIndex } from 'lodash-es'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import {Link} from 'react-scroll';
+import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
 
 
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
-    const { SimulationId } = props
     const dispatch = useDispatch()
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType } = props
     const [loader, setLoader] = useState(false)
+    const [count, setCount] = useState(0)
 
     const impactData = useSelector((state) => state.simulation.impactData)
+    const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
 
 
     useEffect(() => {
+        setLoader(true)
 
         if (SimulationId) {      
             setLoader(true)
@@ -40,9 +43,12 @@ export function Fgwiseimactdata(props) {
                 setLoader(false)
             }))
         }
+       
+        // dispatch(getFgWiseImpactData(SimulationId, (res) => {
 
 
-    }, [SimulationId])
+
+    }, [dataForAssemblyImpact])
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -53,15 +59,14 @@ export function Fgwiseimactdata(props) {
 
     }
 
-
     return (
         <>
             {/* FG wise Impact section start */}
 
             <Row className="mb-3">
                 <Col md="12">
-
-                    <div className={`table-responsive ${!showTableData ? 'fgwise-table' : ""}`}>
+                    {/* {impactType} */}
+                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
                                 {loader && <LoaderCustom />}

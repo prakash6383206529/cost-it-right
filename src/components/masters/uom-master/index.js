@@ -139,13 +139,6 @@ class UOMMaster extends Component {
   */
   deleteItem = (Id) => {
     this.setState({showPopup:true, deletedId:Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteUOM(Id)
-      },
-      onCancel: () => { }
-    };
-    // return Toaster.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
   }
   onPopupConfirm =() => {
     this.confirmDeleteUOM(this.state.deletedId);

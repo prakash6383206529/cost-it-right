@@ -248,20 +248,6 @@ class AddIndivisualProduct extends Component {
 
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updatePart(updateData, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 

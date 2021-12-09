@@ -856,22 +856,6 @@ class AddVolume extends Component {
                                   <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
                                 </AgGridReact>
                               </div>
-                              {/* <BootstrapTable
-                            data={this.state.tableData}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            cellEdit={cellEditProp}
-                            className="add-volume-table"
-                          >
-                            <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
-                            <TableHeaderColumn dataField="BudgetedQuantity" editable={true} dataFormat={this.budgetFormatter}>Budgeted Quantity </TableHeaderColumn>
-                            <TableHeaderColumn dataField="ApprovedQuantity" editable={true} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
-                            <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
-                            <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
-                          </BootstrapTable> */}
-                              {/* </Col> */}
                             </div>
                           </Col>
                         </Row>

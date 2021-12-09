@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
@@ -20,6 +20,8 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 
 function ApproveRejectDrawer(props) {
+  // ********* INITIALIZE REF FOR DROPZONE ********
+  const dropzone = useRef(null);
 
   const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing } = props
 
@@ -28,8 +30,7 @@ function ApproveRejectDrawer(props) {
   const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onChange', reValidateMode: 'onChange',
   })
 
   const dispatch = useDispatch()
@@ -99,7 +100,6 @@ function ApproveRejectDrawer(props) {
         setIsOpen(!IsOpen)
         return null
       })
-
       if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
@@ -192,6 +192,7 @@ function ApproveRejectDrawer(props) {
           },
           ),
         )
+        return null;
       })
 
 

@@ -226,19 +226,6 @@ function SimulationApprovalListing(props) {
 
         setShowPopup(true)
         setDeletedId(data)
-        const toastrConfirmOptions = {
-            onOk: () => {
-                dispatch(deleteDraftSimulation(data, res => {
-                    if (res.data.Result) {
-                        Toaster.success("Simulation token deleted successfully.")
-                        getTableData()
-                    }
-                }))
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
 
     }
     const onPopupConfirm = () => {
@@ -601,8 +588,8 @@ function SimulationApprovalListing(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="text-right w-100 pb-3 warning-section">
-                                    <WarningMessage message="It may take 5 minutes to update the status, please refresh." />
+                                <div className="text-right pb-3 warning-section">
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
                                 {approveDrawer &&
                                     <ApproveRejectDrawer
