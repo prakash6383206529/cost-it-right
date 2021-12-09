@@ -2251,6 +2251,11 @@ export function saveAssemblyBOPHandlingCharge(data, callback) {
   }
 }
 
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
 export function isDataChange(isDataChange){
   return (dispatch) =>{
     dispatch({
