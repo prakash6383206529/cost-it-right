@@ -27,6 +27,7 @@ export function Fgwiseimactdata(props) {
 
 
     useEffect(() => {
+        setLoader(true)
 
         if (SimulationId) {      
             setLoader(true)
@@ -44,14 +45,6 @@ export function Fgwiseimactdata(props) {
        
         // dispatch(getFgWiseImpactData(SimulationId, (res) => {
 
-        //     if (res && res.data && res.data.Result) {
-        //         setshowTableData(true)
-        //     }
-        //     else if (res?.response?.status !== "200") {
-        //         setshowTableData(false)
-        //     }
-        // }))
-        // }
 
 
     }, [])
