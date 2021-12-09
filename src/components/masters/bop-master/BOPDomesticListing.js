@@ -229,87 +229,13 @@ class BOPDomesticListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue ? 'Vendor Based' : 'Zero Based';
+        return cellValue
     }
 
-    costFormatter = (cell, row, enumObject, rowIndex) => {
-        const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
-    }
-
-
-    renderPlant = (cell, row, enumObject, rowIndex) => {
-        return cell !== null ? row.IsVendor ? row.DestinationPlant : row.Plants : '-'
-    }
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { bopCategorySelectList, plantSelectList, vendorWithVendorCodeSelectList, } = this.props;
-        const temp = [];
-
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'BOPCategory') {
-            bopCategorySelectList && bopCategorySelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'vendor') {
-            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-    }
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { costingHead, BOPCategory, plant, vendor } = this.state;
-
-        const costingHeadTemp = costingHead ? costingHead.value : '';
-        const categoryTemp = BOPCategory ? BOPCategory.value : 0;
-        const vendorTemp = vendor ? vendor.value : '';
-        const plantTemp = plant ? plant.value : '';
-
-        this.getDataList(costingHeadTemp, categoryTemp, vendorTemp, plantTemp)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            BOPCategory: [],
-            plant: [],
-            vendor: [],
-        }, () => {
-            this.props.getBOPCategorySelectList(() => { })
-            this.props.getPlantSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList(() => { })
-            this.getDataList()
-        })
-
+    plantFormatter = (props)=>{
+     
+        const rowData = props.data
+        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
     }
 
     formToggle = () => {
@@ -365,6 +291,7 @@ class BOPDomesticListing extends Component {
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
         data && data.map((item => {
             tempArr.push(item.data)
+            return null
         }))
 
         return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
@@ -416,19 +343,8 @@ class BOPDomesticListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
-        const a = getConfigurationKey().IsDestinationPlantConfigure;
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.bopDomesticList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
-
+  
+     
         const isFirstColumn = (params) => {
             if (this.props.isSimulation) {
 
@@ -455,7 +371,8 @@ class BOPDomesticListing extends Component {
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            plantFormatter:this.plantFormatter
         };
 
         const onRowSelect = () => {
@@ -671,7 +588,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor"></AgGridColumn>
                                     <AgGridColumn width={205} field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
