@@ -12,6 +12,7 @@ import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
+import { Link } from 'react-scroll';
 
 function TabPackagingFreight(props) {
 
@@ -254,7 +255,7 @@ dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{    
                         {PackageAndFreightTabData && PackageAndFreightTabData.map((item, index) => {
                           return (
                             <>
-                              <tr class="accordian-row" key={index}>
+                              <tr class="accordian-row" key={index} id="costing-header">
                                 <td>{item.PartNumber}</td>
                                 <td>{item.CostingPartDetails.PackagingNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PackagingNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                                 <td>{item.CostingPartDetails.FreightNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.FreightNetCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
@@ -279,14 +280,14 @@ dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{    
                   </Col>
                 </Row>
                 <div className="col-sm-12 text-right bluefooter-butn">
-                  {!CostingViewMode && <button
+                  {!CostingViewMode &&  <Link  to="costing-header" spy={true} smooth={true} offset={-350} delay={100}> <button
                     type={"button"}
                     className="submit-button mr5 save-btn"
                     onClick={saveCosting}
                   >
                     <div className={"save-icon"}></div>
                     {"Save"}
-                  </button>}
+                  </button> </Link>}
                 </div>
               </form>
             </div>

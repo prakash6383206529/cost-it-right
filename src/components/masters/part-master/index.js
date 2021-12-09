@@ -166,18 +166,16 @@ class PartMaster extends Component {
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
-
+                            <div className="d-flex justify-content-between">
                             <h1>Part Master</h1>
-                            <Row>
-                                <Col md="12" className="d-flex justify-content-end">
-                                    <button
+                            <button
                                         type="button"
-                                        className={'user-btn mr5'}
+                                        className={'user-btn mr5 mt-1'}
                                         title="Add"
                                         onClick={this.openFetchDrawer}>
-                                        <div className={'plus mr-0'}></div></button>
-                                </Col>
-                            </Row>
+                                        <div className={'swap mr-0'}></div></button>
+                            </div>
+                           
 
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
