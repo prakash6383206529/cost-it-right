@@ -514,6 +514,7 @@ function ApprovalListing(props) {
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
                         title: EMPTY_DATA,
+                        imagClass:"imagClass"
                       }}
                       frameworkComponents={frameworkComponents}
                       suppressRowClickSelection={true}

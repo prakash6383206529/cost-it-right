@@ -77,6 +77,7 @@ function SimulationApprovalSummary(props) {
     const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
+    const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState({});
 
     const dispatch = useDispatch()
 
@@ -88,8 +89,7 @@ function SimulationApprovalSummary(props) {
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-    const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-    const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
+    const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
@@ -135,6 +135,16 @@ function SimulationApprovalSummary(props) {
 
                 setLoader(false)
             }, 500);
+
+            const valueTemp = {
+                costingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
+                impactPartNumber: SimulatedCostingList[0].PartNo,
+                plantCode: SimulatedCostingList[0].PlantCode,
+                vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
+                delta: SimulatedCostingList[0].Variance,
+                quantity: 1
+            }
+            setdataForAssemblyImpactForFg(valueTemp)
         }))
 
         const obj = {
@@ -749,8 +759,18 @@ function SimulationApprovalSummary(props) {
                             DisplayCompareCosting={DisplayCompareCosting}
                             SimulationId={simulationDetail.SimulationId}
                             headerName={headerName}
-                            parentField={parentField}
-                            childField={childField}
+                            impactType={'FgWise'}
+                        />
+                        <Row >
+                            <Col md="12">
+                                <div className="left-border">{'Assembly wise Impact:'}</div>
+                            </Col>
+                        </Row>
+                        <Fgwiseimactdata
+                            headerName={headerNameAssembly}
+                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                            vendorIdState={costingList[0]?.VendorId}
+                            impactType={'Assembly'}
                         />
 
                         {/* <Row className="mb-3">
