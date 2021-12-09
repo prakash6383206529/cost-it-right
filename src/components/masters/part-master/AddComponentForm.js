@@ -11,11 +11,13 @@ import TooltipCustom from '../../common/Tooltip';
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
+    this.myRef = React.createRef();
     this.state = {
       part: [],
       parentPart: [],
       isAddMore: false,
       selectedParts: [],
+
     }
   }
 
@@ -124,10 +126,15 @@ class AddComponentForm extends Component {
       Input: Math.floor(100000 + Math.random() * 900000),
     }
     this.props.getDrawerComponentPartData('', res => { })
+    this.setState({
+      part: []
+    
+    })
+    this.props.change('PartNumber',[{label:'',value:''}])
+  
+    this.myRef.current.select.state.value =[]
     if (isAddMore) {
-      this.setState({
-        part: []
-      })
+      console.log('isAddMore: ', isAddMore);
       this.props.setChildParts(childData)
     } else {
       this.props.toggleDrawer('', childData)
@@ -180,7 +187,7 @@ class AddComponentForm extends Component {
               <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
-              <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              <AsyncSelect name="PartNumber" ref={this.myRef} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {/* <Field
                 name="PartNumber"
                 type="text"

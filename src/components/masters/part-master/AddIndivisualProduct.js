@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
-import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
@@ -15,13 +15,13 @@ import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from "../../../assests/images/red-cross.png";
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
+        this.dropzone = React.createRef();
         this.state = {
             isEditFlag: false,
             isLoader: false,
@@ -79,6 +79,14 @@ class AddIndivisualProduct extends Component {
                             files: Data.Attachements,
                             isSurfaceTreatment: Data.IsConsideredForMBOM,
                         }, () => this.setState({ isLoader: false }))
+                        let files = Data.Attachements && Data.Attachements.map((item) => {
+                            item.meta = {}
+                            item.meta.id = item.FileId
+                            item.meta.status = 'done'
+                            return item
+                        })
+                        this.dropzone.current.files = files
+
                     }, 500)
                 }
             })
@@ -118,6 +126,7 @@ class AddIndivisualProduct extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -188,10 +197,13 @@ class AddIndivisualProduct extends Component {
             let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
             this.setState({ files: tempArr })
         }
+
+        if (this.dropzone?.current !== null) {
+            this.dropzone.current.files.pop()
+        }
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}
@@ -220,7 +232,7 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, isSurfaceTreatment } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isSurfaceTreatment } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -595,13 +607,18 @@ class AddIndivisualProduct extends Component {
                                                         <label>
                                                             Upload Files (upload up to 3 files)
                                                         </label>
-                                                        {this.state.files &&
+                                                        {/* {this.state.files &&
                                                             this.state.files.length >= 3 ? (
                                                             <div class="alert alert-danger" role="alert">
                                                                 Maximum file upload limit has been reached.
                                                             </div>
-                                                        ) : (
+                                                        ) : ( */}
+                                                        <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                                                            Maximum file upload limit has been reached.
+                                                        </div>
+                                                        <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                                                             <Dropzone
+                                                                ref={this.dropzone}
                                                                 getUploadParams={this.getUploadParams}
                                                                 onChangeStatus={this.handleChangeStatus}
                                                                 PreviewComponent={this.Preview}
@@ -638,7 +655,8 @@ class AddIndivisualProduct extends Component {
                                                                 classNames="draper-drop"
                                                                 disabled={isEditFlag ? true : false}
                                                             />
-                                                        )}
+                                                        </div>
+                                                        {/* )} */}
                                                     </Col>
                                                     <Col md="3">
                                                         <div className={"attachment-wrapper"}>
