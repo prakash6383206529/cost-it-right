@@ -3,6 +3,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
 import { Fgwiseimactdata } from './FgWiseImactData';
 import { EMPTY_GUID } from '../../../config/constants';
+import AssemblyWiseImpact from './AssemblyWiseImpact';
 function ViewAssembly(props) {
 
     const headerName = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
@@ -44,13 +45,18 @@ function ViewAssembly(props) {
                         {/* <div className={'header-wrapper left'}>
                             <h3>{`Assembly Wise`}</h3>
                         </div> */}
-                        <Fgwiseimactdata
+                        {/* <Fgwiseimactdata
+                            headerName={headerName}
+                            dataForAssemblyImpact={dataForAssemblyImpact}
+                            vendorIdState={props.vendorIdState}
+                            impactType={'Assembly'}
+                        /> */}
+                        <AssemblyWiseImpact
                             headerName={headerName}
                             dataForAssemblyImpact={dataForAssemblyImpact}
                             vendorIdState={props.vendorIdState}
                             impactType={'Assembly'}
                         />
-
                     </div>
                 </div>
 
