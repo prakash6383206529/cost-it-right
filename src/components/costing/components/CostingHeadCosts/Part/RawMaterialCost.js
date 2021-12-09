@@ -549,7 +549,7 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight / 1000000
       }
       const FinishWeight = finishWeight
-      const GrossWeight = grossWeight
+      const GrossWeight = grossWeight    
       const RecoveryPercentage = weightData.RecoveryPercentage
 
       const scrapWeight = weightData.scrapWeight? weightData.scrapWeight : checkForNull(GrossWeight - FinishWeight)

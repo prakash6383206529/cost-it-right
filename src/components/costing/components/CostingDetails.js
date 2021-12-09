@@ -295,6 +295,7 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
+              
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
@@ -1785,6 +1786,7 @@ const nccDrawerToggle=()=>{
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
+                            {}
                             <DatePicker
                               name="EffectiveDate"
                               selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
