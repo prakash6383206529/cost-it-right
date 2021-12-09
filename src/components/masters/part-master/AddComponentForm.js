@@ -128,13 +128,13 @@ class AddComponentForm extends Component {
     this.props.getDrawerComponentPartData('', res => { })
     this.setState({
       part: []
-    
+
     })
-    this.props.change('PartNumber',[{label:'',value:''}])
-  
-    this.myRef.current.select.state.value =[]
+    this.props.change('PartNumber', [{ label: '', value: '' }])
+
+    this.myRef.current.select.state.value = []
     if (isAddMore) {
-      console.log('isAddMore: ', isAddMore);
+
       this.props.setChildParts(childData)
     } else {
       this.props.toggleDrawer('', childData)
@@ -180,7 +180,7 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
-          
+
           <Row>
 
             <Col md="6">
@@ -359,7 +359,7 @@ function mapStateToProps({ part }) {
       ECNNumber: DrawerPartData.ECNNumber,
       RevisionNumber: DrawerPartData.RevisionNumber,
       DrawingNumber: DrawerPartData.DrawingNumber,
-      GroupCode: DrawerPartData.GroupCode,
+      GroupCode: DrawerPartData?.GroupCodeList[0]?.GroupCode,
       BOMNumber: DrawerPartData.BOMNumber,
     }
   }
