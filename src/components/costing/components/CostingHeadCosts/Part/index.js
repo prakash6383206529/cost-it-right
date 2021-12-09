@@ -7,7 +7,8 @@ import RawMaterialCost from './RawMaterialCost';
 import {
   getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
   setComponentDiscountOtherItemData,
-  saveAssemblyPartRowCostingCalculation
+  saveAssemblyPartRowCostingCalculation,
+  isDataChange
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../config/constants';
@@ -23,7 +24,7 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, ComponentItemData, CloseOpenAccordion, CostingEffectiveDate, RMCCTabData, CostingDataList, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, ComponentItemData, CloseOpenAccordion, CostingEffectiveDate, RMCCTabData, CostingDataList, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, getAssemBOPCharge,checkIsDataChange } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -61,9 +62,9 @@ function PartCompoment(props) {
   }, [CloseOpenAccordion])
 
   useEffect(() => {
-
+console.log(checkIsDataChange,"checkIsDataChange");
     // OBJECT FOR SENDING OBJECT TO API
-    if (!CostingViewMode && IsOpen ===false && Count > 0 && Object.keys(ComponentItemData).length > 0) {
+    if (!CostingViewMode && IsOpen ===false && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -116,10 +117,10 @@ function PartCompoment(props) {
         let subAssemblyObj = {
           "CostingId": item.CostingId,
           "CostingNumber": "", // Need to find out how to get it.
-          "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+          "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
           "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
           "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
           "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
@@ -178,6 +179,7 @@ function PartCompoment(props) {
           Toaster.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
           dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
+          dispatch(isDataChange(false))
         }
       }))
     }
