@@ -3169,7 +3169,7 @@ class AddMoreDetails extends Component {
                       <Row>
                         <Col md="12" className="filter-block">
                           <div className="mb-2">
-                            <h5>{'Remarks & Attachment:'}</h5>
+                            <h5>{'Remarks & Attachments:'}</h5>
                           </div>
                         </Col>
                         <Col md="6">
