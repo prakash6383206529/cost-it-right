@@ -5,7 +5,7 @@ import { Fgwiseimactdata } from './FgWiseImactData';
 import { EMPTY_GUID } from '../../../config/constants';
 function ViewAssembly(props) {
 
-    const headerName = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', '']
+    const headerName = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
     const dataForAssemblyImpact = {
         CostingHead: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
         impactPartNumber: props.dataForAssemblyImpact?.row?.PartNo,
