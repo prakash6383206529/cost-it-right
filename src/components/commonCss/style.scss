@@ -1095,6 +1095,12 @@ input.form-control{
   background: transparent url("../../assests/images/Group 10491.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
 }
+.swap {
+  width: 22px;
+  height: 22px;
+  background: transparent url("../../assests/images/swap-logo.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
 .minus-icon {
   width: 22px;
   height: 22px;
@@ -5337,6 +5343,11 @@ body{
         background-size: contain;
       }
       .plus{
+        width: calc(13px * 80 /100);
+        height: calc(13px * 80 /100);
+        background-size: contain;
+      }
+      .swap{
         width: calc(13px * 80 /100);
         height: calc(13px * 80 /100);
         background-size: contain;
