@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -25,17 +25,13 @@ import AddUOM from '../uom-master/AddUOM';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
-
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL, INR, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import WarningMessage from '../../common/WarningMessage';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from '../../../assests/images/red-cross.png'
 import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
@@ -317,7 +313,6 @@ class AddRMImport extends Component {
   */
   handleCurrency = (newValue) => {
     if (newValue && newValue !== '') {
-      const { fieldsObj } = this.props
       if (newValue.label === INR) {
         this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
@@ -415,13 +410,11 @@ class AddRMImport extends Component {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
 
               setTimeout(() => {
-                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList,
-                  vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList } = this.props;
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList , currencySelectList, technologySelectList, plantSelectList } = this.props;
 
                 const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
                 const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
@@ -446,7 +439,6 @@ class AddRMImport extends Component {
                   return plantArray;
                 })
 
-                const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.Vendor)
 
                 let vendorPlantArray = [];
                 Data && Data.VendorPlant.map((item) => {
@@ -469,7 +461,7 @@ class AddRMImport extends Component {
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                   Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
                   selectedPlants: plantArray,
-                  vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                  vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
@@ -639,7 +631,7 @@ class AddRMImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, plantList, filterPlantList,
+    const { gradeSelectList, rmSpecification, filterPlantList,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
       UOMSelectList, currencySelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props;
     const temp = [];
@@ -971,7 +963,10 @@ class AddRMImport extends Component {
             }
           })
         } else {
-          if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) == values.BasicRate && Number(DataToChange.ScrapRate) == values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark == values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
+          if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+            Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === values.NetLandedCost &&
+            DataToChange.Remark === values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice ||
+              values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
             this.cancel()
             return false
           }
@@ -1071,7 +1066,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, effectiveDate, RawMaterial } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag } = this.state;
 
     return (
       <>
