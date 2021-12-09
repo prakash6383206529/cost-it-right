@@ -18,7 +18,7 @@ import {
   getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -26,7 +26,6 @@ import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import TooltipCustom from '../../common/Tooltip';
-import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
 
@@ -368,6 +367,14 @@ function CostingDetails(props) {
         }
       }))
 
+
+      dispatch(getNCCExistingCosting(part.value,(res=>{
+        if(res.data.Result){
+          let Data = res.data.DataList
+          setNccGrid(Data)
+        }
+      })))
+
       setIsOpenVendorSOBDetails(true)
     } else {
       Toaster.warning('Please select Technology or Part.')
@@ -518,7 +525,6 @@ const nccDrawerToggle=()=>{
    * @description HIDE NCC DRAWER
    */
   const closeNCCDrawer = (e = '', nccData = {}) => {
-    console.log('nccData: ', nccData);
     if (Object.keys(nccData).length > 0) {
       //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
       const isExist = nccGrid.findIndex(el => (el.VendorId === nccData.VendorId && el.PlantId === nccData.PlantId))
@@ -815,6 +821,19 @@ const nccDrawerToggle=()=>{
         }
       }),
       )
+
+      dispatch(createNCCCosting(data,(res)=>{
+        if (res.data.Result) {
+          setPartInfo(res.data.Data)
+          setCostingData({ costingId: res.data.Data.CostingId, type })
+          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+            setIsCostingViewMode(false)
+            setStepTwo(true)
+            setStepOne(false)
+          }))
+        }
+      }))
     }
     
     else {
@@ -1054,14 +1073,7 @@ const nccDrawerToggle=()=>{
   const deleteItem = (Item, index, type) => {
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        deleteCosting(Item, index, type);
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    // return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
+   
   }
 
   /**
