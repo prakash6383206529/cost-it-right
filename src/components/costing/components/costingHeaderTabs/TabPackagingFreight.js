@@ -163,7 +163,7 @@ function TabPackagingFreight(props) {
       //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
-if(costData.IsAssemblyPart === true){
+    if(costData.IsAssemblyPart === true){
 
   let assemblyRequestedData = {        
     "TopRow": {
@@ -196,7 +196,7 @@ if(costData.IsAssemblyPart === true){
 }
 console.log(assemblyRequestedData,"assemblyRequestedData");
 dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
-}
+    }
 
     dispatch(saveCostingPackageFreightTab(data, res => {
       if (res.data.Result) {

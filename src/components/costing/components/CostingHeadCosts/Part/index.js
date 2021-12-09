@@ -62,7 +62,6 @@ function PartCompoment(props) {
   }, [CloseOpenAccordion])
 
   useEffect(() => {
-console.log(checkIsDataChange,"checkIsDataChange");
     // OBJECT FOR SENDING OBJECT TO API
     if (!CostingViewMode && IsOpen ===false && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
       const tabData = RMCCTabData[0]
@@ -79,7 +78,7 @@ console.log(checkIsDataChange,"checkIsDataChange");
         "NetOtherOperationCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal : 0,
         "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": costData.IsAssemblyPart? ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost :netPOPrice,   //NEED TO ADD SURFACE TREATMENT COST OF CHILD LATER
+        "TotalCost": costData.IsAssemblyPart? item.CostingPartDetails.TotalCalculatedRMBOPCCCost :netPOPrice,   //NEED TO ADD SURFACE TREATMENT COST OF CHILD LATER
         "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
           checkForNull(item.CostingPartDetails.ProfitCost) +
           checkForNull(item.CostingPartDetails.RejectionCost) +
@@ -114,24 +113,26 @@ console.log(checkIsDataChange,"checkIsDataChange");
       }
       let assemblyWorkingRow = []
       tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
-        let subAssemblyObj = {
-          "CostingId": item.CostingId,
-          "CostingNumber": "", // Need to find out how to get it.
-          "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
-          "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-          "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
-          "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
-          "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
-          "SurfaceTreatmentCostPerAssembly": 0,
-          "TransportationCostPerAssembly": 0,
-          "TotalSurfaceTreatmentCostPerAssembly": 0,
-          "TotalCostINR": netPOPrice
+        if(item.PartType === 'Sub Assembly'){
+          let subAssemblyObj = {
+            "CostingId": item.CostingId,
+            "CostingNumber": "", // Need to find out how to get it.
+            "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+            "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
+            "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
+            "SurfaceTreatmentCostPerAssembly": 0,
+            "TransportationCostPerAssembly": 0,
+            "TotalSurfaceTreatmentCostPerAssembly": 0,
+            "TotalCostINR": netPOPrice
+          }
+          assemblyWorkingRow.push(subAssemblyObj)
+          return assemblyWorkingRow
         }
-        assemblyWorkingRow.push(subAssemblyObj)
-        return assemblyWorkingRow
       })
       let assemblyRequestedData = {
 

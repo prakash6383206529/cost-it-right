@@ -102,8 +102,7 @@ function AddPackaging(props) {
   const calculateApplicabilityCost = (Text) => {
 
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
-    console.log('OperationCostTotal: ', OperationCostTotal);
-    console.log('ProcessCostTotal: ', ProcessCostTotal);
+  
     const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
     const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
     const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
