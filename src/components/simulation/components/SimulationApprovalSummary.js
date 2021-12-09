@@ -30,6 +30,7 @@ import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import redcrossImg from '../../../assests/images/red-cross.png'
 import { Link } from 'react-scroll'
+import AssemblyWiseImpact from './AssemblyWiseImpact';
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -80,7 +81,7 @@ function SimulationApprovalSummary(props) {
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-    const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
+    const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
@@ -711,11 +712,17 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'Assembly wise Impact:'}</div>
                             </Col>
                         </Row>
-                        <Fgwiseimactdata
+                        {/* <Fgwiseimactdata
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}
                             vendorIdState={costingList[0]?.VendorId}
-                            impactType={'Assembly'}
+                            impactType={'AssemblySummary'}
+                        /> */}
+                        <AssemblyWiseImpact
+                            headerName={headerNameAssembly}
+                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                            vendorIdState={costingList[0]?.VendorId}
+                            impactType={'AssemblySummary'}
                         />
                         {/* FG wise Impact section end */}
 

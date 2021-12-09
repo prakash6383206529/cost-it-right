@@ -16,6 +16,7 @@ import { MESSAGES } from '../../../../config/message';
 import { ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import AddBOPHandling from '../Drawers/AddBOPHandling';
+import { Link } from 'react-scroll';
 
 function TabRMCC(props) {
 
@@ -1692,7 +1693,7 @@ function TabRMCC(props) {
   return (
 
     <>
-      <div className="login-container signup-form">
+      <div className="login-container signup-form" id="rm-cc-costing-header">
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
@@ -1802,7 +1803,7 @@ function TabRMCC(props) {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    <button
+                   <Link to={`${ComponentItemData.PartNumber}`} spy={true} smooth={true} offset={-205} > <button
                       type={'button'}
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
@@ -1810,7 +1811,7 @@ function TabRMCC(props) {
                     >
                       <div className={'save-icon'}></div>
                       {'Save'}
-                    </button>
+                    </button> </Link>
                   </div>}
 
               </form>
