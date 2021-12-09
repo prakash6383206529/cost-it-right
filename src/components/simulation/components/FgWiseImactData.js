@@ -22,38 +22,47 @@ export function Fgwiseimactdata(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
+        setLoader(true)
 
         // if (SimulationId) {
-        setLoader(true)
-        const requestData = {
-            costingHead: dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
-            impactPartNumber: dataForAssemblyImpact?.row?.PartNo,
-            plantCode: dataForAssemblyImpact?.row?.PlantCode,
-            vendorId: dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? vendorIdState : EMPTY_GUID,
-            delta: dataForAssemblyImpact?.row?.Variance,
-            quntity: 1,
+        switch (impactType) {
+            case 'Assembly':
+                const requestData = {
+                    costingHead: dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
+                    impactPartNumber: dataForAssemblyImpact?.row?.PartNo,
+                    plantCode: dataForAssemblyImpact?.row?.PlantCode,
+                    vendorId: dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? vendorIdState : EMPTY_GUID,
+                    delta: dataForAssemblyImpact?.row?.Variance,
+                    quntity: 1,
+                }
+                dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
+
+                    if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
+                        setshowTableData(true)
+                    }
+                    else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
+                        setshowTableData(false)
+                    }
+                }))
+
+                break;
+            case 'FgWise':
+                // dispatch(getFgWiseImpactData(SimulationId, (res) => {
+
+                //     if (res && res.data && res.data.Result) {
+                //         setshowTableData(true)
+                //     }
+                //     else if (res?.response?.status !== "200") {
+                //         setshowTableData(false)
+                //     }
+                // }))
+                // }
+                break;
+            default:
+                break;
         }
-        dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
-            console.log(res, 'RES')
-
-            if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
-                setshowTableData(true)
-            }
-            else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
-                setshowTableData(false)
-            }
-        }))
         setLoader(false)
-        // dispatch(getFgWiseImpactData(SimulationId, (res) => {
 
-        //     if (res && res.data && res.data.Result) {
-        //         setshowTableData(true)
-        //     }
-        //     else if (res?.response?.status !== "200") {
-        //         setshowTableData(false)
-        //     }
-        // }))
-        // }
 
 
     }, [])
@@ -66,6 +75,7 @@ export function Fgwiseimactdata(props) {
         props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
 
     }
+
     return (
         <>
             {/* FG wise Impact section start */}
@@ -94,7 +104,6 @@ export function Fgwiseimactdata(props) {
                             </thead>
                             {/* {showTableData && impactData && impactData.map((item, index) => { */}
                             {true && simulationAssemblyList && simulationAssemblyList.map((item, index) => {
-                                console.log(impactType, 'impactTypeimpactTypeimpactType')
                                 switch (impactType) {
                                     case 'Assembly':
                                         return (
