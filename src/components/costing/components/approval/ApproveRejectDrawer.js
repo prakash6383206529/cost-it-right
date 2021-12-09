@@ -20,6 +20,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 
 function ApproveRejectDrawer(props) {
+  // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
   const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing } = props
@@ -99,7 +100,6 @@ function ApproveRejectDrawer(props) {
         setIsOpen(!IsOpen)
         return null
       })
-
       if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
