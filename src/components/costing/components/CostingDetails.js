@@ -104,6 +104,7 @@ function CostingDetails(props) {
     type: '',
     index: []
   })
+  const [titleObj, setTitleObj] = useState({})
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -305,7 +306,7 @@ function CostingDetails(props) {
               setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
-
+              setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
             }),
             )
           } else {
@@ -1680,6 +1681,7 @@ const nccDrawerToggle=()=>{
                         <TextFieldHookForm
                           label="Assembly Name/Part Name"
                           name={"PartName"}
+                          title ={titleObj.partNameTitle}
                           Controller={Controller}
                           control={control}
                           //register={register({ required: "PartName is required." })} //Working for required and msg
@@ -1705,6 +1707,7 @@ const nccDrawerToggle=()=>{
                         <TextFieldHookForm
                           label="Assembly/Part Description"
                           name={"Description"}
+                          title={titleObj.descriptionTitle}
                           Controller={Controller}
                           control={control}
                           register={register}
