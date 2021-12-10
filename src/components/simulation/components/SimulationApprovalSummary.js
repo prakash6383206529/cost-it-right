@@ -30,8 +30,9 @@ import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
-import { Link } from 'react-scroll'
 import AssemblyWiseImpact from './AssemblyWiseImpact';
+import { Link } from 'react-scroll';
+import ScrollToTop from '../../common/ScrollToTop';
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -96,6 +97,7 @@ function SimulationApprovalSummary(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+    
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -619,9 +621,10 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page">
+                    <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
                         <Errorbox customClass={errorBoxClass()} errorText={status} />
                         <h2 className="heading-main">Approval Summary</h2>
+                        <ScrollToTop pointProp={"go-to-top"}/>
                         <Row>
                             <Col md="8">
                                 <div className="left-border">
