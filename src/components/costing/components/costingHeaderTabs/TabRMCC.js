@@ -1752,7 +1752,7 @@ function TabRMCC(props) {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                   <Link to={`${ComponentItemData.PartNumber}`} spy={true} smooth={true} offset={-205} > <button
+                    <button
                       type={'button'}
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
@@ -1760,7 +1760,7 @@ function TabRMCC(props) {
                     >
                       <div className={'save-icon'}></div>
                       {'Save'}
-                    </button> </Link>
+                    </button>
                   </div>}
 
               </form>
