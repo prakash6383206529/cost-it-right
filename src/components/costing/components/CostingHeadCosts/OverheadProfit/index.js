@@ -1751,12 +1751,12 @@ function OverheadProfit(props) {
 
             <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
-                {!CostingViewMode && <Link  to="assembly-costing-header" spy={true} smooth={true} offset={-380}> <button
+                {!CostingViewMode && <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}
-                </button> </Link>}
+                </button>}
               </div>
             </Row>
           </form>

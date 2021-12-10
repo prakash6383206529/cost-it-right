@@ -991,14 +991,14 @@ function TabDiscountOther(props) {
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
-                      {!CostingViewMode &&<Link  to="discount-costing-tab" spy={true} smooth={true} offset={-280} duration={600}> <button
+                      {!CostingViewMode &&<button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
                         onClick={() => setGoToNext(false)}
                       >
                         <div className={"save-icon"}></div>
                         {"Save"}
-                      </button> </Link>}
+                      </button>}
 
                       {!CostingViewMode && <button
                         type="submit"
