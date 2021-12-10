@@ -107,8 +107,8 @@ class AddAssemblyPart extends Component {
               ProductGroup: productArray,
               oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
-                              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
-  let files = Data.Attachements && Data.Attachements.map((item) => {
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
               item.meta.id = item.FileId
               item.meta.status = 'done'
@@ -377,6 +377,9 @@ class AddAssemblyPart extends Component {
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      this.dropzone.current.files.pop()
+      Toaster.warning("File size greater than 2 mb not allowed")
     }
   }
 
@@ -621,6 +624,7 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
+    console.log('this.dropzone?.current?.files: ', this.dropzone?.current?.files);
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -880,12 +884,6 @@ class AddAssemblyPart extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {/* {this.state.files &&
-                            this.state.files.length >= 3 ? (
-                            <div class="alert alert-danger" role="alert">
-                              Maximum file upload limit has been reached.
-                            </div>
-                          ) : ( */}
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit has been reached.
                           </div>
@@ -928,7 +926,6 @@ class AddAssemblyPart extends Component {
                               classNames="draper-drop"
                             />
                           </div>
-                          {/* )} */}
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>
