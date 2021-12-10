@@ -1,17 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
+import { useDispatch, useSelector } from 'react-redux';
+import { createMBOMAssembly } from '../actions/BillOfMaterial'
+
 
 
 
 const FetchDrawer = (props) => {
-    const { register, handleSubmit, formState: { errors }, control } = useForm();
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm();
 
+
+    const [plantCode, setPlantCode] = useState("");
+    const [partCode, setPartCode] = useState("");
+    const dispatch = useDispatch()
 
     // Post api and get Api integration is pending.
     const renderListing = () => {
+
+        return [
+            { label: '001', value: 'Fixed' },
+            { label: '002', value: 'Percentage' },
+            { label: '003', value: 'Percentage' },
+        ];
 
     }
 
@@ -21,7 +34,28 @@ const FetchDrawer = (props) => {
 
     const onSubmit = data => {
 
+
+        let obj = {
+            productNumber: partCode,
+            plantCode: plantCode
+
+        }
+
+        dispatch(createMBOMAssembly(obj, () => { }))
+
+        props.toggleDrawer()
+
     }
+
+    const handlePlantCodeChange = (e) => {
+        setPlantCode(e.label)
+
+    }
+
+    const handlePartCodeChange = (e) => {
+        setPartCode(e.target.value)
+    }
+
 
 
     return (
@@ -60,7 +94,7 @@ const FetchDrawer = (props) => {
                                         //defaultValue={otherCostType.length !== 0 ? otherCostType : ""}
                                         options={renderListing()}
                                         mandatory={false}
-                                        //handleChange={handleOtherCostTypeChange}
+                                        handleChange={handlePlantCodeChange}
                                         errors={errors.plantCode}
                                         disabled={false}
                                     />
@@ -74,7 +108,7 @@ const FetchDrawer = (props) => {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        handleChange={() => { }}
+                                        handleChange={handlePartCodeChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
