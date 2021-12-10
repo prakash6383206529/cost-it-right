@@ -15,15 +15,14 @@ export function Fgwiseimactdata(props) {
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
     const { SimulationId } = props
-    console.log('SimulationId: ', SimulationId);
     const [loader, setLoader] = useState(false)
 
     const impactData = useSelector((state) => state.simulation.impactData)
 
+
     useEffect(() => {
         setLoader(true)
 
-        console.log('SimulationId: ', SimulationId);
         if (SimulationId) {
             setLoader(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
