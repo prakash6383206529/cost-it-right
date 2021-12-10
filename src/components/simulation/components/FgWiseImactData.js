@@ -2,16 +2,11 @@ import { Row, Col } from 'reactstrap'
 import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFgWiseImpactData } from '../actions/Simulation'
-import { getConfigurationKey } from '../../../helper'
 import { checkForDecimalAndNull } from '../../../helper'
-import SimulationApprovalSummary from './SimulationApprovalSummary'
-import { Callbacks } from 'jquery'
-import { sortedLastIndex } from 'lodash-es'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
+import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
-import {Link} from 'react-scroll';
-import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
+import { Link } from 'react-scroll';
 
 
 
@@ -19,18 +14,17 @@ export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
     const dispatch = useDispatch()
-    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType } = props
+    const { SimulationId } = props
+    console.log('SimulationId: ', SimulationId);
     const [loader, setLoader] = useState(false)
-    const [count, setCount] = useState(0)
 
     const impactData = useSelector((state) => state.simulation.impactData)
-    const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
-
 
     useEffect(() => {
         setLoader(true)
 
-        if (SimulationId) {      
+        console.log('SimulationId: ', SimulationId);
+        if (SimulationId) {
             setLoader(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
 
@@ -43,12 +37,12 @@ export function Fgwiseimactdata(props) {
                 setLoader(false)
             }))
         }
-       
+
         // dispatch(getFgWiseImpactData(SimulationId, (res) => {
 
 
 
-    }, [dataForAssemblyImpact])
+    }, [SimulationId])
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -124,7 +118,7 @@ export function Fgwiseimactdata(props) {
                                                     <td><span></span></td>
                                                     <td><span></span></td>
                                                     <td><span></span></td>
-                                                    <td><span> <Link to="fg-compare-costing" spy={true} smooth ={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
+                                                    <td><span> <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
 
                                                 </tr>)
                                         })}
