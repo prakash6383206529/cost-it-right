@@ -917,11 +917,6 @@ function TabDiscountOther(props) {
 
                     <Col md="3" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
-                      {/* {files && files.length >= 4 ? (
-                        <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit has been reached.
-                        </div>
-                      ) : ( */}
                       <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                         Maximum file upload limit has been reached.
                       </div>
@@ -963,7 +958,6 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                         />
                       </div>
-                      {/* )} */}
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
@@ -993,7 +987,7 @@ function TabDiscountOther(props) {
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
-                      {!CostingViewMode &&<Link  to="discount-costing-tab" spy={true} smooth={true} offset={-280} duration={600}> <button
+                      {!CostingViewMode && <Link to="discount-costing-tab" spy={true} smooth={true} offset={-280} duration={600}> <button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
                         onClick={() => setGoToNext(false)}
