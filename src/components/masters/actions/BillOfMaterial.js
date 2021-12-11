@@ -8,11 +8,12 @@ import {
     GET_BOM_SUCCESS,
     UPLOAD_BOM_XLS_SUCCESS,
     GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
-    config
-} from '../../config/constants';
-import { apiErrors } from '../../helper/util';
+    config,
+} from '../../../config/constants';
+import { apiErrors } from '../../../helper/util';
 
 import Toaster from '../../common/Toaster';
+
 
 const headers = config;
 
@@ -217,3 +218,23 @@ export function deleteExisCostingByPartID(PartId, callback) {
 }
 
 // New API for assembly part creation 
+
+
+
+
+
+
+
+export function createMBOMAssembly(obj, callback) {
+    return (dispatch) => {
+
+        const request = axios.post(API.createMBOMAssemblyApi, obj, headers);
+
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
