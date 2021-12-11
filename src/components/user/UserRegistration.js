@@ -80,8 +80,8 @@ class UserRegistration extends Component {
       oldMasterLevelGrid: [],
       masterLevelEditIndex: '',
       isMasterEditIndex: false,
-      showPopup:false,
-      updatedObj :{}
+      showPopup: false,
+      updatedObj: {}
     };
   }
 
@@ -1132,15 +1132,7 @@ class UserRegistration extends Component {
       //
 
       if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
-        this.setState({showPopup:true,updatedObj: updatedData})
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.confirmUpdateUser(updatedData, true)
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
+        this.setState({ showPopup: true, updatedObj: updatedData })
 
       } else {
 
@@ -1193,16 +1185,18 @@ class UserRegistration extends Component {
           this.setState({ isLoader: false })
           Toaster.success(MESSAGES.ADD_USER_SUCCESSFULLY)
           this.cancel();
+        } else if (res) {
+          this.setState({ isLoader: false })
         }
       })
     }
   }
-  
-  onPopupConfirm = ()=>{ 
+
+  onPopupConfirm = () => {
     this.confirmUpdateUser(this.state.updatedObj, true)
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   handleKeyDown = function (e, cb) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1921,8 +1915,8 @@ class UserRegistration extends Component {
           </div>
         </div>
         {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`}  />
-                }
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
+        }
       </div>
     );
   }

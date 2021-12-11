@@ -67,6 +67,7 @@ import {
   GET_COSTING_SPECIFIC_TECHNOLOGY,
   SET_PLASTIC_ARR,
   SET_ASSEM_BOP_CHARGE,
+  CHECK_IS_DATA_CHANGE
 } from '../../../config/constants';
 
 const initialState = {
@@ -278,6 +279,7 @@ export default function costingReducer(state = initialState, action) {
       };
     case SET_RMCC_TAB_DATA:
       const tempRMData = [...action.payload]
+      
       return {
         ...state,
         loading: false,
@@ -552,6 +554,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         getAssemBOPCharge: action.payload
+      }
+    case CHECK_IS_DATA_CHANGE:
+      return{
+        ...state,
+        loading:false,
+        checkIsDataChange:action.payload
       }
     default:
       return state

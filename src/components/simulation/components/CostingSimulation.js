@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
-// import ViewAssembly from './ViewAssembly';
+import ViewAssembly from './ViewAssembly';
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -81,6 +81,7 @@ function CostingSimulation(props) {
     })
     const [amendmentDetails, setAmendmentDetails] = useState({})
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
+    const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
 
     const dispatch = useDispatch()
 
@@ -187,6 +188,8 @@ function CostingSimulation(props) {
     }
 
     const viewAssembly = (cell, row, rowIndex) => {
+        const data = { row: row }
+        setDataForAssemblyImpact(data)
         setShowViewAssemblyDrawer(true)
     }
 
@@ -196,7 +199,7 @@ function CostingSimulation(props) {
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
-                <button className="View" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }} />
+                <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
 
             </>
         )
@@ -628,8 +631,8 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='New Other Cost'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
-                                                    <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
-
+                                                    <AgGridColumn width={150} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    {/* </>} */}
                                                 </AgGridReact>
 
                                                 <div className="paging-container d-inline-block float-right">
@@ -730,14 +733,15 @@ function CostingSimulation(props) {
                     isSimulation={true}
                 />
             }
-            {/* {showViewAssemblyDrawer &&
+             {showViewAssemblyDrawer &&
                 <ViewAssembly
                     isOpen={showViewAssemblyDrawer}
                     closeDrawer={closeAssemblyDrawer}
                     // approvalData={approvalData}
                     anchor={'bottom'}
-                />
-            } */}
+                    dataForAssemblyImpact={dataForAssemblyImpact}
+                    vendorIdState={vendorIdState} />
+            }
         </>
 
     );

@@ -40,6 +40,7 @@ export const maxLength30 = maxLength(30);
 export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
 export const maxLength70 = maxLength(71);
+export const maxLength85 = maxLength(85);
 export const maxLength100 = maxLength(100);
 export const maxLength200 = maxLength(200);
 export const maxLength250 = maxLength(250);
@@ -333,6 +334,7 @@ export const CheckIsCostingDateSelected = (costingDate) => {
     const IsSelected = DayTime(costingDate).isValid ? true : false;
     if (!IsSelected) {
         Toaster.warning('Please select Costing effective date.')
+
     }
     return !IsSelected;
 }

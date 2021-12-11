@@ -95,14 +95,6 @@ class IndivisualProductListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
     /**
@@ -433,34 +425,6 @@ class IndivisualProductListing extends Component {
                         </div>
                     </Col>
                 </Row>
-
-
-                {/* <BootstrapTable
-                    data={this.props.newPartsListing}
-                    striped={false}
-                    bordered={false}
-                    hover={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${ComponentPart}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
-                {/* <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="DrawingNumber">Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
-
 
                 <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">

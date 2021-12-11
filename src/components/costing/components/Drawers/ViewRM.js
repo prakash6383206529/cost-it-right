@@ -128,9 +128,9 @@ function ViewRM(props) {
                         <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                        <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                         <td><button
                           className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                           type={"button"}
@@ -139,7 +139,7 @@ function ViewRM(props) {
                         /></td>
                         <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                        <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                        <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
 
                       </tr>
@@ -147,7 +147,7 @@ function ViewRM(props) {
                   })}
                   {viewRM.length === 0 && (
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={13}>
                         <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>

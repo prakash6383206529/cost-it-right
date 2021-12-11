@@ -4,14 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
-import { fetchModelTypeAPI,   getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType,  gridDataAdded, } from '../../../actions/Costing';
+import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { getOverheadProfitDataByModelType, gridDataAdded, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
+import { Link } from 'react-scroll'
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -459,7 +460,7 @@ function OverheadProfit(props) {
         const { ProfitRMPercentage } = profitObj;
         const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
         setValue('ProfitRMPercentage', ProfitRMPercentage)
-        setValue('ProfitRMCost', IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost)
+        setValue('ProfitRMCost', checkForDecimalAndNull(IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost), initialConfiguration.NoOfDecimalForPrice)
         setValue('ProfitRMTotalCost', checkForDecimalAndNull(((IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) * calculatePercentage(ProfitRMPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
     }
@@ -525,7 +526,9 @@ function OverheadProfit(props) {
     * @description  USED TO HANDLE MODEL TYPE CHANGE
     */
   const handleModelTypeChange = (newValue, IsDropdownClicked) => {
-    if (IsDropdownClicked && !CostingViewMode) {
+    if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
+
+
       setOverheadObj({})
       setProfitObj({})
       setOverheadValues({}, true)
@@ -645,7 +648,7 @@ function OverheadProfit(props) {
 
       if (dataObj.IsProfitRMApplicable) {
         setValue('ProfitRMPercentage', dataObj.IsProfitRMApplicable ? dataObj.ProfitRMPercentage : '')
-        setValue('ProfitRMCost', headerCosts && IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost)
+        setValue('ProfitRMCost', checkForDecimalAndNull(headerCosts && IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('ProfitRMTotalCost', checkForDecimalAndNull(((IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) * calculatePercentage(dataObj.ProfitRMPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
 
@@ -674,11 +677,11 @@ function OverheadProfit(props) {
 
 
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
-      const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly): headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+      const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
       const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
-      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost +ConversionCostForCalculation : RMBOPCC;
+      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation : RMBOPCC;
       const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0].NetSurfaceTreatmentCost);
-      const NetConversionCost =ConversionCostForCalculation
+      const NetConversionCost = ConversionCostForCalculation
       // START HERE ADD CC IN OVERHEAD
       if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
@@ -962,7 +965,7 @@ function OverheadProfit(props) {
                   defaultValue={modelType.length !== 0 ? modelType : ''}
                   options={renderListing('ModelType')}
                   mandatory={false}
-                  disabled={CostingViewMode || CheckIsCostingDateSelected(CostingEffectiveDate) ? true : false}
+                  disabled={CostingViewMode ? true : false}
                   handleChange={(ModelTypeValues) => {
                     handleModelTypeChange(ModelTypeValues, true)
                   }}
@@ -1743,12 +1746,12 @@ function OverheadProfit(props) {
 
             <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
-                {!CostingViewMode && <button
+                {!CostingViewMode && <Link  to="assembly-costing-header" spy={true} smooth={true} offset={-380}> <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}
-                </button>}
+                </button> </Link>}
               </div>
             </Row>
           </form>

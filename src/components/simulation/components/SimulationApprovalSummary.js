@@ -33,6 +33,7 @@ import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import { Link } from 'react-scroll'
+import AssemblyWiseImpact from './AssemblyWiseImpact';
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -74,6 +75,7 @@ function SimulationApprovalSummary(props) {
     const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
+    const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState({});
 
     const dispatch = useDispatch()
 
@@ -84,7 +86,8 @@ function SimulationApprovalSummary(props) {
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
     const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
-
+    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
 
 
     const { setValue, getValues } = useForm({
@@ -128,6 +131,16 @@ function SimulationApprovalSummary(props) {
 
                 setLoader(false)
             }, 500);
+
+            const valueTemp = {
+                CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
+                impactPartNumber: SimulatedCostingList[0].PartNo,
+                plantCode: SimulatedCostingList[0].PlantCode,
+                vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
+                delta: SimulatedCostingList[0].Variance,
+                quantity: 1
+            }
+            setdataForAssemblyImpactForFg(valueTemp)
         }))
         const obj = {
             approvalTokenNumber: approvalNumber
@@ -147,21 +160,23 @@ function SimulationApprovalSummary(props) {
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
-        if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
-            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                const Data = res.data.Data.ImpactedMasterDataList
-                const masterId = res.data.Data.SimulationTechnologyId;
+        if (effectiveDate && costingList && simulationDetail.SimulationId) {
+            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
+                dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                    const Data = res.data.Data.ImpactedMasterDataList
+                    const masterId = res.data.Data.SimulationTechnologyId;
 
-                if (res) {
-                    setImpactedMasterDataListForLastRevisionData(Data)
-                    setShowLastRevisionData(true)
-                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+                    if (res) {
+                        setImpactedMasterDataListForLastRevisionData(Data)
+                        setShowLastRevisionData(true)
+                        setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
 
-                }
-            }))
-            // }
-            // if (simulationDetail.SimulationId) {
-            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                    }
+                }))
+                // }
+                // if (simulationDetail.SimulationId) {
+                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+            }
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
@@ -640,7 +655,7 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`No. Of Costing:`}</span>
+                                                <span className="d-block grey-text">{`No. of Costing:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
                                             </th>
                                             <th className="align-top">
@@ -708,7 +723,23 @@ function SimulationApprovalSummary(props) {
                             DisplayCompareCosting={DisplayCompareCosting}
 
                             SimulationId={simulationDetail.SimulationId} />
-
+                        <Row >
+                            <Col md="12">
+                                <div className="left-border">{'Assembly wise Impact:'}</div>
+                            </Col>
+                        </Row>
+                        {/* <Fgwiseimactdata
+                            headerName={headerNameAssembly}
+                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                            vendorIdState={costingList[0]?.VendorId}
+                            impactType={'AssemblySummary'}
+                        /> */}
+                        <AssemblyWiseImpact
+                            headerName={headerNameAssembly}
+                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                            vendorIdState={costingList[0]?.VendorId}
+                            impactType={'AssemblySummary'}
+                        />
                         {/* FG wise Impact section end */}
 
                         <Row>

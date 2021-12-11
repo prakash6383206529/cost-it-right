@@ -58,7 +58,6 @@ function SurfaceTreatment(props) {
       const surfaceTabData= SurfaceTabData[0]
       const overHeadAndProfitTabData=OverheadProfitTabData[0]
       const discountAndOtherTabData =DiscountCostData[0]
-      console.log('tabData: ', tabData);
       let requestData = {
         "CostingId": item.CostingId,
         "PartId": item.PartId,
@@ -76,32 +75,34 @@ function SurfaceTreatment(props) {
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
           "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
           "TransportationCost": item.CostingPartDetails.TransportationCost,
-          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly,
-          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TotalTransportationCostPerAssembly,
+          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TransportationCost,
           "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
       }
       let assemblyWorkingRow=[]
       surfaceTabData && surfaceTabData.CostingChildPartDetails && surfaceTabData.CostingChildPartDetails.map((item)=>{
-        let subAssemblyObj ={
-        "CostingId":item.CostingId,
-        "CostingNumber": "", // Need to find out how to get it.
-        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +item.CostingPartDetails?.TotalBoughtOutPartCost+item.CostingPartDetails?.TotalConversionCost,
-        "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
-        "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
-        "TotalOperationCostComponent": item.CostingPartDetails?.TotalOperationCostComponent,
-        "SurfaceTreatmentCostPerAssembly":item.CostingPartDetails?.SurfaceTreatmentCost,
-        "TransportationCostPerAssembly": item.CostingPartDetails?.TransportationCost,
-        "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity
+        if(item.PartType === 'Sub Assembly'){
+          let subAssemblyObj = {
+            "CostingId": item.CostingId,
+            "CostingNumber": "", // Need to find out how to get it.
+            "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+            "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
+            "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
+            "SurfaceTreatmentCostPerAssembly": 0,
+            "TransportationCostPerAssembly": 0,
+            "TotalSurfaceTreatmentCostPerAssembly": 0,
+            "TotalCostINR": netPOPrice
+          }
+          assemblyWorkingRow.push(subAssemblyObj)
+          return assemblyWorkingRow
         }
-        assemblyWorkingRow.push(subAssemblyObj)
-        return assemblyWorkingRow
       })
       let assemblyRequestedData = {
         
@@ -118,8 +119,8 @@ function SurfaceTreatment(props) {
             "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
             "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
             "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
-          "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-          "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
+            "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
             "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
             "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
             "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
@@ -136,7 +137,7 @@ function SurfaceTreatment(props) {
           "LoggedInUserId": loggedInUserId()
         
       }
-      console.log(assemblyRequestedData,"assemblyRequestedData");
+      
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {

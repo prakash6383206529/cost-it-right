@@ -221,16 +221,7 @@ class ViewUserDetails extends Component {
                       >Change Password</a></div>
                   </Col>
                 </Row>
-                <Row className="pt-3">
-                  <Col md="12">
-                    <div className={'left-details'}>
-                      <HeaderTitle
-                        title={'Address:'}
-                        customClass={'Header-address'} />
-                    </div>
-                    <div className={'right-details'}>{address}</div>
-                  </Col>
-                </Row>
+             
                 <Row className="pt-3 drawer-table-sm">
                   <Col md="12">
                     <div className={'left-details'}>

@@ -282,6 +282,7 @@ function Tool(props) {
               {!IsApplicableProcessWise &&
                 <>
                   <Col md="3">
+                    {/* NEED TO ADD TOOL COST HERE AFTER DONE FROM BACKNED                    */}
                     <TextFieldHookForm
                       label="Tool Maintanence Cost"
                       name={`ToolMaintenanceCost`}

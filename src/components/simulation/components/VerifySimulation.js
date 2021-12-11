@@ -258,7 +258,6 @@ function VerifySimulation(props) {
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
-        console.log(selectedRows, 'ROW')
 
     }
 
@@ -428,6 +427,7 @@ function VerifySimulation(props) {
                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                 noRowsOverlayComponentParams={{
                                                     title: EMPTY_DATA,
+                                                    imagClass: "verify-simulation-overlay"
                                                 }}
                                                 frameworkComponents={frameworkComponents}
                                                 // suppressRowClickSelection={true}

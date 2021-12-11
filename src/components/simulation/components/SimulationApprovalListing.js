@@ -20,7 +20,9 @@ import { MESSAGES } from '../../../config/message'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import WarningMessage from '../../common/WarningMessage'
+import { debounce } from 'lodash'
 
 const gridOptions = {};
 
@@ -189,6 +191,7 @@ function SimulationApprovalListing(props) {
 
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        console.log(cell,"CEll")
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={cell} >{row.DisplayStatus}</div>
     }
@@ -223,19 +226,6 @@ function SimulationApprovalListing(props) {
 
         setShowPopup(true)
         setDeletedId(data)
-        const toastrConfirmOptions = {
-            onOk: () => {
-                dispatch(deleteDraftSimulation(data, res => {
-                    if (res.data.Result) {
-                        Toaster.success("Simulation token deleted successfully.")
-                        getTableData()
-                    }
-                }))
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
 
     }
     const onPopupConfirm = () => {
@@ -267,11 +257,7 @@ function SimulationApprovalListing(props) {
         }
         else if (status === APPROVED) {
             return `R`
-        }
-        else if (status === REJECTED) {
-            return ''
-        }
-        else {
+        } else {
             return `U`
         }
 
@@ -486,10 +472,12 @@ function SimulationApprovalListing(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
-    const resetState = () => {
+    const resetState = debounce(() => {
+        getTableData()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-    }
+   
+    },500)
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
@@ -547,7 +535,7 @@ function SimulationApprovalListing(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
-                                    style={{ height: '100%', width: '100%' }}
+                                    style={{ height: '100%', width: '100%',  }}
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
@@ -584,9 +572,11 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
 
 
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
 
 
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' cellRenderer='conditionFormatter' pinned="right" ></AgGridColumn>}
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
@@ -598,7 +588,10 @@ function SimulationApprovalListing(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                {isApprovalDrawer &&
+                                <div className="text-right pb-3 warning-section">
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                                </div>
+                                {approveDrawer &&
                                     <ApproveRejectDrawer
                                         isOpen={isApprovalDrawer}
                                         anchor={'right'}

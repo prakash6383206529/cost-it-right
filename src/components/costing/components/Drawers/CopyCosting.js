@@ -370,24 +370,6 @@ function CopyCosting(props) {
       } else {
         setShowPopup(true)
         setUpdatedObj(obj)
-        const toastrConfirmOptions = {
-          onOk: () => {
-            dispatch(
-              saveCopyCosting(obj, (res) => {
-
-                if ((res.status = 200)) {
-                  Toaster.success("Copy costing done sucessfully!")
-                  const { CostingId, CostingType } = res.data.Data
-                  props.closeDrawer('', CostingId, CostingType)
-
-                }
-              }),
-            ) // for saving data
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />
-        }
-        // return Toaster.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
       }
     }))
 

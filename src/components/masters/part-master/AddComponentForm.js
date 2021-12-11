@@ -11,11 +11,13 @@ import TooltipCustom from '../../common/Tooltip';
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
+    this.myRef = React.createRef();
     this.state = {
       part: [],
       parentPart: [],
       isAddMore: false,
       selectedParts: [],
+
     }
   }
 
@@ -124,10 +126,15 @@ class AddComponentForm extends Component {
       Input: Math.floor(100000 + Math.random() * 900000),
     }
     this.props.getDrawerComponentPartData('', res => { })
+    this.setState({
+      part: []
+
+    })
+    this.props.change('PartNumber', [{ label: '', value: '' }])
+
+    this.myRef.current.select.state.value = []
     if (isAddMore) {
-      this.setState({
-        part: []
-      })
+
       this.props.setChildParts(childData)
     } else {
       this.props.toggleDrawer('', childData)
@@ -178,7 +185,8 @@ class AddComponentForm extends Component {
             <Col md="6">
               <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
-              <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
+              <AsyncSelect name="PartNumber" ref={this.myRef} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {/* <Field
                 name="PartNumber"
                 type="text"
@@ -350,7 +358,7 @@ function mapStateToProps({ part }) {
       ECNNumber: DrawerPartData.ECNNumber,
       RevisionNumber: DrawerPartData.RevisionNumber,
       DrawingNumber: DrawerPartData.DrawingNumber,
-      GroupCode: DrawerPartData.GroupCode,
+      GroupCode: DrawerPartData?.GroupCodeList[0]?.GroupCode,
       BOMNumber: DrawerPartData.BOMNumber,
     }
   }
