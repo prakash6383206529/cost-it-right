@@ -811,32 +811,19 @@ const nccDrawerToggle=()=>{
         EffectiveDate: effectiveDate,
       }
 
-      dispatch(createZBCCosting(data, (res) => {
-        if (res.data.Result) {
-          setPartInfo(res.data.Data)
-          setCostingData({ costingId: res.data.Data.CostingId, type })
-          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
-            setIsCostingViewMode(false)
-            setStepTwo(true)
-            setStepOne(false)
-          }))
-        }
-      }),
-      )
-
-      dispatch(createNCCCosting(data,(res)=>{
-        if (res.data.Result) {
-          setPartInfo(res.data.Data)
-          setCostingData({ costingId: res.data.Data.CostingId, type })
-          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
-            setIsCostingViewMode(false)
-            setStepTwo(true)
-            setStepOne(false)
-          }))
-        }
-      }))
+  
+      // dispatch(createNCCCosting(data,(res)=>{
+      //   if (res.data.Result) {
+      //     setPartInfo(res.data.Data)
+      //     setCostingData({ costingId: res.data.Data.CostingId, type })
+      //     /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
+      //     dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => {
+      //       setIsCostingViewMode(false)
+      //       setStepTwo(true)
+      //       setStepOne(false)
+      //     }))
+      //   }
+      // }))
     }
     
     else {
@@ -1008,12 +995,12 @@ const nccDrawerToggle=()=>{
     if(type === NCC){
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
-        setTimeout(() => {
-          setStepTwo(true)
-          setStepOne(false)
-        }, 500)
-      }))
+      // dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+      //   setTimeout(() => {
+      //     setStepTwo(true)
+      //     setStepOne(false)
+      //   }, 500)
+      // }))
     }
   }
 
@@ -1938,7 +1925,7 @@ const nccDrawerToggle=()=>{
                     {/* ****************************************NCC UI HERE************************************************************* */}
               {IsOpenVendorSOBDetails && (
                       <>
-                        <Row className="align-items-center">
+                        {/* <Row className="align-items-center">
                           <Col md={'6'} className={"mb-2 mt-3"}>
                             <h6 className="dark-blue-text sec-heading">Vendor or Plant:</h6>
                           </Col>
@@ -1955,10 +1942,10 @@ const nccDrawerToggle=()=>{
                               ""
                             )}
                           </Col>
-                        </Row>
+                        </Row> */}
 
                         {/* NCC PLANT GRID FOR COSTING */}
-                        <Row>
+                        {/* <Row>
                           <Col md="12" className={"costing-table-container"}>
                             <Table
                               className="table cr-brdr-main costing-table-next costing-table-vbc"
@@ -2036,10 +2023,11 @@ const nccDrawerToggle=()=>{
                               </tbody>
                             </Table>
                           </Col>
-                        </Row>
+                        </Row> */}
                       </>
                     )}
 
+                    {/* ******************************************************VBC UI HERE *********************************************************************** */}
                   
                     {IsOpenVendorSOBDetails && (
                       <>
