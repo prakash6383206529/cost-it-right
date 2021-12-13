@@ -18,8 +18,7 @@ import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
-import redcrossImg from '../../../../assests/images/red-cross.png';
-import { Link } from 'react-scroll'
+import redcrossImg from '../../../../assests/images/red-cross.png'
 
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -464,6 +463,8 @@ function TabDiscountOther(props) {
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      Toaster.warning("File size greater than 5mb not allowed")
     }
   }
 
@@ -610,7 +611,7 @@ function TabDiscountOther(props) {
 
   return (
     <>
-      <div className="login-container signup-form" id="discount-costing-tab">
+      <div className="login-container signup-form">
         <div className="p-3 costing-border w-100 border-top-0">
           <Row>
             <Col md="12">
@@ -915,11 +916,6 @@ function TabDiscountOther(props) {
 
                     <Col md="3" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
-                      {/* {files && files.length >= 4 ? (
-                        <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit has been reached.
-                        </div>
-                      ) : ( */}
                       <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                         Maximum file upload limit has been reached.
                       </div>
@@ -933,7 +929,7 @@ function TabDiscountOther(props) {
                           accept="*"
                           initialFiles={initialFiles}
                           maxFiles={4}
-                          maxSizeBytes={2000000000}
+                          maxSizeBytes={20000000}
                           inputContent={(files, extra) =>
                             extra.reject ? (
                               "Image, audio and video files only"
@@ -961,7 +957,6 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                         />
                       </div>
-                      {/* )} */}
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
@@ -986,12 +981,10 @@ function TabDiscountOther(props) {
                       </div>
                     </Col>
                   </Row>
-
-
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
-                      {!CostingViewMode &&<button
+                      {!CostingViewMode && <button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
                         onClick={() => setGoToNext(false)}

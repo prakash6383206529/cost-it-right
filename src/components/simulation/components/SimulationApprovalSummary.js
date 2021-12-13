@@ -29,8 +29,9 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import redcrossImg from '../../../assests/images/red-cross.png'
-import { Link } from 'react-scroll'
 import AssemblyWiseImpact from './AssemblyWiseImpact';
+import { Link } from 'react-scroll';
+import ScrollToTop from '../../common/ScrollToTop';
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -87,6 +88,7 @@ function SimulationApprovalSummary(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+    
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -564,9 +566,10 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page">
+                    <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
                         {/* <Errorbox customClass="" errorText="There is some error in your page" /> */}
                         <h2 className="heading-main">Approval Summary</h2>
+                        <ScrollToTop pointProp={"go-to-top"}/>
                         <Row>
                             <Col md="8">
                                 <div className="left-border">
@@ -712,6 +715,7 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'Assembly wise Impact:'}</div>
                             </Col>
                         </Row>
+                        {/* ********** THIS NEEDS TO BE KEPT IN CODE FOR FUTURE PURPOSES ***********/}
                         {/* <Fgwiseimactdata
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}

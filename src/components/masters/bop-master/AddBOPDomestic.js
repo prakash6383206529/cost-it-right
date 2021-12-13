@@ -466,6 +466,9 @@ class AddBOPDomestic extends Component {
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      this.dropzone.current.files.pop()
+      Toaster.warning("File size greater than 2 mb not allowed")
     }
   }
 
@@ -1045,12 +1048,6 @@ class AddBOPDomestic extends Component {
                             <label>
                               Upload Files (upload up to 3 files)
                             </label>
-                            {/* {this.state.files &&
-                              this.state.files.length >= 3 ? (
-                              <div class="alert alert-danger" role="alert">
-                                Maximum file upload limit has been reached.
-                              </div>
-                            ) : ( */}
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit has been reached.
                             </div>
@@ -1095,7 +1092,6 @@ class AddBOPDomestic extends Component {
                                 classNames="draper-drop"
                               />
                             </div>
-                            {/* )} */}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>

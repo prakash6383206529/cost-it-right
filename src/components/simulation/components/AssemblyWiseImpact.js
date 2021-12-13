@@ -54,6 +54,7 @@ function AssemblyWiseImpact(props) {
     const onGridReady = (params) => {
         setgridApi(params.api);
 
+        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
