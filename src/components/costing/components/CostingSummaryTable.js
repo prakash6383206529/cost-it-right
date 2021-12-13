@@ -304,9 +304,11 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createZBCCosting(data, (res) => {
         if (res.data.Result) {
-          setPartInfo(res.data.Data)
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-          showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => { 
+            setPartInfo(res.data.Data)
+
+            showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
+          }))
         }
       }),
       )
@@ -323,9 +325,9 @@ const CostingSummaryTable = (props) => {
         VendorPlantCode: tempData.vendorPlantCode,
         VendorName: tempData.vendorName,
         VendorCode: tempData.vendorCode,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantId : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantName : '',
-        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantCode : '',
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData.destinationPlantId : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData.destinationPlantName : '',
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData.destinationPlantCode : '',
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.shareOfBusinessPercent,
@@ -339,12 +341,14 @@ const CostingSummaryTable = (props) => {
         Price: partInfo.Price,
         EffectiveDate: partInfo.EffectiveDate,
       }
-
+      dispatch(getZBCCostingByCostingId('', (res) => { }))
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-          setPartInfo(res.data.Data)
-          showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
+          console.log('res: ', res);
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => { 
+            showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
+            setPartInfo(res.data.Data)
+          }))
         }
       }),
       )
@@ -783,7 +787,7 @@ const CostingSummaryTable = (props) => {
                                   <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   <span class="d-block">{data.partId}</span>
                                   <span class="d-block">{data.partName}</span>
-                                  <span class="d-block">{data.plantName}</span>
+                                  <span class="d-block">{data.zbc === 0 ? data.plantName:data.destinationPlantName}</span>
 
                                 </td>
                               )
