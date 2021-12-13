@@ -8,6 +8,7 @@ import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectLi
 import { getVBCDetailByVendorId, } from '../actions/Costing';
 import { checkVendorPlantConfigurable, getConfigurationKey, getVendorCode, } from '../../../helper';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
+import WarningMessage from '../../common/WarningMessage';
 
 function AddVendorDrawer(props) {
 
@@ -39,7 +40,6 @@ function AddVendorDrawer(props) {
     { initialConfiguration?.IsDestinationPlantConfigure === false && setSelectedVendors(tempArr) }
 
   }, []);
-
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -251,8 +251,14 @@ function AddVendorDrawer(props) {
                       errors={errors.VendorPlant}
                     />
                   </Col>}
-              </Row>
 
+              </Row>
+              <Row>
+                <Col md="12" className="mt-n2" className="re-warning">
+                <WarningMessage   message={`If you have different prices settled at different plants, use plant code 2000` } />
+                </Col>
+                </Row>
+              
               <Row className="justify-content-between">
                 <div className="col-sm-12 text-right">
                   <button

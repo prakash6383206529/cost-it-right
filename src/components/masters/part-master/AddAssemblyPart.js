@@ -625,7 +625,6 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
-    console.log('this.dropzone?.current?.files: ', this.dropzone?.current?.files);
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
