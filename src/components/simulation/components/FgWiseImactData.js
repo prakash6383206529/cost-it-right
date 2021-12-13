@@ -107,7 +107,7 @@ export function Fgwiseimactdata(props) {
                                             return (
                                                 <tr className="accordian-content">
                                                     <td><span>{item.PartNumber}</span></td>
-                                                    <td className="text-center"><span>{item.ECNNumber}</span></td>
+                                                    <td className="text-center"><span>{item.RevisionNumber}</span></td>
                                                     <td><span>{item.PartName}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
