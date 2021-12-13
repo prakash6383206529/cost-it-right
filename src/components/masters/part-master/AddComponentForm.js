@@ -183,7 +183,6 @@ class AddComponentForm extends Component {
           <Row>
 
             <Col md="6">
-              <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
               <AsyncSelect name="PartNumber" ref={this.myRef} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
