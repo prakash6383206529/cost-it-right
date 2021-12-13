@@ -942,7 +942,7 @@ function OverheadProfit(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <form noValidate className="form" >
+          <form noValidate className="form">
             <Row>
               <Col md="12">
                 <div className="left-border">
@@ -1746,13 +1746,13 @@ function OverheadProfit(props) {
 
             <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
-                {!CostingViewMode && <button
+                {!CostingViewMode && <Link  to="assembly-costing-header" spy={true} smooth={true} offset={-330}  delay={200}> <button
                   type={'submit'}
                   onClick={handleSubmit(onSubmit)}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}
-                </button>}
+                </button></Link>}
               </div>
             </Row>
           </form>
