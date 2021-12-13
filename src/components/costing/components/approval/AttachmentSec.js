@@ -21,11 +21,11 @@ function AttachmentSec(props) {
     const dropzoneOthers = useRef(null);
     const dropzoneAttachments = useRef(null);
     const { token, type, Attachements, showAttachment } = props
-    const [acc1, setAcc1] = useState(false)
-    const [acc2, setAcc2] = useState(false)
-    const [acc3, setAcc3] = useState(false)
-    const [acc4, setAcc4] = useState(false)
-    const [acc5, setAcc5] = useState(false)
+    const [acc1, setAcc1] = useState(!showAttachment?false:true)
+    const [acc2, setAcc2] = useState(!showAttachment?false:true)
+    const [acc3, setAcc3] = useState(!showAttachment?false:true)
+    const [acc4, setAcc4] = useState(!showAttachment?false:true)
+    const [acc5, setAcc5] = useState(!showAttachment?false:true)
 
     const [files, setFiles] = useState([]);
     const [supplierFiles, setSupplierFiles] = useState([]);
@@ -414,13 +414,13 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">{IMPACT_SHEET}</h6></Col>
                     <Col md="4" className="text-right p-0">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                      {!showAttachment && <button  className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
                             {acc1 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
                                 <i className="fa fa-plus"></i>
                             )}
-                        </button>
+                        </button>}
                     </Col>
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
@@ -501,13 +501,14 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">{SUPPLIER_CONFRIM}</h6></Col>
                     <Col md="4" className="text-right p-0">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                     {!showAttachment&&   <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
                             {acc2 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
                                 <i className="fa fa-plus"></i>
                             )}
                         </button>
+                        }
                     </Col>
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
@@ -588,7 +589,7 @@ function AttachmentSec(props) {
             <div className="col-md-12 drawer-attachment">
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">{INVOICE_BACKUP}</h6></Col>
-                    <Col md="4" className="text-right p-0">
+                    {!showAttachment && <Col md="4" className="text-right p-0">
                         <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc3(!acc3) }}>
                             {acc3 ? (
                                 <i className="fa fa-minus" ></i>
@@ -596,7 +597,7 @@ function AttachmentSec(props) {
                                 <i className="fa fa-plus"></i>
                             )}
                         </button>
-                    </Col>
+                    </Col>}
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
                     {acc3 && <>
@@ -676,13 +677,13 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">Others</h6></Col>
                     <Col md="4" className="text-right p-0">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+                    {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
                             {acc4 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
                                 <i className="fa fa-plus"></i>
                             )}
-                        </button>
+                        </button> }
                     </Col>
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
@@ -763,13 +764,13 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">Attachments</h6></Col>
                     <Col md="4" className="text-right p-0">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
+                       {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
                             {acc5 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
                                 <i className="fa fa-plus"></i>
                             )}
-                        </button>
+                        </button>}
                     </Col>
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
