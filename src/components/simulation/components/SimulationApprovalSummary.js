@@ -885,7 +885,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         <Row>
                             <Col md="10 mb-3">
-                                <div className="left-border">{'Attachment:'}</div>
+                                <div className="left-border">{'Attachments:'}</div>
                             </Col>
                             <Col md="12" className="pr-0">
                                 <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} showAttachment={true} />
