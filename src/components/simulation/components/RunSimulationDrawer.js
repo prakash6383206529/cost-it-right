@@ -33,9 +33,7 @@ function RunSimulationDrawer(props) {
 
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
-    const [warningMessage, setWarningMessage] = useState(false)
     const [selectedDate, setSelectedDate] = useState('')
-    const [sample, setsample] = useState('')
     const [selectedData, setSelectedData] = useState([])
     const [provisionalCheck, setProvisionalCheck] = useState(false)
     const [inputOtherCost, setInputOtherCost] = useState(false)
@@ -43,7 +41,7 @@ function RunSimulationDrawer(props) {
     const [disableDiscountAndOtherCost, setDisableDiscountAndOtherCost] = useState(false)
     const [disableAdditionalDiscount, setDisableAdditionalDiscount] = useState(false)
     const [disableAdditionalOtherCost, setDisableAdditionalOtherCost] = useState(false)
-    const [toggleSwitchLabel, setToggleSwitchLabel] = useState(false)
+    const [toggleSwitchAdditionalOtherCOst, setToggleSwitchAdditionalOtherCOst] = useState(false)
     const [toggleSwitchAdditionalDiscount, setToggleSwitchAdditionalDiscount] = useState(false)
 
 
@@ -184,9 +182,9 @@ function RunSimulationDrawer(props) {
         obj.IsDiscountAndOtherCost = DiscountOtherCost
         obj.IsAdditionalDiscount = AdditionalDiscount
         obj.IsAdditionalOtherCost = AdditionalOtherCost
-        obj.AdditionalOtherValue = toggleSwitchLabel ? getValues("OtherCostPercent") : getValues("OtherCost")
-        obj.AdditionalDiscountPercentage = toggleSwitchAdditionalDiscount === true ? getValues("DiscountPercent") : getValues("Discount")
-        obj.IsAdditionalOtherCostPercentage = toggleSwitchLabel
+        obj.AdditionalOtherValue = toggleSwitchAdditionalOtherCOst ? getValues("OtherCostPercent") : getValues("OtherCost")                  // if toggleSwitchAdditionalOtherCOst==true then we will fetch percent value else (fixed value)
+        obj.AdditionalDiscountPercentage = toggleSwitchAdditionalDiscount === true ? getValues("DiscountPercent") : getValues("Discount")        // if toggleSwitchAdditionalDiscount==true then we will fetch discount percent value else fixed value
+        obj.IsAdditionalOtherCostPercentage = toggleSwitchAdditionalOtherCOst
         obj.IsAdditionalDiscountPercentage = toggleSwitchAdditionalDiscount
 
         // obj.IsProvisional = provisionalCheck
@@ -304,7 +302,7 @@ function RunSimulationDrawer(props) {
         setSelectedDate(date)
     }
     const onChange = () => {
-        setToggleSwitchLabel(!toggleSwitchLabel)
+        setToggleSwitchAdditionalOtherCOst(!toggleSwitchAdditionalOtherCOst)
 
     }
 
@@ -387,7 +385,7 @@ function RunSimulationDrawer(props) {
 
                                                                                 <Switch
                                                                                     onChange={onChange}
-                                                                                    checked={toggleSwitchLabel}
+                                                                                    checked={toggleSwitchAdditionalOtherCOst}
                                                                                     id="normal-switch"
                                                                                     disabled={false}
                                                                                     background="#4DC771"
@@ -403,7 +401,7 @@ function RunSimulationDrawer(props) {
                                                                             </label>
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
-                                                                            {toggleSwitchLabel &&
+                                                                            {toggleSwitchAdditionalOtherCOst &&           // input field to fetch percent value
                                                                                 <TextFieldHookForm
                                                                                     label=""
                                                                                     name={"OtherCostPercent"}
@@ -432,7 +430,7 @@ function RunSimulationDrawer(props) {
                                                                                 />
                                                                             }
 
-                                                                            {!toggleSwitchLabel &&
+                                                                            {!toggleSwitchAdditionalOtherCOst &&   //// input field to fetch fixed value
                                                                                 <TextFieldHookForm
                                                                                     label=""
                                                                                     name={"OtherCost"}
@@ -483,7 +481,7 @@ function RunSimulationDrawer(props) {
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
 
-                                                                            {toggleSwitchAdditionalDiscount === true &&
+                                                                            {toggleSwitchAdditionalDiscount === true &&  // input field to fetch percent value
                                                                                 <>
 
                                                                                     <TextFieldHookForm
@@ -517,7 +515,7 @@ function RunSimulationDrawer(props) {
 
 
 
-                                                                            {toggleSwitchAdditionalDiscount === false &&
+                                                                            {toggleSwitchAdditionalDiscount === false &&    // input field to fetch fixed value
                                                                                 <>
 
                                                                                     <TextFieldHookForm
