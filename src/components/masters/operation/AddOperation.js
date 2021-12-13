@@ -655,6 +655,8 @@ class AddOperation extends Component {
                           optionLabel={(option) => option.Text}
                           component={renderMultiSelectField}
                           mendatory={true}
+                          required={true}
+                          validate={[required]}
                           className="multiselect-with-border"
                           disabled={isEditFlag ? true : false}
                         />
@@ -718,6 +720,7 @@ class AddOperation extends Component {
                             optionValue={(option) => option.Value}
                             optionLabel={(option) => option.Text}
                             component={renderMultiSelectField}
+                            validate={[required]}
                             mendatory={true}
                             className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
@@ -877,7 +880,7 @@ class AddOperation extends Component {
                           onChange={this.onPressSurfaceTreatment}
                         >
                           Surface Treatment Operation
-                              <input
+                          <input
                             type="checkbox"
                             checked={this.state.isSurfaceTreatment}
                             disabled={isEditFlag ? true : false}
@@ -950,10 +953,10 @@ class AddOperation extends Component {
                                 Drag and Drop or{" "}
                                 <span className="text-primary">
                                   Browse
-                          </span>
+                                </span>
                                 <br />
-                          file to upload
-                        </span>
+                                file to upload
+                              </span>
                             </div>))}
                             styles={{
                               dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
