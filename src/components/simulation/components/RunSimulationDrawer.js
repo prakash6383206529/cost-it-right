@@ -48,6 +48,7 @@ function RunSimulationDrawer(props) {
 
 
     const [linkingTokenNumber, setLinkingTokenNumber] = useState('')
+    const [runSimulationDisable, setRunSimulationDisable] = useState(false)
 
 
 
@@ -160,9 +161,9 @@ function RunSimulationDrawer(props) {
     const IsAvailable = (id) => { }
 
     const SimulationRun = debounce(handleSubmit(() => {
+        setRunSimulationDisable(true)
+
         let obj = {}
-
-
 
         const Overhead = selectedData.includes("Overhead")
         const Profit = selectedData.includes("Profit")
@@ -579,7 +580,7 @@ function RunSimulationDrawer(props) {
                                     <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
                                         <div className="col-md-12 ">
                                             <div className="text-right px-2">
-                                                <button type="button" className="user-btn mr5 save-btn" onClick={SimulationRun}>
+                                                <button type="button" className="user-btn mr5 save-btn" onClick={SimulationRun} disabled={runSimulationDisable}>
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}
                                                     {"RUN SIMULATION"}
