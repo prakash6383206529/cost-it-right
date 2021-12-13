@@ -259,6 +259,7 @@ export default function costingReducer(state = initialState, action) {
         partInfo: action.payload
       };
     case GET_COSTING_DATA_BY_COSTINGID:
+
       return {
         ...state,
         loading: false,
