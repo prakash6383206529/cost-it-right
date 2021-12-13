@@ -678,7 +678,6 @@ function ApproveRejectDrawer(props) {
       dropzone.current.files.pop()
     }
   }
-  console.log(dropzone?.current?.files, 'dropzone.current.filesdropzone.current.files');
   return (
     <>
       <Drawer
