@@ -8,11 +8,8 @@ import AssemblyPartListing from './AssemblyPartListing';
 import IndivisualPartListing from './IndivisualPartListing';
 import { MASTERS, PART } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
-import { getConfigurationKey } from '../../../helper/auth'
 import FetchDrawer from './FetchBOMDrawer'
 
 class PartMaster extends Component {
@@ -188,12 +185,13 @@ class PartMaster extends Component {
                                     </NavLink>
                                 </NavItem>
                                 {/* {getConfigurationKey().IsVendorPlantConfigurable && <NavItem> */}
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                        Manage Products
-                                    </NavLink>
-                                </NavItem>
-
+                                {initialConfiguration?.IsProductMasterConfigurable &&
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                            Manage Products
+                                        </NavLink>
+                                    </NavItem>
+                                }
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 {this.state.activeTab === '1' &&

@@ -712,6 +712,7 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'Assembly wise Impact:'}</div>
                             </Col>
                         </Row>
+                        {/* ********** THIS NEEDS TO BE KEPT IN CODE FOR FUTURE PURPOSES ***********/}
                         {/* <Fgwiseimactdata
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}

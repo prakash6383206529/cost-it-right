@@ -904,11 +904,6 @@ function ApproveRejectDrawer(props) {
                       {<>
                         <Col md="12" className="p-0">
                           <label>Upload Attachment (upload up to 2 files)</label>
-                          {/* {files && files.length >= 2 ? (
-                            <div class="alert alert-danger" role="alert">
-                              Maximum file upload limit has been reached.
-                            </div>
-                          ) : ( */}
                           <div className={`alert alert-danger mt-2 ${files.length === 2 ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit has been reached.
                           </div>
@@ -950,7 +945,6 @@ function ApproveRejectDrawer(props) {
                               disabled={type === 'Sender' ? false : true}
                             />
                           </div>
-                          {/* )} */}
                         </Col>
                         <div className="w-100">
                           <div className={"attachment-wrapper mt-0 mb-3"}>
