@@ -919,11 +919,6 @@ function TabDiscountOther(props) {
 
                     <Col md="3" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
-                      {/* {files && files.length >= 4 ? (
-                        <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit has been reached.
-                        </div>
-                      ) : ( */}
                       <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                         Maximum file upload limit has been reached.
                       </div>
@@ -965,7 +960,6 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                         />
                       </div>
-                      {/* )} */}
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
