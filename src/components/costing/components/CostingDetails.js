@@ -811,6 +811,7 @@ const nccDrawerToggle=()=>{
         EffectiveDate: effectiveDate,
       }
 
+      // remove it
       dispatch(createZBCCosting(data, (res) => {
         if (res.data.Result) {
           setPartInfo(res.data.Data)
@@ -1959,7 +1960,7 @@ const nccDrawerToggle=()=>{
                       <>
                         <Row className="align-items-center">
                           <Col md={'6'} className={"mb-2 mt-3"}>
-                            <h6 className="dark-blue-text sec-heading">Vendor or Plant:</h6>
+                            <h6 className="dark-blue-text sec-heading">NCC:</h6>
                           </Col>
                           <Col md="6" className={"mb-2 mt-3"}>
                             {nccGrid && nccGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (

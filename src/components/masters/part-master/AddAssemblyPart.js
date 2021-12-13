@@ -114,7 +114,9 @@ class AddAssemblyPart extends Component {
               item.meta.status = 'done'
               return item
             })
-            this.dropzone.current.files = files
+            if (this.dropzone.current !== null) {
+              this.dropzone.current.files = files
+            }
 
           }, 200)
         }
@@ -380,6 +382,11 @@ class AddAssemblyPart extends Component {
     } else if (status === 'error_file_size') {
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      this.dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 

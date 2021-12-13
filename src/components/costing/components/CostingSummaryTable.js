@@ -362,12 +362,19 @@ const CostingSummaryTable = (props) => {
     let tempData = viewCostingData[index]
     const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => { }))
-      showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
+      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
+
+        showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
+       }))
     }
     if (type === VBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => { }))
-      showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
+      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => { 
+        setTimeout(() => {
+          
+          showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
+        }, 500);
+
+      }))
     }
   }
 

@@ -47,7 +47,7 @@ function Icc(props) {
 
 
     useEffect(() => {
-        if (IsInventoryApplicable === true) {
+        if (IsInventoryApplicable === true && Object.keys(costData).length >0) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor,
