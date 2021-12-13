@@ -17,7 +17,6 @@ import { FILE_URL ,ZBC} from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const selector = formValueSelector('AddOverhead');
@@ -26,6 +25,8 @@ class AddOverhead extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
+    this.dropzone = React.createRef();
     this.state = {
       OverheadID: '',
       costingHead: 'zero',
@@ -160,6 +161,15 @@ class AddOverhead extends Component {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
             })
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            this.dropzone.current.files = files
+
           }, 500)
         }
       })
@@ -445,11 +455,33 @@ class AddOverhead extends Component {
 
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file, remove }, status) => {
+
     const { files, } = this.state;
 
     if (status === 'removed') {
-      const removedFileName = file.name;
-      let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
+      this.deleteFile(
+        file.id,
+        file.name
+      )
+
+      let tempArr = files.filter(item => item.OriginalFileName === file.name)
+      let FileId = tempArr.FileId
+      let OriginalFileName = tempArr.OriginalFileName
+      if (FileId != null) {
+        let deleteData = {
+          Id: FileId,
+          DeletedBy: loggedInUserId(),
+        }
+        this.props.fileDeleteOverhead(deleteData, (res) => {
+          Toaster.success('File has been deleted successfully.')
+          let tempArr = this.state.files.filter(item => item.FileId !== FileId)
+          this.setState({ files: tempArr })
+        })
+      }
+      if (FileId == null) {
+        let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+        this.setState({ files: tempArr })
+      }
       this.setState({ files: tempArr })
     }
     if (status === 'done') {
@@ -469,6 +501,10 @@ class AddOverhead extends Component {
     }
   }
 
+  marked = (files, extra) => {
+
+  }
+
   renderImages = () => {
     this.state.files && this.state.files.map(f => {
       const withOutTild = f.FileURL.replace('~', '')
@@ -485,6 +521,8 @@ class AddOverhead extends Component {
   }
 
   deleteFile = (FileId, OriginalFileName) => {
+    let tempArr
+
     if (FileId != null) {
       let deleteData = {
         Id: FileId,
@@ -492,13 +530,18 @@ class AddOverhead extends Component {
       }
       this.props.fileDeleteOverhead(deleteData, (res) => {
         Toaster.success('File has been deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
+        tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
+    }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
     }
   }
 
@@ -553,27 +596,30 @@ class AddOverhead extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant,uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
-      if (values.OverheadPercentage == '') {
+
+
+
+      if (values.OverheadPercentage === '') {
         values.OverheadPercentage = null
       }
-      if (values.OverheadRMPercentage == '') {
+      if (values.OverheadRMPercentage === '') {
         values.OverheadRMPercentage = null
       }
-      if (values.OverheadMachiningCCPercentage == '') {
+      if (values.OverheadMachiningCCPercentage === '') {
         values.OverheadMachiningCCPercentage = null
       }
-      if (values.OverheadBOPPercentage == '') {
+      if (values.OverheadBOPPercentage === '') {
         values.OverheadBOPPercentage = null
       }
 
       if (
-        DropdownChanged && DataToChange.OverheadPercentage == values.OverheadPercentage && DataToChange.OverheadRMPercentage == values.OverheadRMPercentage
-        && DataToChange.OverheadMachiningCCPercentage == values.OverheadMachiningCCPercentage && DataToChange.OverheadBOPPercentage == values.OverheadBOPPercentage
-        && DataToChange.Remark == values.Remark) {
+        DropdownChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
+        && Number(DataToChange.OverheadMachiningCCPercentage) === Number(values.OverheadMachiningCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
+        && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
         this.cancel()
         return false
@@ -610,20 +656,6 @@ class AddOverhead extends Component {
       }
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateOverhead(requestData, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
-                this.cancel();
-              }
-            })
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -999,13 +1031,16 @@ class AddOverhead extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files &&
-                            this.state.files.length >= 3 ? (
-                            <div class="alert alert-danger" role="alert">
-                              Maximum file upload limit has been reached.
-                            </div>
-                          ) : (
+                          {/* {this.state.files &&
+                            this.state.files.length > 3 ? (
+                            <></>
+                          ) : ( */}
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={this.dropzone}
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
@@ -1040,7 +1075,9 @@ class AddOverhead extends Component {
                               }}
                               classNames="draper-drop"
                             />
-                          )}
+                          </div>
+                          {/* </>
+                          // )} */}
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>

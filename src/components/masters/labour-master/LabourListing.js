@@ -151,14 +151,6 @@ class LabourListing extends Component {
    */
   deleteItem = (Id) => {
     this.setState({ showPopup: true, deletedId: Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteItem(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    };
-    // return Toaster.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
   }
 
   /**
@@ -169,12 +161,7 @@ class LabourListing extends Component {
     this.props.deleteLabour(ID, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
-        console.log("deleted");
-        //this.getTableListData(null, null, null, null)
         this.filterList()
-      }
-      else {
-        console.log("not deleted");
       }
     })
     this.setState({ showPopup: false })

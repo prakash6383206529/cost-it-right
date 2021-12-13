@@ -407,14 +407,6 @@ class AddAssemblyProduct extends Component {
   */
   confirmBOMDraft = (updateData) => {
     this.setState({ showPopup: true, updatedObj: updateData })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDraftItem(updateData)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    // return Toaster.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -520,21 +512,6 @@ class AddAssemblyProduct extends Component {
       }
 
       if (isEditFlag) {
-
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateAssemblyPart(updateData, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 

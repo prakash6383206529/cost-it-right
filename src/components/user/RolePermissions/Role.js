@@ -184,14 +184,6 @@ class Role extends Component {
 				Modules: Modules
 			}
 			this.setState({ showPopup: true, updatedObj: updateData })
-			const toastrConfirmOptions = {
-				onOk: () => {
-					this.confirmUpdate(updateData)
-				},
-				onCancel: () => this.clearForm(),
-				component: () => <ConfirmComponent />
-			};
-			// return Toaster.confirm(`${MESSAGES.ROLE_UPDATE_ALERT}`, toastrConfirmOptions);
 
 
 		} else {

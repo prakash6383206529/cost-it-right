@@ -251,14 +251,6 @@ function RMImportListing(props) {
   const deleteItem = (Id) => {
     setShowPopup(true)
     setDeletedId(Id)
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmDelete(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    // return Toaster.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -571,13 +563,6 @@ function RMImportListing(props) {
   */
   const densityAlert = () => {
     setShowPopupBulk(true)
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmDensity()
-      },
-      onCancel: () => { }
-    };
-    // return Toaster.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
   }
 
   const handleHeadChange = (newValue, actionMeta) => {

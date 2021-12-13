@@ -425,10 +425,7 @@ class BOMViewer extends Component {
                                   <span className="flowpoint-header-delete">
                                     <button
                                       onClick={() => this.deleteLevelOne(i)}
-                                    ><img
-                                        src={require("../../../assests/images/times.png")}
-                                        alt="cancel-icon.jpg"
-                                      />
+                                    ><div className="cancel-icon"></div>
                                     </button>
                                   </span>
                                 )}

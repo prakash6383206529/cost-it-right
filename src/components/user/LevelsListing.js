@@ -198,14 +198,6 @@ class LevelsListing extends Component {
 	*/
 	deleteItem = (Id) => {
 		this.setState({showPopup:true, deletedId:Id })
-		const toastrConfirmOptions = {
-			onOk: () => {
-				this.confirmDeleteItem(Id)
-			},
-			onCancel: () => { },
-			component: () => <ConfirmComponent />
-		};
-		// return Toaster.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
 
 	/**
@@ -256,14 +248,6 @@ class LevelsListing extends Component {
 			ModifiedBy: loggedInUserId(),
 			IsActive: !cell, //Status of the user.
 		}
-		const toastrConfirmOptions = {
-			onOk: () => {
-				this.confirmDeactivateItem(data, cell)
-			},
-			onCancel: () => { },
-			component: () => <ConfirmComponent />,
-		};
-		// return Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
 	}
 
 	confirmDeactivateItem = (data, cell) => {
@@ -487,11 +471,12 @@ class LevelsListing extends Component {
 															title: EMPTY_DATA,
 														}}
 														frameworkComponents={frameworkComponents}
+														enableBrowserTooltips={true}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
 														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Tehnology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
 														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
-														<AgGridColumn field="Users" headerName="Users"></AgGridColumn>
+														<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>
 													<div className="paging-container d-inline-block float-right">
 														<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

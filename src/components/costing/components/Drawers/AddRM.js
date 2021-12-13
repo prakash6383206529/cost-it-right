@@ -345,7 +345,7 @@ function AddRM(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD RM'}</h3>
+                    <h3>{'ADD RM: '}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -428,6 +428,7 @@ function AddRM(props) {
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
                           title: EMPTY_DATA,
+                          imagClass: "imagClass"
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={isMultipleRMAllow(costData.TechnologyName) && !IsApplyMasterBatch ? 'multiple' : 'single'}

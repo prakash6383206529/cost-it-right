@@ -102,14 +102,6 @@ class RolesListing extends Component {
   */
   deleteItem = (Id) => {
     this.setState({showPopup:true, deletedId:Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteItem(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    };
-    // return Toaster.confirm(`${MESSAGES.ROLE_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   onPopupConfirm =() => {
@@ -235,23 +227,7 @@ closePopUp= () =>{
           </Row>
           <Row class="">
             <Col className="table-mt-0">
-              {/* <BootstrapTable
-              data={this.state.tableData}
-              striped={false}
-              bordered={false}
-              hover={false}
-              options={options}
-              //search
-              ignoreSinglePage
-              ref={'table'}
-              trClassName={'userlisting-row'}
-              tableHeaderClass='my-custom-header'
-              pagination>
-              <TableHeaderColumn dataField="RoleName" isKey={true} dataAlign="left" dataSort={true}>Role</TableHeaderColumn>
-              <TableHeaderColumn dataField="RoleId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
-
-              <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              <div className="ag-grid-wrapper height-width-wrapper">
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>

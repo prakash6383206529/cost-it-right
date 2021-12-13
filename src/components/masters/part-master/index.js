@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col } from "reactstrap";
 import classnames from 'classnames';
 import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
@@ -13,7 +13,6 @@ import { loggedInUserId } from '../../../helper/auth';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
 import { getConfigurationKey } from '../../../helper/auth'
-
 class PartMaster extends Component {
     constructor(props) {
         super(props);
@@ -31,7 +30,7 @@ class PartMaster extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
-
+            openDrawer: false,
         }
     }
 
@@ -43,6 +42,13 @@ class PartMaster extends Component {
         if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
             this.applyPermission(nextProps.topAndLeftMenuData)
         }
+    }
+
+    toggleFetchDrawer = () => {
+
+        this.setState({
+            openDrawer: false
+        });
     }
 
     /**
@@ -115,6 +121,13 @@ class PartMaster extends Component {
         this.setState({ getDetails: data, isProductForm: true, isAddBOMForm: false, })
     }
 
+    //Open the Fetch Drawer
+
+    openFetchDrawer = () => {
+        this.setState({ openDrawer: true })
+
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -150,7 +163,7 @@ class PartMaster extends Component {
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
-                            <h1>Part Master</h1>
+
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
@@ -208,6 +221,8 @@ class PartMaster extends Component {
                                         />
                                     </TabPane>}
                             </TabContent>
+
+
                         </div>
                     </div >
                 </div>

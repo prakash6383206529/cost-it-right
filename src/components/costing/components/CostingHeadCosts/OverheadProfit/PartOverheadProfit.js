@@ -30,6 +30,7 @@ function PartOverheadProfit(props) {
       BOMLevel: BOMLevel,
       PartNumber: PartNumber,
     }
+
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
@@ -107,7 +108,7 @@ function PartOverheadProfit(props) {
   */
   return (
     <>
-      <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+      <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
         <td>
           <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>

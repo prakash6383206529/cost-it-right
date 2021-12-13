@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useForm, Controller, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -18,9 +18,11 @@ import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
+import { Link } from 'react-scroll'
 
 function TabDiscountOther(props) {
-
+  // ********* INITIALIZE REF FOR DROPZONE ********
+  const dropzone = useRef(null);
   const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -186,7 +188,14 @@ function TabDiscountOther(props) {
                 DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : ''
               }
               props.setHeaderCost(topHeaderData)
-
+              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+              let files = Data.Attachements && Data.Attachements.map((item) => {
+                item.meta = {}
+                item.meta.id = item.FileId
+                item.meta.status = 'done'
+                return item
+              })
+              dropzone.current.files = files
             }, 1500)
           }
         }
@@ -471,10 +480,14 @@ function TabDiscountOther(props) {
       setFiles(tempArr)
       setIsOpen(!IsOpen)
     }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (dropzone?.current !== null) {
+      dropzone.current.files.pop()
+    }
   }
 
   const Preview = ({ meta }) => {
-    const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
         {/* {Math.round(percent)}% */}
@@ -558,13 +571,13 @@ function TabDiscountOther(props) {
           "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
           "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
           "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
-          "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+          "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
           "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
           "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
           "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
           "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
           "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
           "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
           "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
           "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
@@ -594,7 +607,7 @@ function TabDiscountOther(props) {
 
   return (
     <>
-      <div className="login-container signup-form">
+      <div className="login-container signup-form" id="discount-costing-tab">
         <div className="p-3 costing-border w-100 border-top-0">
           <Row>
             <Col md="12">
@@ -933,12 +946,17 @@ function TabDiscountOther(props) {
 
                     <Col md="3" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
-                      {files && files.length >= 4 ? (
+                      {/* {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
                           Maximum file upload limit has been reached.
                         </div>
-                      ) : (
+                      ) : ( */}
+                      <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
+                        Maximum file upload limit has been reached.
+                      </div>
+                      <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
                         <Dropzone
+                          ref={dropzone}
                           getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
@@ -973,7 +991,8 @@ function TabDiscountOther(props) {
                           classNames="draper-drop"
                           disabled={CostingViewMode ? true : false}
                         />
-                      )}
+                      </div>
+                      {/* )} */}
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
@@ -1003,14 +1022,14 @@ function TabDiscountOther(props) {
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
-                      {!CostingViewMode && <button
+                      {!CostingViewMode &&<Link  to="discount-costing-tab" spy={true} smooth={true} offset={-280} duration={600}> <button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
                         onClick={() => setGoToNext(false)}
                       >
                         <div className={"save-icon"}></div>
                         {"Save"}
-                      </button>}
+                      </button> </Link>}
 
                       {!CostingViewMode && <button
                         type="submit"

@@ -1578,7 +1578,6 @@ class AddMoreDetails extends Component {
           },
           onCancel: () => { },
         }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -3170,7 +3169,7 @@ class AddMoreDetails extends Component {
                       <Row>
                         <Col md="12" className="filter-block">
                           <div className="mb-2">
-                            <h5>{'Remarks & Attachment:'}</h5>
+                            <h5>{'Remarks & Attachments:'}</h5>
                           </div>
                         </Col>
                         <Col md="6">

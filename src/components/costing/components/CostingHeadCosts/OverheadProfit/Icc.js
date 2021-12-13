@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import { getInventoryDataByHeads, gridDataAdded, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
@@ -95,30 +95,31 @@ function Icc(props) {
       */
     const checkInventoryApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '') {
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
 
-            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
+            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
             switch (Text) {
                 case 'RM':
-                    setValue('InterestRateCost', headerCosts.NetRawMaterialsCost)
+                    setValue('InterestRateCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'RM + CC':
-                    setValue('InterestRateCost', RMCC)
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'RM + BOP':
-                    setValue('InterestRateCost', RMBOP)
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP), initialConfiguration.NoOfDecimalForPrice)
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'RM + CC + BOP':
-                    setValue('InterestRateCost', (RMBOPCC)) //NEED TO ASK HERE ALSO
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
@@ -128,12 +129,12 @@ function Icc(props) {
                     break;
 
                 case 'Annual ICC (%)':
-                    setValue('InterestRateCost', RMBOPCC) // NEED TO ASK HERE ALSO
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) // NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'Net Cost':
-                    setValue('InterestRateCost', RMBOPCC) //NEED TO ASK HERE ALSO
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
+import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, fileDeleteOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
@@ -19,8 +19,6 @@ import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
@@ -30,6 +28,8 @@ class AddOperation extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
+    this.dropzone = React.createRef();
     this.state = {
       IsVendor: false,
       selectedTechnology: [],
@@ -74,8 +74,6 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    const { data, initialConfiguration } = this.props;
-
     this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getVendorWithVendorCodeSelectList()
@@ -328,6 +326,14 @@ class AddOperation extends Component {
               destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               dataToChange: Data
             })
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            this.dropzone.current.files = files
           }, 500)
 
         }
@@ -418,6 +424,11 @@ class AddOperation extends Component {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
     }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
+    }
   }
 
   Preview = ({ meta }) => {
@@ -504,20 +515,6 @@ class AddOperation extends Component {
           return false
         }
         this.setState({ showPopup: true, updatedObj: updateData })
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateOperationAPI(updateData, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -930,12 +927,17 @@ class AddOperation extends Component {
                       </Col>
                       <Col md="3">
                         <label>Upload Files (upload up to 3 files)</label>
-                        {this.state.files.length >= 3 ? (
+                        {/* {this.state.files.length >= 3 ? (
                           <div class="alert alert-danger" role="alert">
                             Maximum file upload limit has been reached.
                           </div>
-                        ) :
+                        ) : */}
+                        <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                          Maximum file upload limit has been reached.
+                        </div>
+                        <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                           < Dropzone
+                            ref={this.dropzone}
                             getUploadParams={this.getUploadParams}
                             onChangeStatus={this.handleChangeStatus}
                             PreviewComponent={this.Preview}
@@ -960,7 +962,9 @@ class AddOperation extends Component {
                               inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
                             }}
                             classNames="draper-drop"
-                          />}
+                          />
+                        </div>
+                        {/* } */}
                       </Col>
                       <Col md="3">
                         <div className={'attachment-wrapper'}>

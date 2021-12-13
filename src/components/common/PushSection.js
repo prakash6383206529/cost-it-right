@@ -114,15 +114,15 @@ function PushSection(props) {
                         label={"Material Group"}
                         name={"MaterialGroup"}
                         placeholder={"-Select-"}
-                        Controller={Controller}
-                        control={control}
+                        Controller={props.Controller}
+                        control={props.control}
                         rules={{ required: true }}
-                        register={register}
+                        register={props.register}
                         defaultValue={MaterialGroup.length !== 0 ? MaterialGroup : ""}
                         options={renderListing("MaterialGroup")}
                         mandatory={true}
                         handleChange={handleMaterialChange}
-                        errors={errors.MaterialGroup}
+                        errors={props.errors.MaterialGroup}
                     />
 
                 </Col>
@@ -131,15 +131,15 @@ function PushSection(props) {
                         label={"Purchasing Group"}
                         name={"PurchasingGroup"}
                         placeholder={"-Select-"}
-                        Controller={Controller}
-                        control={control}
+                        Controller={props.Controller}
+                        control={props.control}
                         rules={{ required: true }}
-                        register={register}
+                        register={props.register}
                         defaultValue={PurchasingGroup.length !== 0 ? PurchasingGroup : ""}
                         options={renderListing("PurchasingGroup")}
                         mandatory={true}
                         handleChange={handlePurchasingChange}
-                        errors={errors.PurchasingGroup}
+                        errors={props.errors.PurchasingGroup}
                     />
                 </Col>
                 <Col md="6">
@@ -147,15 +147,15 @@ function PushSection(props) {
                         label={"Decimal Option"}
                         name={"DecimalOption"}
                         placeholder={"-Select-"}
-                        Controller={Controller}
-                        control={control}
+                        Controller={props.Controller}
+                        control={props.control}
                         rules={{ required: true }}
-                        register={register}
+                        register={props.register}
                         defaultValue={DecimalOption.length !== 0 ? DecimalOption : ""}
                         options={renderListing("DecimalOption")}
                         mandatory={true}
                         handleChange={handleDecimalOption}
-                        errors={errors.DecimalOption}
+                        errors={props.errors.DecimalOption}
                     />
                 </Col>
             </Row>

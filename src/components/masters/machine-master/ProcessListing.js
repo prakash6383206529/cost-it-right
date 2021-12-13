@@ -216,17 +216,6 @@ class ProcessListing extends Component {
    */
   deleteItem = (Id) => {
     this.setState({ showPopup: true, deletedId: Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDelete(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    }
-    // return Toaster.confirm(
-    //   `${MESSAGES.PROCESS_DELETE_ALERT}`,
-    //   toastrConfirmOptions,
-    // )
   }
 
   /**
@@ -590,28 +579,7 @@ class ProcessListing extends Component {
         </form>
         <Row>
           <Col>
-            {/* <BootstrapTable
-              data={this.props.processList}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${ProcessMaster}.csv`}
-              //ignoreSinglePage
-              ref={'table'}
-              pagination
-            >
-              <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
-
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>

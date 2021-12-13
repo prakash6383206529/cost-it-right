@@ -271,7 +271,6 @@ class SimulationUploadDrawer extends Component {
                             break;
                         case Number(BOPDOMESTIC):
                             resp.rows.map((val, index) => {
-                                console.log(val, 'VAL')
                                 if (index > 0) {
                                     if (val[8] !== '' && val[8] !== undefined) {
                                         basicRateCount = 1
@@ -298,7 +297,6 @@ class SimulationUploadDrawer extends Component {
                             break;
                         case Number(BOPIMPORT):
                             resp.rows.map((val, index) => {
-                                console.log(val, 'VAL')
                                 if (index > 0) {
                                     if (val[8] !== '' && val[8] !== undefined) {
                                         basicRateCount = 1

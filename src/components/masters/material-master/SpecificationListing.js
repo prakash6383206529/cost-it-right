@@ -176,14 +176,6 @@ class SpecificationListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({showPopup:true, deletedId:Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />
-        };
-        // return Toaster.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -296,13 +288,6 @@ class SpecificationListing extends Component {
     */
     densityAlert = () => {
         this.setState({showPopup2:true})
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDensity()
-            },
-            onCancel: () => { }
-        };
-        // return Toaster.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
 
     /**
@@ -468,27 +453,7 @@ class SpecificationListing extends Component {
 
                 <Row>
                     <Col>
-                        {/* <hr /> */}
-                        {/*<BootstrapTable
-                            data={this.props.rmSpecificationList}
-                            striped={false}
-                            bordered={false}
-                            hover={false}
-                            options={options}
-                            search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${RmSpecification}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            pagination>
-                         
-                            <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="RMGrade" dataAlign="left" >Grade</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMSpec" dataAlign="left">Specification</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>  */}
-
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>

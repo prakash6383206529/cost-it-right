@@ -281,6 +281,7 @@ function Tool(props) {
               {/* BELOW CONDITION RENDER WHEN APPLICABILITY IS OVERALL */}
               {!IsApplicableProcessWise &&
                 <>
+                {/* TOOL COST CODE WILL COME HERE */}
                   <Col md="3">
                     <TextFieldHookForm
                       label="Tool Maintanence Cost"

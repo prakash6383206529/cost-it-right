@@ -95,14 +95,6 @@ class IndivisualProductListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
     /**
@@ -434,6 +426,7 @@ class IndivisualProductListing extends Component {
                     </Col>
                 </Row>
 
+<<<<<<< HEAD
 
                 {/* <BootstrapTable
                     data={this.props.newPartsListing}
@@ -463,6 +456,9 @@ class IndivisualProductListing extends Component {
 
 
                 <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+=======
+                <div className="ag-grid-wrapper height-width-wrapper">
+>>>>>>> 2c4c0f63d (removed unused bootstrap code)
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>

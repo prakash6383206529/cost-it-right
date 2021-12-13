@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 
 let counter = 0;
 function OperationCost(props) {
@@ -46,6 +46,10 @@ function OperationCost(props) {
       } else {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
+
+      if(JSON.stringify(gridData) !== JSON.stringify(OldGridData)){
+        dispatch(isDataChange(true))
+      }
     }
 
     selectedIds(gridData)
@@ -71,7 +75,6 @@ function OperationCost(props) {
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
         const OperationCost = WithLaboutCost + WithOutLabourCost;
-        console.log('OperationCost: ', OperationCost);
 
         return {
           IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
@@ -89,7 +92,6 @@ function OperationCost(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
-      console.log('tempArr: ', tempArr);
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))

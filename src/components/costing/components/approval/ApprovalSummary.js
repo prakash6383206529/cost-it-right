@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
-import { checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
+import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
 import { getApprovalSummary } from '../../actions/Approval'
 import { setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
@@ -38,6 +38,7 @@ function ApprovalSummary(props) {
   const [pushButton, setPushButton] = useState(false)
 
 
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
     approvalSummaryHandler()
   }, [])
@@ -113,7 +114,7 @@ function ApprovalSummary(props) {
       }
     }
   }
-  const dataSend=[
+  const dataSend = [
     approvalDetails,
     partDetail
   ]
@@ -290,13 +291,13 @@ function ApprovalSummary(props) {
                           {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}
                         </td> */}
                       <td>
-                        {approvalDetails.OldPOPrice !== null ? approvalDetails.OldPOPrice : '-'}
+                        {approvalDetails.OldPOPrice !== null ? checkForDecimalAndNull(approvalDetails.OldPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
-                        {approvalDetails.NewPOPrice !== null ? approvalDetails.NewPOPrice : '-'}
+                        {approvalDetails.NewPOPrice !== null ? checkForDecimalAndNull(approvalDetails.NewPOPrice, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
-                        {approvalDetails.Variance !== null ? approvalDetails.Variance : '-'}
+                        {approvalDetails.Variance !== null ? checkForDecimalAndNull(approvalDetails.Variance, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>
                       <td>
                         {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
@@ -326,14 +327,14 @@ function ApprovalSummary(props) {
                   <tfoot>
                     <tr>
                       <td colSpan="12">
-                        <span className="grey-text">Reason:</span>
+                        <span className="grey-text">Reason: </span>
                         {approvalDetails.Reason ? approvalDetails.Reason : '-'}
                       </td>
                     </tr>
                     <tr>
                       <td colSpan="12">
-                        <span className="grey-text">Remark:</span>
-                        {approvalDetails.Remark ? approvalDetails.Remark : '-'}{' '}
+                        <span className="grey-text">Remarks: </span>
+                        {approvalDetails.Remark ? approvalDetails.Remark : ' -'}{' '}
                       </td>
                     </tr>
                   </tfoot>
@@ -412,7 +413,7 @@ function ApprovalSummary(props) {
                 <Fragment>
                   <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
                     <div className={"save-icon"}></div>
-                    {"Push"}
+                    {"Repush"}
                   </button>
                 </Fragment>
               </div>
@@ -454,7 +455,7 @@ function ApprovalSummary(props) {
       )}
       {pushButton && (
         <PushButtonDrawer
-        dataSend={dataSend}
+          dataSend={dataSend}
           isOpen={pushButton}
           closeDrawer={closePushButton}
           dataSend={[approvalDetails, partDetail]}
