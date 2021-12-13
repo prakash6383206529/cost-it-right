@@ -45,6 +45,7 @@ function ViewAssembly(props) {
                         {/* <div className={'header-wrapper left'}>
                             <h3>{`Assembly Wise`}</h3>
                         </div> */}
+                        {/* ********** THIS NEEDS TO BE KEPT IN CODE FOR FUTURE PURPOSES ***********/}
                         {/* <Fgwiseimactdata
                             headerName={headerName}
                             dataForAssemblyImpact={dataForAssemblyImpact}

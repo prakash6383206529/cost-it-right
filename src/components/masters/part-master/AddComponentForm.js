@@ -358,9 +358,10 @@ function mapStateToProps({ part }) {
       ECNNumber: DrawerPartData.ECNNumber,
       RevisionNumber: DrawerPartData.RevisionNumber,
       DrawingNumber: DrawerPartData.DrawingNumber,
-      GroupCode: DrawerPartData?.GroupCodeList[0]?.GroupCode,
+      GroupCode: DrawerPartData.GroupCode,
       BOMNumber: DrawerPartData.BOMNumber,
     }
+
   }
 
   return { componentPartSelectList, DrawerPartData, initialValues, }
