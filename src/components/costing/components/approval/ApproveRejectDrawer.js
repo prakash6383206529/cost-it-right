@@ -619,7 +619,9 @@ function ApproveRejectDrawer(props) {
       const removedFileName = file.name;
       let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
       setFiles(tempArr)
-      setIsOpen(!IsOpen)
+      setTimeout(() => {
+        setIsOpen(!IsOpen)
+      }, 500);
     }
 
     if (status === 'done') {
@@ -629,14 +631,22 @@ function ApproveRejectDrawer(props) {
         let Data = res.data[0]
         files.push(Data)
         setFiles(files)
-        setIsOpen(!IsOpen)
+        setTimeout(() => {
+          setIsOpen(!IsOpen)
+        }, 500);
       }))
     }
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      dropzone.current.files.pop()
       Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 
@@ -668,6 +678,7 @@ function ApproveRejectDrawer(props) {
       dropzone.current.files.pop()
     }
   }
+  console.log(dropzone?.current?.files, 'dropzone.current.filesdropzone.current.files');
   return (
     <>
       <Drawer
