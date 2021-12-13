@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Dropzone from 'react-dropzone-uploader';
@@ -14,6 +14,12 @@ import Toaster from '../../../common/Toaster';
 
 function AttachmentSec(props) {
     const dispatch = useDispatch()
+    // ********* INITIALIZE REF FOR DROPZONE ********
+    const dropzoneImpactSheet = useRef(null);
+    const dropzoneSupplierConfirm = useRef(null);
+    const dropzoneInvoiceBackup = useRef(null);
+    const dropzoneOthers = useRef(null);
+    const dropzoneAttachments = useRef(null);
     const { token, type, Attachements, showAttachment } = props
     const [acc1, setAcc1] = useState(!showAttachment?false:true)
     const [acc2, setAcc2] = useState(!showAttachment?false:true)
@@ -28,6 +34,7 @@ function AttachmentSec(props) {
     const [attachmentFiles, setAttachmentFiles] = useState([]);
 
     const [IsOpen, setIsOpen] = useState(false);
+
     const [initialFiles, setInitialFiles] = useState([]);
 
     const { attachmentsData } = useSelector((state) => state.simulation)
@@ -104,7 +111,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            dropzoneImpactSheet.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            dropzoneImpactSheet.current.files.pop()
+            Toaster.warning("Something went wrong")
         }
     }
 
@@ -139,7 +152,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            dropzoneSupplierConfirm.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            dropzoneSupplierConfirm.current.files.pop()
+            Toaster.warning("Something went wrong")
         }
     }
 
@@ -170,7 +189,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            dropzoneInvoiceBackup.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            dropzoneInvoiceBackup.current.files.pop()
+            Toaster.warning("Something went wrong")
         }
     }
     const handleOtherChangeStatus = ({ meta, file }, status) => {
@@ -203,7 +228,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            dropzoneOthers.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            dropzoneOthers.current.files.pop()
+            Toaster.warning("Something went wrong")
         }
     }
     const handleChangeAttachment = ({ meta, file }, status) => {
@@ -236,7 +267,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            dropzoneAttachments.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            dropzoneAttachments.current.files.pop()
+            Toaster.warning("Something went wrong")
         }
     }
 
@@ -263,6 +300,10 @@ function AttachmentSec(props) {
             setFiles(tempArr)
             setIsOpen(!IsOpen)
         }
+        // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+        if (dropzoneImpactSheet?.current !== null) {
+            dropzoneImpactSheet.current.files.pop()
+        }
     }
     const deleteFileOthers = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -281,6 +322,9 @@ function AttachmentSec(props) {
             let tempArr = otherFiles && otherFiles.filter(item => item.FileName !== OriginalFileName)
             setOtherFiles(tempArr)
             setIsOpen(!IsOpen)
+        }
+        if (dropzoneSupplierConfirm?.current !== null) {
+            dropzoneSupplierConfirm.current.files.pop()
         }
     }
 
@@ -302,6 +346,9 @@ function AttachmentSec(props) {
             setSupplierFiles(tempArr)
             setIsOpen(!IsOpen)
         }
+        if (dropzoneInvoiceBackup?.current !== null) {
+            dropzoneInvoiceBackup.current.files.pop()
+        }
     }
 
     const deleteFileInvoiceBackups = (FileId, OriginalFileName) => {
@@ -322,6 +369,9 @@ function AttachmentSec(props) {
             setInvoiceFiles(tempArr)
             setIsOpen(!IsOpen)
         }
+        if (dropzoneOthers?.current !== null) {
+            dropzoneOthers.current.files.pop()
+        }
     }
 
     const deleteFileAttachments = (FileId, OriginalFileName) => {
@@ -341,6 +391,9 @@ function AttachmentSec(props) {
             let tempArr = attachmentFiles && attachmentFiles.filter(item => item.FileName !== OriginalFileName)
             setAttachmentFiles(tempArr)
             setIsOpen(!IsOpen)
+        }
+        if (dropzoneAttachments?.current !== null) {
+            dropzoneAttachments.current.files.pop()
         }
     }
 
@@ -374,12 +427,12 @@ function AttachmentSec(props) {
                     {acc1 && <>
                         {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 2 files)</label>
-                            {files && files.length >= 2 ? (
-                                <div class="alert alert-danger" role="alert">
-                                    Maximum file upload limit has been reached.
-                                </div>
-                            ) : (
+                            <div className={`alert alert-danger mt-2 ${files.length === 2 ? '' : 'd-none'}`} role="alert">
+                                Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${files.length >= 2 ? 'd-none' : ''}`}>
                                 <Dropzone
+                                    ref={dropzoneImpactSheet}
                                     getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeStatus}
                                     PreviewComponent={Preview}
@@ -414,7 +467,7 @@ function AttachmentSec(props) {
                                     classNames="draper-drop"
                                     disabled={type === 'Sender' ? false : true}
                                 />
-                            )}
+                            </div>
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
@@ -462,12 +515,12 @@ function AttachmentSec(props) {
                     {acc2 && <>
                         {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 2 files)</label>
-                            {supplierFiles && supplierFiles.length >= 2 ? (
-                                <div class="alert alert-danger" role="alert">
-                                    Maximum file upload limit has been reached.
-                                </div>
-                            ) : (
+                            <div className={`alert alert-danger mt-2 ${supplierFiles.length === 2 ? '' : 'd-none'}`} role="alert">
+                                Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${supplierFiles.length >= 2 ? 'd-none' : ''}`}>
                                 <Dropzone
+                                    ref={dropzoneSupplierConfirm}
                                     getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeSupplierConfirmationStatus}
                                     PreviewComponent={Preview}
@@ -502,7 +555,7 @@ function AttachmentSec(props) {
                                     className="draper-drop"
                                     disabled={type === 'Sender' ? false : true}
                                 />
-                            )}
+                            </div>
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
@@ -550,12 +603,12 @@ function AttachmentSec(props) {
                     {acc3 && <>
                         {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 10 files)</label>
-                            {invoiceFiles && invoiceFiles.length >= 10 ? (
-                                <div class="alert alert-danger" role="alert">
-                                    Maximum file upload limit has been reached.
-                                </div>
-                            ) : (
+                            <div className={`alert alert-danger mt-2 ${invoiceFiles.length === 10 ? '' : 'd-none'}`} role="alert">
+                                Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${invoiceFiles.length >= 10 ? 'd-none' : ''}`}>
                                 <Dropzone
+                                    ref={dropzoneInvoiceBackup}
                                     getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeInvoiceBackupStatus}
                                     PreviewComponent={Preview}
@@ -590,7 +643,7 @@ function AttachmentSec(props) {
                                     className="draper-drop"
                                     disabled={type === 'Sender' ? false : true}
                                 />
-                            )}
+                            </div>
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
@@ -637,12 +690,12 @@ function AttachmentSec(props) {
                     {acc4 && <>
                         {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 10 files)</label>
-                            {otherFiles && otherFiles.length >= 10 ? (
-                                <div class="alert alert-danger" role="alert">
-                                    Maximum file upload limit has been reached.
-                                </div>
-                            ) : (
+                            <div className={`alert alert-danger mt-2 ${otherFiles.length === 10 ? '' : 'd-none'}`} role="alert">
+                                Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${otherFiles.length >= 10 ? 'd-none' : ''}`}>
                                 <Dropzone
+                                    ref={dropzoneOthers}
                                     getUploadParams={getUploadParams}
                                     onChangeStatus={handleOtherChangeStatus}
                                     PreviewComponent={Preview}
@@ -677,7 +730,7 @@ function AttachmentSec(props) {
                                     className="draper-drop"
                                     disabled={type === 'Sender' ? false : true}
                                 />
-                            )}
+                            </div>
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
@@ -724,12 +777,12 @@ function AttachmentSec(props) {
                     {acc5 && <>
                         {!showAttachment && <Col md="12" className="p-0">
                             <label>Upload Attachment (upload up to 4 files)</label>
-                            {attachmentFiles && attachmentFiles.length >= 4 ? (
-                                <div class="alert alert-danger" role="alert">
-                                    Maximum file upload limit has been reached.
-                                </div>
-                            ) : (
+                            <div className={`alert alert-danger mt-2 ${attachmentFiles.length === 4 ? '' : 'd-none'}`} role="alert">
+                                Maximum file upload limit has been reached.
+                            </div>
+                            <div className={`${attachmentFiles.length >= 4 ? 'd-none' : ''}`}>
                                 <Dropzone
+                                    ref={dropzoneAttachments}
                                     getUploadParams={getUploadParams}
                                     onChangeStatus={handleChangeAttachment}
                                     PreviewComponent={Preview}
@@ -764,7 +817,7 @@ function AttachmentSec(props) {
                                     className="draper-drop"
                                     disabled={type === 'Sender' ? false : true}
                                 />
-                            )}
+                            </div>
                         </Col>}
                         <div className="w-100">
                             <div className={"attachment-wrapper mt-0 mb-3"}>
