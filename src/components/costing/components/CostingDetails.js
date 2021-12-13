@@ -1821,7 +1821,7 @@ const nccDrawerToggle=()=>{
                       <>
                         <Row className="align-items-center">
                           <Col md="6" className={"mb-2 mt-3"}>
-                            <h6 className="dark-blue-text sec-heading">NCC:</h6>
+                            <h6 className="dark-blue-text sec-heading">ZBC:</h6>
                           </Col>
                           <Col md="6" className={"mb-2 mt-3"}>
                             <button
@@ -1829,7 +1829,7 @@ const nccDrawerToggle=()=>{
                               className={"user-btn"}
                               onClick={plantDrawerToggle}
                             >
-                              <div className={"plus"}></div>ADD NCC
+                              <div className={"plus"}></div>ADD ZBC
                             </button>
                           </Col>
                         </Row>
