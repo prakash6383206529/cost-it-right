@@ -35,6 +35,7 @@ function RunSimulationDrawer(props) {
     const [opposite, setIsOpposite] = useState(false)
     const [warningMessage, setWarningMessage] = useState(false)
     const [selectedDate, setSelectedDate] = useState('')
+    const [sample, setsample] = useState('')
     const [selectedData, setSelectedData] = useState([])
     const [provisionalCheck, setProvisionalCheck] = useState(false)
     const [inputOtherCost, setInputOtherCost] = useState(false)
@@ -79,7 +80,7 @@ function RunSimulationDrawer(props) {
         if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
             const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
             const indexForCheck = selectedData.findIndex((el) => el === elementObj.label)
-            console.log('indexForCheck: ', indexForCheck);
+
             if (ind !== -1) {
                 temp.splice(ind, 1)
                 temp1.splice(indexForCheck, 1)
@@ -183,8 +184,8 @@ function RunSimulationDrawer(props) {
         obj.IsDiscountAndOtherCost = DiscountOtherCost
         obj.IsAdditionalDiscount = AdditionalDiscount
         obj.IsAdditionalOtherCost = AdditionalOtherCost
-        obj.AdditionalOtherValue = getValues("OtherCost")
-        obj.AdditionalDiscountPercentage = getValues("Discount")
+        obj.AdditionalOtherValue = toggleSwitchLabel ? getValues("OtherCostPercent") : getValues("OtherCost")
+        obj.AdditionalDiscountPercentage = toggleSwitchAdditionalDiscount === true ? getValues("DiscountPercent") : getValues("Discount")
         obj.IsAdditionalOtherCostPercentage = toggleSwitchLabel
         obj.IsAdditionalDiscountPercentage = toggleSwitchAdditionalDiscount
 
@@ -311,12 +312,16 @@ function RunSimulationDrawer(props) {
         setToggleSwitchAdditionalDiscount(!toggleSwitchAdditionalDiscount)
 
     }
+
+
+
     return (
         <>
             {/* <runSimulationDrawerDataContext.Provider value={runSimulationDrawerData}>
                 < ApproveRejectDrawer />
-
+                
             </runSimulationDrawerDataContext.Provider> */}
+
 
 
 
@@ -379,6 +384,7 @@ function RunSimulationDrawer(props) {
                                                                     <Fragment>
                                                                         <div className="toggle-button-per-and-fix">
                                                                             <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+
                                                                                 <Switch
                                                                                     onChange={onChange}
                                                                                     checked={toggleSwitchLabel}
@@ -396,21 +402,56 @@ function RunSimulationDrawer(props) {
                                                                                 <span className="ml-2">Percentage</span>
                                                                             </label>
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-                                                                            <TextFieldHookForm
-                                                                                label=""
-                                                                                name={"OtherCost"}
-                                                                                Controller={Controller}
-                                                                                rules={{ required: true }}
-                                                                                control={control}
-                                                                                register={register}
-                                                                                mandatory={true}
-                                                                                handleChange={() => { }}
-                                                                                defaultValue={""}
-                                                                                className=""
-                                                                                customClassName={"withBorder"}
-                                                                                errors={errors.OtherCost}
-                                                                                disabled={false}
-                                                                            />
+
+                                                                            {toggleSwitchLabel &&
+                                                                                <TextFieldHookForm
+                                                                                    label=""
+                                                                                    name={"OtherCostPercent"}
+                                                                                    Controller={Controller}
+                                                                                    rules={{
+                                                                                        required: true,
+                                                                                        pattern: {
+                                                                                            value: /^\d*\.?\d*$/,
+                                                                                            message: 'Invalid Number.'
+                                                                                        },
+
+                                                                                        max: {
+                                                                                            value: 100,
+                                                                                            message: "Should not be greater than 100"
+                                                                                        }
+                                                                                    }}
+                                                                                    control={control}
+                                                                                    register={register}
+                                                                                    mandatory={true}
+                                                                                    handleChange={() => { }}
+                                                                                    defaultValue={""}
+                                                                                    className=""
+                                                                                    customClassName={"withBorder"}
+                                                                                    errors={errors.OtherCostPercent}
+                                                                                    disabled={false}
+                                                                                />
+                                                                            }
+
+                                                                            {!toggleSwitchLabel &&
+                                                                                <TextFieldHookForm
+                                                                                    label=""
+                                                                                    name={"OtherCost"}
+                                                                                    Controller={Controller}
+                                                                                    rules={
+                                                                                        { required: true }
+
+                                                                                    }
+                                                                                    control={control}
+                                                                                    register={register}
+                                                                                    mandatory={true}
+                                                                                    handleChange={() => { }}
+                                                                                    defaultValue={""}
+                                                                                    className=""
+                                                                                    customClassName={"withBorder"}
+                                                                                    errors={errors.OtherCost}
+                                                                                    disabled={false}
+                                                                                />
+                                                                            }
                                                                         </div>
                                                                     </Fragment>
 
@@ -442,33 +483,67 @@ function RunSimulationDrawer(props) {
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
 
+                                                                            {toggleSwitchAdditionalDiscount === true &&
+                                                                                <>
 
-                                                                            <TextFieldHookForm
-                                                                                label=""
-                                                                                name={"Discount"}
-                                                                                Controller={Controller}
-                                                                                control={control}
-                                                                                register={register}
-                                                                                mandatory={true}
-                                                                                rules={{
-                                                                                    required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
+                                                                                    <TextFieldHookForm
+                                                                                        label=""
+                                                                                        name={"DiscountPercent"}
+                                                                                        Controller={Controller}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
+                                                                                        rules={{
+                                                                                            required: true,
+                                                                                            pattern: {
+                                                                                                value: /^\d*\.?\d*$/,
+                                                                                                message: 'Invalid Number.'
+                                                                                            },
 
-                                                                                    max: {
-                                                                                        value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    },
-                                                                                }}
-                                                                                handleChange={() => { }}
-                                                                                defaultValue={""}
-                                                                                className=""
-                                                                                customClassName={"withBorder"}
-                                                                                errors={errors.Discount}
-                                                                                disabled={false}
-                                                                            />
+                                                                                            max: {
+                                                                                                value: 100,
+                                                                                                message: "Should not be greater than 100"
+                                                                                            }
+                                                                                        }}
+                                                                                        handleChange={() => { }}
+                                                                                        defaultValue={""}
+                                                                                        className=""
+                                                                                        customClassName={"withBorder"}
+                                                                                        errors={errors.DiscountPercent}
+                                                                                        disabled={false}
+                                                                                    />
+                                                                                </>
+                                                                            }
+
+
+
+                                                                            {toggleSwitchAdditionalDiscount === false &&
+                                                                                <>
+
+                                                                                    <TextFieldHookForm
+                                                                                        label=""
+                                                                                        name={"Discount"}
+                                                                                        Controller={Controller}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
+                                                                                        rules={{
+                                                                                            required: true,
+                                                                                            pattern: {
+                                                                                                value: /^\d*\.?\d*$/,
+                                                                                                message: 'Invalid Number.'
+                                                                                            },
+
+                                                                                        }}
+                                                                                        handleChange={() => { }}
+                                                                                        defaultValue={""}
+                                                                                        className=""
+                                                                                        customClassName={"withBorder"}
+                                                                                        errors={errors.Discount}
+                                                                                        disabled={false}
+                                                                                    />
+                                                                                </>
+                                                                            }
                                                                         </div>
                                                                     </Fragment>
 
