@@ -272,6 +272,7 @@ export function getZBCCostingByCostingId(CostingId, callback) {
       })
       const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
       request.then((response) => {
+        console.log('response: ', response);
         if (response.data.Result) {
           dispatch({
             type: GET_COSTING_DATA_BY_COSTINGID,
@@ -461,7 +462,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
-  
+
 
 
   return (dispatch) => {
@@ -1085,9 +1086,11 @@ export function getInventoryDataByHeads(data, callback) {
  * @description GET PAYMENT TERM DETAIL BY COSTING HEADS
  */
 export function getPaymentTermsDataByHeads(data, callback) {
+  console.log('data: ', data);
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}`, headers,)
+    console.log('request: ', request);
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -1394,6 +1397,7 @@ export function fileUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
+      callback(error)
     })
   }
 }
@@ -2130,7 +2134,7 @@ export function gridDataAdded(IsCostingDateDisabled) {
  * @description SET OVERHEAD PROFIT TAB DATA  
  */
 export function setRMCutOff(cutOffObj) {
-  
+
   return (dispatch) => {
     dispatch({
       type: SET_CUTOFF_RMC,
@@ -2193,19 +2197,19 @@ export function checkDataForCopyCosting(data, callback) {
 * @description SAVE ASSEMBLY COSTING RM+CC TAB
 */
 export function saveAssemblyPartRowCostingCalculation(data, callback) {
- return (dispatch) => {
-   const request = axios.post(API.saveAssemblyPartRowCostingCalculation, data, headers);
-   request.then((response) => {
-     callback(response);
-   }).catch((error) => {
-     dispatch({ type: API_FAILURE });
-     apiErrors(error);
-   });
- };
+  return (dispatch) => {
+    const request = axios.post(API.saveAssemblyPartRowCostingCalculation, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
 }
 
-export function saveAssemblyBOPHandlingCharge(data,callback){
-  return (dispatch)=>{
+export function saveAssemblyBOPHandlingCharge(data, callback) {
+  return (dispatch) => {
     dispatch({
       type: SET_ASSEM_BOP_CHARGE,
       payload: data
@@ -2217,7 +2221,7 @@ export function saveAssemblyBOPHandlingCharge(data,callback){
  * @method getVBCExistingCosting
  * @description get VBC Costing Select List By Part
  */
- export function getNCCExistingCosting(PartId, callback) {
+export function getNCCExistingCosting(PartId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getNCCCExistingCosting}/${PartId}`, headers)
@@ -2237,7 +2241,7 @@ export function saveAssemblyBOPHandlingCharge(data,callback){
  * @method createZBCCosting
  * @description CREATE ZBC COSTING
  */
- export function createNCCCosting(data, callback) {
+export function createNCCCosting(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.createNCCCosting, data, headers)
     request.then((response) => {
@@ -2256,11 +2260,11 @@ export function saveAssemblyBOPHandlingCharge(data,callback){
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
 */
 
-export function isDataChange(isDataChange){
-  return (dispatch) =>{
+export function isDataChange(isDataChange) {
+  return (dispatch) => {
     dispatch({
-      type:CHECK_IS_DATA_CHANGE,
-      payload:isDataChange
+      type: CHECK_IS_DATA_CHANGE,
+      payload: isDataChange
     })
   }
 }

@@ -196,7 +196,9 @@ function TabDiscountOther(props) {
                 item.meta.status = 'done'
                 return item
               })
-              dropzone.current.files = files
+              if (dropzone.current !== null) {
+                dropzone.current.files = files
+              }
             }, 1500)
           }
         }
@@ -454,17 +456,31 @@ function TabDiscountOther(props) {
       let data = new FormData()
       data.append('file', file)
       dispatch(fileUploadCosting(data, (res) => {
-        let Data = res.data[0]
-        files.push(Data)
-        setFiles(files)
-        setIsOpen(!IsOpen)
+        if ('response' in res) {
+          status = res && res?.response?.status
+          dropzone.current.files.pop()
+        }
+        else {
+          let Data = res.data[0]
+          files.push(Data)
+          setFiles(files)
+          setTimeout(() => {
+            setIsOpen(!IsOpen)
+          }, 500);
+        }
       }))
     }
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      dropzone.current.files.pop()
       Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 
@@ -608,7 +624,6 @@ function TabDiscountOther(props) {
       }
     }))
   }
-
   return (
     <>
       <div className="login-container signup-form">
