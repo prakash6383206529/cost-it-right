@@ -255,7 +255,7 @@ function AddVendorDrawer(props) {
               </Row>
               <Row>
                 <Col md="12" className="mt-n2" className="re-warning">
-                <WarningMessage   message={`If you have different prices setteled at different plants, use plant code 2000` } />
+                <WarningMessage   message={`If you have different prices settled at different plants, use plant code 2000` } />
                 </Col>
                 </Row>
               
