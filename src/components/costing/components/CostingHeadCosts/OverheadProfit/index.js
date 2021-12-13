@@ -942,7 +942,7 @@ function OverheadProfit(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
+          <form noValidate className="form" >
             <Row>
               <Col md="12">
                 <div className="left-border">
@@ -1748,6 +1748,7 @@ function OverheadProfit(props) {
               <div className="col-sm-12 text-right bluefooter-butn">
                 {!CostingViewMode && <Link  to="assembly-costing-header" spy={true} smooth={true} offset={-380}> <button
                   type={'submit'}
+                  onClick={handleSubmit(onSubmit)}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}
