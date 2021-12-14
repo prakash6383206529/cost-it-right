@@ -654,6 +654,7 @@ function CostingSimulation(props) {
                                         class="user-btn approval-btn mr5"
                                         onClick={sendForApproval}
                                         disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                        title="Send For Approval"
                                     >
                                         <div className="send-for-approval"></div>
                                         {'Send For Approval'}
