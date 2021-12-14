@@ -193,7 +193,12 @@ function RunSimulationDrawer(props) {
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
                 dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
@@ -210,7 +215,13 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(RMDOMESTIC):
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
@@ -218,7 +229,12 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(RMIMPORT):
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
@@ -226,8 +242,12 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(SURFACETREATMENT):
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
@@ -236,8 +256,12 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(OPERATIONS):
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
@@ -246,7 +270,12 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(MACHINERATE):
                 dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
@@ -255,7 +284,12 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(BOPDOMESTIC):
                 dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
@@ -264,7 +298,12 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(BOPIMPORT):
                 dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                    }
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
