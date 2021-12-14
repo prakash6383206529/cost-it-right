@@ -5,14 +5,16 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFo
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { createMBOMAssembly } from '../actions/BillOfMaterial'
+import { useEffect } from 'react';
+import {  getPlantSelectListByType } from '../../../actions/Common';
+import { ZBC } from '../../../config/constants';
 
 
 
 
 const FetchDrawer = (props) => {
-    const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm();
-
-
+    const { register, handleSubmit, formState: { errors }, control } = useForm();
+    const plantSelectList = useSelector(state => state.comman.plantSelectList)
     const [plantCode, setPlantCode] = useState("");
     const [partCode, setPartCode] = useState("");
     const dispatch = useDispatch()
@@ -20,13 +22,21 @@ const FetchDrawer = (props) => {
     // Post api and get Api integration is pending.
     const renderListing = () => {
 
-        return [
-            { label: '001', value: 'Fixed' },
-            { label: '002', value: 'Percentage' },
-            { label: '003', value: 'Percentage' },
-        ];
-
+        let temp=[]
+        plantSelectList && plantSelectList.map(item => {
+            if (item.Value === '0') return false;
+            let plantName = item.Text.split('(')[1]
+            temp.push({ label: plantName.split(')')[0], value: item.Value })
+            return null;
+          });
+         
+        return temp
     }
+
+
+    useEffect(()=>{
+        dispatch(getPlantSelectListByType(ZBC, () => { }))
+    },[])
 
     const cancel = () => {
         props.toggleDrawer()
