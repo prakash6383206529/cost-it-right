@@ -27,7 +27,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import {  FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -389,7 +389,7 @@ class AddRMDomestic extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
 
-          
+
           this.setState({ DataToChange: Data }, () => { })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
@@ -402,8 +402,8 @@ class AddRMDomestic extends Component {
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
           this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
           this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
-          this.props.change('JaliScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')
-          this.props.change('CircleScrapCost', Data.ScrapRate)
+          this.props.change('JaliScrapCost', Data.ScrapRate)            // THIS KEY FOR CIRCLE SCRAP COST
+          this.props.change('CircleScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')  //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
             this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
@@ -429,7 +429,7 @@ class AddRMDomestic extends Component {
                   return plantArray
                 })
 
-            
+
                 let vendorPlantArray = []
                 Data && Data.VendorPlant.map((item) => {
                   vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId, })
@@ -451,7 +451,7 @@ class AddRMDomestic extends Component {
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                   selectedPlants: plantArray,
                   Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
-                  vendorName:Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+                  vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
@@ -939,7 +939,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
     const { initialConfiguration } = this.props
 
     let plantArray = []
@@ -1012,11 +1012,11 @@ class AddRMDomestic extends Component {
         if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
           Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
             values.cutOffPrice === undefined) || uploadAttachements === false)) {
-              this.setState({ showPopup: true, updatedObj: requestData })
+          this.setState({ showPopup: true, updatedObj: requestData })
         }
       }
     }
-    
+
 
     else {
       let formData = {}
