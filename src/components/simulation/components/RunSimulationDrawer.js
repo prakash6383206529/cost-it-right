@@ -159,6 +159,18 @@ function RunSimulationDrawer(props) {
 
     const IsAvailable = (id) => { }
 
+    const checkForResponse = (res) => {
+        if ('response' in res) {
+            if (res && res?.response?.data?.Result === false) {
+                setRunSimulationDisable(false)
+            }
+        }
+        if (res?.data?.Result) {
+            Toaster.success('Simulation process has been run successfully.')
+            runSimulationCosting()
+        }
+    }
+
     const SimulationRun = debounce(handleSubmit(() => {
         setRunSimulationDisable(true)
 
@@ -193,108 +205,46 @@ function RunSimulationDrawer(props) {
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
                 dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                    checkForResponse(res)
                 }))
                 break;
 
             case Number(RMDOMESTIC):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                
-            
-                    if ('response' in res) {
-                        if (res && res?.response?.data?.Result === false) {
-                            setRunSimulationDisable(false)
-                        }
-                    }
-
-                    if (res?.data?.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 break;
             case Number(RMIMPORT):
-dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if ('response' in res) {
-                        if (res && res?.response?.data?.Result === false) {
-                            setRunSimulationDisable(false)
-                        }
-                    }
-                    if (res?.data?.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 break;
             case Number(SURFACETREATMENT):
-dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if ('response' in res) {
-                        if (res && res?.response?.data?.Result === false) {
-                            setRunSimulationDisable(false)
-                        }
-                    }
-                    if (res?.data?.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 runSimulationCosting()
                 break;
             case Number(OPERATIONS):
-dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if ('response' in res) {
-                        if (res && res?.response?.data?.Result === false) {
-                            setRunSimulationDisable(false)
-                        }
-                    }
-                    if (res?.data?.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 break;
             case Number(MACHINERATE):
-                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if ('response' in res) {
-                        if (res && res?.response?.data?.Result === false) {
-                            setRunSimulationDisable(false)
-                        }
-                    }
-                    if (res?.data?.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 runSimulationCosting()
                 break;
             case Number(BOPDOMESTIC):
-                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if ('response' in res) {
-                        if (res && res?.response?.data?.Result === false) {
-                            setRunSimulationDisable(false)
-                        }
-                    }
-                    if (res?.data?.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 runSimulationCosting()
                 break;
             case Number(BOPIMPORT):
-                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if ('response' in res) {
-                        if (res && res?.response?.data?.Result === false) {
-                            setRunSimulationDisable(false)
-                        }
-                    }
-                    if (res?.data?.Result) {
-                        Toaster.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 runSimulationCosting()
                 break;
