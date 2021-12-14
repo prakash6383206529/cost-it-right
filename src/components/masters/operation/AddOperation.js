@@ -665,7 +665,6 @@ class AddOperation extends Component {
                           label="Technology"
                           name="technology"
                           placeholder="Select"
-                          type="multiselect"
                           selection={
                             this.state.selectedTechnology == null ||
                               this.state.selectedTechnology.length === 0
