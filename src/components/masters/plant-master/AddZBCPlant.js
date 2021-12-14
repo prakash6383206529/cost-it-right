@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -361,7 +361,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={""}
-                      validate={[required, postiveNumber, checkWhiteSpaces, maxLength15]}
+                      validate={[required, postiveNumber, checkWhiteSpaces, maxLength4]}
                       component={renderText}
                       required={true}
                       className=""
