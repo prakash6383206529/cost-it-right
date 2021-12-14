@@ -6,7 +6,6 @@ import {
     CREATE_BOM_SUCCESS,
     CREATE_BOM_FAILURE,
     GET_BOM_SUCCESS,
-    GET_PLANT_CODE,
     UPLOAD_BOM_XLS_SUCCESS,
     GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
     config,
@@ -241,26 +240,4 @@ export function createMBOMAssembly(obj, callback) {
 }
 
 
-
-export function getPlantCode(callback) {
-    return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantCodeApi}`, headers);
-        request.then((response) => {
-            //if (response.data.Result) {
-            dispatch({
-                type: GET_PLANT_CODE,
-                payload: response.data.SelectList,
-            });
-            callback(response);
-            // } else {
-            //     Toaster.error(MESSAGES.SOME_ERROR);
-            // }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
 

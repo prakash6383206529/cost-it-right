@@ -16,7 +16,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = 'http://10.10.0.43/RoyalEnfieldLocal/api/v1';
+// const BASE_URL = 'http://10.10.1.100:10122/api/v1';
 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -259,6 +259,7 @@ export const API = {
   deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
   activeInactiveStatus: `${BASE_URL}/masters-plant/active`,
   getFilteredPlantList: `${BASE_URL}/masters-plant/get-all-by-filter`,
+  getPlantCodeSelectList:`${BASE_URL}/masters-plant/select-list-get-plant-code`,
 
   //VENDOR MASTER
   createSupplierAPI: `${BASE_URL}/vendor/create-vendor`,
@@ -1052,6 +1053,8 @@ export const CREATE_PLANT_FAILURE = 'CREATE_PLANT_FAILURE'
 export const GET_PLANT_FAILURE = 'GET_PLANT_FAILURE'
 export const GET_PLANT_DATA_SUCCESS = 'GET_PLANT_DATA_SUCCESS'
 export const GET_PLANT_FILTER_LIST = 'GET_PLANT_FILTER_LIST'
+export const GET_PLANT_CODE_SELECT_LIST = 'GET_PLANT_CODE_SELECT_LIST'
+
 
 //SUPPLIER MASTER
 export const CREATE_SUPPLIER_SUCCESS = 'CREATE_SUPPLIER_SUCCESS'
