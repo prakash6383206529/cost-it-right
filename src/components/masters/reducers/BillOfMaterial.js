@@ -3,6 +3,7 @@ import {
     CREATE_BOM_SUCCESS,
     CREATE_BOM_FAILURE,
     GET_BOM_SUCCESS,
+    GET_PLANT_CODE,
     GET_BOM_FAILURE,
     UPLOAD_BOM_XLS_SUCCESS,
     GET_BOM_UNIT_DATA_BY_PART_SUCCESS,
@@ -73,6 +74,15 @@ export default function BOMReducer(state = initialState, action) {
                 error: true,
                 AssemblyPartData: action.payload
             };
+
+        case GET_PLANT_CODE:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                plantCode: action.payload
+            };
+
         default:
             return state;
     }

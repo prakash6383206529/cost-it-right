@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { createMBOMAssembly } from '../actions/BillOfMaterial'
+import { createMBOMAssembly, getPlantCode } from '../actions/BillOfMaterial'
 
 
 
@@ -17,14 +17,32 @@ const FetchDrawer = (props) => {
     const [partCode, setPartCode] = useState("");
     const dispatch = useDispatch()
 
+
+
+    useEffect(() => {
+        dispatch(getPlantCode(() => { }))
+
+    }, [])
+
+
+
+    const plantCodeData = useSelector((state) => state.billOfMaterial.plantCode)
+
+
+
     // Post api and get Api integration is pending.
     const renderListing = () => {
 
-        return [
-            { label: '001', value: 'Fixed' },
-            { label: '002', value: 'Percentage' },
-            { label: '003', value: 'Percentage' },
-        ];
+
+        const temp = []
+
+        plantCodeData && plantCodeData.map((item) => {
+            if (item.Value === '0') return false
+            temp.push({ label: item.Text, value: item.Value })
+            return null
+        })
+        return temp
+
 
     }
 
