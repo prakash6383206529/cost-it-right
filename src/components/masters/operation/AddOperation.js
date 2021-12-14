@@ -676,6 +676,7 @@ class AddOperation extends Component {
                           optionLabel={(option) => option.Text}
                           component={renderMultiSelectField}
                           mendatory={true}
+                          validate={[required]}
                           className="multiselect-with-border"
                           disabled={isEditFlag ? true : false}
                         />
@@ -740,6 +741,7 @@ class AddOperation extends Component {
                             optionLabel={(option) => option.Text}
                             component={renderMultiSelectField}
                             mendatory={true}
+                            validate={[required]}
                             className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
                           />
