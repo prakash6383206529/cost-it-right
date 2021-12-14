@@ -6597,4 +6597,30 @@ left: 17rem;
   .content-page {
     padding: 15px 0 15px 0 !important;
   }
+  .cr-bg-tbl {
+       span {
+         font-size: 14px;
+       }
+  }
+  // <--------------START Part number showing on hover in costing sticky header --------->
+  .cr-part-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position:absolute;
+    border-top: none !important;
+    max-width: 120px;
+    padding-left: 5px !important;
+    &:hover {
+      span {
+        background-color:  #E7F2FC;
+      }
+      // white-space: pre-wrap;
+      text-overflow: none;
+      // max-width: 80px;
+      max-width: 100%;
+    }
+  }
+   // <--------------END Part number showing on hover in costing sticky header --------->
 }
+
