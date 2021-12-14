@@ -5125,7 +5125,8 @@ body{
         }
       .content-page{
         width: calc(100% - (205px * 80 / 100));
-        padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
+        // padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
+        padding: 21px 0 15px 0;
 
         .tab-pane{
           .filter-block {
@@ -6530,4 +6531,16 @@ left: 17rem;
     width: fit-content;
   }
   min-width: 14.725rem;
+}
+
+// <--------START costing tooltip css -------->
+.costing-tooltip {
+  right: -16px;
+  top: 12px;
+}
+// <--------END costing tooltip css -------->
+@media screen and (max-width:$miniDesktop) {
+  .content-page {
+    padding: 15px 0 15px 0 !important;
+  }
 }
