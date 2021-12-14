@@ -78,12 +78,22 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-    const { selectedParts } = this.state;
+    //const { selectedParts } = this.state;
+
+
+    const { BOMViewerData } = this.props;
+    let tempArr = [];
+    BOMViewerData && BOMViewerData.map(el => {
+      if (el.PartType === COMPONENT_PART) {
+        tempArr.push(el.PartId)
+      }
+      return null;
+    })
 
     const temp = [];
     if (label === 'part') {
       componentPartSelectList && componentPartSelectList.map(item => {
-        if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -136,7 +146,9 @@ class AddComponentForm extends Component {
     if (isAddMore) {
 
       this.props.setChildParts(childData)
+
     } else {
+
       this.props.toggleDrawer('', childData)
     }
   }
@@ -171,6 +183,8 @@ class AddComponentForm extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
+
+
       });
     return (
       <>
