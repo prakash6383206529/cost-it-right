@@ -41,7 +41,8 @@ function SimulationApprovalSummary(props) {
     const { approvalDetails, approvalData, isbulkUpload, list, technology, master, type, isSimulation, simulationCostingIdOfFgwiSeImpact } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [showImpactedData, setshowImpactedData] = useState(false)
-
+    const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
+    const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -719,30 +720,50 @@ function SimulationApprovalSummary(props) {
                             <Col md="12">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
-                        </Row>
-                        <Fgwiseimactdata
-                            DisplayCompareCosting={DisplayCompareCosting}
-
-                            SimulationId={simulationDetail.SimulationId} />
-                        <Row >
-                            <Col md="12">
-                                <div className="left-border">{'Assembly wise Impact:'}</div>
+                            <Col md="2" className="text-right">
+                                <div className="right-border">
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setFgWiseDataAcc(!fgWiseDataAcc) }}>
+                                        {fgWiseDataAcc ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}
+                                    </button>
+                                </div>
                             </Col>
                         </Row>
-                        {/* ********** THIS NEEDS TO BE KEPT IN CODE FOR FUTURE PURPOSES ***********/}
-                        {/* <Fgwiseimactdata
-                            headerName={headerNameAssembly}
-                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
-                            vendorIdState={costingList[0]?.VendorId}
-                            impactType={'AssemblySummary'}
-                        /> */}
-                        <AssemblyWiseImpact
+                        {fgWiseDataAcc && 
+                         <Fgwiseimactdata
+                         DisplayCompareCosting={DisplayCompareCosting}
+                         SimulationId={simulationDetail.SimulationId}
+                     />
+                        }
+                         {/* FG wise Impact section end */}
+                        <Row className="mt-4">
+                            <Col md="10">
+                                <div className="left-border">{'Assembly wise Impact:'}</div>
+                            </Col>
+                            <Col md="2" className="text-right">
+                                <div className="right-border">
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
+                                        {assemblyWiseAcc ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}
+                                    </button>
+                                </div>
+                            </Col>
+                        </Row>
+                        
+                        {assemblyWiseAcc && <AssemblyWiseImpact
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}
                             vendorIdState={costingList[0]?.VendorId}
                             impactType={'AssemblySummary'}
                         />
-                        {/* FG wise Impact section end */}
+}
+                      
 
                         <Row>
                             <Col md="10">
