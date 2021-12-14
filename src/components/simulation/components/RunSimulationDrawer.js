@@ -34,7 +34,6 @@ function RunSimulationDrawer(props) {
 
     const [multipleHeads, setMultipleHeads] = useState([])
     const [opposite, setIsOpposite] = useState(false)
-    const [warningMessage, setWarningMessage] = useState(false)
     const [selectedDate, setSelectedDate] = useState('')
     const [selectedData, setSelectedData] = useState([])
     const [provisionalCheck, setProvisionalCheck] = useState(false)
@@ -43,7 +42,7 @@ function RunSimulationDrawer(props) {
     const [disableDiscountAndOtherCost, setDisableDiscountAndOtherCost] = useState(false)
     const [disableAdditionalDiscount, setDisableAdditionalDiscount] = useState(false)
     const [disableAdditionalOtherCost, setDisableAdditionalOtherCost] = useState(false)
-    const [toggleSwitchLabel, setToggleSwitchLabel] = useState(false)
+    const [toggleSwitchAdditionalOtherCOst, setToggleSwitchAdditionalOtherCOst] = useState(false)
     const [toggleSwitchAdditionalDiscount, setToggleSwitchAdditionalDiscount] = useState(false)
 
 
@@ -183,9 +182,9 @@ function RunSimulationDrawer(props) {
         obj.IsDiscountAndOtherCost = DiscountOtherCost
         obj.IsAdditionalDiscount = AdditionalDiscount
         obj.IsAdditionalOtherCost = AdditionalOtherCost
-        obj.AdditionalOtherValue = getValues("OtherCost")
-        obj.AdditionalDiscountPercentage = getValues("Discount")
-        obj.IsAdditionalOtherCostPercentage = toggleSwitchLabel
+        obj.AdditionalOtherValue = toggleSwitchAdditionalOtherCOst ? getValues("OtherCostPercent") : getValues("OtherCost")                  // if toggleSwitchAdditionalOtherCOst==true then we will fetch percent value else (fixed value)
+        obj.AdditionalDiscountPercentage = toggleSwitchAdditionalDiscount === true ? getValues("DiscountPercent") : getValues("Discount")        // if toggleSwitchAdditionalDiscount==true then we will fetch discount percent value else fixed value
+        obj.IsAdditionalOtherCostPercentage = toggleSwitchAdditionalOtherCOst
         obj.IsAdditionalDiscountPercentage = toggleSwitchAdditionalDiscount
 
         // obj.IsProvisional = provisionalCheck
@@ -303,7 +302,7 @@ function RunSimulationDrawer(props) {
         setSelectedDate(date)
     }
     const onChange = () => {
-        setToggleSwitchLabel(!toggleSwitchLabel)
+        setToggleSwitchAdditionalOtherCOst(!toggleSwitchAdditionalOtherCOst)
 
     }
 
@@ -380,7 +379,7 @@ function RunSimulationDrawer(props) {
                                                                             <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
                                                                                 <Switch
                                                                                     onChange={onChange}
-                                                                                    checked={toggleSwitchLabel}
+                                                                                    checked={toggleSwitchAdditionalOtherCOst}
                                                                                     id="normal-switch"
                                                                                     disabled={false}
                                                                                     background="#4DC771"
@@ -395,21 +394,56 @@ function RunSimulationDrawer(props) {
                                                                                 <span className="ml-2">Percentage</span>
                                                                             </label>
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-                                                                            <TextFieldHookForm
-                                                                                label=""
-                                                                                name={"OtherCost"}
-                                                                                Controller={Controller}
-                                                                                rules={{ required: true }}
-                                                                                control={control}
-                                                                                register={register}
-                                                                                mandatory={true}
-                                                                                handleChange={() => { }}
-                                                                                defaultValue={""}
-                                                                                className=""
-                                                                                customClassName={"withBorder"}
-                                                                                errors={errors.OtherCost}
-                                                                                disabled={false}
-                                                                            />
+
+                                                                            {toggleSwitchAdditionalOtherCOst &&           // input field to fetch percent value
+                                                                                <TextFieldHookForm
+                                                                                    label=""
+                                                                                    name={"OtherCostPercent"}
+                                                                                    Controller={Controller}
+                                                                                    rules={{
+                                                                                        required: true,
+                                                                                        pattern: {
+                                                                                            value: /^\d*\.?\d*$/,
+                                                                                            message: 'Invalid Number.'
+                                                                                        },
+
+                                                                                        max: {
+                                                                                            value: 100,
+                                                                                            message: "Should not be greater than 100"
+                                                                                        }
+                                                                                    }}
+                                                                                    control={control}
+                                                                                    register={register}
+                                                                                    mandatory={true}
+                                                                                    handleChange={() => { }}
+                                                                                    defaultValue={""}
+                                                                                    className=""
+                                                                                    customClassName={"withBorder"}
+                                                                                    errors={errors.OtherCostPercent}
+                                                                                    disabled={false}
+                                                                                />
+                                                                            }
+
+                                                                            {!toggleSwitchAdditionalOtherCOst &&   //// input field to fetch fixed value
+                                                                                <TextFieldHookForm
+                                                                                    label=""
+                                                                                    name={"OtherCost"}
+                                                                                    Controller={Controller}
+                                                                                    rules={
+                                                                                        { required: true }
+
+                                                                                    }
+                                                                                    control={control}
+                                                                                    register={register}
+                                                                                    mandatory={true}
+                                                                                    handleChange={() => { }}
+                                                                                    defaultValue={""}
+                                                                                    className=""
+                                                                                    customClassName={"withBorder"}
+                                                                                    errors={errors.OtherCost}
+                                                                                    disabled={false}
+                                                                                />
+                                                                            }
                                                                         </div>
                                                                     </Fragment>
 
@@ -441,33 +475,67 @@ function RunSimulationDrawer(props) {
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
 
 
+                                                                            {toggleSwitchAdditionalDiscount === true &&  // input field to fetch percent value
+                                                                                <>
 
-                                                                            <TextFieldHookForm
-                                                                                label=""
-                                                                                name={"Discount"}
-                                                                                Controller={Controller}
-                                                                                control={control}
-                                                                                register={register}
-                                                                                mandatory={true}
-                                                                                rules={{
-                                                                                    required: true,
-                                                                                    pattern: {
-                                                                                        value: /^\d*\.?\d*$/,
-                                                                                        message: 'Invalid Number.'
-                                                                                    },
+                                                                                    <TextFieldHookForm
+                                                                                        label=""
+                                                                                        name={"DiscountPercent"}
+                                                                                        Controller={Controller}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
+                                                                                        rules={{
+                                                                                            required: true,
+                                                                                            pattern: {
+                                                                                                value: /^\d*\.?\d*$/,
+                                                                                                message: 'Invalid Number.'
+                                                                                            },
 
-                                                                                    max: {
-                                                                                        value: 100,
-                                                                                        message: "Should not be greater than 100"
-                                                                                    },
-                                                                                }}
-                                                                                handleChange={() => { }}
-                                                                                defaultValue={""}
-                                                                                className=""
-                                                                                customClassName={"withBorder"}
-                                                                                errors={errors.Discount}
-                                                                                disabled={false}
-                                                                            />
+                                                                                            max: {
+                                                                                                value: 100,
+                                                                                                message: "Should not be greater than 100"
+                                                                                            }
+                                                                                        }}
+                                                                                        handleChange={() => { }}
+                                                                                        defaultValue={""}
+                                                                                        className=""
+                                                                                        customClassName={"withBorder"}
+                                                                                        errors={errors.DiscountPercent}
+                                                                                        disabled={false}
+                                                                                    />
+                                                                                </>
+                                                                            }
+
+
+
+                                                                            {toggleSwitchAdditionalDiscount === false &&    // input field to fetch fixed value
+                                                                                <>
+
+                                                                                    <TextFieldHookForm
+                                                                                        label=""
+                                                                                        name={"Discount"}
+                                                                                        Controller={Controller}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
+                                                                                        rules={{
+                                                                                            required: true,
+                                                                                            pattern: {
+                                                                                                value: /^\d*\.?\d*$/,
+                                                                                                message: 'Invalid Number.'
+                                                                                            },
+
+                                                                                        }}
+                                                                                        handleChange={() => { }}
+                                                                                        defaultValue={""}
+                                                                                        className=""
+                                                                                        customClassName={"withBorder"}
+                                                                                        errors={errors.Discount}
+                                                                                        disabled={false}
+                                                                                    />
+                                                                                </>
+                                                                            }
                                                                         </div>
                                                                     </Fragment>
 
