@@ -202,7 +202,15 @@ function RunSimulationDrawer(props) {
                 break;
             case Number(RMDOMESTIC):
                 dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
+                    if ('response' in res) {
+                        console.log('res: ', res && res?.response?.data?.Result);
+                        if (res && res?.response?.data?.Result === false) {
+                            setRunSimulationDisable(false)
+                        }
+                        // status = res && res?.response?.status
+                    }
+
+                    if (res?.data?.Result) {
                         Toaster.success('Simulation process has been run successfully.')
                         runSimulationCosting()
                     }
