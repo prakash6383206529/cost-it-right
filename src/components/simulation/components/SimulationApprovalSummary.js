@@ -39,8 +39,8 @@ function SimulationApprovalSummary(props) {
     const { isbulkUpload } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [showImpactedData, setshowImpactedData] = useState(false)
-    const [showFGWiseData, setShowFGWiseData] = useState(true)
-    const [showAssemblyWise, setShowAssemblyWise] = useState(true)
+    const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
+    const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -706,8 +706,8 @@ function SimulationApprovalSummary(props) {
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setShowFGWiseData(!showFGWiseData) }}>
-                                        {showFGWiseData ? (
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setFgWiseDataAcc(!fgWiseDataAcc) }}>
+                                        {fgWiseDataAcc ? (
                                             <i className="fa fa-minus" ></i>
                                         ) : (
                                             <i className="fa fa-plus"></i>
@@ -716,7 +716,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {showFGWiseData && 
+                        {fgWiseDataAcc && 
                          <Fgwiseimactdata
                          DisplayCompareCosting={DisplayCompareCosting}
                          SimulationId={simulationDetail.SimulationId}
@@ -731,8 +731,8 @@ function SimulationApprovalSummary(props) {
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setShowAssemblyWise(!showAssemblyWise) }}>
-                                        {showAssemblyWise ? (
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
+                                        {assemblyWiseAcc ? (
                                             <i className="fa fa-minus" ></i>
                                         ) : (
                                             <i className="fa fa-plus"></i>
@@ -742,7 +742,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         
-                        {showAssemblyWise && <AssemblyWiseImpact
+                        {assemblyWiseAcc && <AssemblyWiseImpact
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}
                             vendorIdState={costingList[0]?.VendorId}
