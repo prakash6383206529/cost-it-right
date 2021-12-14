@@ -538,7 +538,7 @@ const cancel = () => {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Stiching length - Inch/Joint`}
+                                        label={`Stitching length - Inch/Joint`}
                                         name={'stiching_length'}
                                         Controller={Controller}
                                         control={control}
