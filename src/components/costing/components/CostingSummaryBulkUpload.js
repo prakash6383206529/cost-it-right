@@ -80,7 +80,7 @@ class CostingSummaryBulkUpload extends Component {
         if (status === PENDING) {
             return (
                 <>
-                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
+                    <button className={'user-btn mr5'} disabled={row.IncorrectCostingCount >0 ? true:false} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
                     <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, false)} type={'button'}>Reject</button>
                     {/* {row.IncorrectCostingCount > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>} */}
                 </>
