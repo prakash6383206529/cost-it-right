@@ -1192,7 +1192,7 @@ function OverheadProfit(props) {
                       <Col md="3">
                         <div className="d-inline-block">
                           {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
-                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
+                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3 costing-tooltip'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
                             </span>}
                           <TextFieldHookForm
@@ -1478,7 +1478,7 @@ function OverheadProfit(props) {
                       <Col md="3">
                         <div className="d-inline-block">
                           {profitObj?.ProfitApplicability.includes('RM') && RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
-                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
+                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
                             </span>
                           }
@@ -1544,7 +1544,7 @@ function OverheadProfit(props) {
                       <Col md="3">
                         <div className="d-inline-block">
                           {RMCCutOffObj?.IsCutOffApplicable && RMCCutOffObj?.CutOffRMC > 0 &&
-                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right mb-n3'}>
+                            <span className={'fa fa-info-circle mt9 tooltip-n tooltip_custom_right costing-tooltip mb-n3'}>
                               <span class="tooltiptext">{`RM cut-off price ${RMCCutOffObj.CutOffRMC} applied`}</span>
                             </span>
                           }

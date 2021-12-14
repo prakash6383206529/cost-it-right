@@ -3232,6 +3232,7 @@ opacity: 0.5;
   color: #256bd1;
   opacity: 1;
   cursor: pointer;
+
 }
 .tooltip-inner{
   background-color: #D0D8E5;
@@ -6574,3 +6575,10 @@ left: 17rem;
   }
   min-width: 14.725rem;
 }
+
+// <--------START costing tooltip css -------->
+.costing-tooltip {
+  right: -16px;
+  top: 12px;
+}
+// <--------END costing tooltip css -------->
