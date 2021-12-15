@@ -260,6 +260,7 @@ class AddOperation extends Component {
     this.setState({
       effectiveDate: date,
     })
+
   }
   /**
   * @method onPressSurfaceTreatment
@@ -676,7 +677,7 @@ class AddOperation extends Component {
                           optionLabel={(option) => option.Text}
                           component={renderMultiSelectField}
                           mendatory={true}
-                          validate={[required]}
+                          validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
                           className="multiselect-with-border"
                           disabled={isEditFlag ? true : false}
                         />
@@ -741,7 +742,7 @@ class AddOperation extends Component {
                             optionLabel={(option) => option.Text}
                             component={renderMultiSelectField}
                             mendatory={true}
-                            validate={[required]}
+                            validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                             className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
                           />
@@ -1030,25 +1031,23 @@ class AddOperation extends Component {
                       </button>
 
 
-
-                      {
-                        // (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                        //   <button type="submit"
-                        //     class="user-btn approval-btn save-btn mr5"
-                        //     disabled={this.state.isFinalApprovar}
+                      {/* //  (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                        //    <button type="submit"
+                        //      class="user-btn approval-btn save-btn mr5"
+                        //      disabled={this.state.isFinalApprovar}
                         //   >
-                        //     <div className="send-for-approval"></div>
+                        //      <div className="send-for-approval"></div>
                         //     {'Send For Approval'}
-                        //   </button>
-                        //   :
-                        <button
-                          type="submit"
-                          className="user-btn mr5 save-btn"
-                        >
-                          <div className={"save-icon"}></div>
-                          {isEditFlag ? "Update" : "Save"}
-                        </button>
-                      }
+                        //    </button>
+                        //    : */}
+                      <button
+                        type="submit"
+                        className="user-btn mr5 save-btn"
+                      >
+                        <div className={"save-icon"}></div>
+                        {isEditFlag ? "Update" : "Save"}
+                      </button>
+
 
 
 
