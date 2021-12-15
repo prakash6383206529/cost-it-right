@@ -73,6 +73,7 @@ export default function BOMReducer(state = initialState, action) {
                 error: true,
                 AssemblyPartData: action.payload
             };
+
         default:
             return state;
     }

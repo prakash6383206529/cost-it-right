@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { createMBOMAssembly } from '../actions/BillOfMaterial'
-import { useEffect } from 'react';
-import {  getPlantSelectListByType } from '../../../actions/Common';
+import { getPlantSelectListByType } from '../../../actions/Common';
 import { ZBC } from '../../../config/constants';
 
 
@@ -19,24 +18,25 @@ const FetchDrawer = (props) => {
     const [partCode, setPartCode] = useState("");
     const dispatch = useDispatch()
 
-    // Post api and get Api integration is pending.
+
+
     const renderListing = () => {
 
-        let temp=[]
+        let temp = []
         plantSelectList && plantSelectList.map(item => {
             if (item.Value === '0') return false;
             let plantName = item.Text.split('(')[1]
             temp.push({ label: plantName.split(')')[0], value: item.Value })
             return null;
-          });
-         
+        });
+
         return temp
     }
 
 
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(getPlantSelectListByType(ZBC, () => { }))
-    },[])
+    }, [])
 
     const cancel = () => {
         props.toggleDrawer()
