@@ -188,6 +188,8 @@ class UsersListing extends Component {
 	* @description confirm edit item
 	*/
 	editItemDetails = (Id, passwordFlag = false) => {
+
+		if (Id === loggedInUserId()) return null;
 		let data = {
 			isEditFlag: true,
 			UserId: Id,
