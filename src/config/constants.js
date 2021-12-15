@@ -258,7 +258,6 @@ export const API = {
   deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
   activeInactiveStatus: `${BASE_URL}/masters-plant/active`,
   getFilteredPlantList: `${BASE_URL}/masters-plant/get-all-by-filter`,
-  getPlantCodeSelectList: `${BASE_URL}/masters-plant/select-list-get-plant-code`,
 
   //VENDOR MASTER
   createSupplierAPI: `${BASE_URL}/vendor/create-vendor`,
