@@ -189,7 +189,6 @@ class UsersListing extends Component {
 	*/
 	editItemDetails = (Id, passwordFlag = false) => {
 
-		if (Id === loggedInUserId()) return null;
 		let data = {
 			isEditFlag: true,
 			UserId: Id,
