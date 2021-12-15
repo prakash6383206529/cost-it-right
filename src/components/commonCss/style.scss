@@ -6543,6 +6543,12 @@ left: 17rem;
   .content-page {
     padding: 15px 0 15px 0 !important;
   }
+  .interest-rate-container {
+    padding:21px 15px 15px !important;
+  }
+  .add-interest-rate-footer.sf-btn-footer {
+    margin:0 -15px -15px -15px !important;
+  }
   .cr-bg-tbl {
        span {
          font-size: 14px;
@@ -6569,4 +6575,6 @@ left: 17rem;
   }
    // <--------------END Part number showing on hover in costing sticky header --------->
 }
-
+.align-table {
+  transform: translateY(-13px);
+}
