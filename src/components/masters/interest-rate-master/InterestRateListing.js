@@ -445,7 +445,7 @@ class InterestRateListing extends Component {
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react interest-rate-container ${DownloadAccessibility ? "show-table-btn" : ""}`}>
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
