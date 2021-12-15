@@ -229,7 +229,7 @@ class ViewUserDetails extends Component {
                   <Col md="12">
                     <div className={'left-details'}>
                       <HeaderTitle
-                        title={'Role & Company:'}
+                        title={'Role & Department:'}
                         customClass={'role-department-details'} />
                     </div>
                     <div className={'right-details'}>

@@ -580,7 +580,7 @@ class AddInterestRate extends Component {
                     </Row>
                   </div>
 
-                  <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                  <Row className="sf-btn-footer add-interest-rate-footer no-gutters justify-content-between">
                     <div className="col-sm-12 text-right bluefooter-butn">
                       <button
                         type={"button"}
