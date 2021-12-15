@@ -493,7 +493,7 @@ const CostingSummaryTable = (props) => {
     setMultipleCostings(temp)
     setFlag(!flag)
   }
-
+  console.log(viewCostingData, "viewCostingData")
   const sendForApprovalData = (costingIds) => {
 
     let temp = viewApprovalData
@@ -1110,7 +1110,7 @@ const CostingSummaryTable = (props) => {
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
-                            <td>
+                            <td className="align-table">
                               <div class="d-flex">
                                 <span class="d-inline-block w-50">
                                   {data.CostingHeading !== VARIANCE ? data.toolApplicability.applicability : ''}
