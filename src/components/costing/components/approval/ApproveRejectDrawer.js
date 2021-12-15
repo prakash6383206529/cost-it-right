@@ -87,7 +87,8 @@ function ApproveRejectDrawer(props) {
     } else {
       dispatch(getSimulationApprovalByDepartment(res => {
         const Data = res.data.SelectList
-        const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+      
+        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender'? userData.DepartmentId:simulationDetail.DepartmentId))
 
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
         getApproversList(departObj[0].Value)
@@ -659,6 +660,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
+                        disabled={type==='Sender'?false:true}  // USER WILL NOT BE ABLE TO CHANGE DEPARTMENT BUT CAN CHANGE APPROVER
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -674,7 +676,7 @@ function ApproveRejectDrawer(props) {
                         options={approvalDropDown}
                         mandatory={true}
                         handleChange={() => { }}
-                        errors={errors.approver}
+                        errors={errors.approver}                      
                       />
                     </div>
                     {

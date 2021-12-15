@@ -27,7 +27,6 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import { pushAPI } from '../../simulation/actions/Simulation'
-import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
@@ -110,7 +109,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,DepartmentId } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -120,7 +119,7 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,DepartmentId:DepartmentId
 
             })
             dispatch(setAttachmentFileData(Attachements, () => { }))
@@ -572,7 +571,7 @@ function SimulationApprovalSummary(props) {
         pushObj.LoggedInUserId = userLoggedIn
         pushObj.AmmendentDataRequests = temp
         dispatch(pushAPI(pushObj, () => { }))
-        toastr.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
+        Toaster.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
         setShowListing(true)
     }
 
