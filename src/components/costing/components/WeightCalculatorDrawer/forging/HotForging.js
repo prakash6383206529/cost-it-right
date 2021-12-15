@@ -226,7 +226,7 @@ function HotForging(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Finished Weight`}
                         name={'finishedWeight'}
@@ -251,7 +251,7 @@ function HotForging(props) {
                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Total Machining Stock`}
                         name={'machiningStock'}
@@ -276,7 +276,7 @@ function HotForging(props) {
                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Forge Weight`}
                         name={'forgeWeight'}
@@ -402,7 +402,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col> */}
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Input Weight(UOM)`}
                         name={'inputWeight'}
@@ -427,7 +427,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Slug Weight`}
                         name={'slugWeight'}
@@ -452,7 +452,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Scrap Weight`}
                         name={'scrapWeight'}
@@ -477,7 +477,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Scrap Cost`}
                         name={'scrapCost'}
