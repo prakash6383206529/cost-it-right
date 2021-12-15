@@ -304,7 +304,7 @@ function ColdForging(props) {
 
               <Col md="12">
                 <Row className={'mt15'}>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Outer Diameter(UOM)`}
                       name={'inputOuterDiameter'}
@@ -329,7 +329,7 @@ function ColdForging(props) {
                       disabled={props.CostingViewMode ? props.CostingViewMode : false}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Length(UOM)`}
                       name={'inputLength'}
@@ -354,7 +354,7 @@ function ColdForging(props) {
                       disabled={props.CostingViewMode ? props.CostingViewMode : false}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Volume`}
                       name={'inputVolume'}
@@ -379,7 +379,7 @@ function ColdForging(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Weight(UOM)`}
                       name={'inputWeight'}
@@ -405,7 +405,7 @@ function ColdForging(props) {
                     />
                   </Col>
 
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Flash in %`}
                       name={'flash'}
@@ -430,7 +430,7 @@ function ColdForging(props) {
                       disabled={props.CostingViewMode ? props.CostingViewMode : false}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Input RM Weight(UOM)`}
                       name={'rmWeight'}
@@ -490,7 +490,7 @@ function ColdForging(props) {
 
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="2">
                       <TextFieldHookForm
                         label={`Description`}
                         name={'description'}
@@ -516,7 +516,7 @@ function ColdForging(props) {
                       />
                     </Col>
                     {!showLabel && (
-                      <Col md="2" className="m-height-44-label-inside">
+                      <Col md="3">
                         <TextFieldHookForm
                           label={`Outer Diameter(UOM)`}
                           name={'forgingOuterDiameter'}
@@ -543,7 +543,7 @@ function ColdForging(props) {
                       </Col>
                     )}
 
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Length`}
                         name={'forgingLength'}
@@ -570,7 +570,7 @@ function ColdForging(props) {
                     </Col>
                     {showLabel && (
                       <Fragment>
-                        <Col md="2" className="m-height-44-label-inside">
+                        <Col md="3">
                           <TextFieldHookForm
                             label={`Breadth`}
                             name={'breadth'}
@@ -595,7 +595,7 @@ function ColdForging(props) {
                             disabled={props.CostingViewMode ? props.CostingViewMode : false}
                           />
                         </Col>
-                        <Col md="2" className="m-height-44-label-inside">
+                        <Col md="3">
                           <TextFieldHookForm
                             label={`Height`}
                             name={'height'}
@@ -620,7 +620,7 @@ function ColdForging(props) {
                             disabled={props.CostingViewMode ? props.CostingViewMode : false}
                           />
                         </Col>
-                        <Col md="2" className="m-height-44-label-inside">
+                        <Col md="3">
                           <TextFieldHookForm
                             label={`No`}
                             name={'number'}
@@ -648,7 +648,7 @@ function ColdForging(props) {
                       </Fragment>
                     )}
 
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Volume`}
                         name={'forgingVolume'}
@@ -673,7 +673,7 @@ function ColdForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Gross Weight(UOM)`}
                         name={'grossForgingWeight'}
@@ -698,7 +698,7 @@ function ColdForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2">
+                    <Col md="3">
                       <div>
                         {isEdit ? (
                           <>
@@ -805,7 +805,7 @@ function ColdForging(props) {
 
               <Col md="12">
                 <Row className={'mt15'}>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3" className="m-height-44-label-inside">
                     <TextFieldHookForm
                       label={`Net Forging Weight(UOM)`}
                       name={'netForgingWeight'}
@@ -830,7 +830,7 @@ function ColdForging(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3" className="m-height-44-label-inside">
                     <TextFieldHookForm
                       label={`Raw Material Cost/Component`}
                       name={'rawMaterialCost'}
@@ -855,7 +855,7 @@ function ColdForging(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3" className="m-height-44-label-inside">
                     <TextFieldHookForm
                       label={`Scrap Weight Recovery`}
                       name={'scrapWeightRecovery'}
@@ -880,7 +880,7 @@ function ColdForging(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3" className="m-height-44-label-inside">
                     <TextFieldHookForm
                       label={`Scrap Cost`}
                       name={'scrapCost'}
@@ -906,7 +906,7 @@ function ColdForging(props) {
                     />
                   </Col>
 
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3" className="m-height-44-label-inside">
                     <TextFieldHookForm
                       label={`Material Cost`}
                       name={'materialCost'}
@@ -931,7 +931,7 @@ function ColdForging(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col md="2" className="m-height-44-label-inside">
+                  <Col md="3" className="m-height-44-label-inside">
                     <TextFieldHookForm
                       label={`Input RM Weight(UOM)`}
                       name={'rmWeight'}
