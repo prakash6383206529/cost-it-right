@@ -159,7 +159,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-   console.log(ComponentItemToolData,"ComponentItemToolData");
+
     if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true &&ComponentItemToolData.CostingPartDetails.TotalToolCost >0 && activeTab !== '5') {
       const data = {
         "IsToolCostProcessWise": false,

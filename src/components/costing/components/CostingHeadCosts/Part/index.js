@@ -45,6 +45,7 @@ function PartCompoment(props) {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
             props.setPartDetails(BOMLevel, PartNumber, Data, item)
+            // dispatch(isDataChange(false))
           }
         }))
       }
@@ -63,7 +64,7 @@ function PartCompoment(props) {
 
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
-    if (!CostingViewMode && IsOpen ===false && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
+   if (!CostingViewMode  && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -183,6 +184,9 @@ function PartCompoment(props) {
           dispatch(isDataChange(false))
         }
       }))
+    }
+    else{
+      dispatch(isDataChange(false))
     }
 
   }, [IsOpen])
