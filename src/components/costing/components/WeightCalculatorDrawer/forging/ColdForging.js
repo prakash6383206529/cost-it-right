@@ -297,7 +297,8 @@ function ColdForging(props) {
       <Row>
         <Col>
           <Col md="12" className={'mt25'}>
-            <div className="border pl-3 pr-3 pt-3">
+            <div className="border px-3 pt-3">
+              <Row>
               <Col md="10">
                 <div className="left-border">{'Input Weight Calculator:'}</div>
               </Col>
@@ -457,6 +458,8 @@ function ColdForging(props) {
                   </Col>
                 </Row>
               </Col>
+              </Row>
+              <Row>
               <Col md="10 mt-25">
                 <div className="left-border">
                   {'Forging Weight Calculator:'}
@@ -802,7 +805,8 @@ function ColdForging(props) {
                   </tbody>
                 </Table>
               </Col>
-
+            </Row>
+            <Row>
               <Col md="12">
                 <Row className={'mt15'}>
                   <Col md="3" className="m-height-44-label-inside">
@@ -958,6 +962,7 @@ function ColdForging(props) {
                   </Col>
                 </Row>
               </Col>
+              </Row>
             </div>
           </Col>
           <div className="mt25 col-md-12 text-right">
