@@ -102,6 +102,9 @@ function PartOverheadProfit(props) {
     dispatch(setComponentOverheadItemData(item, () => { }))
   }, [IsOpen])
 
+
+ 
+
   /**
   * @method render
   * @description Renders the component
