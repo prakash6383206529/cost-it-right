@@ -507,6 +507,7 @@ function SimulationApprovalListing(props) {
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={sendForApproval}
+                                            title="Send For Approval"
                                         // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                         >
                                             <div className="send-for-approval"></div>

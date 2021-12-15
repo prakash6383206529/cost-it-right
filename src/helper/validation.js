@@ -25,6 +25,7 @@ export const minLength10 = minLength(10);
 
 export const maxLength2 = maxLength(2);
 export const maxLength3 = maxLength(3);
+export const maxLength4 = maxLength(4);
 export const maxLength5 = maxLength(5);
 export const maxLength6 = maxLength(6);
 export const maxLength7 = maxLength(7);
