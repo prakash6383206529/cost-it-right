@@ -218,7 +218,8 @@ function HotForging(props) {
         <Col>
           <form noValidate className="form">
             <Col md="12" className={'mt25'}>
-              <div className="border pl-3 pr-3 pt-3">
+              <div className="border px-3 pt-3">
+                <Row>
                 <Col md="10">
                   <div className="left-border">
                     {'Input Weight Calculator:'}
@@ -504,6 +505,7 @@ function HotForging(props) {
                     </Col>
                   </Row>
                 </Col>
+                </Row>
                 <LossStandardTable
                   dropDownMenu={dropDown}
                   CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
