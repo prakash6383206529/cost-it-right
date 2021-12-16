@@ -145,7 +145,6 @@ export const API = {
   checkCostingExistForPart: `${BASE_URL}/masters-part-bill-of-material/check-exist-costing-by-part`,
   deleteExisCostingByPartID: `${BASE_URL}/masters-part-bill-of-material/delete-exist-costing-by-part`,
   createMBOMAssemblyApi: `${BASE_URL}/masters-part/create-mbom-assembly`,
-  getPlantCodeApi: `${BASE_URL}/masters-plant/select-list-get-plant-code`,
 
   //CATEGORY MASTER
   createcategoryTypeAPI: `${BASE_URL}/masters-category/create-type`,
@@ -259,7 +258,6 @@ export const API = {
   deletePlantAPI: `${BASE_URL}/masters-plant/delete`,
   activeInactiveStatus: `${BASE_URL}/masters-plant/active`,
   getFilteredPlantList: `${BASE_URL}/masters-plant/get-all-by-filter`,
-  getPlantCodeSelectList:`${BASE_URL}/masters-plant/select-list-get-plant-code`,
 
   //VENDOR MASTER
   createSupplierAPI: `${BASE_URL}/vendor/create-vendor`,
@@ -1077,7 +1075,6 @@ export const UPLOAD_BOM_XLS_SUCCESS = 'UPLOAD_BOM_XLS_SUCCESS'
 export const GET_BOM_UNIT_DATA_BY_PART_SUCCESS = 'GET_BOM_UNIT_DATA_BY_PART_SUCCESS'
 export const GET_ASSEMBLY_PART_DATALIST_SUCCESS = 'GET_ASSEMBLY_PART_DATALIST_SUCCESS'
 export const GET_ASSEMBLY_PART_DATA_SUCCESS = 'GET_ASSEMBLY_PART_DATA_SUCCESS'
-export const GET_PLANT_CODE = 'GET_PLANT_CODE'
 
 //BOP MASTER
 export const CREATE_BOP_SUCCESS = 'CREATE_BOP_SUCCESS';
