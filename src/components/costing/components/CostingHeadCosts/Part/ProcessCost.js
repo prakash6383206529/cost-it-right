@@ -556,7 +556,7 @@ function ProcessCost(props) {
                 className={'user-btn'}
                 onClick={DrawerToggle}
               >
-                <div className={'plus'}></div>ADD PROCESS
+                <div className={'plus'}></div>PROCESS
               </button>}
             </Col>
           </Row>

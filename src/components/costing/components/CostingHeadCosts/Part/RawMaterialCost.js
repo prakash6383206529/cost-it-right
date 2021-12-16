@@ -815,7 +815,7 @@ function RawMaterialCost(props) {
                   onClick={DrawerToggle}
                   disabled={IsApplyMasterBatch}
                 >
-                  <div className={'plus'}></div>ADD RM
+                  <div className={'plus'}></div>RM
                 </button>
               }
             </Col>

@@ -6622,3 +6622,17 @@ left: 17rem;
 .align-table {
   transform: translateY(-13px);
 }
+.btn-stciky-container {
+  position: sticky;
+  bottom: 0;
+  padding: 0 15px !important;
+}
+
+.rmcc-main-headings {
+  position: relative;
+  th {
+    position: sticky;
+    top: 0;
+    padding: 5px 15px !important;
+  }
+}

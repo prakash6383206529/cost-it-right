@@ -170,7 +170,7 @@ function AssemblyPart(props) {
               type="button"
               className={'user-btn add-oprn-btn'}
               onClick={DrawerToggle}>
-              <div className={'plus'}></div>{`${CostingViewMode ? 'View Operation' : 'Add Operation'}`}</button>}
+              <div className={'plus'}></div>{`${CostingViewMode ? 'View Operation' : 'OPER'}`}</button>}
         </td>
       </tr>
 
