@@ -291,7 +291,7 @@ function BOPCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD INSERT</button>}
+                <div className={'plus'}></div>INSERT</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >

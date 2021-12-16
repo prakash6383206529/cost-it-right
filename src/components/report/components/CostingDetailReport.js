@@ -501,7 +501,7 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before btn-index">
+                <Row className="pt-4 blue-before ">
 
 
                     <Col md="8" lg="8" className="search-user-block mb-3">
