@@ -717,7 +717,7 @@ function SimulationApprovalSummary(props) {
 
                         {/* FG wise Impact section start */}
                         <Row >
-                            <Col md="12">
+                            <Col md="10">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
