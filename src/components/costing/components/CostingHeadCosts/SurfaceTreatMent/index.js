@@ -85,7 +85,7 @@ function SurfaceTreatment(props) {
       }
      
    let assemblyRequestedData = createToprowObjAndSave(surfaceTabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,2)
-      console.log(assemblyRequestedData,"assemblyRequestedData");
+
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {

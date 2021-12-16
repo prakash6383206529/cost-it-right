@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col } from "reactstrap";
 import classnames from 'classnames';
 import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
@@ -8,11 +8,9 @@ import AssemblyPartListing from './AssemblyPartListing';
 import IndivisualPartListing from './IndivisualPartListing';
 import { MASTERS, PART } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
-import { getConfigurationKey } from '../../../helper/auth'
+import FetchDrawer from './FetchBOMDrawer'
 
 class PartMaster extends Component {
     constructor(props) {
@@ -31,6 +29,7 @@ class PartMaster extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
+            openDrawer: false,
         }
     }
 
@@ -42,6 +41,13 @@ class PartMaster extends Component {
         if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
             this.applyPermission(nextProps.topAndLeftMenuData)
         }
+    }
+
+    toggleFetchDrawer = () => {
+
+        this.setState({
+            openDrawer: false
+        });
     }
 
     /**
@@ -114,6 +120,13 @@ class PartMaster extends Component {
         this.setState({ getDetails: data, isProductForm: true, isAddBOMForm: false, })
     }
 
+    //Open the Fetch Drawer
+
+    openFetchDrawer = () => {
+        this.setState({ openDrawer: true })
+
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -149,7 +162,17 @@ class PartMaster extends Component {
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
+                            <div className="d-flex justify-content-between">
                             <h1>Part Master</h1>
+                            <button
+                                        type="button"
+                                        className={'user-btn mr5 mt-1'}
+                                        title="Add"
+                                        onClick={this.openFetchDrawer}>
+                                        <div className={'swap mr-0'}></div></button>
+                            </div>
+                           
+
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
@@ -162,12 +185,13 @@ class PartMaster extends Component {
                                     </NavLink>
                                 </NavItem>
                                 {/* {getConfigurationKey().IsVendorPlantConfigurable && <NavItem> */}
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                        Manage Products
-                                    </NavLink>
-                                </NavItem>
-
+                                {initialConfiguration?.IsProductMasterConfigurable &&
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                            Manage Products
+                                        </NavLink>
+                                    </NavItem>
+                                }
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
                                 {this.state.activeTab === '1' &&
@@ -207,6 +231,19 @@ class PartMaster extends Component {
                                         />
                                     </TabPane>}
                             </TabContent>
+
+
+                            {this.state.openDrawer &&
+                                <FetchDrawer
+
+                                    isOpen={this.state.openDrawer}
+                                    toggleDrawer={this.toggleFetchDrawer}
+                                    anchor={"right"}
+
+
+                                />
+
+                            }
                         </div>
                     </div >
                 </div>

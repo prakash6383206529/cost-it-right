@@ -37,6 +37,7 @@ function AssemblyOverheadProfit(props) {
         }
       }))
     } else {
+
       props.toggleAssembly(Params)
     }
   }
@@ -72,10 +73,10 @@ function AssemblyOverheadProfit(props) {
   */
   const saveCosting = (values) => {
     const tabData = RMCCTabData[0]
-    const surfaceTabData= SurfaceTabData[0]
-    const overHeadAndProfitTabData=OverheadProfitTabData[0]
-    console.log('overHeadAndProfitTabData: ', overHeadAndProfitTabData);
-    const discountAndOtherTabData =DiscountCostData[0]
+    const surfaceTabData = SurfaceTabData[0]
+    const overHeadAndProfitTabData = OverheadProfitTabData[0]
+
+    const discountAndOtherTabData = DiscountCostData[0]
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),
@@ -111,7 +112,7 @@ function AssemblyOverheadProfit(props) {
   */
   return (
     <>
-      <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+      <tr id="assembly-costing-header" className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} >
         <td>
           <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>

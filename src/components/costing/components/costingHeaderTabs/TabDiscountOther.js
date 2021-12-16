@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useForm, Controller, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -22,7 +22,8 @@ import redcrossImg from '../../../../assests/images/red-cross.png'
 import { createToprowObjAndSave } from '../../CostingUtil';
 
 function TabDiscountOther(props) {
-
+  // ********* INITIALIZE REF FOR DROPZONE ********
+  const dropzone = useRef(null);
   const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -189,7 +190,16 @@ function TabDiscountOther(props) {
                 DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : ''
               }
               props.setHeaderCost(topHeaderData)
-
+              // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+              let files = Data.Attachements && Data.Attachements.map((item) => {
+                item.meta = {}
+                item.meta.id = item.FileId
+                item.meta.status = 'done'
+                return item
+              })
+              if (dropzone.current !== null) {
+                dropzone.current.files = files
+              }
             }, 1500)
           }
         }
@@ -447,15 +457,31 @@ function TabDiscountOther(props) {
       let data = new FormData()
       data.append('file', file)
       dispatch(fileUploadCosting(data, (res) => {
-        let Data = res.data[0]
-        files.push(Data)
-        setFiles(files)
-        setIsOpen(!IsOpen)
+        if ('response' in res) {
+          status = res && res?.response?.status
+          dropzone.current.files.pop()
+        }
+        else {
+          let Data = res.data[0]
+          files.push(Data)
+          setFiles(files)
+          setTimeout(() => {
+            setIsOpen(!IsOpen)
+          }, 500);
+        }
       }))
     }
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      dropzone.current.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 
@@ -477,10 +503,14 @@ function TabDiscountOther(props) {
       setFiles(tempArr)
       setIsOpen(!IsOpen)
     }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (dropzone?.current !== null) {
+      dropzone.current.files.pop()
+    }
   }
 
   const Preview = ({ meta }) => {
-    const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
         {/* {Math.round(percent)}% */}
@@ -549,38 +579,7 @@ function TabDiscountOther(props) {
     if (costData.IsAssemblyPart === true) {
       let assemblyRequestedData = createToprowObjAndSave(tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,6)
 
-      // let assemblyRequestedData = {
-      //   "TopRow": {
-      //     "CostingId": tabData.CostingId,
-      //     "CostingNumber": tabData.CostingNumber,
-      //     "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-      //     "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-      //     "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-      //     "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-      //     "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-      //     "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-      //     "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-      //     "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-      //     "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-      //     "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
-      //     "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-      //     "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
-      //     "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-      //     "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
-      //     "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-      //     "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-      //     "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
-      //     "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-      //     "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
-      //     "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
-      //     "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
-      //     "TotalCostINR": netPOPrice,
-      //     "TabId": 6
-      //   },
-      //   "WorkingRows": [],
-      //   "LoggedInUserId": loggedInUserId()
-
-      // }
+  
 
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
@@ -596,7 +595,6 @@ function TabDiscountOther(props) {
       }
     }))
   }
-
   return (
     <>
       <div className="login-container signup-form">
@@ -904,12 +902,12 @@ function TabDiscountOther(props) {
 
                     <Col md="3" className="height152-label">
                       <label>Upload Attachment (upload up to 4 files)</label>
-                      {files && files.length >= 4 ? (
-                        <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit has been reached.
-                        </div>
-                      ) : (
+                      <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
+                        Maximum file upload limit has been reached.
+                      </div>
+                      <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
                         <Dropzone
+                          ref={dropzone}
                           getUploadParams={getUploadParams}
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
@@ -917,7 +915,7 @@ function TabDiscountOther(props) {
                           accept="*"
                           initialFiles={initialFiles}
                           maxFiles={4}
-                          maxSizeBytes={2000000000}
+                          maxSizeBytes={20000000}
                           inputContent={(files, extra) =>
                             extra.reject ? (
                               "Image, audio and video files only"
@@ -944,7 +942,7 @@ function TabDiscountOther(props) {
                           classNames="draper-drop"
                           disabled={CostingViewMode ? true : false}
                         />
-                      )}
+                      </div>
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
@@ -969,8 +967,6 @@ function TabDiscountOther(props) {
                       </div>
                     </Col>
                   </Row>
-
-
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 

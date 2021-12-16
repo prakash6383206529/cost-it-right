@@ -1095,6 +1095,18 @@ input.form-control{
   background: transparent url("../../assests/images/Group 10491.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
 }
+.swap {
+  width: 18px;
+  height: 18px;
+  background: transparent url("../../assests/images/swap-logo.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
+.go-to-top {
+  width: 22px;
+  height: 22px;
+  background: transparent url("../../assests/images/go-to-top.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
 .minus-icon {
   width: 22px;
   height: 22px;
@@ -2909,6 +2921,7 @@ button:disabled{pointer-events: none;}
   .costing-table-next{
     tbody{
       td{
+        word-break: break-all;
         .mb-15{
           margin-bottom: 0px;
         }
@@ -3219,6 +3232,7 @@ opacity: 0.5;
   color: #256bd1;
   opacity: 1;
   cursor: pointer;
+
 }
 .tooltip-inner{
   background-color: #D0D8E5;
@@ -3594,11 +3608,17 @@ body {
   .form-control[disabled]{
     max-width: 280px;
     width: 280px;
+    @media screen and (max-width:$miniDesktop) {
+      width: 260px;
+    }
   }
   .form-group.inputbox.withBorder{
     input.form-control{
       max-width: 280px;
       width: 280px;
+      @media screen and (max-width:$miniDesktop) {
+        width: 260px;
+      }
     }
     label{
       display: none;
@@ -4279,6 +4299,10 @@ body{
   min-height: inherit;
   .empty-table-paecholder{
     min-height: calc(100vh - 350px);
+    @media screen and (max-width:$miniDesktop) {
+      min-height: calc(100vh - 300px);
+      
+    }
   }
   .filter-row-large{
     z-index: 11;
@@ -5152,7 +5176,8 @@ body{
         }
       .content-page{
         width: calc(100% - (205px * 80 / 100));
-        padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
+        // padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
+        padding: 21px 0 15px 0;
 
         .tab-pane{
           .filter-block {
@@ -5326,6 +5351,11 @@ body{
         background-size: contain;
       }
       .plus{
+        width: calc(13px * 80 /100);
+        height: calc(13px * 80 /100);
+        background-size: contain;
+      }
+      .swap{
         width: calc(13px * 80 /100);
         height: calc(13px * 80 /100);
         background-size: contain;
@@ -5716,7 +5746,8 @@ body{
         .Approved,
         .ApprovedBySimulation,
         .Rejected,
-        .History {
+        .History,
+        .ApprovedByAssembly {
           min-width: calc(90px * 80 / 100);
           height: calc(30px * 80 / 100);
           font-size: calc(14px * 80 / 100);
@@ -6474,7 +6505,120 @@ left: 17rem;
 // FG-Wise table css End
 .warning-section {
  position:absolute;
+ right: 190px;
  bottom: 0;
- left: -190px;
- white-space: wr;
+}
+.min-width-btn {
+  min-width: 143px;
+}
+.bs-tooltip-auto {
+  z-index: 1300;
+}
+.child-component-tooltip {
+  bottom: 23px;
+}
+.with-border-table {
+  border: none;
+  td {
+    border: 1px solid #C2CBE8 ;
+  }
+
+}
+.hide-border {
+  border: none;
+  table {
+    margin-bottom: 0;
+    border: 1px solid #3333 !important;
+    th {
+      border-bottom: none !important;
+    }
+    td {
+      border: 1px solid #3333;
+    }
+  }
+}
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
+}
+// <---------------START this code for tooltip we will use it in future-------------->
+// .custom-tooltip {
+//   position: absolute;
+//   top: 10px;
+//   width: 100%;
+//   height: auto;
+//   border: 1px solid #256bd1;
+//   border-top: 1px solid #256bd1;
+//   transition: opacity 0.1s;
+// }
+// .custom-tooltip p {
+//   margin: 3px auto;
+//   white-space: pre-wrap;
+//   color: #000000de !important;
+//   word-spacing: 1px;
+//   line-height: 1.5;
+//   padding: 5px 10px;
+//   font-size: 14px;
+//   border: 1px solid #256bd1;
+//   border-radius: 4px;
+//   width: fit-content;
+//   background-color: #fff;
+// }
+// <----------------END--------------->
+.verify-simulation-overlay {
+  padding-top: 105px;
+}
+.mb-width {
+  label {
+    width: fit-content;
+  }
+  min-width: 14.725rem;
+}
+
+// <--------START costing tooltip css -------->
+.costing-tooltip {
+  right: -16px;
+  top: 12px;
+}
+// <--------END costing tooltip css -------->
+@media screen and (max-width:$miniDesktop) {
+  .content-page {
+    padding: 15px 0 15px 0 !important;
+  }
+  .interest-rate-container {
+    padding:21px 15px 15px !important;
+  }
+  .add-interest-rate-footer.sf-btn-footer {
+    margin:0 -15px -15px -15px !important;
+  }
+  .cr-bg-tbl {
+       span {
+         font-size: 14px;
+       }
+  }
+  // <--------------START Part number showing on hover in costing sticky header --------->
+  .cr-part-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position:absolute;
+    border-top: none !important;
+    max-width: 120px;
+    padding-left: 5px !important;
+    &:hover {
+      span {
+        background-color:  #E7F2FC;
+      }
+      // white-space: pre-wrap;
+      text-overflow: none;
+      // max-width: 80px;
+      max-width: 100%;
+    }
+  }
+   // <--------------END Part number showing on hover in costing sticky header --------->
+}
+.align-table {
+  transform: translateY(-13px);
 }

@@ -22,7 +22,7 @@ import { getConfigurationKey } from '../../../helper'
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
-import { debounce } from '@material-ui/core'
+import { debounce } from 'lodash'
 
 const gridOptions = {};
 
@@ -222,19 +222,6 @@ function SimulationApprovalListing(props) {
 
         setShowPopup(true)
         setDeletedId(data)
-        const toastrConfirmOptions = {
-            onOk: () => {
-                dispatch(deleteDraftSimulation(data, res => {
-                    if (res.data.Result) {
-                        Toaster.success("Simulation token deleted successfully.")
-                        getTableData()
-                    }
-                }))
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`, toastrConfirmOptions);
 
     }
     const onPopupConfirm = () => {
@@ -255,6 +242,25 @@ function SimulationApprovalListing(props) {
         return cell !== null ? cell : '-'
     }
 
+    const conditionFormatter = (props) => {
+
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+        const status = props.node.data.Status;
+
+        if (status === DRAFT) {
+            return `Y`;
+        }
+        else if (status === APPROVED) {
+            return `R`
+        } else {
+            return `U`
+        }
+
+
+
+
+    }
 
     const renderVendor = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -338,7 +344,10 @@ function SimulationApprovalListing(props) {
         nextPage: <span className="next-page-pg"></span>, // Next page button text
         firstPage: <span className="first-page-pg"></span>, // First page button text
         lastPage: <span className="last-page-pg"></span>,
-
+        //exportCSVText: 'Download Excel',
+        //onExportToCSV: this.onExportToCSV,
+        //paginationShowsTotal: true,
+        //paginationShowsTotal: this.renderPaginationShowsTotal,
     }
 
     const sendForApproval = () => {
@@ -362,7 +371,21 @@ function SimulationApprovalListing(props) {
             }
         })
 
+        // selectedRowData.forEach((element, index, arr) => {
+        //     if (index > 0) {
+        //         if (element.TechnologyId !== arr[index - 1].TechnologyId) {
+        //             technologyCount = technologyCount + 1
+        //         } else {
+        //             return false
+        //         }
+        //     } else {
+        //         return false
+        //     }
+        // })
 
+        // if (technologyCount > 0) {
+        //     return Toaster.warning("Technology should be same for sending multiple costing for approval")
+        // }
 
         if (count > 0) {
             Toaster.warning("Reason should be same for sending multiple costing for approval")
@@ -444,15 +467,16 @@ function SimulationApprovalListing(props) {
     }
 
     const resetState = debounce(() => {
-     getTableData()
+        getTableData()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
    
     },500)
 
-
     const frameworkComponents = {
-
+        // totalValueRenderer: this.buttonFormatter,
+        // effectiveDateRenderer: this.effectiveDateFormatter,
+        // costingHeadRenderer: this.costingHeadFormatter,
         linkableFormatter: linkableFormatter,
         renderVendor: renderVendor,
         requestedByFormatter: requestedByFormatter,
@@ -462,6 +486,7 @@ function SimulationApprovalListing(props) {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
+        conditionFormatter: conditionFormatter
     };
 
 
@@ -481,6 +506,7 @@ function SimulationApprovalListing(props) {
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={sendForApproval}
+                                            title="Send For Approval"
                                         // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
@@ -503,7 +529,7 @@ function SimulationApprovalListing(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
-                                    style={{ height: '100%', width: '100%', }}
+                                    style={{ height: '100%', width: '100%',  }}
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
@@ -523,9 +549,9 @@ function SimulationApprovalListing(props) {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
-
-
-
+                                    
+                                    
+                                   
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
@@ -544,7 +570,7 @@ function SimulationApprovalListing(props) {
 
 
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
-                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="Status" headerName='Amendment Status'  ></AgGridColumn>}
+                                    {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
 
 
@@ -559,8 +585,8 @@ function SimulationApprovalListing(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="text-right w-100 pb-3 warning-section">
-                                    <WarningMessage message="It may take 5 minutes to update the status, please refresh." />
+                                <div className="text-right pb-3 warning-section">
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                 </div>
                                 {approveDrawer &&
                                     <ApproveRejectDrawer

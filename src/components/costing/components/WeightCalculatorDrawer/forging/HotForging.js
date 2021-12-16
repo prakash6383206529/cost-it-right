@@ -197,19 +197,19 @@ function HotForging(props) {
   const dropDown = [
     {
       label: 'Scale Loss',
-      value: 'scaleLoss',
+      value: 5,
     },
     {
       label: 'Trimming Loss',
-      value: 'trimmingLoss',
+      value: 6,
     },
     {
       label: 'Billet Heating Loss',
-      value: 'HeatingLoss',
+      value: 7,
     },
     {
       label: 'Bar Cutting Allowance',
-      value: 'cuttingAllowance',
+      value: 8,
     },
   ]
   return (
@@ -218,7 +218,8 @@ function HotForging(props) {
         <Col>
           <form noValidate className="form">
             <Col md="12" className={'mt25'}>
-              <div className="border pl-3 pr-3 pt-3">
+              <div className="border px-3 pt-3">
+                <Row>
                 <Col md="10">
                   <div className="left-border">
                     {'Input Weight Calculator:'}
@@ -226,7 +227,7 @@ function HotForging(props) {
                 </Col>
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Finished Weight`}
                         name={'finishedWeight'}
@@ -251,7 +252,7 @@ function HotForging(props) {
                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Total Machining Stock`}
                         name={'machiningStock'}
@@ -276,7 +277,7 @@ function HotForging(props) {
                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Forge Weight`}
                         name={'forgeWeight'}
@@ -402,7 +403,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col> */}
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Input Weight(UOM)`}
                         name={'inputWeight'}
@@ -427,7 +428,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Slug Weight`}
                         name={'slugWeight'}
@@ -452,7 +453,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Scrap Weight`}
                         name={'scrapWeight'}
@@ -477,7 +478,7 @@ function HotForging(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Scrap Cost`}
                         name={'scrapCost'}
@@ -504,6 +505,7 @@ function HotForging(props) {
                     </Col>
                   </Row>
                 </Col>
+                </Row>
                 <LossStandardTable
                   dropDownMenu={dropDown}
                   CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}

@@ -22,8 +22,6 @@ import BOMViewer from './BOMViewer';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
@@ -33,6 +31,8 @@ class AddAssemblyPart extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
+    this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
       isLoader: false,
@@ -106,6 +106,17 @@ class AddAssemblyPart extends Component {
               ProductGroup: productArray,
               oldProductGroup: productArray
             }, () => this.setState({ isLoader: false }))
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            if (this.dropzone.current !== null) {
+              this.dropzone.current.files = files
+            }
+
           }, 200)
         }
       })
@@ -251,6 +262,7 @@ class AddAssemblyPart extends Component {
       productGroupSelectList && productGroupSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ Text: item.Text, Value: item.Value })
+        return null;
       })
       return temp;
     }
@@ -368,6 +380,14 @@ class AddAssemblyPart extends Component {
 
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      this.dropzone.current.files.pop()
+      Toaster.warning("File size greater than 2 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      this.dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 
@@ -401,6 +421,11 @@ class AddAssemblyPart extends Component {
     if (FileId == null) {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
+    }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
     }
   }
 
@@ -442,7 +467,6 @@ class AddAssemblyPart extends Component {
       onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
-    // return Toaster.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -504,9 +528,9 @@ class AddAssemblyPart extends Component {
     if (isEditFlag) {
 
 
-      if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
-        DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
-        DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode && BOMChanged) {
+      if (DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && String(DataToCheck.Description) === String(values.Description) &&
+        String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
+        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.GroupCode) === String(values.GroupCode) && BOMChanged) {
         this.cancel()
         return false;
       }
@@ -544,20 +568,6 @@ class AddAssemblyPart extends Component {
 
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateAssemblyPart(updateData, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        }
-        // return Toaster.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions)
       }
 
 
@@ -622,6 +632,7 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
+    console.log('this.dropzone?.current?.files: ', this.dropzone?.current?.files);
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -881,13 +892,12 @@ class AddAssemblyPart extends Component {
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files &&
-                            this.state.files.length >= 3 ? (
-                            <div class="alert alert-danger" role="alert">
-                              Maximum file upload limit has been reached.
-                            </div>
-                          ) : (
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={this.dropzone}
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
@@ -923,7 +933,7 @@ class AddAssemblyPart extends Component {
                               }}
                               classNames="draper-drop"
                             />
-                          )}
+                          </div>
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>

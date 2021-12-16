@@ -153,14 +153,6 @@ class InterestRateListing extends Component {
   */
   deleteItem = (Id) => {
     this.setState({ showPopup: true, deletedId: Id })
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteItem(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    };
-    // return Toaster.confirm(MESSAGES.INTEREST_DELETE_ALERT, toastrConfirmOptions);
   }
 
   /**
@@ -454,7 +446,7 @@ class InterestRateListing extends Component {
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react interest-rate-container ${DownloadAccessibility ? "show-table-btn" : ""}`}>
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate

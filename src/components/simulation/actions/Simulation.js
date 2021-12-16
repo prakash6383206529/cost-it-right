@@ -203,6 +203,7 @@ export function runSimulationOnSelectedCosting(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -755,15 +756,15 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
     }
 }
 
-export function getAssemblySimulationList(token, plantId, rawMatrialId, callback) {
+export function getSimulatedAssemblyWiseImpactDate(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getAssemblySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?costingHead=${token.costingHead}&impactPartNumber=${token.impactPartNumber}&plantCode=${token.plantCode}&vendorId=${token.vendorId}&delta=${token.delta}&quantity=${token.quantity}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
                     type: GET_ASSEMBLY_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationImpactedCostings
+                    payload: response.data.DataList
                 })
                 callback(response)
             }

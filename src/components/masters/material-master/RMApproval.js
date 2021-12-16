@@ -15,7 +15,7 @@ import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
-import { debounce } from '@material-ui/core';
+import { debounce } from 'lodash'
 
 
 
@@ -388,8 +388,8 @@ function RMApproval(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="text-right w-100 pb-3 warning-section">
-                                  <WarningMessage message="It may take 5 minutes to update the status, please refresh." />
+                                <div className="text-right pb-3 warning-section">
+                                  <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                  </div>
                             </div>
                         </div>

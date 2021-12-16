@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { netHeadCostContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, getConfigurationKey, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
 import Switch from "react-switch";
 
 function IsolateReRender(control) {
@@ -35,6 +35,8 @@ function AddPackaging(props) {
   });
 
   const headCostData = useContext(netHeadCostContext)
+  const costData = useContext(costingInfoContext);
+
 
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
   const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
@@ -101,12 +103,12 @@ function AddPackaging(props) {
    */
   const calculateApplicabilityCost = (Text) => {
 
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
-    console.log('OperationCostTotal: ', OperationCostTotal);
-    console.log('ProcessCostTotal: ', ProcessCostTotal);
-    const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, } = headCostData;
+    
+    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
+    const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost +ConversionCostForCalculation
     const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
-    const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
+    const RMCC = NetRawMaterialsCost +ConversionCostForCalculation;
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
     switch (Text) {
@@ -130,8 +132,7 @@ function AddPackaging(props) {
         if (!PackageType) {
           setValue('PackagingCost', '')
         } else {
-          console.log("Coming in CC else");
-          setValue('PackagingCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(PackagingCostPercentage), getConfigurationKey().NoOfDecimalForPrice))
+          setValue('PackagingCost', checkForDecimalAndNull((ConversionCostForCalculation) * calculatePercentage(PackagingCostPercentage), getConfigurationKey().NoOfDecimalForPrice))
         }
         break;
 

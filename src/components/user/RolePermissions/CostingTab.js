@@ -95,7 +95,7 @@ class CostingTab extends Component {
                   </th>
 
                   <th className="crud-label">
-                    <div className='Reject'></div>
+                    <div className='CancelIcon'></div>
                     Reject
                   </th>
                 </>
@@ -373,7 +373,7 @@ class CostingTab extends Component {
     return (
       <div>
         <div className="row form-group grant-user-grid user-costing-tab">
-          <div className="col-md-12">
+          <div className="col-md-12 px-0">
             <Table className="table table-bordered" size="sm">
               <thead>
                 <tr>

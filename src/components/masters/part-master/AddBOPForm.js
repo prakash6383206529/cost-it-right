@@ -18,6 +18,7 @@ class AddBOPForm extends Component {
       BOPPart: [],
       isAddMore: false,
       selectedParts: [],
+      titleObj:{}
     }
   }
 
@@ -213,6 +214,7 @@ class AddBOPForm extends Component {
             </Col>
             <Col md="6">
               <Field
+                title={this.props.initialValues.Specification}
                 label={`Specification`}
                 name={"Specification"}
                 type="text"

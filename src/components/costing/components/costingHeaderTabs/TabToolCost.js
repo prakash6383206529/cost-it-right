@@ -389,30 +389,6 @@ function TabToolCost(props) {
                 {IsApplicableProcessWise &&
                   <Row>
                     <Col>
-                      {/* <BootstrapTable
-                        data={ToolsDataList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        className="table cr-brdr-main table-sm tool-cost-tab-process-table"
-                      //search
-                      // exportCSV
-                      //ignoreSinglePage
-                      //ref={'table'}
-                      //pagination
-                      >
-                        <TableHeaderColumn dataField="ToolOperationId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="BOMLevel" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'BOMLevel'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="PartNumber" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Part Number'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="ProcessOrOperation" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Process/Operation'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="ToolCategory" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Tool Category'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="ToolName" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Tool Name'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="Quantity" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Quantity'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="ToolCost" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'ToolCost'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="Life" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Life'}</TableHeaderColumn>
-                        <TableHeaderColumn width={100} dataField="NetToolCost" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Net Tool Cost'}</TableHeaderColumn>
-                      </BootstrapTable> */}
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
                         <div className="ag-grid-wrapper height-width-wrapper">
