@@ -235,7 +235,7 @@ function OperationCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OPERATION</button>}
+                <div className={'plus'}></div>OPER</button>}
             </Col>
           </Row>
           <Row>

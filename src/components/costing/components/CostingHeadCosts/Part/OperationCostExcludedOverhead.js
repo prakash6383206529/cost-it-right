@@ -237,7 +237,7 @@ function OperationCostExcludedOverhead(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OTHER OPERATION</button>}
+                <div className={'plus'}></div>OTHER OPER</button>}
             </Col>
           </Row>
           <Row>
