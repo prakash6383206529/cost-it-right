@@ -289,7 +289,8 @@ export default function costingReducer(state = initialState, action) {
         RMCCTabData: tempRMData
       };
     case SET_COSTING_DATALIST_BY_COSTINGID:
-      const Costingdata1 = action.payload
+      const Costingdata1 = action.payload??[]
+      
       return {
         ...state,
         loading: false,
@@ -564,9 +565,8 @@ export default function costingReducer(state = initialState, action) {
         loading:false,
         checkIsDataChange:action.payload
       }
-
-      case SET_ARRAY_FOR_COSTING:
-      console.log(...state.setArrayForCosting,"...state.setArrayForCosting");
+    case SET_ARRAY_FOR_COSTING:
+      
       let tempArray= [...state.setArrayForCosting,action.payload]
       return {
         ...state,

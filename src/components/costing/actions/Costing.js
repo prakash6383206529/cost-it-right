@@ -257,6 +257,7 @@ export function updateVBCSOBDetail(requestData, callback) {
  * @description GET COSTING DETAIL BY COSTING ID
  */
 export function getZBCCostingByCostingId(CostingId, callback) {
+  console.log('CostingId: ', CostingId);
   return (dispatch) => {
     if (CostingId !== '') {
       dispatch({
@@ -446,7 +447,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
           type: SET_RMCC_TAB_DATA,
           payload: TabData,
         });
-        //callback(response);
+        callback(response);
       } else {
         callback(response);
       }

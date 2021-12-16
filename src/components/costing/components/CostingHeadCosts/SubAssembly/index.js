@@ -41,8 +41,10 @@ function AssemblyPart(props) {
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
           }
-        
-          dispatch(setAllCostingInArray(Data.CostingChildPartDetails))
+          Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item=>{
+
+            dispatch(setAllCostingInArray(item))
+          })
           props.toggleAssembly(BOMLevel, PartNumber, Data)
         }
       }))
