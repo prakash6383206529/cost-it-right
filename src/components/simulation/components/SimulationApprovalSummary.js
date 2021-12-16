@@ -1066,12 +1066,12 @@ function SimulationApprovalSummary(props) {
                                         {'Approve'}
                                     </button>
 
-                                    {showFinalLevelButtons &&
+                                    {/* {showFinalLevelButtons &&
                                         <button
                                             type="button" className="mr5 user-btn" onClick={() => { }}                    >
                                             <div className={'save-icon'}></div>
                                             {'Approve & Push'}
-                                        </button>}
+                                        </button>} */}
                                 </Fragment>
                             </div>
                         </Row>
