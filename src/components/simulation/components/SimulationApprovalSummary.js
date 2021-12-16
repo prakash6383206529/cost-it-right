@@ -110,7 +110,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,DepartmentId } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,DepartmentId, } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -567,7 +567,7 @@ function SimulationApprovalSummary(props) {
         let temp = []
         costingList && costingList.map(item => {
             const vendor = item.VendorName.split('(')[1]
-            temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup: userDetails().DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+            temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup:simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
         })
         pushObj.LoggedInUserId = userLoggedIn
         pushObj.AmmendentDataRequests = temp
