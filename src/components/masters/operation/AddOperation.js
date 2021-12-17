@@ -626,8 +626,8 @@ class AddOperation extends Component {
                   <div className="col-md-6">
                     <h2>
                       {this.state.isEditFlag
-                        ? "Update Operation"
-                        : "Add Operation"}
+                        ? "Update OPER"
+                        : "OPER"}
                     </h2>
                   </div>
                 </div>

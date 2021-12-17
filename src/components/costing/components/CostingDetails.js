@@ -1814,7 +1814,7 @@ const nccDrawerToggle=()=>{
                               className={"user-btn"}
                               onClick={plantDrawerToggle}
                             >
-                              <div className={"plus"}></div>ADD PLANT
+                              <div className={"plus"}></div>PLANT
                             </button>
                           </Col>
                         </Row>
@@ -1950,7 +1950,7 @@ const nccDrawerToggle=()=>{
                                 className={"user-btn"}
                                 onClick={nccDrawerToggle}
                               >
-                                <div className={"plus"}></div>Add Vendor or Plant
+                                <div className={"plus"}></div>Vendor/Plant
                               </button>
                             ) : (
                               ""
@@ -2055,7 +2055,7 @@ const nccDrawerToggle=()=>{
                                 className={"user-btn"}
                                 onClick={vendorDrawerToggle}
                               >
-                                <div className={"plus"}></div>ADD VENDOR
+                                <div className={"plus"}></div>VENDOR
                               </button>
                             ) : (
                               ""
