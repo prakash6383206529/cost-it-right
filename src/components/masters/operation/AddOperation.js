@@ -612,7 +612,7 @@ class AddOperation extends Component {
                   <div className="col-md-6">
                     <h2>
                       {this.state.isEditFlag
-                        ? "Update Operation"
+                        ? "Update OPER"
                         : "OPER"}
                     </h2>
                   </div>
