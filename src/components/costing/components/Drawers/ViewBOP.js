@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
   const { viewBOPData } = props
-  const { BOPData, bopPHandlingCharges, bopHandlingPercentage,childPartBOPHandlingCharges,IsAssemblyCosting } = viewBOPData
+  const { BOPData, bopPHandlingCharges, bopHandlingPercentage, childPartBOPHandlingCharges, IsAssemblyCosting } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   useEffect(() => {
@@ -48,7 +48,7 @@ function ViewBOP(props) {
                 ></div>
               </Col>
             </Row>
-  
+
             <Row className="mx-0">
               <Col md="12">
                 <Row>
@@ -59,7 +59,7 @@ function ViewBOP(props) {
                 <Table className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
-                      <th>{`Part No.`}</th>
+                      {IsAssemblyCosting && <th>{`Part No.`}</th>}
                       <th>{`Insert Part No.`}</th>
                       <th>{`Insert Part Name`}</th>
                       <th>{`Currency`}</th>
@@ -73,7 +73,7 @@ function ViewBOP(props) {
                       viewBOPCost.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
+                            {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                             <td>{item.BOPPartNumber}</td>
                             <td>{item.BOPPartName}</td>
                             <td>{item.Currency}</td>
@@ -98,13 +98,13 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-               
+
             <Row className="mx-0">
               <Col md="12">
-               <br />
+                <br />
                 <Row>
                   <Col md="12">
-                    <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s Insert Handling Charge:':'Insert Handling Charge:'}`}</div>
+                    <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s Insert Handling Charge:' : 'Insert Handling Charge:'}`}</div>
                   </Col>
                 </Row>
                 <Table className="table cr-brdr-main" size="sm">
@@ -133,49 +133,49 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-           
+
             {
-            IsAssemblyCosting &&   
-            <Row className="mx-0">
-              <Col md="12">
-                <br />
-                <Row>
-                  <Col md="12">
-                    <div className="left-border">{'Part\'s Insert Handling Charge:'}</div>
-                  </Col>
-                </Row>
-                <Table className="table cr-brdr-main" size="sm">
-                  <thead>
-                    <tr>
-                      {IsAssemblyCosting && <th>{`Part No.`}</th>}
-                      <th>{`Percentage`}</th>
-                      <th className="costing-border-right">{`Handling Charges`}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {childPartBOPHandlingCharges &&
-                      childPartBOPHandlingCharges.map((item, index) => {
-                        return (
-                          <tr key={index}>
-                           {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>} 
-                            <td>{checkForDecimalAndNull(item.BOPHandlingPercentage,initialConfiguration.NoOfDecimalForPrice)}</td>
-                            <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>                          
-                          </tr>
-                        )
-                      })}
-                  {childPartBOPHandlingCharges && childPartBOPHandlingCharges.length === 0 && (
+              IsAssemblyCosting &&
+              <Row className="mx-0">
+                <Col md="12">
+                  <br />
+                  <Row>
+                    <Col md="12">
+                      <div className="left-border">{'Part\'s Insert Handling Charge:'}</div>
+                    </Col>
+                  </Row>
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
                       <tr>
-                        <td colSpan={7}>
-                          <NoContentFound title={EMPTY_DATA} />
-                        </td>
+                        {IsAssemblyCosting && <th>{`Part No.`}</th>}
+                        <th>{`Percentage`}</th>
+                        <th className="costing-border-right">{`Handling Charges`}</th>
                       </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>
-          }
-         </div>
+                    </thead>
+                    <tbody>
+                      {childPartBOPHandlingCharges &&
+                        childPartBOPHandlingCharges.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                              <td>{checkForDecimalAndNull(item.BOPHandlingPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                              <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            </tr>
+                          )
+                        })}
+                      {childPartBOPHandlingCharges && childPartBOPHandlingCharges.length === 0 && (
+                        <tr>
+                          <td colSpan={7}>
+                            <NoContentFound title={EMPTY_DATA} />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </Col>
+              </Row>
+            }
+          </div>
         </Container>
       </Drawer>
     </Fragment>

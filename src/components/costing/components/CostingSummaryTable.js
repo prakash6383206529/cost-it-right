@@ -32,6 +32,7 @@ const CostingSummaryTable = (props) => {
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
   const [isEditFlag, setIsEditFlag] = useState(false)
+  const [isAssemblyCosting, setIsAssemblyCosting] = useState(false)
   const [editObject, setEditObject] = useState({})
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
 
@@ -137,7 +138,7 @@ const CostingSummaryTable = (props) => {
   const viewBop = (index) => {
     setViewBOP(true)
     setIsViewConversionCost(false)
-    if (index != -1) {
+    if (index !== -1) {
       let data = viewCostingData[index].netBOPCostView
       let bopPHandlingCharges = viewCostingData[index].bopPHandlingCharges
       let bopHandlingPercentage = viewCostingData[index].bopHandlingPercentage
@@ -154,7 +155,7 @@ const CostingSummaryTable = (props) => {
   const viewConversionCost = (index) => {
     setIsViewConversionCost(true)
     setViewBOP(false)
-    if (index != -1) {
+    if (index !== -1) {
       let data = viewCostingData[index].netConversionCostView
       let netTransportationCostView = viewCostingData[index].netTransportationCostView
       let surfaceTreatmentDetails = viewCostingData[index].surfaceTreatmentDetails
@@ -169,6 +170,7 @@ const CostingSummaryTable = (props) => {
    */
   const viewRM = (index) => {
     let data = viewCostingData[index].netRMCostView
+    setIsAssemblyCosting(viewCostingData[index].IsAssemblyCosting)
     setIsViewRM(true)
     setIndex(index)
     setViewRMData(data)
@@ -304,7 +306,7 @@ const CostingSummaryTable = (props) => {
 
       dispatch(createZBCCosting(data, (res) => {
         if (res.data.Result) {
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => { 
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
             setPartInfo(res.data.Data)
 
             showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
@@ -344,8 +346,8 @@ const CostingSummaryTable = (props) => {
       dispatch(getZBCCostingByCostingId('', (res) => { }))
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
-          console.log('res: ', res);
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => { 
+
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, () => {
             showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
             setPartInfo(res.data.Data)
           }))
@@ -369,12 +371,12 @@ const CostingSummaryTable = (props) => {
       dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
 
         showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
-       }))
+      }))
     }
     if (type === VBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => { 
+      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
         setTimeout(() => {
-          
+
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
         }, 500);
 
@@ -493,7 +495,7 @@ const CostingSummaryTable = (props) => {
     setMultipleCostings(temp)
     setFlag(!flag)
   }
-  console.log(viewCostingData, "viewCostingData")
+
   const sendForApprovalData = (costingIds) => {
 
     let temp = viewApprovalData
@@ -787,7 +789,7 @@ const CostingSummaryTable = (props) => {
                                   <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                                   <span class="d-block">{data.partId}</span>
                                   <span class="d-block">{data.partName}</span>
-                                  <span class="d-block">{data.zbc === 0 ? data.plantName:data.destinationPlantName}</span>
+                                  <span class="d-block">{data.zbc === 0 ? data.plantName : data.destinationPlantName}</span>
 
                                 </td>
                               )
@@ -1387,6 +1389,7 @@ const CostingSummaryTable = (props) => {
             isOpen={isViewRM}
             viewRMData={viewRMData}
             closeDrawer={closeViewDrawer}
+            isAssemblyCosting={isAssemblyCosting}
             anchor={'right'}
             index={index}
             technologyId={technologyId}

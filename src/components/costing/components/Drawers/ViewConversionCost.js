@@ -164,7 +164,7 @@ function ViewConversionCost(props) {
                       <Table className="table cr-brdr-main" size="sm">
                         <thead>
                           <tr>
-                            {partNumberList.length === 0 && <th>{`Part No`}</th>}
+                            {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                             <th>{`Process Name`}</th>
                             <th>{`Process Description`}</th>
                             <th>{`Machine Name`}</th>
@@ -183,7 +183,7 @@ function ViewConversionCost(props) {
                             costingProcessCost.map((item, index) => {
                               return (
                                 <tr key={index}>
-                                  {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
+                                  {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                   <td>{item.ProcessName ? item.ProcessName : '-'}</td>
                                   <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
                                   <td>{item.MachineName ? item.MachineName : '-'}</td>
@@ -225,7 +225,7 @@ function ViewConversionCost(props) {
                         <Table className="table cr-brdr-main" size="sm">
                           <thead>
                             <tr>
-                              {partNumberList.length === 0 && <th>{`Part No`}</th>}
+                              {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                               <th>{`Operation Name`}</th>
                               <th>{`Operation Code`}</th>
                               <th>{`UOM`}</th>
@@ -242,7 +242,7 @@ function ViewConversionCost(props) {
                               costingOperationCost.map((item, index) => {
                                 return (
                                   <tr key={index}>
-                                    {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
+                                    {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                     <td>
                                       {item.OperationName ? item.OperationName : '-'}
                                     </td>
@@ -296,7 +296,7 @@ function ViewConversionCost(props) {
                         <Table className="table cr-brdr-main" size="sm">
                           <thead>
                             <tr>
-                              {partNumberList.length === 0 && <th>{`Part No`}</th>}
+                              {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                               <th>{`Operation Name`}</th>
                               <th>{`Operation Code`}</th>
                               <th>{`UOM`}</th>
@@ -313,7 +313,7 @@ function ViewConversionCost(props) {
                               othercostingOperationCost.map((item, index) => {
                                 return (
                                   <tr key={index}>
-                                    {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
+                                    {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                     <td>
                                       {item.OtherOperationName ? item.OtherOperationName : '-'}
                                     </td>
@@ -417,7 +417,7 @@ function ViewConversionCost(props) {
                       <Table className="table cr-brdr-main" size="sm">
                         <thead>
                           <tr>
-                            {partNumberList.length === 0 && <th>{`Part No`}</th>}
+                            {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
                             <th>{`Operation Name`}</th>
                             <th>{`Surface Area`}</th>
                             <th>{`UOM`}</th>
@@ -430,7 +430,7 @@ function ViewConversionCost(props) {
                             surfaceTreatmentCost.map((item, index) => {
                               return (
                                 <tr key={index}>
-                                  {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
+                                  {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                   <td>{item.OperationName ? item.OperationName : '-'}</td>
                                   <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                                   <td>{item.UOM ? item.UOM : '-'}</td>
