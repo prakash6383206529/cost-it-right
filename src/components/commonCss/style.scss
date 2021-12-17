@@ -2155,26 +2155,26 @@ body {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-        &.remark-wrapper {             // view description when user hover it 
-          &:hover {                         
-          position: absolute;
-          background-color: #ffffff;
-          white-space: pre-wrap;
-          overflow: visible;
-          left: 80px;
-          width: calc(100% - 80px);
-          // max-width: 80%;
-          padding: 5px;
-          top: 77%;
-          z-index: 10;
-          @media screen and (max-width:$miniDesktop) {
-            // max-width: 70%;
-          }
-          @media screen and (max-width:$middleDesktop) and (min-width:1367px) {
-            // max-width: 75%;
-          }
-        }
-      }
+      //   &.remark-wrapper {             // view description when user hover it 
+      //     &:hover {                         
+      //     position: absolute;
+      //     background-color: #ffffff;
+      //     white-space: pre-wrap;
+      //     overflow: visible;
+      //     left: 80px;
+      //     width: calc(100% - 80px);
+      //     // max-width: 80%;
+      //     padding: 5px;
+      //     top: 77%;
+      //     z-index: 10;
+      //     @media screen and (max-width:$miniDesktop) {
+      //       // max-width: 70%;
+      //     }
+      //     @media screen and (max-width:$middleDesktop) and (min-width:1367px) {
+      //       // max-width: 75%;
+      //     }
+      //   }
+      // }
 		}
 	}
 }
@@ -6416,8 +6416,8 @@ left: 17rem;
   }
 }
 .report-listing-page {
-  .loader_container {
-    z-index: 99;
+  .blue-before {
+    z-index: 5;
   }
 }
 .costing-table-container {
@@ -6481,7 +6481,6 @@ left: 17rem;
   }
 }
 
-  
 // FG-Wise table css Start
 .fgwise-table {
   .cr-brdr-main {
@@ -6543,30 +6542,6 @@ left: 17rem;
       width: 25%; 
    }
 }
-// <---------------START this code for tooltip we will use it in future-------------->
-// .custom-tooltip {
-//   position: absolute;
-//   top: 10px;
-//   width: 100%;
-//   height: auto;
-//   border: 1px solid #256bd1;
-//   border-top: 1px solid #256bd1;
-//   transition: opacity 0.1s;
-// }
-// .custom-tooltip p {
-//   margin: 3px auto;
-//   white-space: pre-wrap;
-//   color: #000000de !important;
-//   word-spacing: 1px;
-//   line-height: 1.5;
-//   padding: 5px 10px;
-//   font-size: 14px;
-//   border: 1px solid #256bd1;
-//   border-radius: 4px;
-//   width: fit-content;
-//   background-color: #fff;
-// }
-// <----------------END--------------->
 .verify-simulation-overlay {
   padding-top: 105px;
 }
@@ -6584,14 +6559,14 @@ left: 17rem;
 }
 // <--------END costing tooltip css -------->
 @media screen and (max-width:$miniDesktop) {
-  .content-page {
-    padding: 15px 0 15px 0 !important;
-  }
-  .interest-rate-container {
-    padding:21px 15px 15px !important;
-  }
-  .add-interest-rate-footer.sf-btn-footer {
-    margin:0 -15px -15px -15px !important;
+  // .content-page {
+  //   padding: 15px 0 15px 0 !important;
+  // }
+  .app-wrapper {
+    .user-page {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
   }
   .cr-bg-tbl {
        span {
@@ -6618,7 +6593,57 @@ left: 17rem;
     }
   }
    // <--------------END Part number showing on hover in costing sticky header --------->
+   .rm-table-body {
+   position: relative;   
+   .rm-part-name {
+    display: flex;
+    align-items: center;
+    top: 0;
+    bottom: 0;
+    &:hover {
+      background-color: #fff;
+      padding-right: 0;
+      border-top: 1px solid #C2CBE8 !important;
+    }
+  }
+  .text-help {
+    position:absolute;
+    margin: -2px 0;
+  }
+  }
+  .rm-name-head {
+    min-width: 125px;
+  }
 }
 .align-table {
   transform: translateY(-13px);
+}
+.btn-stciky-container {
+  position: sticky;
+  bottom: 0;
+  padding: 0 28px !important;
+}
+
+.rmcc-main-headings {
+  position: relative;
+  th {
+    position: sticky;
+    top: 0;
+    padding: 5px 15px !important;
+  }
+}
+.min-height-auto {
+  min-height: auto !important;
+}
+.forging-cal-table {
+  border: 1px solid #C2CBE8;
+  th {
+    padding: 0.71rem 0.45rem !important;
+    &:last-child {
+      min-width: 100px;
+    }
+  }
+  td {
+    font-size: 15px;
+  }
 }

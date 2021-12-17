@@ -162,7 +162,7 @@ function HotForging(props) {
   const calculateScrapCost = () => {
     const scrapWeight = Number(getValues('scrapWeight'))
     const scrapCost = checkForDecimalAndNull(scrapWeight * rmRowData.ScrapRate, trim)
-    setValue('scrapCost', scrapCost)
+    setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
     //Need to confirm this formula
   }
   /**

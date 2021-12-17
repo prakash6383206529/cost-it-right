@@ -105,7 +105,7 @@ function PackageCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD PACKAGING</button>}
+                <div className={'plus'}></div>PACKAGING</button>}
             </Col>
           </Row>
           <Row>
