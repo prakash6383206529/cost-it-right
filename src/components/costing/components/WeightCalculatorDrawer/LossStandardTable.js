@@ -315,7 +315,7 @@ function LossStandardTable(props) {
         </Col>
 
         <Col md="12">
-          <Table className="table mb-0" size="sm">
+          <Table className="table mb-0 forging-cal-table" size="sm">
             <thead>
               <tr>
                 <th>{`Type of Loss`}</th>

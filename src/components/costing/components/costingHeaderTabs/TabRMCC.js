@@ -1664,15 +1664,15 @@ function TabRMCC(props) {
                             <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`Insert Cost`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`CC`}</th>
                             <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
-                            <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM + CC Cost/Pc`}</th>
-                            {costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`RM + CC Cost/Assembly`}</th>}
+                            <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RMC + CC/Pc`}</th>
+                            {costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`RMC + CC/Assembly`}</th>}
                             {
                               costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{
                                 <button
                                   type="button"
                                   className={'user-btn add-oprn-btn'}
                                   onClick={bopHandlingDrawer}>
-                                  <div className={'plus'}></div>{`${CostingViewMode ? 'View Insert Handling' : 'InsertH'}`}</button>}
+                                  <div className={'plus'}></div>{`${CostingViewMode ? 'View Insert Handling' : 'Insert H'}`}</button>}
                               </th>
                             }
                           </tr>

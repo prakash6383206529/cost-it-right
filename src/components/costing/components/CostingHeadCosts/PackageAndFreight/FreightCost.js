@@ -94,7 +94,7 @@ function FreightCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD FREIGHT</button>}
+                <div className={'plus'}></div>FREIGHT</button>}
             </Col>
           </Row>
           <Row>
