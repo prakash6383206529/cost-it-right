@@ -962,7 +962,7 @@ class AddOverhead extends Component {
                         {!isHideCC && (
                           <Col md="4">
                             <Field
-                              label={`Overhead on CC (Machining) (%)`}
+                              label={`Overhead on CC (%)`}
                               name={"OverheadMachiningCCPercentage"}
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}

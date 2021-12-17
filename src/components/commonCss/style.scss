@@ -6513,6 +6513,12 @@ left: 17rem;
   right: -16px;
   top: 12px;
 }
+.rm-table-body {
+  .text-help {
+    position:absolute;
+    margin: -2px 0;
+  }
+}
 // <--------END costing tooltip css -------->
 @media screen and (max-width:$miniDesktop) {
   // .content-page {
@@ -6562,10 +6568,7 @@ left: 17rem;
       border-top: 1px solid #C2CBE8 !important;
     }
   }
-  .text-help {
-    position:absolute;
-    margin: -2px 0;
-  }
+  
   }
   .rm-name-head {
     min-width: 125px;
@@ -6602,4 +6605,7 @@ left: 17rem;
   td {
     font-size: 15px;
   }
+}
+.alert-danger, .attachment.images {
+  font-size: 15px;   //maximum file upload font
 }
