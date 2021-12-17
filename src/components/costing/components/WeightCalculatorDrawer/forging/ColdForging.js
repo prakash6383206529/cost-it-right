@@ -161,7 +161,7 @@ function ColdForging(props) {
       inputVolume * rmRowData.Density,
       trim,
     )
-    setValue('inputVolume', inputVolume)
+    setValue('inputVolume',checkForDecimalAndNull(inputVolume, getConfigurationKey().NoOfDecimalForInputOutput))
     setValue('inputWeight', inputWeight)
   }
   /**
@@ -201,7 +201,7 @@ function ColdForging(props) {
       forgingVolume * rmRowData.Density,
       trim,
     )
-    setValue('forgingVolume', forgingVolume)
+    setValue('forgingVolume', checkForDecimalAndNull(forgingVolume, getConfigurationKey().NoOfDecimalForInputOutput))
     setValue('grossForgingWeight', grossForgingWeight)
   }
   /**
@@ -739,7 +739,7 @@ function ColdForging(props) {
               {/* Table starts from here */}
 
               <Col>
-                <Table className="table" size="sm">
+                <Table className="table forging-cal-table" size="sm">
                   <thead>
                     <tr>
                       <th>{`Description`}</th>
