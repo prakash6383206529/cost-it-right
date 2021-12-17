@@ -145,7 +145,7 @@ function AssemblySurfaceTreatment(props) {
                 // DrawerToggle()
               }}
             >
-              <div className={'plus'}></div>Add Surface Treatment</button>)
+              <div className={'plus'}></div>Surface T.</button>)
           }
         </td>
       </tr>
