@@ -471,7 +471,7 @@ function TabDiscountOther(props) {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
       dropzone.current.files.pop()
-      Toaster.warning("File size greater than 5mb not allowed")
+      Toaster.warning("File size greater than 20 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
