@@ -6416,8 +6416,8 @@ left: 17rem;
   }
 }
 .report-listing-page {
-  .loader_container {
-    z-index: 99;
+  .blue-before {
+    z-index: 5;
   }
 }
 .costing-table-container {
@@ -6559,14 +6559,14 @@ left: 17rem;
 }
 // <--------END costing tooltip css -------->
 @media screen and (max-width:$miniDesktop) {
-  .content-page {
-    padding: 15px 0 15px 0 !important;
-  }
-  .interest-rate-container {
-    padding:21px 15px 15px !important;
-  }
-  .add-interest-rate-footer.sf-btn-footer {
-    margin:0 -15px -15px -15px !important;
+  // .content-page {
+  //   padding: 15px 0 15px 0 !important;
+  // }
+  .app-wrapper {
+    .user-page {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
   }
   .cr-bg-tbl {
        span {
