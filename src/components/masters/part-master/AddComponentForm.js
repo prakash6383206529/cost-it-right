@@ -8,6 +8,7 @@ import { getComponentPartSelectList, getDrawerComponentPartData, } from '../acti
 import { COMPONENT_PART } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
+import { set } from 'lodash';
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
@@ -17,6 +18,7 @@ class AddComponentForm extends Component {
       parentPart: [],
       isAddMore: false,
       selectedParts: [],
+      updateAsyncDropdown: false,
 
     }
   }
@@ -141,16 +143,22 @@ class AddComponentForm extends Component {
 
     })
     this.props.change('PartNumber', [{ label: '', value: '' }])
-
     this.myRef.current.select.state.value = []
+
     if (isAddMore) {
 
       this.props.setChildParts(childData)
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })
 
     } else {
 
       this.props.toggleDrawer('', childData)
     }
+
+    setTimeout(() => {
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })
+    }, 1000);
+
   }
 
   handleKeyDown = function (e) {
@@ -186,6 +194,9 @@ class AddComponentForm extends Component {
 
 
       });
+
+
+
     return (
       <>
         <form
@@ -200,7 +211,7 @@ class AddComponentForm extends Component {
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
-              <AsyncSelect name="PartNumber" ref={this.myRef} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {/* <Field
                 name="PartNumber"
                 type="text"
