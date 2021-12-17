@@ -185,7 +185,7 @@ function SurfaceTreatmentCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD SURFACE TREATMENT</button>
+                <div className={'plus'}></div>SURFACE T.</button>
             </Col>
           </Row>
           <Row>
