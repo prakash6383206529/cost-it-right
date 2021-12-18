@@ -815,7 +815,7 @@ function RawMaterialCost(props) {
                   onClick={DrawerToggle}
                   disabled={IsApplyMasterBatch}
                 >
-                  <div className={'plus'}></div>ADD RM
+                  <div className={'plus'}></div>RM
                 </button>
               }
             </Col>
@@ -828,7 +828,7 @@ function RawMaterialCost(props) {
                 <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
                   <thead>
                     <tr>
-                      <th>{`RM Name`}</th>
+                      <th className='rm-name-head'>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
@@ -849,8 +849,8 @@ function RawMaterialCost(props) {
                       gridData.map((item, index) => {
 
                         return (
-                          <tr key={index}>
-                            <td>{item.RMName}</td>
+                          <tr key={index} className='rm-table-body'>
+                            <td className='cr-part-name rm-part-name'>{item.RMName}</td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
