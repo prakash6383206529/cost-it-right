@@ -6533,6 +6533,12 @@ left: 17rem;
 .hide-border {
   border: none;
   table {
+    tbody {
+      &::before {
+        content: none !important;
+      }
+      border-bottom: none !important;
+    }
     margin-bottom: 0;
     border: 1px solid #3333 !important;
     th {
@@ -6541,6 +6547,9 @@ left: 17rem;
     td {
       border: 1px solid #3333;
     }
+  }
+  .fg-name-heading {
+    width: 21rem;
   }
 }
 .add-min-width {

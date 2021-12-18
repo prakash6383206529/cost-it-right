@@ -66,7 +66,7 @@ export function Fgwiseimactdata(props) {
                                 <tr>
                                     <th><span></span></th>
                                     <th className="text-center"><span>Revision No.</span></th>
-                                    <th><span>Name</span></th>
+                                    <th className='fg-name-heading'><span>Name</span></th>
                                     <th><span>Old Cost/Pc</span></th>
                                     <th><span>New Cost/pc</span></th>
                                     <th><span>Quantity</span></th>
@@ -86,7 +86,7 @@ export function Fgwiseimactdata(props) {
                                 return (<>
                                     <tbody>
                                         <tr className="accordian-with-arrow">
-                                            <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                            <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked }) }></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
                                             <td><span>{'-'}</span></td>
                                             <td><span>{item.PartName}</span></td>
                                             <td><span>{'-'}</span></td>
@@ -96,8 +96,8 @@ export function Fgwiseimactdata(props) {
 
                                             <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.ImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                            <td><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                            <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td>
+                                            <td colSpan="2"><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            {/* <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
 
                                         </tr>
 
@@ -112,12 +112,8 @@ export function Fgwiseimactdata(props) {
                                                     <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{item.Quantity}</span></td>
-                                                    <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-
-                                                    <td><span></span></td>
-                                                    <td><span></span></td>
-                                                    <td><span></span></td>
-                                                    <td><span> <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
+                                                    <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                    <td colSpan="5"><span> <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></Link></span></td>
 
                                                 </tr>)
                                         })}
