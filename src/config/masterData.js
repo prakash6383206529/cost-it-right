@@ -2416,7 +2416,7 @@ export const CostingSimulationDownload = [
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
-    { label: "Variance", value: "Variance" },
+    { label: "PO Variance", value: "Variance" },
     { label: "Old Basic Rate", value: "OldRMRate" },
     { label: 'New Basic Rate', value: 'NewRMRate' },
     { label: "ScrapRate", value: "OldScrapRate" },
