@@ -2411,17 +2411,19 @@ export const CostingSimulationDownload = [
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
     { label: "ECN Number", value: "ECNNumber" },
-    { label: "Revision Number", value: "RevisionNumber" },    
+    { label: "Revision Number", value: "RevisionNumber" },
     { label: "Finish Weight", value: "RawMaterialFinishWeight" },
     { label: "Gross Weight", value: "RawMaterialGrossWeight" },
     { label: "PO Price Old", value: "OldPOPrice" },
     { label: "PO Price New", value: "NewPOPrice" },
+    { label: "Variance", value: "Variance" },
     { label: "Old Basic Rate", value: "OldRMRate" },
     { label: 'New Basic Rate', value: 'NewRMRate' },
     { label: "ScrapRate", value: "OldScrapRate" },
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "RM Variance", value: "RMVariance" },
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2438,7 +2440,8 @@ export const CostingSimulationDownload = [
     { label: "NewDiscountCost", value: "NewDiscountCost" },
     { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
     { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
-    { label: "Variance", value: "Variance" }
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
