@@ -227,9 +227,7 @@ function ApproveRejectDrawer(props) {
       dispatch(
         getAllSimulationApprovalList(obj, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-          console.log('Data: ', Data);
-          if(Object.keys(Data).length >0){
-
+          if (Object.keys(Data).length > 0) {
             setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
           }
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
