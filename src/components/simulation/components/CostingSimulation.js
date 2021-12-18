@@ -620,7 +620,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='varianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMCSUM" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="RMVariance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' cellRenderer='varianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
