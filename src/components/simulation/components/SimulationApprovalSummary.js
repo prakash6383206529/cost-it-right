@@ -79,7 +79,7 @@ function SimulationApprovalSummary(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState({});
     const [textFilterSearch, setTextFilterSearch] = useState('')
-    
+
 
     const dispatch = useDispatch()
 
@@ -512,8 +512,10 @@ function SimulationApprovalSummary(props) {
 
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+
+        // var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(newPageSize));
+
     };
 
     const onFilterTextBoxChanged = (e) => {
