@@ -1731,6 +1731,10 @@ button.user-btn.pull-right {
  .cr-subtabs-head{background-color: #E0E9F5;}
  .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: 16px;padding: 10px 15px;border-top:2px solid transparent}
  .content-page .cr-subtabs-head.nav-tabs .nav-link.active,.content-page .cr-subtabs-head.nav-tabs .nav-link:hover{border-top: #d62c8c 2px solid;border-radius: 0;border-bottom: 0;background-color: #fff; }
+//  START Forging costing calculator
+.cr-subtabs-head.forging-tabs.nav-tabs .nav-link {border: none; border-top: #d62c8c 2px solid;}
+.cr-subtabs-head.forging-tabs.nav-tabs .nav-link:hover {border: none; border-top: #d62c8c 2px solid;}
+//  END Forging costing calculator
  .cr-prt-link{cursor: pointer;}
  .cr-costlabel{padding-top: 9px;padding-bottom: 7px;}
  .cr-innerwrap-td{background-color:#F1F4F7;}
