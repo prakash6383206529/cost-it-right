@@ -215,7 +215,7 @@ class AddComponentForm extends Component {
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
               <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
-              {this.state.isPartNoNotSelected && <div> <p>This field is required.</p></div>}
+              {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
               {/* <Field
                 name="PartNumber"
                 type="text"
