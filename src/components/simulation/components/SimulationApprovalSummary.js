@@ -89,7 +89,7 @@ function SimulationApprovalSummary(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-    
+
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -103,7 +103,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,DepartmentId } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -113,7 +113,7 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,DepartmentId:DepartmentId
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
 
             })
             setFiles(Attachements)
@@ -570,7 +570,7 @@ function SimulationApprovalSummary(props) {
                     <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
                         {/* <Errorbox customClass="" errorText="There is some error in your page" /> */}
                         <h2 className="heading-main">Approval Summary</h2>
-                        <ScrollToTop pointProp={"go-to-top"}/>
+                        <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
                             <Col md="8">
                                 <div className="left-border">
@@ -716,15 +716,15 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {fgWiseDataAcc && 
-                         <Fgwiseimactdata
-                         DisplayCompareCosting={DisplayCompareCosting}
-                         SimulationId={simulationDetail.SimulationId}
-                         headerName={headerName}
-                         impactType={'FgWise'}
-                     />
+                        {fgWiseDataAcc &&
+                            <Fgwiseimactdata
+                                DisplayCompareCosting={DisplayCompareCosting}
+                                SimulationId={simulationDetail.SimulationId}
+                                headerName={headerName}
+                                impactType={'FgWise'}
+                            />
                         }
-                       
+
                         <Row className="mt-4">
                             <Col md="10">
                                 <div className="left-border">{'Assembly wise Impact:'}</div>
@@ -741,7 +741,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
-                        
+
                         {assemblyWiseAcc && <AssemblyWiseImpact
                             headerName={headerNameAssembly}
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}
@@ -817,15 +817,20 @@ function SimulationApprovalSummary(props) {
 
                                                                 {
                                                                     String(SimulationTechnologyId) !== EXCHNAGERATE &&
-                                                                    <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
+                                                                    <>
+                                                                        <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="PO Variance"></AgGridColumn>
+                                                                    </>
                                                                 }
-                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                 {
                                                                     (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
                                                                     <>
-                                                                        <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
+
                                                                         <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance"></AgGridColumn>
                                                                     </>
                                                                 }
 
@@ -835,11 +840,12 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="PO Variance"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance"></AgGridColumn>
                                                                     </>
                                                                 }
-                                                                <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
                                                                 <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
