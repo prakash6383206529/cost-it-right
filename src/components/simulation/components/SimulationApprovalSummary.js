@@ -82,6 +82,8 @@ function SimulationApprovalSummary(props) {
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
     const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState({});
+    const [textFilterSearch, setTextFilterSearch] = useState('')
+    
 
     const dispatch = useDispatch()
 
@@ -555,9 +557,12 @@ function SimulationApprovalSummary(props) {
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e.target.value)
     }
 
-    const resetState = () => {
+    const resetState = (e) => {
+        gridApi.setQuickFilter('');
+        setTextFilterSearch('')
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -916,7 +921,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCostingSummary(!costingSummary) }}>
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" value={textFilterSearch} onClick={() => { setCostingSummary(!costingSummary) }}>
                                         {costingSummary ? (
                                             <i className="fa fa-minus" ></i>
                                         ) : (
@@ -934,18 +939,14 @@ function SimulationApprovalSummary(props) {
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                                        <div className="ag-grid-header">
-                                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                    <div className="ag-grid-wrapper height-width-wrapper">
+                                                        <div className="ag-grid-header d-flex">
+                                                            <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                         </div>
-                                                        
-                                                        <div
-                                                            className="ag-theme-material"
-                                                            style={{ height: '100%', width: '100%' }}
-                                                        >
+                                                        <div className="ag-theme-material">
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}

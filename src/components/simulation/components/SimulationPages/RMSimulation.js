@@ -36,6 +36,7 @@ function RMSimulation(props) {
     const [rowData, setRowData] = useState(null);
     const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
+    const [textFilterSearch, setTextFilterSearch] = useState('')
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -134,7 +135,12 @@ function RMSimulation(props) {
 
         setShowVerifyPage(false)
     }
-
+    const resetState = () => {
+        gridApi.setQuickFilter('');
+        setTextFilterSearch('')
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+    }
 
     /**
      * @method shearingCostFormatter
@@ -363,6 +369,7 @@ function RMSimulation(props) {
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e.target.value)
     }
     const cellChange = (props) => {
     }
@@ -440,9 +447,12 @@ function RMSimulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                    <div className="ag-grid-header">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <div className="ag-grid-wrapper height-width-wrapper">
+                                    <div className="ag-grid-header d-flex">
+                                        <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                         <div className="refresh mr-0"></div>
+                                       </button>
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact

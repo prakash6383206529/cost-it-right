@@ -20,6 +20,7 @@ function AssemblyWiseImpact(props) {
     const [loader, setloader] = useState(false);
     const [showTableData, setShowTableData] = useState(false);
     const [count, setCount] = useState(0);
+    const [textFilterSearch, setTextFilterSearch] = useState('')
     const dispatch = useDispatch();
 
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
@@ -65,8 +66,14 @@ function AssemblyWiseImpact(props) {
     };
 
     const resetState = () => {
-        gridOptions.columnApi.resetColumnState(null);
+        gridApi.setQuickFilter('');
+        setTextFilterSearch('')
+        gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+    }
+    const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e.target.value)
     }
     const defaultColDef = {
         resizable: true,
@@ -83,11 +90,14 @@ function AssemblyWiseImpact(props) {
         <div className={`ag-grid-react `}>
             {/* { this.props.loading && <Loader />} */}
             <Row>
-                <Col className="mb-3 d-flex justify-content-end">
-                    <div>
-                        <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
+                <Col className="mb-3">
+                <div className="ag-grid-header">
+                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
+                     <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
-                        </button>
+                     </button>
+                     </div>
+                    <div>     
                     </div>
                 </Col>
             </Row>
