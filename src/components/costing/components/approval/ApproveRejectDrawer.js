@@ -18,6 +18,7 @@ import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/acti
 import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
+import _ from 'lodash'
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -468,7 +469,11 @@ function ApproveRejectDrawer(props) {
               if (IsFinalLevel) {
                 let pushObj = {}
                 let temp = []
-                costingList && costingList.map(item => {
+                let uniqueArr = _.uniqBy(costingList, function(o){
+                  return o.CostingId;
+              });
+
+                uniqueArr && uniqueArr.map(item => {
                   const vendor = item.VendorName.split('(')[1]
                   temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup:simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
                   return null

@@ -34,6 +34,7 @@ import redcrossImg from '../../../assests/images/red-cross.png'
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
+import _ from 'lodash'
 const gridOptions = {};
 
 function SimulationApprovalSummary(props) {
@@ -565,7 +566,10 @@ function SimulationApprovalSummary(props) {
     const rePush = () => {
         let pushObj = {}
         let temp = []
-        costingList && costingList.map(item => {
+        let uniqueArr = _.uniqBy(costingList, function(o){
+            return o.CostingId;
+        });
+        uniqueArr && uniqueArr.map(item => {
             const vendor = item.VendorName.split('(')[1]
             temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup:simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
         })
