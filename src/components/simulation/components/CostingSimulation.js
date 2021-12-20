@@ -128,7 +128,7 @@ function CostingSimulation(props) {
                         case Number(RMDOMESTIC):
                             item.OldRMCSUM = reducerOldRMPrice(Data.SimulatedCostingList)
                             item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList)
-                            item.RMVariance = Number(item.OldRMCSUM) - Number(item.NewRMCSum)
+                            item.RMVariance = checkForDecimalAndNull(Number(item.OldRMCSUM) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
 
                             break;
 
@@ -634,10 +634,10 @@ function CostingSimulation(props) {
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="POVariance" headerName=' PO Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMCSUM" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="Variance" headerName='RM Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' ></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
