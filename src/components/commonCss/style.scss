@@ -6555,21 +6555,7 @@ left: 17rem;
     }
   }
    // <--------------END Part number showing on hover in costing sticky header --------->
-   .rm-table-body {
-   position: relative;   
-   .rm-part-name {
-    display: flex;
-    align-items: center;
-    top: 0;
-    bottom: 0;
-    &:hover {
-      background-color: #fff;
-      padding-right: 0;
-      border-top: 1px solid #C2CBE8 !important;
-    }
-  }
-  
-  }
+
   .rm-name-head {
     min-width: 125px;
   }
