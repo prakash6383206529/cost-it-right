@@ -68,11 +68,11 @@ class AddBOPForm extends Component {
   renderListing = (label) => {
     const { boughtOutPartSelectList } = this.props;
     const temp = [];
-    const { BOMViewerData } = this.props;
+    const { BOMViewerData } = this.props;                    //UPDATING BOMVIEWER DATA ON EVERY RENDERING OF DROPDOWN
     let tempArr = [];
 
     BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === BOUGHTOUTPART) {
+      if (el.PartType === BOUGHTOUTPART) {                           //UPDATING BOUGHT OUT PART IN TEMPARR
         tempArr.push(el.PartId)
       }
       return null;

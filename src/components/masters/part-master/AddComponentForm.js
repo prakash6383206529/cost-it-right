@@ -8,7 +8,7 @@ import { getComponentPartSelectList, getDrawerComponentPartData, } from '../acti
 import { COMPONENT_PART } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
 import TooltipCustom from '../../common/Tooltip';
-import { set } from 'lodash';
+
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
@@ -148,7 +148,7 @@ class AddComponentForm extends Component {
     if (isAddMore) {
 
       this.props.setChildParts(childData)
-      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
 
     } else {
 
@@ -156,7 +156,7 @@ class AddComponentForm extends Component {
     }
 
     setTimeout(() => {
-      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })      // UPDATING RANDOM STATE AFTER 1 SECOND FOR REFRESHING THE ASYNC SELECT DROPDOWN AFTER CLICKING ON  ADD MORE BUTTON
     }, 1000);
 
   }
