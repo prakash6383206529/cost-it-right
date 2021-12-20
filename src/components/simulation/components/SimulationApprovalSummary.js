@@ -396,14 +396,13 @@ function SimulationApprovalSummary(props) {
 
     const varianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) {
-            return checkForDecimalAndNull(row.OldRMPrice - row.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        } else if (String(SimulationTechnologyId) === EXCHNAGERATE) {
-            return checkForDecimalAndNull(row.OldExchangeRate - row.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
-
-        }
+        return checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
     }
 
+    const POVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
+    }
 
     const oldCCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -556,7 +555,8 @@ function SimulationApprovalSummary(props) {
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
         newCCFormatter: newCCFormatter,
-        oldCCFormatter: oldCCFormatter
+        oldCCFormatter: oldCCFormatter,
+        POVarianceFormatter: POVarianceFormatter
     };
 
     const errorBoxClass = () => {
@@ -842,7 +842,7 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="PO Variance"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
@@ -851,7 +851,7 @@ function SimulationApprovalSummary(props) {
 
                                                                         <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {
@@ -868,10 +868,10 @@ function SimulationApprovalSummary(props) {
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="PO Variance"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>

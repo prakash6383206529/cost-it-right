@@ -120,9 +120,8 @@ function OtherCostingSimulation(props) {
                 setSelectedCostingIds(item.CostingId)
             }
             if (Number(master) === Number(EXCHNAGERATE)) {
-                item.Variance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
-            } else if (Number(master) === Number(COMBINED_PROCESS)) {
-                item.Variance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
+                item.POVariance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
+                item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
             }
             return null
         })
@@ -686,33 +685,9 @@ function OtherCostingSimulation(props) {
                                                         <>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldCostFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newCostFormatter'></AgGridColumn>
-                                                        </>
-                                                    }
-                                                    {String(master) === String(COMBINED_PROCESS) &&
-                                                        <>
-                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldNetCC" headerName='Old CC' cellRenderer='oldCCFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewNetCC" headerName='New CC' cellRenderer='newCCFormatter'></AgGridColumn>
-
-                                                            <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter'></AgGridColumn>
-                                                            {/* <AgGridColumn width={140} field="OldNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewNetOverheadAndProfitCost" hide={hideDataColumn.hideOveheadAndProfit} cellRenderer='netOverheadAndProfitFormatter'></AgGridColumn> */}
+                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='POVarianceFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
                                                     <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
