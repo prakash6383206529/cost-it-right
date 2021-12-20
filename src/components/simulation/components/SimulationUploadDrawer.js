@@ -115,7 +115,7 @@ class SimulationUploadDrawer extends Component {
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let uploadfileName = fileObj?.name;
-        let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
+        let fileType = uploadfileName?.substr(uploadfileName.indexOf('.'));
 
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
@@ -138,26 +138,28 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
-                                if (index > 0) {
-                                    if (val[11] !== '' && val[11] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[11] === '' && val[15] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[11] !== '' && val[11] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        obj[fileHeads[i]] = el;
-                                        return null;
-                                    })
-                                    fileData.push(obj)
-                                    obj = {}
+                                        if (val[11] === '' && val[15] === '') {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
 
+                                    }
                                 }
                                 return null;
                             })
@@ -165,26 +167,28 @@ class SimulationUploadDrawer extends Component {
 
                         case Number(RMIMPORT):
                             resp.rows.map((val, index) => {
-                                if (index > 0) {
-                                    if (val[11] !== '' && val[11] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[11] === '' && val[13] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[11] !== '' && val[11] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        obj[fileHeads[i]] = el;
-                                        return null;
-                                    })
-                                    fileData.push(obj)
-                                    obj = {}
+                                        if (val[11] === '' && val[13] === '') {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
 
+                                    }
                                 }
                                 return null;
                             })
@@ -192,26 +196,28 @@ class SimulationUploadDrawer extends Component {
 
                         case Number(SURFACETREATMENT):
                             resp.rows.map((val, index) => {
-                                if (index > 0) {
-                                    if (val[8] !== '' && val[8] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[8] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[8] !== '' && val[8] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        obj[fileHeads[i]] = el;
-                                        return null;
-                                    })
-                                    fileData.push(obj)
-                                    obj = {}
+                                        if (val[8] === '') {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
 
+                                    }
                                 }
                                 return null;
                             })
@@ -219,106 +225,112 @@ class SimulationUploadDrawer extends Component {
 
                         case Number(OPERATIONS):
                             resp.rows.map((val, index) => {
-                                if (index > 0) {
-                                    if (val[8] !== '' && val[8] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[8] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[8] !== '' && val[8] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        obj[fileHeads[i]] = el;
-                                        return null;
-                                    })
-                                    fileData.push(obj)
-                                    obj = {}
+                                        if (val[8] === '') {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
 
+                                    }
                                 }
                                 return null;
                             })
                             break;
                         case Number(MACHINERATE):
                             resp.rows.map((val, index) => {
-                                if (index > 0) {
-                                    if (val[9] !== '' && val[9] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[9] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[9] !== '' && val[9] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        obj[fileHeads[i]] = el;
-                                        return null;
-                                    })
-                                    fileData.push(obj)
-                                    obj = {}
+                                        if (val[9] === '') {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
 
+                                    }
                                 }
                                 return null;
                             })
                             break;
                         case Number(BOPDOMESTIC):
                             resp.rows.map((val, index) => {
-                                console.log(val, 'VAL')
-                                if (index > 0) {
-                                    if (val[8] !== '' && val[8] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[8] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[8] !== '' && val[8] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        obj[fileHeads[i]] = el;
-                                        return null;
-                                    })
-                                    fileData.push(obj)
-                                    obj = {}
+                                        if (val[8] === '') {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
 
+                                    }
                                 }
                                 return null;
                             })
                             break;
                         case Number(BOPIMPORT):
                             resp.rows.map((val, index) => {
-                                console.log(val, 'VAL')
-                                if (index > 0) {
-                                    if (val[8] !== '' && val[8] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[8] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[8] !== '' && val[8] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        obj[fileHeads[i]] = el;
-                                        return null;
-                                    })
-                                    fileData.push(obj)
-                                    obj = {}
+                                        if (val[8] === '') {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
 
+                                    }
                                 }
                                 return null;
                             })

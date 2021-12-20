@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -88,6 +88,18 @@ function CostingSimulation(props) {
     }, [])
 
 
+    const reducerOldRMPrice = (array) => {
+        const arr = array.reduce((accumulator, el) => {
+            return accumulator + el.OldRMPrice
+        }, 0)
+        return arr
+    }
+    const reducerNewRMPrice = (array) => {
+        const arr = array.reduce((accumulator, el) => {
+            return accumulator + el.NewRMPrice
+        }, 0)
+        return arr
+    }
     const getCostingList = (plantId = '', rawMatrialId = '') => {
         dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
             if (res.data.Result) {
@@ -105,12 +117,26 @@ function CostingSimulation(props) {
                         setSelectedCostingIds(item.CostingId)
                     }
                     item.Variance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
+                    //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
+                    switch (Number(selectedMasterForSimulation.value)) {
+                        case Number(RMIMPORT):
+                        case Number(RMDOMESTIC):
+                            item.OldRMCSUM = reducerOldRMPrice(Data.SimulatedCostingList)
+                            item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList)
+                            item.RMVariance = checkForDecimalAndNull(Number(item.OldRMCSUM) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+
+                            break;
+
+                        default:
+                            break;
+                    }
 
                 })
                 let uniqeArray = []
                 const map = new Map();
                 for (const item of Data.SimulatedCostingList) {
                     if (!map.has(item.CostingNumber)) {
+
                         map.set(item.CostingNumber, true);    // set any value to Map
                         uniqeArray.push(item);
                     }
@@ -393,7 +419,7 @@ function CostingSimulation(props) {
     const varianceFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell
+        return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
     const hideColumn = (props) => {
         setHideDataColumn({
@@ -586,16 +612,15 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={130} field="RMSpec" headerName='RM Specs' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={130} field="RMCode" headerName='RM Code.' cellRenderer='revisionFormatter'></AgGridColumn>
 
                                                     <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                     <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldRMPrice" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewRMPrice" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldRMCSUM" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' ></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
