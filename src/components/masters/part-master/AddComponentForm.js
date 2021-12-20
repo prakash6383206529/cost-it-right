@@ -146,11 +146,17 @@ class AddComponentForm extends Component {
     if (isAddMore) {
 
       this.props.setChildParts(childData)
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
 
     } else {
 
       this.props.toggleDrawer('', childData)
     }
+
+    setTimeout(() => {
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })      // UPDATING RANDOM STATE AFTER 1 SECOND FOR REFRESHING THE ASYNC SELECT DROPDOWN AFTER CLICKING ON  ADD MORE BUTTON
+    }, 1000);
+
   }
 
   handleKeyDown = function (e) {
