@@ -25,6 +25,8 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
+import _ from 'lodash'
+
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -133,7 +135,8 @@ function CostingSimulation(props) {
                         case Number(RMDOMESTIC):
                             item.OldRMCSUM = reducerOldRMPrice(Data.SimulatedCostingList)
                             item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList)
-                            item.RMVariance = checkForDecimalAndNull(Number(item.OldRMCSUM) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSUM) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMVariance = checkForDecimalAndNull(Number(item.OldRMPrice) - Number(item.NewRMPrice), getConfigurationKey().NoOfDecimalForPrice)
 
                             break;
 
@@ -476,8 +479,24 @@ function CostingSimulation(props) {
         </ExcelSheet>);
     }
 
-    const renderColumn = () => returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
-
+    const renderColumn = () => {
+        let arrayOFCorrectObjIndividual = []
+        let tempArr = []
+        selectedRowData.map((item) => {
+            tempArr.push(item?.PartNo)
+            return null
+        })
+        tempArr && tempArr.map((itemOut) => {
+            let tem = []
+            costingList && costingList.map((item) => {
+                if (itemOut === item.PartNo) {
+                    tem.push(item)
+                }
+            })
+            arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(tem);
+        })
+        return returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList.length > 0 ? costingList : [])
+    }
 
     useEffect(() => {
         if (userDetails().Role === 'SuperAdmin') {
@@ -645,8 +664,8 @@ function CostingSimulation(props) {
                                                     {isRMDomesticOrRMImport && <>
                                                         <AgGridColumn width={140} field="OldRMCSUM" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' ></AgGridColumn>
+                                                        {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
                                                         <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
