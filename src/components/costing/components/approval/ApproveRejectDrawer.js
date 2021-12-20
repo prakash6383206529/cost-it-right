@@ -4,10 +4,10 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap, } from '../../../costing/actions/Approval'
-import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getConfigurationKey, getPOPriceAfterDecimal, loggedInUserId, userDetails } from '../../../../helper'
+import { TextAreaHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs'
+import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { EMPTY_GUID, INR, FILE_URL, RMDOMESTIC, RMIMPORT, REASON_ID } from '../../../../config/constants'
+import { EMPTY_GUID, INR, FILE_URL, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
@@ -366,7 +366,6 @@ function ApproveRejectDrawer(props) {
           if (res.data.Result) {
             if (showFinalLevelButtons) {
               Toaster.success('The costing has been approved')
-              // const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
               let pushdata = {
                 effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
                 vendorCode: dataSend[0].VendorCode ? dataSend[0].VendorCode : '',
