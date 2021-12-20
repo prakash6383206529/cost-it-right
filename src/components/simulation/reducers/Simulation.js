@@ -20,7 +20,7 @@ import {
 
 const initialState = {
 
-
+count:1
 
 
 
@@ -147,7 +147,6 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 simulationAssemblyList: action.payload
             }
-
 
         default:
             return state;

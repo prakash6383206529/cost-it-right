@@ -703,8 +703,8 @@ export function getverifyCombinedProcessSimulationList(token, callback) {
 }
 
 export function getFgWiseImpactData(data, callback) {
-
     return (dispatch) => {
+        
         const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, headers);
         request.then((response) => {
             if (response.data.Result) {
@@ -986,6 +986,7 @@ export function getSimulatedAssemblyWiseImpactDate(token, callback) {
         })
     }
 }
+
 
 
 

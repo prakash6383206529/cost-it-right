@@ -10,7 +10,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, storeSimulationId } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -526,7 +526,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className="ag-grid-wrapper height-width-wrapper">
+                        <div className="ag-grid-wrapper height-width-wrapper min-height-auto ">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
