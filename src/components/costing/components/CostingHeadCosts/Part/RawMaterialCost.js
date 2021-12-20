@@ -835,7 +835,7 @@ function RawMaterialCost(props) {
                       {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "190px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
-                      {isScrapRecoveryPercentageApplied && <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th>}
+                      {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery %`}</th>}
                       {costData.TechnologyName === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
                       {/* //Add i here for MB+ */}
@@ -849,8 +849,8 @@ function RawMaterialCost(props) {
                       gridData.map((item, index) => {
 
                         return (
-                          <tr key={index} className='rm-table-body'>
-                            <td className='cr-part-name rm-part-name'>{item.RMName}</td>
+                          <tr key={index} className=''>
+                            <td className='rm-part-name'>{item.RMName}</td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
