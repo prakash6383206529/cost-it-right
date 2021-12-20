@@ -99,7 +99,7 @@ function PartSurfaceTreatment(props) {
               //onClick={DrawerToggle}
               onClick={() => toggle(item.BOMLevel, item.PartNumber)}
             >
-              <div className={'plus'}></div>Add Surface Treatment</button>)
+              <div className={'plus'}></div>Surface T.</button>)
           }
         </td>
       </tr>
