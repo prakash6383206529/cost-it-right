@@ -112,11 +112,12 @@ class SOBListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  buttonFormatter = (params) => {
     const { EditAccessibility, } = this.props;
+    const cellValue = params?.valueFormatted ? params.valueFormatted : params?.value;
     return (
       <>
-        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
       </>
     )
   }
