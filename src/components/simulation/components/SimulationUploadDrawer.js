@@ -363,7 +363,7 @@ class SimulationUploadDrawer extends Component {
                             break;
                         case Number(COMBINED_PROCESS):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one basic rate.')
+                                Toaster.warning('Please fill at least one Conversion Cost.')
                                 return false
                             }
                             break;
