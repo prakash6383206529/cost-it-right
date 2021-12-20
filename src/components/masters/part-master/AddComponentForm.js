@@ -17,6 +17,8 @@ class AddComponentForm extends Component {
       parentPart: [],
       isAddMore: false,
       selectedParts: [],
+      updateAsyncDropdown: false,
+      isPartNoNotSelected: false,
 
     }
   }
@@ -50,7 +52,7 @@ class AddComponentForm extends Component {
   */
   handlePartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ part: newValue }, () => {
+      this.setState({ part: newValue, isPartNoNotSelected: false }, () => {
         const { part } = this.state;
         this.props.getDrawerComponentPartData(part.value, res => { })
       });
@@ -66,7 +68,7 @@ class AddComponentForm extends Component {
   */
   handleParentPartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ parentPart: newValue });
+      this.setState({ parentPart: newValue, });
     } else {
       this.setState({ parentPart: [], });
     }
@@ -121,6 +123,12 @@ class AddComponentForm extends Component {
     const { part, isAddMore } = this.state;
     const { DrawerPartData } = this.props;
 
+    if (part.length <= 0) {
+      this.setState({ isPartNoNotSelected: true })      // IF PART NO IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY
+      return false
+    }
+    this.setState({ isPartNoNotSelected: false })
+
     let childData = {
       PartNumber: part ? part : [],
       Position: { "x": 600, "y": 50 },
@@ -140,6 +148,7 @@ class AddComponentForm extends Component {
       part: []
 
     })
+
     this.props.change('PartNumber', [{ label: '', value: '' }])
 
     this.myRef.current.select.state.value = []
@@ -205,7 +214,8 @@ class AddComponentForm extends Component {
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
-              <AsyncSelect name="PartNumber" ref={this.myRef} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              {this.state.isPartNoNotSelected && <div> <p>This field is required.</p></div>}
               {/* <Field
                 name="PartNumber"
                 type="text"
