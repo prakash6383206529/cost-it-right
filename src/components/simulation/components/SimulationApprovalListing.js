@@ -511,7 +511,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader && <LoaderCustom />}
+                            {isLoader  && <LoaderCustom customClass={"simulation-history-loader"}/>}
                             <Row className="pt-4 blue-before">
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
