@@ -52,6 +52,7 @@ function SimulationApprovalListing(props) {
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
+    const [simulationDetail,setSimulationDetail] = useState([])
     const [isLoader, setIsLoader] = useState(true)
     const isSmApprovalListing = props.isSmApprovalListing;
 
@@ -395,6 +396,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning("Reason should be same for sending multiple costing for approval")
             return false
         } else {
+            setSimulationDetail({DepartmentId:selectedRowData[0].DepartmentId})
             setReasonId(selectedRowData[0].ReasonId)
             setApproveDrawer(true)
         }
@@ -502,7 +504,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader && <LoaderCustom />}
+                            {isLoader  && <LoaderCustom customClass={"simulation-history-loader"}/>}
                             <Row className="pt-4 blue-before">
 
 
@@ -558,7 +560,7 @@ function SimulationApprovalListing(props) {
 
 
                                 >
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
@@ -606,6 +608,7 @@ function SimulationApprovalListing(props) {
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
+                                        simulationDetail={simulationDetail}
 
                                     />
                                 }
