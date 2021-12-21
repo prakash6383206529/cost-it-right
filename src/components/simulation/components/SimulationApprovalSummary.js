@@ -34,7 +34,7 @@ import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import { SimulationUtils } from '../SimulationUtils'
-import { SimulationApprovalSummaryDownload } from '../../../config/masterData'
+import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -329,7 +329,7 @@ function SimulationApprovalSummary(props) {
 
     const renderColumn = () => {
 
-        return returnExcelColumn(SimulationApprovalSummaryDownload, costingList.length > 0 ? costingList : [])
+        return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOAD, costingList.length > 0 ? costingList : [])
     }
 
 
@@ -340,7 +340,7 @@ function SimulationApprovalSummary(props) {
         temp = SimulationUtils(TempData)    // common function 
 
 
-        return (<ExcelSheet data={temp} name={'Costing'}>
+        return (<ExcelSheet data={temp} name={'Costing Summary'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
     }
