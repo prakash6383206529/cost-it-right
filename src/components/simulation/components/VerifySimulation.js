@@ -301,10 +301,10 @@ function VerifySimulation(props) {
     }
 
     const runSimulation = debounce(() => {
-        // if (selectedRowData.length === 0) {
-        //     Toaster.warning('Please select atleast one costing.')
-        //     return false
-        // }
+        if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one costing.')
+            return false
+        }
 
         let obj = {};
         obj.SimulationId = simulationId
