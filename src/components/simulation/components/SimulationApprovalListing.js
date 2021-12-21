@@ -52,6 +52,8 @@ function SimulationApprovalListing(props) {
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
+    const [simulationDetail,setSimulationDetail] = useState([])
+    const [isLoader, setIsLoader] = useState(true)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -83,8 +85,11 @@ function SimulationApprovalListing(props) {
             // partNo: partNo,
             // createdBy: createdBy,
         }
+        setIsLoader(true)
+        dispatch(getSimulationApprovalList(filterData, (res) => {
+            setIsLoader(false)
 
-        dispatch(getSimulationApprovalList(filterData, (res) => { }))
+        }))
     }
 
     const renderDropdownListing = (label) => {
@@ -391,6 +396,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning("Reason should be same for sending multiple costing for approval")
             return false
         } else {
+            setSimulationDetail({DepartmentId:selectedRowData[0].DepartmentId})
             setReasonId(selectedRowData[0].ReasonId)
             setApproveDrawer(true)
         }
@@ -470,8 +476,8 @@ function SimulationApprovalListing(props) {
         getTableData()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-   
-    },500)
+
+    }, 500)
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
@@ -498,6 +504,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
+                            {isLoader && <LoaderCustom />}
                             <Row className="pt-4 blue-before">
 
 
@@ -529,7 +536,7 @@ function SimulationApprovalListing(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
-                                    style={{ height: '100%', width: '100%',  }}
+                                    style={{ height: '100%', width: '100%', }}
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
@@ -549,9 +556,9 @@ function SimulationApprovalListing(props) {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
-                                    
-                                    
-                                   
+
+
+
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
@@ -601,6 +608,7 @@ function SimulationApprovalListing(props) {
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
+                                        simulationDetail={simulationDetail}
 
                                     />
                                 }
