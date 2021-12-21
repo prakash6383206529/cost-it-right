@@ -6174,13 +6174,11 @@ body{
     }
   }
 }
-.simulation-history {
-   .token-no-grid {
-     .ag-cell-value {
-       position: absolute;
-       left: 38px;
-     }
-   }
+.token-no-grid {
+ .ag-cell-value {
+   position: absolute;
+   left: 38px;
+ }
 }
 .unset-height {
   min-height: auto !important;
@@ -6545,5 +6543,5 @@ left: 17rem;
 }
 .version {
   color: #256bd1;
-  margin-right: 8px;
+  margin-right: 15px;
 }
