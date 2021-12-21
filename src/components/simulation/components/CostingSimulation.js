@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useForm, Controller, } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
+import { BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { getComparisionSimulationData, getCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -24,6 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
+
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -79,6 +80,11 @@ function CostingSimulation(props) {
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
 
+    const isSurfaceTreatmentOrOperation = ((Number(master) === Number(SURFACETREATMENT)) || (Number(master) === Number(OPERATIONS)));
+    const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)));
+    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)))
+    const isMachineRate = Number(master) === (Number(MACHINERATE));
+
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -123,7 +129,8 @@ function CostingSimulation(props) {
                         case Number(RMDOMESTIC):
                             item.OldRMCSUM = reducerOldRMPrice(Data.SimulatedCostingList)
                             item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList)
-                            item.RMVariance = checkForDecimalAndNull(Number(item.OldRMCSUM) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSUM) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMVariance = checkForDecimalAndNull(Number(item.OldRMPrice) - Number(item.NewRMPrice), getConfigurationKey().NoOfDecimalForPrice)
 
                             break;
 
@@ -467,8 +474,28 @@ function CostingSimulation(props) {
         </ExcelSheet>);
     }
 
-    const renderColumn = () => returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? selectedRowData : costingList && costingList.length > 0 ? costingList : [])
+    const renderColumn = () => {
+        let arrayOFCorrectObjIndividual = []
+        let tempArr = []
+        // ********** EXTRACT PART NO. FROM SELECTED ROWS IN AN ARRAY ********** */
+        selectedRowData.map((item) => {
+            tempArr.push(item?.PartNo)
+            return null
+        })
 
+        //********** APPLY MAP ON PART NO ARRAY | COMPARE WITH REDUCER'S ALL PART NO. ONE BY ONE | CONDITION - TRUE -> PUSH IN ARRAY  ********** */
+        tempArr && tempArr.map((itemOut) => {
+            let temp = []
+            costingList && costingList.map((item) => {
+                if (itemOut === item.PartNo) {
+                    temp.push(item)
+                }
+            })
+            // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
+            arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
+        })
+        return returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList.length > 0 ? costingList : [])
+    }
 
     useEffect(() => {
         if (userDetails().Role === 'SuperAdmin') {
@@ -612,19 +639,39 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-
-                                                    <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
-                                                    <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
+                                                    {isRMDomesticOrRMImport && <>
+                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
+                                                    </>}
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldRMCSUM" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' ></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
+
+                                                    {isRMDomesticOrRMImport && <>
+                                                        <AgGridColumn width={140} field="OldRMCSUM" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' ></AgGridColumn>
+                                                        {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
+                                                        <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
+                                                    </>}
+
+                                                    {isBOPDomesticOrImport && <>
+                                                        <AgGridColumn width={140} field="OldBasicRate" headerName='Old Basic Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewBasicRate" headerName='New Basic Rate' ></AgGridColumn>
+                                                    </>}
+
+                                                    {isMachineRate && <>
+                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
+                                                    </>}
+
+                                                    {isSurfaceTreatmentOrOperation && <>
+                                                        <AgGridColumn width={140} field="OldRate" headerName='Old Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRate" headerName='New Rate' ></AgGridColumn>
+                                                    </>}
+
                                                     <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Old Overhead'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='New Overhead'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter' headerName='Old Profit'></AgGridColumn>
