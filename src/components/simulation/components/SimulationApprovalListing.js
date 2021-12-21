@@ -53,6 +53,7 @@ function SimulationApprovalListing(props) {
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
+    const [isLoader, setIsLoader] = useState(true)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -86,8 +87,11 @@ function SimulationApprovalListing(props) {
             // partNo: partNo,
             // createdBy: createdBy,
         }
+        setIsLoader(true)
+        dispatch(getSimulationApprovalList(filterData, (res) => {
+            setIsLoader(false)
 
-        dispatch(getSimulationApprovalList(filterData, (res) => { }))
+        }))
     }
 
     const renderDropdownListing = (label) => {
@@ -475,8 +479,8 @@ function SimulationApprovalListing(props) {
         getTableData()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-   
-    },500)
+
+    }, 500)
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
@@ -505,6 +509,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
+                            {isLoader && <LoaderCustom />}
                             <Row className="pt-4 blue-before">
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
@@ -534,7 +539,7 @@ function SimulationApprovalListing(props) {
                                 className="ag-theme-material"
                             >
                                 <AgGridReact
-                                    style={{ height: '100%', width: '100%',  }}
+                                    style={{ height: '100%', width: '100%', }}
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
@@ -553,6 +558,7 @@ function SimulationApprovalListing(props) {
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
+
                                 >
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
