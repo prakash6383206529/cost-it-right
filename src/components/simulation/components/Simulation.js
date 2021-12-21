@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation,MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation } from '../../../config/masterData';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation,MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation,OverheadProfitSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
@@ -31,6 +31,8 @@ import TooltipCustom from '../../common/Tooltip';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
+import OPSimulation from './SimulationPages/OPSimulation';
+import OverheadListing from '../../masters/overhead-profit-master/OverheadListing'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -221,6 +223,8 @@ function Simulation(props) {
                 return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} apply={editTable} />)
             case SURFACETREATMENT:
                 return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            // case BOPIMPORT:
+            //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -246,6 +250,8 @@ function Simulation(props) {
                 return returnExcelColumn(BOPDomesticSimulation, tableData && tableData.length > 0 ? tableData : [])
             case BOPIMPORT:
                 return returnExcelColumn(BOPImportSimulation, tableData && tableData.length > 0 ? tableData : [])
+            // case BOPIMPORT:
+            //     return returnExcelColumn(OverheadProfitSimulation, tableData && tableData.length > 0 ? tableData : [])
             default:
                 return 'foo';
         }
@@ -627,6 +633,13 @@ function Simulation(props) {
     const openEditPage = () => {
         setShowEditTable(true)
     }
+    const openEditPageReload = () => {
+        setShowEditTable(false)
+        setTimeout(() => {
+
+            setShowEditTable(true)
+        }, 1);
+    }
 
     const editMasterPage = (page) => {
         switch (page) {
@@ -650,6 +663,8 @@ function Simulation(props) {
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             case BOPIMPORT:
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            // case BOPIMPORT:
+            //     return <OPSimulation isOperation={true} openEditPageReload={openEditPageReload} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }
@@ -793,7 +808,6 @@ function Simulation(props) {
                                         </>
                                     }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
-
 
                                 </div>
                             </div>
