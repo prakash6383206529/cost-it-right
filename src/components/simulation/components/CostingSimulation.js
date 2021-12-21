@@ -502,18 +502,22 @@ function CostingSimulation(props) {
     const renderColumn = () => {
         let arrayOFCorrectObjIndividual = []
         let tempArr = []
+        // ********** EXTRACT PART NO. FROM SELECTED ROWS IN AN ARRAY ********** */
         selectedRowData.map((item) => {
             tempArr.push(item?.PartNo)
             return null
         })
+
+        //********** APPLY MAP ON PART NO ARRAY | COMPARE WITH REDUCER'S ALL PART NO. ONE BY ONE | CONDITION - TRUE -> PUSH IN ARRAY  ********** */
         tempArr && tempArr.map((itemOut) => {
-            let tem = []
+            let temp = []
             costingList && costingList.map((item) => {
                 if (itemOut === item.PartNo) {
-                    tem.push(item)
+                    temp.push(item)
                 }
             })
-            arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(tem);
+            // ************ CONCAT ALL DATA IN SINGLE ARRAY *********** */
+            arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
         })
         return returnExcelColumn(CostingSimulationDownload, selectedRowData.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList.length > 0 ? costingList : [])
     }
