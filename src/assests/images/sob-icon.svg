@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <g id="sob-icon" transform="translate(-1800 -753)">
+    <g id="Rectangle_2013" data-name="Rectangle 2013" transform="translate(1800 753)" fill="#7959f6" stroke="#7959f6" stroke-width="1" opacity="0.2">
+      <rect width="32" height="32" rx="4" stroke="none"/>
+      <rect x="0.5" y="0.5" width="31" height="31" rx="3.5" fill="none"/>
+    </g>
+    <g id="pie2" transform="translate(1804 757)">
+      <path id="Path_16406" data-name="Path 16406" d="M0,0H24V24H0Z" fill="none"/>
+      <path id="Path_16407" data-name="Path 16407" d="M11,2.05V13H21.95A10,10,0,1,1,11,2.05ZM13,.543A11.5,11.5,0,0,1,23.457,11H13Z" fill="#7959f6"/>
+    </g>
+  </g>
+</svg>

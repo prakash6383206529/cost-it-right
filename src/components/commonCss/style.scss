@@ -956,6 +956,7 @@ input.form-control{
 .Create,
 .Copy,
 .Approve,
+.SOB,
 .Run,
 .Save,
 .Add-file,
@@ -1671,6 +1672,13 @@ button.user-btn.pull-right {
   width: 32px;
   height: 32px;
   background: transparent url("../../assests/images/Approve.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+.SOB {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/sob-icon.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
 }
@@ -3187,7 +3195,7 @@ button:disabled{pointer-events: none;}
     filter: opacity(0.5);
   }
 }
-.CalculatorIcon:disabled,.Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled{
+.CalculatorIcon:disabled,.Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .SOB:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled{
 border: none !important;
 opacity: 0.5;
 }
@@ -4969,6 +4977,7 @@ body{
       .Create,
       .Copy,
       .Approve,
+      .SOB,
       .Run,
       .Save,
       .Add-file,
@@ -6532,6 +6541,12 @@ left: 17rem;
 .hide-border {
   border: none;
   table {
+    tbody {
+      &::before {
+        content: none !important;
+      }
+      border-bottom: none !important;
+    }
     margin-bottom: 0;
     border: 1px solid #3333 !important;
     th {
@@ -6540,6 +6555,9 @@ left: 17rem;
     td {
       border: 1px solid #3333;
     }
+  }
+  .fg-name-heading {
+    width: 21rem;
   }
 }
 .add-min-width {
