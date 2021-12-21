@@ -58,6 +58,7 @@ function RMSimulation(props) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
+
     }, [])
 
     const verifySimulation = debounce(() => {
@@ -141,10 +142,10 @@ function RMSimulation(props) {
         setShowVerifyPage(false)
     }
     const resetState = () => {
-        gridApi.setQuickFilter('');
+        gridApi?.setQuickFilter('');
         setTextFilterSearch('')
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
     }
 
     /**
@@ -357,6 +358,7 @@ function RMSimulation(props) {
     };
 
     const onGridReady = (params) => {
+
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         window.screen.width >= 1600 && params.api.sizeColumnsToFit();
@@ -372,8 +374,9 @@ function RMSimulation(props) {
     };
 
     const onFilterTextBoxChanged = (e) => {
-        gridApi.setQuickFilter(e.target.value);
-        setTextFilterSearch(e.target.value)
+
+        gridApi?.setQuickFilter(e?.target?.value);
+        setTextFilterSearch(e?.target?.value)
     }
     const cellChange = (props) => {
 
@@ -456,8 +459,8 @@ function RMSimulation(props) {
                                     <div className="ag-grid-header d-flex">
                                         <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                         <div className="refresh mr-0"></div>
-                                       </button>
+                                            <div className="refresh mr-0"></div>
+                                        </button>
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
