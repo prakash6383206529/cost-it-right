@@ -514,7 +514,7 @@ function ApprovalListing(props) {
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
                         title: EMPTY_DATA,
-                        imagClass:"imagClass"
+                        imagClass: "imagClass"
                       }}
                       frameworkComponents={frameworkComponents}
                       suppressRowClickSelection={true}
@@ -549,7 +549,7 @@ function ApprovalListing(props) {
                       </select>
                     </div>
                     <div className="text-right pb-3 warning-section">
-                         <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                      <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                     </div>
                   </div>
                 </div>
