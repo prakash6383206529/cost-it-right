@@ -2483,7 +2483,7 @@ export const COMBINEDPROCESSSIMULATION = [
 ]
 
 
-export const SimulationApprovalSummaryDownload = [
+export const SIMULATIONAPPROVALSUMMARYDOWNLOAD = [
 
     { label: "Costing Id", value: "CostingId" },
     { label: "RawMaterial Grade", value: "RMGrade" },
