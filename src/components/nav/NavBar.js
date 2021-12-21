@@ -46,8 +46,8 @@ class SideBar extends Component {
       isLoader: false,
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
     };
   }
 
@@ -118,17 +118,17 @@ class SideBar extends Component {
       AccessToken: userData.Token,
       UserId: userData.LoggedInUserId,
     };
-    this.setState({showPopup:true, updatedObj:requestData})
-    
+    this.setState({ showPopup: true, updatedObj: requestData })
+
   };
- 
-  onPopupConfirm = (e)=> {
-    const {updatedObj} = this.state
+
+  onPopupConfirm = (e) => {
+    const { updatedObj } = this.state
     e.preventDefault()
     this.props.logoutUserAPI(updatedObj, () => this.props.logUserOut());
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
    * @method user toggle
@@ -695,9 +695,9 @@ class SideBar extends Component {
               </button>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
-                <li className="nav-item d-xl-inline-block version">
-                 V1.1.1D
-                </li>
+                  <li className="nav-item d-xl-inline-block version">
+                    V1.1.2D
+                  </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
@@ -773,7 +773,7 @@ class SideBar extends Component {
 
         </div>
         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message= {`Are you sure do you want to logout?`} />
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
       </nav>
     )
