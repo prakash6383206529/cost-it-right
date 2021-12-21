@@ -23,6 +23,8 @@ import {
     GET_ASSEMBLY_SIMULATION_LIST,
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
+    SET_DATA_TEMP,
+    GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -775,6 +777,46 @@ export function getSimulatedAssemblyWiseImpactDate(token, callback) {
     }
 }
 
+export function setData(valdataTemp) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_DATA_TEMP,
+            payload: valdataTemp,
+        });
+    }
+}
 
+export function getVerifyOverheadProfitSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getVerifyOverheadProfitSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedOverheadProfitCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedOverheadProfitCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 
 

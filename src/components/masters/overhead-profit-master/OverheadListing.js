@@ -23,6 +23,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -44,7 +45,8 @@ class OverheadListing extends Component {
             vendorName: [],
             overheadAppli: [],
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            selectedRowData: []
         }
     }
 
@@ -357,12 +359,41 @@ class OverheadListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+        const onRowSelect = () => {
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (this.props.isSimulation) {
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(length)
 
+                this.props.apply(selectedRows)
+            }
+            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+        // const onFloatingFilterChanged = (p) => {
+        //     this.gridApi.deselectAll()
+        // }
+        const isFirstColumn = (params) => {
+            if (this.props.isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
 
         };
 
@@ -458,6 +489,9 @@ class OverheadListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                // onFilterModified={onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
@@ -522,6 +556,7 @@ export default connect(mapStateToProps, {
     getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OverheadListing',
     enableReinitialize: true,

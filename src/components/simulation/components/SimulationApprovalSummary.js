@@ -28,11 +28,18 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
+import ReactExport from 'react-export-excel';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
+import { SimulationUtils } from '../SimulationUtils'
+import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
+
 const gridOptions = {};
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -60,7 +67,6 @@ function SimulationApprovalSummary(props) {
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
     const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
-
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
@@ -83,7 +89,7 @@ function SimulationApprovalSummary(props) {
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData.length >= 0 ? false : true)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
 
@@ -318,6 +324,25 @@ function SimulationApprovalSummary(props) {
         }
         setCostingList(temp)
 
+    }
+
+
+    const renderColumn = () => {
+
+        return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOAD, costingList.length > 0 ? costingList : [])
+    }
+
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+
+        let temp = []
+        temp = SimulationUtils(TempData)    // common function 
+
+
+        return (<ExcelSheet data={temp} name={'Costing Summary'}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
     }
 
     const VerifyImpact = () => {
@@ -707,7 +732,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        <Row >
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
@@ -732,7 +757,7 @@ function SimulationApprovalSummary(props) {
                             />
                         }
 
-                        <Row className="mt-4">
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'Assembly wise Impact:'}</div>
                             </Col>
@@ -757,7 +782,7 @@ function SimulationApprovalSummary(props) {
                         />}
                         {/* FG wise Impact section end */}
 
-                        <Row>
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'Summary:'}</div>
                             </Col>
@@ -777,13 +802,19 @@ function SimulationApprovalSummary(props) {
                         {costingSummary &&
                             <>
                                 <div className={`ag-grid-react`}>
+                                    { }
                                     <Row className="pb-2">
                                         <Col md="12">
                                             <Row>
                                                 <Col>
                                                     <div className="ag-grid-wrapper height-width-wrapper">
                                                         <div className="ag-grid-header d-flex">
+
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                                {renderColumn()}
+                                                            </ExcelFile>
                                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
@@ -873,7 +904,7 @@ function SimulationApprovalSummary(props) {
                             </>
                         }
 
-                        <Row className="mt-3">
+                        <Row className="mt-2">
                             <Col md="10">
                                 <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
@@ -886,12 +917,12 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
 
-                        <Row className="mb-4">
+                        <Row>
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-2'>
                             <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
                             {false && <Col md="12" className="px-4">
                                 <label>Upload Attachment (upload up to 2 files)</label>
@@ -961,13 +992,6 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </div>
                         </Row>
-                        {/* Costing Summary page here */}
-                        {/* page starts */}
-
-
-
-
-
                         <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
