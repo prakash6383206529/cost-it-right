@@ -52,6 +52,7 @@ function SimulationApprovalListing(props) {
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
+    const [simulationDetail,setSimulationDetail] = useState([])
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -391,6 +392,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning("Reason should be same for sending multiple costing for approval")
             return false
         } else {
+            setSimulationDetail({DepartmentId:selectedRowData[0].DepartmentId})
             setReasonId(selectedRowData[0].ReasonId)
             setApproveDrawer(true)
         }
@@ -601,6 +603,7 @@ function SimulationApprovalListing(props) {
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
+                                        simulationDetail={simulationDetail}
 
                                     />
                                 }
