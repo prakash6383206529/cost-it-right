@@ -399,6 +399,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning("Reason should be same for sending multiple costing for approval")
             return false
         } else {
+            setSimulationDetail({DepartmentId:selectedRowData[0].DepartmentId})
             setReasonId(selectedRowData[0].ReasonId)
             setSimulationDetail({DepartmentId:selectedRowData[0].DepartmentId})
             setApproveDrawer(true)
@@ -611,9 +612,6 @@ function SimulationApprovalListing(props) {
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
-                                    // vendorId={vendorIdState}
-                                    // SimulationTechnologyId={SimulationTechnologyIdState}
-                                    // SimulationType={simulationTypeState}
                                     />
                                 }
                             </div>
