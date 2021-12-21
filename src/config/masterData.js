@@ -2432,6 +2432,27 @@ export const CostingSimulationDownload = [
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOAD = [
+
+    { label: "Costing Id", value: "CostingId" },
+    { label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+    { label: "RM Cost Old", value: "OldRMPrice" },
+    { label: "RM Cost New", value: "NewRMPrice" },
+    { label: "RM Variance", value: "Variance" },
+
+
+]
+
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
     { label: "BoughtOutPartNumber", value: "BoughtOutPartNumber", },
