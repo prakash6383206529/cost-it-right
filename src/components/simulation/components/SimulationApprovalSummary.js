@@ -63,7 +63,6 @@ function SimulationApprovalSummary(props) {
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
     const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
-
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
@@ -89,7 +88,7 @@ function SimulationApprovalSummary(props) {
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData.length >= 0 ? false: true)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
 
@@ -727,7 +726,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        <Row >
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
@@ -749,8 +748,8 @@ function SimulationApprovalSummary(props) {
                          SimulationId={simulationDetail.SimulationId}
                      />
                         }
-                         {/* FG wise Impact section end */}
-                        <Row className="mt-4">
+
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'Assembly wise Impact:'}</div>
                             </Col>
@@ -776,7 +775,7 @@ function SimulationApprovalSummary(props) {
 }
                       
 
-                        <Row>
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'Summary:'}</div>
                             </Col>
@@ -899,7 +898,7 @@ function SimulationApprovalSummary(props) {
                             </>
                         }
 
-                        <Row className="mt-3">
+                        <Row className="mt-2">
                             <Col md="10">
                                 <div id="fg-compare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
@@ -912,7 +911,7 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
 
-                        <Row className="mb-4">
+                        <Row>
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
@@ -925,13 +924,6 @@ function SimulationApprovalSummary(props) {
                                 <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} showAttachment={true} />
                             </Col>
                         </Row>
-                        {/* Costing Summary page here */}
-                        {/* page starts */}
-
-
-
-
-
                         <Row className="mb-4">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
