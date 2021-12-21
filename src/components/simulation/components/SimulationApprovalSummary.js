@@ -30,12 +30,19 @@ import { pushAPI } from '../../simulation/actions/Simulation'
 import { MESSAGES } from '../../../config/message';
 import AttachmentSec from '../../costing/components/approval/AttachmentSec'
 import { Errorbox } from '../../common/ErrorBox';
+import ReactExport from 'react-export-excel';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import _ from 'lodash'
+import { SimulationUtils } from '../SimulationUtils'
+import { SimulationApprovalSummaryDownload } from '../../../config/masterData'
+
 const gridOptions = {};
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -88,7 +95,7 @@ function SimulationApprovalSummary(props) {
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData.length >= 0 ? false: true)
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData.length >= 0 ? false : true)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
 
@@ -309,6 +316,25 @@ function SimulationApprovalSummary(props) {
         }
         setCostingList(temp)
 
+    }
+
+
+    const renderColumn = () => {
+
+        return returnExcelColumn(SimulationApprovalSummaryDownload, costingList.length > 0 ? costingList : [])
+    }
+
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+
+        let temp = []
+        temp = SimulationUtils(TempData)    // common function 
+
+
+        return (<ExcelSheet data={temp} name={'Costing'}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
     }
 
     const VerifyImpact = () => {
@@ -794,14 +820,20 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <div className={`ag-grid-react re-summary-table`}>
+                                <div className={`ag-grid-react`}>
+                                    { }
                                     <Row className="pb-2">
                                         <Col md="12">
                                             <Row>
                                                 <Col>
                                                     <div className="ag-grid-wrapper height-width-wrapper">
                                                         <div className="ag-grid-header d-flex">
+
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                                {renderColumn()}
+                                                            </ExcelFile>
                                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
