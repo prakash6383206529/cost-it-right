@@ -360,7 +360,7 @@ class UserRegistration extends Component {
               city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
               // TechnologyLevelGrid:
             })
-
+            this.setState({ city: { label: this.props.registerUserData.CityName, value: this.props.registerUserData.CityId } })
             if (Data.IsAdditionalAccess) {
               this.getUserPermission(data.UserId)
             }
