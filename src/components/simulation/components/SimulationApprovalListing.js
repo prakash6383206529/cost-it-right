@@ -88,7 +88,7 @@ function SimulationApprovalListing(props) {
             // createdBy: createdBy,
         }
         setIsLoader(true)
-        dispatch(getSimulationApprovalList(filterData, (res) => {
+        dispatch(getSimulationApprovalList(filterData, (res) => { 
             setIsLoader(false)
 
         }))
@@ -294,15 +294,47 @@ function SimulationApprovalListing(props) {
     const onRowSelect = (row, isSelected, e) => {
 
         let arr = []
+        let tempArrDepartmentId = []
+        let tempArrIsFinalLevelButtonShow = []
+        let tempArrIsPushedButtonShow = []
         var selectedRows = gridApi.getSelectedRows();
+        let tempArrReason = []
+        let tempArrTechnology = []
 
         selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
+            tempArrDepartmentId.push(item.DepartmentId)
+            tempArrIsFinalLevelButtonShow.push(item.IsFinalLevelButtonShow)
+            tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
+            tempArrReason.push(item.ReasonId)
+            tempArrTechnology.push(item.TechnologyName)
         })
 
         if (!allEqual(arr)) {
-            Toaster.warning('Please select costing of similar Status.')
+            Toaster.warning('Please select costing which have same status')
             gridApi.deselectAll()
+        } else if (!allEqual(tempArrDepartmentId)) {
+            Toaster.warning('Please choose token which have same department')
+            gridApi.deselectAll()
+        } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
+            Toaster.warning('Please choose token which are at same level of approval')
+            gridApi.deselectAll()
+        }
+        // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************
+        // else if (!allEqual(tempArrIsPushedButtonShow)) {
+        //     Toaster.warning('Please choose costing for same push')
+        //     gridApi.deselectAll()
+        // }
+        // ********** UNCOMMENT THIS IN MINDA ONLY ********** */
+        // else if (!allEqual(tempArrReason)) {
+        //     Toaster.warning('Please choose costing which have same reason')
+        //     gridApi.deselectAll()
+        // }
+        else if (!allEqual(tempArrTechnology)) {
+            Toaster.warning('Technology should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        } else {
+            setReasonId(selectedRows[0]?.ReasonId)
         }
 
         setIsPendingForApproval(arr.includes("Pending For Approval") ? true : false)
@@ -358,52 +390,13 @@ function SimulationApprovalListing(props) {
     }
 
     const sendForApproval = () => {
-        let count = 0
-        let technologyCount = 0
 
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        setIsApprovalDrawer(true)
-
-        selectedRowData.forEach((element, index, arr) => {
-            if (index > 0) {
-                if (element.ReasonId !== arr[index - 1].ReasonId) {
-                    count = count + 1
-                } else {
-                    return false
-                }
-            } else {
-                return false
-            }
-        })
-
-        // selectedRowData.forEach((element, index, arr) => {
-        //     if (index > 0) {
-        //         if (element.TechnologyId !== arr[index - 1].TechnologyId) {
-        //             technologyCount = technologyCount + 1
-        //         } else {
-        //             return false
-        //         }
-        //     } else {
-        //         return false
-        //     }
-        // })
-
-        // if (technologyCount > 0) {
-        //     return Toaster.warning("Technology should be same for sending multiple costing for approval")
-        // }
-
-        if (count > 0) {
-            Toaster.warning("Reason should be same for sending multiple costing for approval")
-            return false
-        } else {
-            setReasonId(selectedRowData[0].ReasonId)
-            setSimulationDetail({DepartmentId:selectedRowData[0].DepartmentId})
-            setApproveDrawer(true)
-        }
-
+        setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
+        setApproveDrawer(true)
 
     }
 
@@ -510,7 +503,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader && <LoaderCustom />}
+                            {isLoader  && <LoaderCustom customClass={"simulation-history-loader"}/>}
                             <Row className="pt-4 blue-before">
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
@@ -611,9 +604,7 @@ function SimulationApprovalListing(props) {
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
-                                    // vendorId={vendorIdState}
-                                    // SimulationTechnologyId={SimulationTechnologyIdState}
-                                    // SimulationType={simulationTypeState}
+                                        IsFinalLevel={selectedRowData[0]?.IsFinalLevelButtonShow}
                                     />
                                 }
                             </div>
