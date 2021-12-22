@@ -568,7 +568,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId} isSurfaceTreatment={isSurfaceTreatment} />
+                <CostingSimulation simulationId={simulationId} isSurfaceTreatment={isSurfaceTreatment} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&
