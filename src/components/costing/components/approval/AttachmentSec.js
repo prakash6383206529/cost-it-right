@@ -183,6 +183,10 @@ function AttachmentSec(props) {
                 invoiceFiles.push(Data)
                 setInvoiceFiles(invoiceFiles)
                 setIsOpen(!IsOpen)
+                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let uploadData = new FormData()
+                uploadData.append('path', path)
+                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 

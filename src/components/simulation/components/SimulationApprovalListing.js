@@ -54,13 +54,13 @@ function SimulationApprovalListing(props) {
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
     const [isLoader, setIsLoader] = useState(true)
+    const [simulationDetail,setSimulationDetail] = useState([])
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-    const { simulationDetail, } = props
 
     useEffect(() => {
         getTableData()
@@ -400,6 +400,7 @@ function SimulationApprovalListing(props) {
             return false
         } else {
             setReasonId(selectedRowData[0].ReasonId)
+            setSimulationDetail({DepartmentId:selectedRowData[0].DepartmentId})
             setApproveDrawer(true)
         }
 
@@ -609,6 +610,7 @@ function SimulationApprovalListing(props) {
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
+                                        simulationDetail={simulationDetail}
                                     // vendorId={vendorIdState}
                                     // SimulationTechnologyId={SimulationTechnologyIdState}
                                     // SimulationType={simulationTypeState}
