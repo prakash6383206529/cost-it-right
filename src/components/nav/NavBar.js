@@ -694,7 +694,7 @@ class SideBar extends Component {
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
-                    V1.1.6D
+                    V1.1.7D
                   </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
@@ -706,11 +706,11 @@ class SideBar extends Component {
                           <DropdownToggle caret>
                             {isLoggedIn ? (
                               <>
-                                  {/* <img
+                                {/* <img
                                   className="img-xs rounded-circle"
                                   alt={""}
                                   src={UserImg}
-                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */} 
+                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */}
                                 {userData.Name}
                               </>
                             ) : (
