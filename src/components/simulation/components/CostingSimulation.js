@@ -648,8 +648,8 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
-                                                        <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldRMPrice" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRMPrice" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' ></AgGridColumn>
                                                         {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
                                                         {/* <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn> */}
