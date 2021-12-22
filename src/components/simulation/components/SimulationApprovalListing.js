@@ -312,7 +312,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please choose token which have same Department')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
-            Toaster.warning('Please choose costing approval for same level')
+            Toaster.warning('Please select tokens having same level for approval')
             gridApi.deselectAll()
         }
         // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************
