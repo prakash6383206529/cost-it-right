@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form'
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,11 +12,9 @@ import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
-import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
@@ -61,8 +59,6 @@ function RMDomesticListing(props) {
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
-    const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [showPopup, setShowPopup] = useState(false)

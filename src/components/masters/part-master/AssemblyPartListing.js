@@ -13,7 +13,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AssemblyPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
