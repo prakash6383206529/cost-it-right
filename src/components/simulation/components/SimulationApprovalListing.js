@@ -52,6 +52,8 @@ function SimulationApprovalListing(props) {
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
+    const [simulationDetail, setSimulationDetail] = useState([])
+    const [isLoader, setIsLoader] = useState(true)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -83,8 +85,11 @@ function SimulationApprovalListing(props) {
             // partNo: partNo,
             // createdBy: createdBy,
         }
+        setIsLoader(true)
+        dispatch(getSimulationApprovalList(filterData, (res) => {
+            setIsLoader(false)
 
-        dispatch(getSimulationApprovalList(filterData, (res) => { }))
+        }))
     }
 
     const renderDropdownListing = (label) => {
@@ -310,21 +315,22 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please choose costing which have same department')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
-            Toaster.warning('Please choose costing approval for same level')
+            Toaster.warning('Tokens you have selected are not of same level')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsPushedButtonShow)) {
-            Toaster.warning('Please choose costing for same push button')
+            Toaster.warning('Please choose costing for same push')
             gridApi.deselectAll()
         }
         // ********** UNCOMMENT THIS IN MINDA ONLY ********** */
-        else if (!allEqual(tempArrReason)) {
-            Toaster.warning('Please choose costing which have same reason')
-            gridApi.deselectAll()
-        }
-        else if (!allEqual(tempArrTechnology)) {
-            Toaster.warning('Technology should be same for sending multiple costing for approval')
-            gridApi.deselectAll()
-        } else {
+        // else if (!allEqual(tempArrReason)) {
+        //     Toaster.warning('Please choose costing which have same reason')
+        //     gridApi.deselectAll()
+        // }
+        // else if (!allEqual(tempArrTechnology)) {
+        //     Toaster.warning('Technology should be same for sending multiple costing for approval')
+        //     gridApi.deselectAll()
+        // } 
+        else {
             setReasonId(selectedRows[0]?.ReasonId)
         }
 
@@ -342,6 +348,7 @@ function SimulationApprovalListing(props) {
         //     setSelectedRowData(tempArr)
         // }
     }
+
     const isRowSelectable = (rowNode) => {
         if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === ERROR) {
             return false;
@@ -490,6 +497,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
+                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <Row className="pt-4 blue-before">
 
 
@@ -545,7 +553,7 @@ function SimulationApprovalListing(props) {
 
 
                                 >
-                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
                                     {/* NEED TO REMOVE THIS FIELD AFTER IMPLEMENTATION */}
@@ -593,6 +601,7 @@ function SimulationApprovalListing(props) {
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
+                                        simulationDetail={simulationDetail}
 
                                     />
                                 }
