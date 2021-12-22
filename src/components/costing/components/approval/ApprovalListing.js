@@ -544,7 +544,7 @@ function ApprovalListing(props) {
                         <option value="100">100</option>
                       </select>
                     </div>
-                    <div className="text-right pb-3 warning-section">
+                    <div className="text-right pb-3">
                       <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                     </div>
                   </div>
