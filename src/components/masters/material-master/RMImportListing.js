@@ -1,31 +1,28 @@
-import React, { Component } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import React from 'react';
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
-  getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser, getVendorListByVendorType
+  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList,
+  getRawMaterialFilterSelectList
+  , getVendorListByVendorType
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC, RmImport, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
-import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INR, ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
+import { RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { CheckApprovalApplicableMaster, getFilteredRMData, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -53,19 +50,16 @@ function RMImportListing(props) {
   const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
   const [shown, setshown] = useState(isSimulation ? true : false);
-  const [technology, settechnology] = useState([]);
   const [gridApi, setgridApi] = useState(null);
   const [gridColumnApi, setgridColumnApi] = useState(null);
   const [loader, setloader] = useState(true);
   const [statusId, setstatusId] = useState(0);
-  const [count, setCount] = useState(0)
   const [selectedRowData, setSelectedRowData] = useState([]);
   const dispatch = useDispatch();
 
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
-  const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
-  const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
+
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')

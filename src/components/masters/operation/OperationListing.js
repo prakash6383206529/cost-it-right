@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -18,12 +17,8 @@ import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import ReactExport from 'react-export-excel';
@@ -389,7 +384,7 @@ class OperationListing extends Component {
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
+        let data = rowData.CostingHead === "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
         return data;
 
@@ -745,7 +740,6 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getLeftMenu,
     setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OperationListing',
