@@ -306,18 +306,20 @@ function SimulationApprovalListing(props) {
         })
 
         if (!allEqual(arr)) {
-            Toaster.warning('Please select costing of similar Status.')
+            Toaster.warning('Please select costing of similar Status')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrDepartmentId)) {
-            Toaster.warning('Please choose costing which have same department')
+            Toaster.warning('Please choose token which have same Department')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
             Toaster.warning('Please choose costing approval for same level')
             gridApi.deselectAll()
-        } else if (!allEqual(tempArrIsPushedButtonShow)) {
-            Toaster.warning('Please choose costing for same push button')
-            gridApi.deselectAll()
         }
+        // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************
+        // else if (!allEqual(tempArrIsPushedButtonShow)) {
+        //     Toaster.warning('Please choose costing for same push')
+        //     gridApi.deselectAll()
+        // }
         // ********** UNCOMMENT THIS IN MINDA ONLY ********** */
         else if (!allEqual(tempArrReason)) {
             Toaster.warning('Please choose costing which have same reason')
@@ -388,6 +390,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
+        setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
         setApproveDrawer(true)
 
     }
@@ -594,7 +597,8 @@ function SimulationApprovalListing(props) {
                                         closeDrawer={closeDrawer}
                                         isSimulation={true}
                                         isSimulationApprovalListing={true}
-
+                                        simulationDetail={simulationDetail}
+                                        IsFinalLevel={selectedRowData[0]?.IsFinalLevelButtonShow}
                                     />
                                 }
                             </div>
