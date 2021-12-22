@@ -85,7 +85,7 @@ function ApproveRejectDrawer(props) {
     } else {
       dispatch(getSimulationApprovalByDepartment(res => {
         const Data = res.data.SelectList
-        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender'? userData.DepartmentId:simulationDetail.DepartmentId))
+        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
 
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
         getApproversList(departObj[0].Value)
@@ -907,7 +907,7 @@ function ApproveRejectDrawer(props) {
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
                 {
-                  isSimulation &&
+                  isSimulation && type === 'Sender' &&
                   <div className="col-md-12 drawer-attachment">
                     <div className="d-flex w-100 flex-wrap">
                       <Col md="8" className="p-0"><h6 className="mb-0">Attachments</h6></Col>
