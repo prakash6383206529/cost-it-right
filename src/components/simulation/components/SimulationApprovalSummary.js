@@ -992,7 +992,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </div>
                         </Row>
-                        <Row className="mb-4">
+                        <Row className="mb-4 last-revison-container">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>

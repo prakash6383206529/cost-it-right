@@ -2824,7 +2824,7 @@ table{
   color: #3D4465;
 }
 .add-min-height{
-  .btn-secondary,.btn-primary{
+  .btn-secondary,.btn-primary, .user-btn{
     height: 40px;
   }
   .reset-btn{
@@ -6547,4 +6547,7 @@ left: 17rem;
 }
 .loader_container.simulation-history-loader {
   background-color: rgba(255, 255, 255, 0.97);
+}
+.last-revison-container .user-btn {
+ height: auto;
 }
