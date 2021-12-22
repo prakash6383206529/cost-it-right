@@ -704,8 +704,8 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* } */}
 
-                        <Row>
-                            <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
+                        <Row className='reset-btn-container'>
+                            <Col md="6"><div className="left-border ">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
                                     <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setshowImpactedData(!showImpactedData) }}>
@@ -811,13 +811,13 @@ function SimulationApprovalSummary(props) {
                                                         <div className="ag-grid-header d-flex">
 
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                                                <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
-                                                                {renderColumn()}
-                                                            </ExcelFile>
-                                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                            <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
+                                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                                {renderColumn()}
+                                                            </ExcelFile>
                                                         </div>
                                                         <div className="ag-theme-material">
                                                             <AgGridReact
@@ -992,7 +992,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </div>
                         </Row>
-                        <Row className="mb-4 last-revison-container">
+                        <Row className="mb-4 reset-btn-container">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
