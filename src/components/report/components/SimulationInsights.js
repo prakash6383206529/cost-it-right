@@ -1,20 +1,15 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
-import { useDispatch, useSelector } from 'react-redux'
 import NoContentFound from '../../common/NoContentFound'
-import { GridTotalFormate } from '../../common/TableGridFunctions'
-import { getSimulationHistory } from '../../simulation/actions/History'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, EMPTY_DATA } from '../../../config/constants';
+import {ReportMaster, EMPTY_DATA } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 
 
 const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationInsights(props) {
     const simulationInsights = []
@@ -53,44 +48,18 @@ function SimulationInsights(props) {
     gridApi.setQuickFilter(e.target.value);
 }
 
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  const options = {
-    clearSearch: true,
-    noDataText: <NoContentFound title={EMPTY_DATA} />,
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    prePage: <span className="prev-page-pg"></span>, // Previous page button text
-    nextPage: <span className="next-page-pg"></span>, // Next page button text
-    firstPage: <span className="first-page-pg"></span>, // First page button text
-    lastPage: <span className="last-page-pg"></span>,
-    //exportCSVText: 'Download Excel',
-    //onExportToCSV: this.onExportToCSV,
-    //paginationShowsTotal: true,
-    //paginationShowsTotal: this.renderPaginationShowsTotal,
-
-  }
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
-            {/* {isLoader && <LoaderCustom />} */}
-           
-
                 <h1 className="mb-0">Report</h1>
-
                 <Row className="pt-4 blue-before ">
-
-
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {/* {renderColumn(ReportMaster)} */}
                                 </ExcelFile>
-
                             </div>
                         </div>
-
                     </Col>
                 </Row>
             <div className="ag-grid-react">
