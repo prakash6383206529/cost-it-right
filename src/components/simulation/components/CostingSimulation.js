@@ -127,9 +127,9 @@ function CostingSimulation(props) {
                     switch (Number(selectedMasterForSimulation.value)) {
                         case Number(RMIMPORT):
                         case Number(RMDOMESTIC):
-                            item.OldRMCSUM = reducerOldRMPrice(Data.SimulatedCostingList)
+                            item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList)
                             item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList)
-                            item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSUM) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
                             item.RMVariance = checkForDecimalAndNull(Number(item.OldRMPrice) - Number(item.NewRMPrice), getConfigurationKey().NoOfDecimalForPrice)
 
                             break;
@@ -648,11 +648,11 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
-                                                        <AgGridColumn width={140} field="OldRMCSUM" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' ></AgGridColumn>
                                                         {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
-                                                        <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn>
+                                                        {/* <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn> */}
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
                                                     </>}
