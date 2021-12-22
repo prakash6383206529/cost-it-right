@@ -309,13 +309,13 @@ function SimulationApprovalListing(props) {
         })
 
         if (!allEqual(arr)) {
-            Toaster.warning('Please select costing of similar Status')
+            Toaster.warning('Please select costing which have same status')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrDepartmentId)) {
-            Toaster.warning('Please choose token which have same Department')
+            Toaster.warning('Please choose token which have same department')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
-            Toaster.warning('Please select tokens having same level for approval')
+            Toaster.warning('Please choose token which are at same level of approval')
             gridApi.deselectAll()
         }
         // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************

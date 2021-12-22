@@ -25,7 +25,7 @@ import { debounce } from 'lodash'
 const gridOptions = {};
 
 function VerifySimulation(props) {
-    const { cancelVerifyPage, isSurfaceTreatment } = props
+    const { cancelVerifyPage } = props
     const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -568,7 +568,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId} isSurfaceTreatment={isSurfaceTreatment} master={selectedMasterForSimulation.value} />
+                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&
@@ -586,7 +586,7 @@ function VerifySimulation(props) {
             {/* {   // REJECTED ASSEMBLY
                 showAssemblyPage &&
 
-                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} isSurfaceTreatment={false} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
+                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
 
             } */}
         </>
