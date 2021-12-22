@@ -87,8 +87,11 @@ function SimulationApprovalListing(props) {
             // partNo: partNo,
             // createdBy: createdBy,
         }
+        setIsLoader(true)
+        dispatch(getSimulationApprovalList(filterData, (res) => { 
+            setIsLoader(false)
 
-        dispatch(getSimulationApprovalList(filterData, (res) => { }))
+        }))
     }
 
     const renderDropdownListing = (label) => {
@@ -323,10 +326,10 @@ function SimulationApprovalListing(props) {
         //     gridApi.deselectAll()
         // }
         // ********** UNCOMMENT THIS IN MINDA ONLY ********** */
-        else if (!allEqual(tempArrReason)) {
-            Toaster.warning('Please choose costing which have same reason')
-            gridApi.deselectAll()
-        }
+        // else if (!allEqual(tempArrReason)) {
+        //     Toaster.warning('Please choose costing which have same reason')
+        //     gridApi.deselectAll()
+        // }
         else if (!allEqual(tempArrTechnology)) {
             Toaster.warning('Technology should be same for sending multiple costing for approval')
             gridApi.deselectAll()
