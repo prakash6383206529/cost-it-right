@@ -10,7 +10,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS,ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS, ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
@@ -122,6 +122,9 @@ function OtherCostingSimulation(props) {
             if (Number(master) === Number(EXCHNAGERATE)) {
                 item.POVariance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
                 item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
+            } if (Number(master) === Number(COMBINED_PROCESS)) {
+                item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
+                item.Variance = checkForDecimalAndNull(item.OldNetCC - item.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)
             }
             return null
         })
@@ -393,6 +396,11 @@ function OtherCostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
+    const fourDecimalFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
     const NewOverheadCostReducer = (array) => {
         const arr = array.reduce((accumulator, currentValue) => {
             return accumulator + checkForNull(currentValue.NewOverheadCost)
@@ -561,7 +569,7 @@ function OtherCostingSimulation(props) {
     }
     const errorBoxClass = () => {
         let temp
-        temp =status===(null && '') ?  'd-none':''
+        temp = status === (null && '') ? 'd-none' : ''
         return temp
     }
 
@@ -592,7 +600,8 @@ function OtherCostingSimulation(props) {
         newPOCurrencyFormatter: newPOCurrencyFormatter,
         oldCCFormatter: oldCCFormatter,
         newCCFormatter: newCCFormatter,
-        vendorFormatter: vendorFormatter
+        vendorFormatter: vendorFormatter,
+        fourDecimalFormatter: fourDecimalFormatter
     };
 
     const VerifyImpact = () => {
@@ -612,7 +621,7 @@ function OtherCostingSimulation(props) {
 
                                 <Row>
                                     <Col sm="12">
-                                    <Errorbox customClass={errorBoxClass()} errorText={status} />
+                                        <Errorbox customClass={errorBoxClass()} errorText={status} />
                                     </Col>
                                 </Row>
                                 <Row>
@@ -673,24 +682,29 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
+                                                    {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
                                                     {
                                                         String(master) === String(EXCHNAGERATE) &&
                                                         <>
                                                             <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                        </>
-                                                    }
-                                                    {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
-                                                    {String(master) === String(EXCHNAGERATE) &&
-                                                        <>
-                                                            <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='Old PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='New PO Price(in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='POVarianceFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldExchangeRate" headerName='Old Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
-                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
+                                                    {String(master) === String(COMBINED_PROCESS) &&
+                                                        <>
+                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                        </>
+                                                    }
+                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='fourDecimalFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>

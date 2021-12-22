@@ -54,7 +54,7 @@ function SimulationApprovalListing(props) {
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
     const [isLoader, setIsLoader] = useState(true)
-    const [simulationDetail,setSimulationDetail] = useState([])
+    const [simulationDetail, setSimulationDetail] = useState([])
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -88,7 +88,7 @@ function SimulationApprovalListing(props) {
             // createdBy: createdBy,
         }
         setIsLoader(true)
-        dispatch(getSimulationApprovalList(filterData, (res) => { 
+        dispatch(getSimulationApprovalList(filterData, (res) => {
             setIsLoader(false)
 
         }))
@@ -395,6 +395,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
+        setIsApprovalDrawer(true)
         setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
         setApproveDrawer(true)
 
@@ -503,7 +504,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader  && <LoaderCustom customClass={"simulation-history-loader"}/>}
+                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <Row className="pt-4 blue-before">
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
