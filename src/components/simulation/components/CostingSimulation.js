@@ -9,7 +9,7 @@ import { BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC
 import { getComparisionSimulationData, getCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -97,19 +97,36 @@ function CostingSimulation(props) {
         dispatch(getRawMaterialNameChild(() => { }))
     }, [])
 
+    const reducerOldRMPrice = (array, item) => {
+        let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
+        let sum = 0
+        const arr = array.reduce((accumulator, el) => {
+            if (temparr.length === 1) {
+                if (el.CostingId === item.CostingId) {
+                    sum = el.OldRMPrice
+                }
+            } else {
+                sum = accumulator + el.OldRMPrice
+            }
+            return sum
+        }, 0)
+    }
 
-    const reducerOldRMPrice = (array) => {
+    const reducerNewRMPrice = (array, item) => {
+        let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
+        let sum = 0
         const arr = array.reduce((accumulator, el) => {
-            return accumulator + el.OldRMPrice
+            if (temparr.length === 1) {
+                if (el.CostingId === item.CostingId) {
+                    sum = el.NewRMPrice
+                }
+            } else {
+                sum = accumulator + el.NewRMPrice
+            }
+            return sum
         }, 0)
-        return arr
     }
-    const reducerNewRMPrice = (array) => {
-        const arr = array.reduce((accumulator, el) => {
-            return accumulator + el.NewRMPrice
-        }, 0)
-        return arr
-    }
+
     const getCostingList = (plantId = '', rawMatrialId = '') => {
         dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
             if (res.data.Result) {
@@ -132,12 +149,12 @@ function CostingSimulation(props) {
                     switch (Number(selectedMasterForSimulation.value)) {
                         case Number(RMIMPORT):
                         case Number(RMDOMESTIC):
-                            item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList)
-                            item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList)
+                            item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                            item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
                             item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                            item.RMVariance = checkForDecimalAndNull(Number(item.OldRMPrice) - Number(item.NewRMPrice), getConfigurationKey().NoOfDecimalForPrice)
-
-                            break;
+                            const diff = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMVariance = diff
+                            return item
 
                         default:
                             break;
@@ -153,6 +170,7 @@ function CostingSimulation(props) {
                         uniqeArray.push(item);
                     }
                 }
+                console.log(uniqeArray, "uniqeArrayuniqeArray");
                 setTableData(uniqeArray)
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
@@ -428,6 +446,59 @@ function CostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
+    const oldRMCalc = (row) => {
+        let temparr = costingArr.filter(item1 => item1.CostingId === row.CostingId)
+        console.log('temparr: ', temparr);
+        const sum = temparr.reduce((accumulator, el) => {
+            if (temparr.length === 1) {
+                return checkForNull(row.OldRMPrice)
+            } else {
+                if (el.CostingId === row.CostingId) {
+                    console.log("COMIING IN ELSE", el.OldRMPrice);
+                    return checkForNull(accumulator) + checkForNull(el.OldRMPrice)
+                }
+            }
+        }, 0)
+        console.log(sum, "sumsusumm");
+        return sum
+    }
+    const newRMCalc = (row) => {
+        let temparr = costingArr.filter(item1 => item1.CostingId === row.CostingId)
+        const sum = temparr.reduce((accumulator, el) => {
+            if (temparr.length === 1) {
+                return checkForNull(row.NewRMPrice)
+            } else {
+                if (el.CostingId === row.CostingId) {
+                    return checkForNull(accumulator) + checkForNull(el.NewRMPrice)
+                }
+            }
+        }, 0)
+        return sum
+    }
+
+    const oldRMCFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const sum = oldRMCalc(row)
+        console.log('sum: ', sum);
+        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
+    const newRMCFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const sum = newRMCalc(row)
+        console.log('sum: ', sum);
+        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
+    const varianceRMCFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const sumold = oldRMCalc(row)
+        const sumnew = newRMCalc(row)
+        const diff = (sumold - sumnew).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+        console.log('diff: ', diff);
+        return checkForDecimalAndNull(diff)
+    }
+
     const varianceFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -571,7 +642,10 @@ function CostingSimulation(props) {
         otherCostFormatter: otherCostFormatter,
         discountCostFormatter: discountCostFormatter,
         netOverheadAndProfitFormatter: netOverheadAndProfitFormatter,
-        hideColumn: hideColumn
+        hideColumn: hideColumn,
+        oldRMCFormatter: oldRMCFormatter,
+        newRMCFormatter: newRMCFormatter,
+        varianceRMCFormatter: varianceRMCFormatter
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -665,9 +739,9 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
-                                                        <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
                                                         {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
                                                         {/* <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn> */}
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
@@ -806,7 +880,7 @@ function CostingSimulation(props) {
                     isSimulation={true}
                 />
             }
-             {showViewAssemblyDrawer &&
+            {showViewAssemblyDrawer &&
                 <ViewAssembly
                     isOpen={showViewAssemblyDrawer}
                     closeDrawer={closeAssemblyDrawer}
