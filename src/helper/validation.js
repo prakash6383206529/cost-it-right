@@ -51,7 +51,6 @@ export const maxLength1000 = maxLength(1000);
 export const maxLength5000 = maxLength(5000);
 export const maxLength512 = maxLength(512);
 export const maxLength80 = maxLength(80);
-export const maxLength85 = maxLength(85);
 
 
 
