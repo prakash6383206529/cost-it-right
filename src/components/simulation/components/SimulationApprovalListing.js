@@ -85,8 +85,10 @@ function SimulationApprovalListing(props) {
             // partNo: partNo,
             // createdBy: createdBy,
         }
-
-        dispatch(getSimulationApprovalList(filterData, (res) => { }))
+        setIsLoader(true)
+        dispatch(getSimulationApprovalList(filterData, (res) => { 
+            setIsLoader(false)
+        }))
     }
 
     const renderDropdownListing = (label) => {

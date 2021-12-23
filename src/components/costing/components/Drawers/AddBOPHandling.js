@@ -16,6 +16,7 @@ import { NetPOPriceContext } from '../CostingDetailStepTwo';
 function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const { RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
+  console.log('getAssemBOPCharge: ', getAssemBOPCharge);
   const dispatch = useDispatch()
   const netPOPrice = useContext(NetPOPriceContext);
 
