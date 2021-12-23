@@ -1653,7 +1653,6 @@ function TabRMCC(props) {
               >
                 <Row>
                   <Col md="12">
-                    <div className="table-responsive">
                       <Table className="table cr-brdr-main mb-0 rmcc-main-headings" size="sm">
                         <thead>
                           <tr>
@@ -1732,7 +1731,6 @@ function TabRMCC(props) {
 
                         </tbody>
                       </Table>
-                    </div>
                   </Col>
                 </Row>
                 {
