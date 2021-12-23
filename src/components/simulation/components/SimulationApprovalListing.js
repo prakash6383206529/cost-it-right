@@ -53,7 +53,7 @@ function SimulationApprovalListing(props) {
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
     const [isLoader, setIsLoader] = useState(true)
-    const [simulationDetail,setSimulationDetail] = useState([])
+    const [simulationDetail, setSimulationDetail] = useState([])
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -86,7 +86,7 @@ function SimulationApprovalListing(props) {
             // createdBy: createdBy,
         }
         setIsLoader(true)
-        dispatch(getSimulationApprovalList(filterData, (res) => { 
+        dispatch(getSimulationApprovalList(filterData, (res) => {
             setIsLoader(false)
         }))
     }
@@ -349,7 +349,7 @@ function SimulationApprovalListing(props) {
         // }
     }
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.DisplayStatus === APPROVED || rowNode.data.DisplayStatus === REJECTED || rowNode.data.DisplayStatus === WAITING_FOR_APPROVAL || rowNode.data.DisplayStatus === PUSHED || rowNode.data.DisplayStatus === ERROR) {
+        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === ERROR) {
             return false;
         } else {
             return true
@@ -497,7 +497,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader  && <LoaderCustom customClass={"simulation-history-loader"}/>}
+                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <Row className="pt-4 blue-before">
 
 
@@ -506,8 +506,8 @@ function SimulationApprovalListing(props) {
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={sendForApproval}
-                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
-                                        title="Send For Approval"
+                                            // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                            title="Send For Approval"
                                         >
                                             <div className="send-for-approval"></div>
                                             {/* {'Send For Approval'} */}
