@@ -162,7 +162,7 @@ class PartMaster extends Component {
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
-
+                        <h1>Part Master</h1>
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
