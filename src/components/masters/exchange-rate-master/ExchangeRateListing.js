@@ -460,7 +460,6 @@ export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
     getCurrencySelectList,
-    getLeftMenu,
     getExchangeRateData
 })(reduxForm({
     form: 'ExchangeRateListing',
