@@ -6,7 +6,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
-import { runVerifySimulation } from '../../actions/Simulation';
+import { runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedOverheadProfitCosting, setData } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { useForm, Controller, useWatch } from 'react-hook-form'
@@ -18,37 +18,60 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { data } from 'jquery';
 import Simulation from '../Simulation';
+import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
+
 const gridOptions = {
 
 };
 
 
-function RMSimulation(props) {
+function OPSImulation(props) {
     const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
-    const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
     const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
-    const [textFilterSearch, setTextFilterSearch] = useState('')
+    const [valuesForDropdownInAgGrid, setValuesForDropdownInAgGrid] = useState(
+        {
+            applicability: ['BOP', 'BOP + CC', 'CC', 'Fixed', 'RM', 'RM + BOP', 'RM + CC', 'RM + CC + BOP'],
+            modelType: ['All', 'High Volume', 'Low Volume', 'Medium Volume', 'New Development']
+        }
+    )
+    const [applicabilityForGrid, setApplicabilityForGrid] = useState('')
 
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const [isRM, setIsRM] = useState(false)
+    const [isCC, setIsCC] = useState(false)
+    const [isBOP, setIsBOP] = useState(false)
+    const [isOverheadPercent, setIsOverheadPercent] = useState(false)
+    const [reload, setReload] = useState(true)
+    const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+    useEffect(() => {
+        // console.log('gridOptions.columnApi: ', gridOptions);
+
+        console.log(gridApi, 'gridApigridApi');
+        // if (gridApi !== null) {
+        //     gridApi.redrawRows();
+        // }
 
 
+
+    }, [isBOP])
+    // useEffect(() => {
+    //     setValuesForDropdownInAgGrid(prevState => ({ ...prevState, applicability: ['BOP', 'BOP + CC', 'CC', 'Fixed', 'RM', 'RM + BOP', 'RM + CC', 'RM + CC + BOP'] }))
+    //     setValuesForDropdownInAgGrid(prevState => ({ ...prevState, modelType: ['All', 'High Volume', 'Low Volume', 'Medium Volume', 'New Development'] }))
+    // }, [])
 
     const dispatch = useDispatch()
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { valdataTemp } = useSelector(state => state.simulation)
 
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -56,14 +79,14 @@ function RMSimulation(props) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
-
     }, [])
 
-    const verifySimulation = () => {
+    const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
 
         list && list.map((li) => {
+
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
                 basicRateCount = basicRateCount + 1
@@ -74,10 +97,10 @@ function RMSimulation(props) {
             return null;
         })
 
-        if (basicRateCount === list.length && basicScrapCount === list.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
-            return false
-        }
+        // if (basicRateCount === list.length && basicScrapCount === list.length) {
+        //     Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+        //     return false
+        // }
         basicRateCount = 0
         basicScrapCount = 0
         // setShowVerifyPage(true)
@@ -124,25 +147,22 @@ function RMSimulation(props) {
         })
         obj.SimulationRawMaterials = tempArr
 
-        dispatch(runVerifySimulation(obj, res => {
+        dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
-    }
+        setShowVerifyPage(true)
+    }, 500)
+
 
     const cancelVerifyPage = () => {
 
         setShowVerifyPage(false)
     }
-    const resetState = () => {
-        gridApi?.setQuickFilter('');
-        setTextFilterSearch('')
-        gridOptions?.columnApi?.resetColumnState();
-        gridOptions?.api?.setFilterModel(null);
-    }
+
 
     /**
      * @method shearingCostFormatter
@@ -153,7 +173,13 @@ function RMSimulation(props) {
 
         return cell != null ? cell : '-';
     }
+    const reloadIt = () => {
+        setReload(false)
+        setTimeout(() => {
 
+        }, 200);
+        setReload(true)
+    }
     /**
     * @method freightCostFormatter
     * @description Renders buttons
@@ -288,7 +314,6 @@ function RMSimulation(props) {
     }
 
     const NewcostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
@@ -297,6 +322,14 @@ function RMSimulation(props) {
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
 
+    const modelTypeFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
+        const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
+        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
+        // return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
+    }
 
     const runSimulation = () => {
         let basicRateCount = 0
@@ -317,35 +350,36 @@ function RMSimulation(props) {
 
         })
     }
+    const applicabilityCellEditor = (params) => {
+        const selectedCountry = params.data?.OverheadApplicabilityType;
+        const allowedCities = valuesForDropdownInAgGrid.applicability;
 
-    const options = {
-        clearSearch: true,
-        noDataText: <NoContentFound title={EMPTY_DATA} />,
-        paginationShowsTotal: renderPaginationShowsTotal(),
-        prePage: <span className="prev-page-pg"></span>, // Previous page button text
-        nextPage: <span className="next-page-pg"></span>, // Next page button text
-        firstPage: <span className="first-page-pg"></span>, // First page button text
-        lastPage: <span className="last-page-pg"></span>,
-
+        return {
+            values: allowedCities,
+            formatValue: (value) => `${value} (${selectedCountry})`,
+        };
     };
+    const modelTypeCellEditor = (params) => {
+        const selectedCountry = params.data?.ModelType;
+        const allowedCities = valuesForDropdownInAgGrid.modelType;
 
+        return {
+            values: allowedCities,
+            formatValue: (value) => `${value} (${selectedCountry})`,
+        };
+    };
     const cancel = () => {
         // props.cancelEditPage()
         setShowMainSimulation(true)
     }
-    const cellEditProp = {
-        mode: 'click',
-        blurToSave: true,
-        beforeSaveCell: beforeSaveCell,
-        afterSaveCell: afterSaveCell,
-    };
 
     const closeDrawer = (e = '') => {
         setShowRunSimulationDrawer(false)
 
     }
-
-
+    const textTemp = () => {
+        props.openEditPageReload()
+    }
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -354,11 +388,10 @@ function RMSimulation(props) {
     };
 
     const onGridReady = (params) => {
-
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if(isImpactedMaster) {
+        if (isImpactedMaster) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
         params.api.paginationGoToPage(0);
@@ -370,14 +403,143 @@ function RMSimulation(props) {
     };
 
     const onFilterTextBoxChanged = (e) => {
+        gridApi.setQuickFilter(e.target.value);
+    }
 
-        gridApi?.setQuickFilter(e?.target?.value);
-        setTextFilterSearch(e?.target?.value)
+    const checkOverheadFields = (applicabilityForGridProp) => {
+
+        switch (applicabilityForGridProp) {
+            case 'RM':
+                setIsRM(false)
+                setIsCC(true)
+                setIsBOP(true)
+                setIsOverheadPercent(true)
+                // setIsHideOverhead(true)
+                // setIsHideRM(false)
+                // setIsHideCC(true)
+                // setIsHideBOP(true)
+                // gridApi.redrawRows();
+
+                // dispatch(setData(true))
+                // reloadIt()
+                break;
+            case 'CC':
+                setIsRM(true)
+                setIsCC(false)
+                setIsBOP(true)
+                setIsOverheadPercent(true)
+                // setIsHideOverhead(true)
+                // setIsHideRM(true)
+                // setIsHideCC(false)
+                // setIsHideBOP(true)
+                // gridApi.redrawRows();
+                // dispatch(setData(false))
+                // reloadIt()
+                break;
+            case 'BOP':
+                setIsRM(true)
+                setIsBOP(false)
+                setIsCC(true)
+                setIsOverheadPercent(true)
+                // setIsHideOverhead(true)
+                // setIsHideRM(true)
+                // setIsHideCC(true)
+                // setIsHideBOP(false)
+                // gridApi.redrawRows();
+                break;
+            case 'Fixed':
+                setIsRM(true)
+                setIsCC(true)
+                setIsBOP(true)
+                setIsOverheadPercent(true)
+                // setIsHideOverhead(true)
+                // setIsHideRM(true)
+                // setIsHideCC(true)
+                // setIsHideBOP(true)
+                // gridApi.redrawRows();
+                break;
+            case 'RM + CC':
+                setIsRM(false)
+                setIsCC(false)
+                setIsBOP(true)
+                setIsOverheadPercent(false)
+                // setIsHideOverhead(false)
+                // setIsHideBOP(true)
+                // setIsHideRM(false)
+                // setIsHideCC(false)
+                // gridApi.redrawRows();
+                break;
+            case 'RM + BOP':
+                setIsRM(false)
+                setIsCC(true)
+                setIsBOP(false)
+                setIsOverheadPercent(false)
+                // setIsHideOverhead(false)
+                // setIsHideCC(true)
+                // setIsHideRM(false)
+                // setIsHideBOP(false)
+                // gridApi.redrawRows();
+                break;
+            case 'BOP + CC':
+                setIsRM(true)
+                setIsBOP(false)
+                setIsCC(false)
+                setIsOverheadPercent(false)
+                // setIsHideOverhead(false)
+                // setIsHideRM(true)
+                // setIsHideBOP(false)
+                // setIsHideCC(false)
+                // gridApi.redrawRows();
+                break;
+            case 'RM + CC + BOP':
+                setIsRM(false)
+                setIsCC(false)
+                setIsBOP(false)
+                setIsOverheadPercent(false)
+                // setIsHideOverhead(false)
+                // setIsHideBOP(false)
+                // setIsHideCC(false)
+                // setIsHideRM(false)
+
+                // gridApi.redrawRows();
+                break;
+            default:
+                return 'foo';
+
+        }
+
+        var params = {
+            force: true,
+            suppressFlash: false,
+        };
+        // gridOptions.api.refreshCells(params);
     }
+
     const cellChange = (props) => {
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
     }
+
+    const cellEditorSelector = (params) => {
+        return {
+            component: 'agRichSelectCellEditor',
+            params: { values: valuesForDropdownInAgGrid.applicability }
+        };
+    }
+    const EditableCallback = (props) => {
+
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return true
+    }
+    const onCellValueChanged = (props) => {
+        setApplicabilityForGrid(props.value)
+        checkOverheadFields(props.value);
+    }
+
     const frameworkComponents = {
-        effectiveDateFormatter: effectiveDateFormatter,
+        effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
         shearingCostFormatter: shearingCostFormatter,
         freightCostFormatter: freightCostFormatter,
@@ -389,10 +551,22 @@ function RMSimulation(props) {
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         oldScrapRateFormatter: oldScrapRateFormatter,
+        cellEditorSelector: cellEditorSelector,
+        applicabilityCellEditor: applicabilityCellEditor,
+        modelTypeFormatter: modelTypeFormatter,
+        onCellValueChanged: onCellValueChanged,
+        EditableCallback: EditableCallback
     };
 
 
 
+
+
+
+
+    // 
+    // 
+    // 
     return (
 
         <div>
@@ -451,11 +625,8 @@ function RMSimulation(props) {
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className="ag-grid-wrapper height-width-wrapper">
-                                    <div className="ag-grid-header d-flex">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                    <div className="ag-grid-header">
+                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
@@ -476,41 +647,28 @@ function RMSimulation(props) {
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
+                                            onCellValueChanged={onCellValueChanged}
+                                            EditableCallback={EditableCallback}
+
                                         >
-                                            {
-                                                !isImpactedMaster &&
-                                                <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                            }
-                                            <AgGridColumn width={140} field="RawMaterial" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMGrade" editable='false' headerName="RM Grade" ></AgGridColumn>
-                                            <AgGridColumn width={115} field="RMSpec" editable='false' headerName="RM Spec"></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn width={115} field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={100} field="VendorName" editable='false' headerName="Vendor"></AgGridColumn>}
-                                            <AgGridColumn width={100} field="UOM" editable='false' headerName="UOM"></AgGridColumn>
+                                            {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+                                            <AgGridColumn field="IsVendor" editable='false' headerName="Costing Head" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="ClientName" editable='false' headerName="Client Name" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="VendorName" editable='false' headerName="Vendor Name" minWidth={190}></AgGridColumn>
 
-                                            {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
-                                            {costingAndPartNo && <AgGridColumn field="PartNumber" headerName="Part No" minWidth={190}></AgGridColumn>}
+                                            <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="OverheadApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn>
+
+                                            <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" editable={isBOP} minWidth={190}  ></AgGridColumn>
+                                            {/* <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" minWidth={190} editable={isBOP} ></AgGridColumn> */}
+                                            {/* <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead Machining CC Percentage" editable={isCC} minWidth={190}></AgGridColumn>
+                                                <AgGridColumn field="OverheadPercentage" headerName="Overhead Percentage" minWidth={190} editable={isOverheadPercent}></AgGridColumn>
+                                                <AgGridColumn field="OverheadRMPercentage" headerName="Overhead RM Percentage" minWidth={190} editable={isRM} ></AgGridColumn>  */}
 
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
-                                                <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
-                                            </AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
-                                                <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
-                                            </AgGridColumn>
-                                            <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
-                                            <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
-                                                <AgGridColumn width={120} field="NetLandedCost" editable='false' cellRenderer={'costFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
-                                            </AgGridColumn>
-                                            }
-                                            <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName="Effective Date" ></AgGridColumn>
-                                            <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
+
 
                                         </AgGridReact>
 
@@ -539,6 +697,10 @@ function RMSimulation(props) {
                                         </div>{" "}
                                         {"Verify"}
                                     </button>
+                                    <button type="button" className={"user-btn mt2 mr5"} onClick={reloadIt} >
+                                        <div className={"edit-icon"}></div>  {"RELOAD"} </button>
+
+
                                     {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run"}>
                                 </div>{" "}
@@ -564,7 +726,6 @@ function RMSimulation(props) {
                         isOpen={showRunSimulationDrawer}
                         closeDrawer={closeDrawer}
                         anchor={"right"}
-                        masterId={master}
                     />
                 }
             </div>
@@ -572,4 +733,5 @@ function RMSimulation(props) {
     );
 }
 
-export default RMSimulation;
+
+export default OPSImulation;

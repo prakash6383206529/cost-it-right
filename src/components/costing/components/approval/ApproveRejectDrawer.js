@@ -88,8 +88,7 @@ function ApproveRejectDrawer(props) {
     } else {
       dispatch(getSimulationApprovalByDepartment(res => {
         const Data = res.data.SelectList
-      
-        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender'? userData.DepartmentId:simulationDetail.DepartmentId))
+        const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
 
         setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
         getApproversList(departObj[0].Value)
@@ -477,7 +476,7 @@ function ApproveRejectDrawer(props) {
 
                 uniqueArr && uniqueArr.map(item => {
                   const vendor = item.VendorName.split('(')[1]
-                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: vendor.split(')')[0], PurchasingGroup:simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup:simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
                   return null
                 })
                 pushObj.LoggedInUserId = userLoggedIn

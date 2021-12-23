@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, } from '../actions/Simulation';
+import { getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList,getVerifyOverheadProfitSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -49,6 +49,7 @@ function VerifySimulation(props) {
     const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
+    const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(BOPIMPORT));
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
@@ -189,6 +190,24 @@ function VerifySimulation(props) {
                     }
                 }))
                 break;
+            // case Number(BOPIMPORT):
+
+            // dispatch(getVerifyOverheadProfitSimulationList(props.token, (res) => {
+            //     if (res.data.Result) {
+            //         const data = res.data.Data
+            //         if (data.SimulationOverheadProfitImpactedCostings.length === 0) {           //   for condition
+            //             Toaster.warning('No approved costing exist for this bought out part.')
+            //             setHideRunButton(true)
+            //             return false
+            //         }
+            //         setTokenNo(data.TokenNumber)
+            //         setSimualtionId(data.SimulationId)
+            //         // setMasterId(data.SimulationtechnologyId)
+            //         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+            //         setHideRunButton(false)
+            //     }
+            // }))
+            // break;
             default:
                 break;
         }
@@ -455,21 +474,21 @@ function VerifySimulation(props) {
                                                     </>
                                                 }
 
-                                                {isBOPDomesticOrImport === true &&
+                                                {/* {isBOPDomesticOrImport === true &&
                                                     <>
                                                         <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
                                                         <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
                                                     </>
-                                                }
+                                                } */}
 
                                                 {isBOPDomesticOrImport === true &&
                                                     <>
-                                                        <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="ModelType" headerName="Model Type"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="OverheadApplicabilityType" headerName="Overhead Applicability Type"></AgGridColumn>
+                                                        {/* <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn> */}
                                                     </>
                                                 }
                                                 {isMachineRate &&
@@ -492,6 +511,11 @@ function VerifySimulation(props) {
                                                     </>
                                                 }
 
+                                                {isOverHeadProfit === true &&
+                                                    <>
+                                                        <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>
+                                                    </>
+                                                }
 
                                             </AgGridReact>
 
@@ -536,7 +560,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId} />
+                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&
@@ -553,7 +577,7 @@ function VerifySimulation(props) {
             {/* {   // REJECTED ASSEMBLY
                 showAssemblyPage &&
 
-                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} isSurfaceTreatment={false} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
+                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
 
             } */}
         </>

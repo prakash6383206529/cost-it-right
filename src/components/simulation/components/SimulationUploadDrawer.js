@@ -12,7 +12,7 @@ import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import NewReport from '../../report/components/CostingBenchmarkReport'
 import TooltipCustom from '../../common/Tooltip';
-import { COMBINED_PROCESS, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT,BOPDOMESTIC, BOPIMPORT, } from '../../../config/constants';
+import { COMBINED_PROCESS, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -143,23 +143,14 @@ class SimulationUploadDrawer extends Component {
                         //         }
                         //     }))
                         //     break;
-                        case Number(COMBINED_PROCESS):
+                        case (Number(COMBINED_PROCESS)):
                             resp.rows.map((val, index) => {
-                                if (index > 0) {
-                                    if (val[5] !== '' && val[5] !== undefined) {
-                                        basicRateCount = 1
-                                    }
-                                    if (val[5] === '') {
-                                        NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                        return false
-                                    }
-                                    correctRowCount = correctRowCount + 1
-                                    let obj = {}
-                                    val.map((el, i) => {
-                                        if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                            el = getJsDateFromExcel(el)
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[5] !== '' && val[5] !== undefined) {
+                                            basicRateCount = 1
                                         }
-                                        if (val[11] === '' && val[15] === '') {
+                                        if (val[5] === '') {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -175,11 +166,12 @@ class SimulationUploadDrawer extends Component {
                                         fileData.push(obj)
                                         obj = {}
 
-                                    })
+                                    }
                                 }
                                 return null;
                             })
                             break;
+
 
                         case (Number(RMDOMESTIC) || Number(RMIMPORT)):
                             resp.rows.map((val, index) => {
@@ -188,7 +180,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[11] !== '' && val[11] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[11] === '' && val[13] === '') {
+                                        if (val[11] === '' && val[15] === '') {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -366,6 +358,12 @@ class SimulationUploadDrawer extends Component {
                         case Number(RMIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please fill at least one basic rate.')
+                                return false
+                            }
+                            break;
+                        case Number(COMBINED_PROCESS):
+                            if (basicRateCount === 0) {
+                                Toaster.warning('Please fill at least one Conversion Cost.')
                                 return false
                             }
                             break;
