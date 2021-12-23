@@ -145,8 +145,6 @@ class SimulationUploadDrawer extends Component {
                         //     break;
                         case (Number(COMBINED_PROCESS)):
                             resp.rows.map((val, index) => {
-                                // console.log('val.length: ', val);
-                                console.log('val.length: ', val[11]);
                                 if (val.length !== 0) {
                                     if (index > 0) {
                                         if (val[5] !== '' && val[5] !== undefined) {

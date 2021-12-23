@@ -229,9 +229,7 @@ function CostingSimulation(props) {
             costingId: data.CostingId
         }
         setId(id)
-        const oldRmCSum = oldRMCalc(data)
-        const newRmCSum = newRMCalc(data)
-        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: oldRmCSum, NewRMPrice: newRmCSum, CostingHead: data.CostingHead })
+        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCostz, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
@@ -476,21 +474,32 @@ function CostingSimulation(props) {
     }
 
     const oldRMCFormatter = (props) => {
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // const sumold = oldRMCalc(row)
+        // const sumnew = newRMCalc(row)
+        // const classGreen = (sumnew > sumold) ? 'red-value form-control' :
+        //     (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        // return <span className={classGreen}>{checkForDecimalAndNull(sumold, getConfigurationKey().NoOfDecimalForPrice)}</span>
+
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sumold = oldRMCalc(row)
-        const sumnew = newRMCalc(row)
-        const classGreen = (sumnew > sumold) ? 'red-value form-control' :
-            (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
-        return <span className={classGreen}>{checkForDecimalAndNull(sumold, getConfigurationKey().NoOfDecimalForPrice)}</span>
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+
     }
 
     const newRMCFormatter = (props) => {
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // const sumold = oldRMCalc(row)
+        // const sumnew = newRMCalc(row)
+        // const classGreen = (sumnew > sumold) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        // return <span className={classGreen}>{checkForDecimalAndNull(sumnew, getConfigurationKey().NoOfDecimalForPrice)}</span>
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sumold = oldRMCalc(row)
-        const sumnew = newRMCalc(row)
-        const classGreen = (sumnew > sumold) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
-        return <span className={classGreen}>{checkForDecimalAndNull(sumnew, getConfigurationKey().NoOfDecimalForPrice)}</span>
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+
     }
 
     const varianceRMCFormatter = (props) => {
@@ -741,9 +750,14 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
-                                                        <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn> */}
+
+
+                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
                                                         {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
                                                         {/* <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn> */}
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
