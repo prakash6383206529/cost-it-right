@@ -742,7 +742,7 @@ class SideBar extends Component {
                   </li>
                   {isLoggedIn ? (
                     <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
+                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
                         <img
                           className=""
                           src={logoutImg}
