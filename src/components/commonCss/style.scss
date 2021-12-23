@@ -6361,11 +6361,7 @@ left: 17rem;
   }
 }
 // FG-Wise table css End
-.warning-section {
- position:absolute;
- right: 190px;
- bottom: 0;
-}
+
 .min-width-btn {
   min-width: 143px;
 }
@@ -6427,6 +6423,7 @@ left: 17rem;
   .text-help {
     position:absolute;
     margin: -2px 0;
+    white-space: nowrap;
   }
 }
 // <--------END costing tooltip css -------->
@@ -6505,4 +6502,7 @@ left: 17rem;
 }
 .loader_container.simulation-history-loader {
   background-color: rgba(255, 255, 255, 0.97);
+}
+.reset-btn-container .user-btn {
+ height: auto;
 }

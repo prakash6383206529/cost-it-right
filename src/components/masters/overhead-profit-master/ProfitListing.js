@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
 import {
     getProfitDataList, deleteProfit, activeInactiveProfit, fetchModelTypeAPI,
     getVendorWithVendorCodeSelectList, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
 } from '../actions/OverheadProfit';
-import { searchableSelect } from "../../layout/FormInputs";
 import { EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
@@ -15,8 +13,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { PROFIT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -26,6 +23,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -355,7 +353,6 @@ class ProfitListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-        const { isEditFlag, } = this.state;
 
         const options = {
             clearSearch: true,
@@ -479,7 +476,7 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="ProfitId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

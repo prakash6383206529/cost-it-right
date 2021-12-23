@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -18,11 +17,8 @@ import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import ReactExport from 'react-export-excel';
@@ -31,6 +27,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -386,7 +384,7 @@ class OperationListing extends Component {
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
+        let data = rowData.CostingHead === "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
         return data;
 
@@ -656,8 +654,8 @@ class OperationListing extends Component {
                                 <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                {!this.props.isSimulation&& <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

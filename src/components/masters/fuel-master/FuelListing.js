@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
     getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
-import { searchableSelect } from "../../layout/FormInputs";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import Toaster from '../../common/Toaster';
 import 'react-input-range/lib/css/index.css'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -23,6 +21,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -389,7 +388,7 @@ class FuelListing extends Component {
                                     <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                     <AgGridColumn field="Rate" headerName="Rate (INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="ModifiedDate" headerName="Date Of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

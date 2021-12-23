@@ -696,7 +696,7 @@ class SideBar extends Component {
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
-                    V1.1.2D
+                    V1.1.4D
                   </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
@@ -742,7 +742,7 @@ class SideBar extends Component {
                   </li>
                   {isLoggedIn ? (
                     <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
+                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
                         <img
                           className=""
                           src={logoutImg}

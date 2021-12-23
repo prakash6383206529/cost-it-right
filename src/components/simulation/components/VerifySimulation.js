@@ -565,7 +565,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId}  master={selectedMasterForSimulation.value} />
+                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&
@@ -582,7 +582,7 @@ function VerifySimulation(props) {
             {/* {   // REJECTED ASSEMBLY
                 showAssemblyPage &&
 
-                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} isSurfaceTreatment={false} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
+                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
 
             } */}
         </>
