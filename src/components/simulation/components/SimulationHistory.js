@@ -130,33 +130,6 @@ function SimulationHistory(props) {
           <h1 className="mb-4">{`Simulation History`}</h1>
         </Col>
       </Row>
-      {/* <BootstrapTable
-                data={simulationHistory}
-                striped={false}
-                hover={false}
-                bordered={false}
-                options={options}
-                search
-                // exportCSV
-                //ignoreSinglePage
-                //ref={'table'}
-                trClassName={'userlisting-row'}
-                tableHeaderClass="my-custom-header"
-                pagination
-            >
-                <TableHeaderColumn dataField="TokenNumber" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                <TableHeaderColumn dataField="CostingHead" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Technology'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="VendorName" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderVendorName()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactCosting()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactParts()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="SimulatedBy" width={110} columnTitle={true} dataAlign="left" dataSort={false} >{renderSimulatedBy()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="SimulatedOn" width={160} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={simulatedOnFormatter} >{renderSimulatedOn()} </TableHeaderColumn>
-                <TableHeaderColumn dataField="ApprovedBy" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderApprovedBy()} </TableHeaderColumn>
-                <TableHeaderColumn dataField="ApprovedOn" width={160} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={approvedOnFormatter}> {renderApprovedOn()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="CostingStatus" width={180} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
-                <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} isKey={true} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
       <div className="ag-grid-react">
         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
           <div className="ag-grid-header">

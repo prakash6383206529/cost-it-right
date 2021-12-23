@@ -235,14 +235,6 @@ class IndivisualPartListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
 
     /**
@@ -611,6 +603,8 @@ class IndivisualPartListing extends Component {
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
+                                    imagClass: 'imagClass'
+                                    
                                 }}
                                 frameworkComponents={frameworkComponents}
                             //    suppressPaginationPanel={true}

@@ -80,7 +80,7 @@ class CostingSummaryBulkUpload extends Component {
         if (status === PENDING) {
             return (
                 <>
-                   <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
+                    <button className={'user-btn mr5'} disabled={row.IncorrectCostingCount >0 ? true:false} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
                     <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, false)} type={'button'}>Reject</button>
                     {/* {row.NoOfIncorrectRow > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>} */}
                 </>
@@ -222,27 +222,6 @@ class CostingSummaryBulkUpload extends Component {
                         </Row>
 
                     </form>
-
-                    {/* <BootstrapTable
-                        data={this.props.costingBulkUploadList}
-                        striped={false}
-                        hover={false}
-                        bordered={false}
-                        options={options}
-                        search
-                        // exportCSV
-                        //ignoreSinglePage
-                        ref={'table'}
-                        trClassName={'userlisting-row'}
-                        tableHeaderClass='my-custom-header client-table'
-                        className={'client-table'}
-                        pagination>
-                        <TableHeaderColumn dataField="FileUploadStatus" dataAlign="left" >{'Status'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CorrectCostingCount" dataAlign="left" >{'No. of Correct Row'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="IncorrectCostingCount" dataAlign="left" >{'No. of Incorrect Row'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="OriginalFileName" dataAlign="left" >{'File Name'}</TableHeaderColumn>
-                        <TableHeaderColumn width={400} className="action" searchable={false} dataField="CostingBulkUploadFileId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable> */}
                     {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                     <div className="ag-grid-react">
                         <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>

@@ -153,7 +153,8 @@ a:hover {
 .user-btn,
 .btn-primary-add,
 .apply,
-.btn-secondary {
+.btn-secondary,
+.goToTop {
   background: $colorPrimary 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 10px #0000000f;
   border-radius: 4px;
@@ -204,7 +205,19 @@ a:hover {
     background-color: #1d59af;
   }
 }
-
+//START scroll to top button UI 10-12-2021
+.goToTop {
+  width: 27px;
+  padding: 3px;
+  padding-top: 5px;
+  height: 26px;
+  border-radius: 50px;
+  position: fixed;
+  bottom: 4%;
+  right: -5px;
+  z-index: 999;
+}
+//END scroll to top button UI 10-12-2021
 .approval-btn{
   img{
     height: 16px;
@@ -2016,7 +2029,10 @@ form .form-control {
   margin: 30px 0;
 
   img {
-    width: 120px;
+    width: 90px;
+  }
+  h5 {
+    font-size: 1rem;
   }
 }
 .ag-overlay-panel{

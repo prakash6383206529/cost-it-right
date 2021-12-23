@@ -1,66 +1,42 @@
-import React, { Component } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import React from 'react';
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
-  getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser, getVendorListByVendorType
+  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList,
+  getRawMaterialFilterSelectList
+  , getVendorListByVendorType
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC, RmImport, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
-import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INR, ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
+import { RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-var filterParams = {
-  comparator: function (filterLocalDateAtMidnight, cellValue) {
-    var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-    if (dateAsString == null) return -1;
-    var dateParts = dateAsString.split('/');
-    var cellDate = new Date(
-      Number(dateParts[2]),
-      Number(dateParts[1]) - 1,
-      Number(dateParts[0])
-    );
-    if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-      return 0;
-    }
-    if (cellDate < filterLocalDateAtMidnight) {
-      return -1;
-    }
-    if (cellDate > filterLocalDateAtMidnight) {
-      return 1;
-    }
-  },
-  browserDatePicker: true,
-  minValidYear: 2000,
-};
+
 
 function RMImportListing(props) {
   const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation } = props;
@@ -73,20 +49,17 @@ function RMImportListing(props) {
   const [value, setvalue] = useState({ min: 0, max: 0 });
   const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
-  const [shown, setshown] = useState(false);
-  const [technology, settechnology] = useState([]);
+  const [shown, setshown] = useState(isSimulation ? true : false);
   const [gridApi, setgridApi] = useState(null);
   const [gridColumnApi, setgridColumnApi] = useState(null);
   const [loader, setloader] = useState(true);
   const [statusId, setstatusId] = useState(0);
-  const [count, setCount] = useState(0)
   const [selectedRowData, setSelectedRowData] = useState([]);
   const dispatch = useDispatch();
 
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
-  const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
-  const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
+
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
@@ -251,14 +224,6 @@ function RMImportListing(props) {
   const deleteItem = (Id) => {
     setShowPopup(true)
     setDeletedId(Id)
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmDelete(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    // return Toaster.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
   }
 
   /**
@@ -385,167 +350,11 @@ function RMImportListing(props) {
 
 
 
-  /**
-  * @method renderListing
-  * @description Used to show type of listing
-  */
-  const renderListing = (label) => {
 
-    const temp = [];
-    if (label === 'costingHead') {
-      return costingHeadObjs;
-    }
-    if (label === 'plant') {
-      plantSelectList && plantSelectList.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-      });
-      return temp;
-    }
-    if (label === 'material') {
-      filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'grade') {
-      filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'VendorNameList') {
-      filterRMSelectList && filterRMSelectList.Vendors && filterRMSelectList.Vendors.map(item => {
-        if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
-    }
-    if (label === 'technology') {
-      technologySelectList && technologySelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
-  }
 
-  /**
-  * @method handleRMChange
-  * @description  used to handle row material selection
-  */
-  const handleRMChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setRawMaterial(newValue);
-      dispatch(getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
-      dispatch(getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
-      dispatch(getGradeSelectList(res => { }))
 
-    } else {
-      setRawMaterial([]);
-    }
-  }
 
-  /**
-  * @method handleGradeChange
-  * @description  used to handle row material grade selection
-  */
-  const handleGradeChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setRMGrade(newValue);
 
-      const fun = () => {
-
-        dispatch(getRawMaterialFilterByGradeSelectList(RMGrade.value, () => { }))
-        dispatch(getVendorFilterByGradeSelectList(RMGrade.value, () => { }))
-      }
-      fun();
-    } else {
-      setRMGrade([]);
-    }
-  }
-
-  /**
-   * @method handleVendorName
-   * @description called
-   */
-  const handleVendorName = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      setvendorName(newValue);
-
-      const fun = () => {
-
-        dispatch(getRawMaterialFilterByVendorSelectList(vendorName.value, () => { }))
-        dispatch(getGradeFilterByVendorSelectList(vendorName.value, () => { }))
-      }
-
-      fun();
-
-    } else {
-      setvendorName([]);
-    }
-  }
-
-  /**
-  * @method filterList
-  * @description Filter user listing on the basis of role and department
-  */
-  const filterList = () => {
-    // const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
-
-    const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
-    const plantId = plant ? plant.value : null;
-    const RMid = RawMaterial ? RawMaterial.value : null;
-    const RMGradeid = RMGrade ? RMGrade.value : null;
-    const Vendorid = vendorName ? vendorName.value : null;
-    const technologyId = technology ? technology.value : 0
-
-    if (isSimulation) {
-      dispatch(setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plant.label, value: plant.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } }))
-      setTimeout(() => {
-
-        getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
-
-      }, 500);
-    } else {
-      getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
-
-    }
-  }
-
-  /**
-  * @method resetFilter
-  * @description Reset user filter
-  */
-  const resetFilter = () => {
-    if (isSimulation) {
-      dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
-    }
-
-    setcostingHead([]);
-    setRawMaterial([]);
-    setRMGrade([]);
-    setvendorName([]);
-    setplant([]);
-    settechnology([]);
-    setvalue({ min: 0, max: 0 });
-    getInitialRange()
-    getDataList(null)
-    setValue('CostingHead', '')
-    setValue('Plant', '')
-    setValue('Technology', '')
-    setValue('RawMaterialId', '')
-    setValue('RawMaterialGradeId', '')
-    setValue('VendorId', '')
-    dispatch(getRawMaterialFilterSelectList(() => { }))
-
-  }
 
   const formToggle = () => {
     props.formToggle()
@@ -571,13 +380,6 @@ function RMImportListing(props) {
   */
   const densityAlert = () => {
     setShowPopupBulk(true)
-    const toastrConfirmOptions = {
-      onOk: () => {
-        confirmDensity()
-      },
-      onCancel: () => { }
-    };
-    // return Toaster.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
   }
 
   const handleHeadChange = (newValue, actionMeta) => {
@@ -596,13 +398,7 @@ function RMImportListing(props) {
     }
   }
 
-  const handleTechnologyChange = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      settechnology(newValue);
-    } else {
-      settechnology([]);
-    }
-  }
+
   /**
   * @method confirmDensity
   * @description confirm density popup.

@@ -24,7 +24,6 @@ import { EMPTY_DATA } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
-import ConfirmComponent from "../../helper/ConfirmComponent";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 
@@ -67,7 +66,6 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
-      isLoader: false,
       simulationHeads: [],
       simualtionLevel: [],
       HeadLevelGrid: [],
@@ -80,8 +78,8 @@ class UserRegistration extends Component {
       oldMasterLevelGrid: [],
       masterLevelEditIndex: '',
       isMasterEditIndex: false,
-      showPopup:false,
-      updatedObj :{}
+      showPopup: false,
+      updatedObj: {}
     };
   }
 
@@ -339,7 +337,7 @@ class UserRegistration extends Component {
           let Data = res.data.Data;
 
           setTimeout(() => {
-            const { roleList, cityList, departmentList } = this.props;
+            const { roleList, departmentList } = this.props;
             let DepartmentObj = {}
             const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
@@ -349,7 +347,6 @@ class UserRegistration extends Component {
               DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             }
             // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
-            const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
 
             this.setState({
               isEditFlag: true,
@@ -357,8 +354,7 @@ class UserRegistration extends Component {
               IsShowAdditionalPermission: Data.IsAdditionalAccess,
               department: (getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ Text: DepartmentObj.DepartmentName, Value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
-              city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-              // TechnologyLevelGrid:
+              city: { label: this.props.registerUserData.CityName, value: this.props.registerUserData.CityId }
             })
 
             if (Data.IsAdditionalAccess) {
@@ -1132,15 +1128,7 @@ class UserRegistration extends Component {
       //
 
       if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
-        this.setState({showPopup:true,updatedObj: updatedData})
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.confirmUpdateUser(updatedData, true)
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
+        this.setState({ showPopup: true, updatedObj: updatedData })
 
       } else {
 
@@ -1193,16 +1181,18 @@ class UserRegistration extends Component {
           this.setState({ isLoader: false })
           Toaster.success(MESSAGES.ADD_USER_SUCCESSFULLY)
           this.cancel();
+        } else if (res) {
+          this.setState({ isLoader: false })
         }
       })
     }
   }
-  
-  onPopupConfirm = ()=>{ 
+
+  onPopupConfirm = () => {
     this.confirmUpdateUser(this.state.updatedObj, true)
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   handleKeyDown = function (e, cb) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1921,8 +1911,8 @@ class UserRegistration extends Component {
           </div>
         </div>
         {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`}  />
-                }
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
+        }
       </div>
     );
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DayTime from '../components/common/DayTimeWrapper';
 import { MESSAGES } from '../config/message'
@@ -10,7 +10,6 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
-import { data } from 'react-dom-factories';
 
 
 
@@ -602,6 +601,13 @@ export function formViewData(costingSummary) {
   obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost : 0
   obj.amortizationQty = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].Life !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].Life : 0
+
+  obj.toolApplicability =  { applicability: 'Applicability', value: 'Value', }
+  obj.toolApplicabilityValue= {
+    toolTitle:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceApplicability !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceApplicability : 0,
+    toolValue:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
+  }
+  obj.toolAmortizationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost : 0
 
   obj.totalToolCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetToolCost !== null ? dataFromAPI.CostingPartDetails.NetToolCost : 0
   obj.totalCost = dataFromAPI.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : '-'

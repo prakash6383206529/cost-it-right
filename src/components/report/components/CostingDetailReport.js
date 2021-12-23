@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
-import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
+import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../../config/masterData';
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import { getReportListing } from '.././actions/ReportListing'
 import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing'
@@ -13,7 +13,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster,ReportSAPMaster ,EMPTY_DATA} from '../../../config/constants';
+import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster, EMPTY_DATA } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
@@ -403,7 +403,7 @@ function ReportListing(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         // console.log('TempData: ', TempData);
-      
+
 
 
         return (<ExcelSheet data={TempData} name={ReportMaster}>
@@ -501,10 +501,10 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before btn-index">
+                <Row className="pt-4 blue-before ">
 
 
-                <Col md="8" lg="8" className="search-user-block mb-3">
+                    <Col md="8" lg="8" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
@@ -576,7 +576,8 @@ function ReportListing(props) {
                         <AgGridColumn field="RMSpecification" headerName="RM Specs" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                        {/* <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn> */}
+                        <AgGridColumn field="ScrapWeight" headerName="Scrap Weight"></AgGridColumn>
+                        <AgGridColumn field="ScrapRate" headerName="Scrap Rate"></AgGridColumn>
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
                         <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>

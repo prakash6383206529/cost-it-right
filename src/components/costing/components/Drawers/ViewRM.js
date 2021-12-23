@@ -14,7 +14,7 @@ import { EMPTY_GUID } from '../../../../config/constants';
 
 function ViewRM(props) {
 
-  const { viewRMData, rmMBDetail } = props
+  const { viewRMData, rmMBDetail, isAssemblyCosting } = props
   /*
   * @method toggleDrawer
   * @description closing drawer
@@ -32,6 +32,7 @@ function ViewRM(props) {
   useEffect(() => {
 
     setViewRM(viewRMData)
+    console.log(isAssemblyCosting, "VIEW RM DATA");
   }, [])
 
   const dispatch = useDispatch()
@@ -104,7 +105,7 @@ function ViewRM(props) {
               <Table className="table cr-brdr-main" size="sm">
                 <thead>
                   <tr>
-                    <th>{`Part No`}</th>
+                    {isAssemblyCosting && <th>{`Part No`}</th>}
                     <th>{`RM Name -Grade`}</th>
                     <th>{`RM Rate`}</th>
                     <th>{`Scrap Rate`}</th>
@@ -123,7 +124,7 @@ function ViewRM(props) {
                   {viewRM && viewRM.length > 0 && viewRM.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>
+                        {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                         <td>{item.RMName}</td>
                         <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -147,7 +148,7 @@ function ViewRM(props) {
                   })}
                   {viewRM.length === 0 && (
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={13}>
                         <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>

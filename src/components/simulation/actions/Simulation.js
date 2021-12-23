@@ -24,6 +24,8 @@ import {
     GET_ASSEMBLY_SIMULATION_LIST,
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
+    SET_DATA_TEMP,
+    GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -204,12 +206,17 @@ export function runSimulationOnSelectedCosting(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
 
 export function getSimulationApprovalList(filterData, callback) {
     return (dispatch) => {
+        dispatch({
+            type: GET_SIMULATION_APPROVAL_LIST,
+            payload: [],
+        })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
         request.then((response) => {
@@ -780,15 +787,15 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
     }
 }
 
-export function getAssemblySimulationList(token, plantId, rawMatrialId, callback) {
+export function getSimulatedAssemblyWiseImpactDate(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getAssemblySimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
+        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?costingHead=${token.costingHead}&impactPartNumber=${token.impactPartNumber}&plantCode=${token.plantCode}&vendorId=${token.vendorId}&delta=${token.delta}&quantity=${token.quantity}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
                     type: GET_ASSEMBLY_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationImpactedCostings
+                    payload: response.data.DataList
                 })
                 callback(response)
             }
@@ -799,6 +806,46 @@ export function getAssemblySimulationList(token, plantId, rawMatrialId, callback
     }
 }
 
+export function setData(valdataTemp) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_DATA_TEMP,
+            payload: valdataTemp,
+        });
+    }
+}
 
+export function getVerifyOverheadProfitSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getVerifyOverheadProfitSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedOverheadProfitCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedOverheadProfitCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 
 

@@ -13,7 +13,7 @@ import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
 import {  G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
-import { gridDataAdded, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
+import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 
@@ -46,6 +46,7 @@ function RawMaterialCost(props) {
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
   const [Ids, setIds] = useState([])
   const [editCalculation, setEditCalculation] = useState(true)
+  const [oldGridData,setOldGridData]= useState(props.data)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -80,7 +81,11 @@ function RawMaterialCost(props) {
       }
 
       if (!CostingViewMode) {
+
         props.setRMCost(gridData, Params, item)
+        if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+          dispatch(isDataChange(true))
+        }
       }
       selectedIds(gridData)
 
@@ -174,7 +179,7 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
 
     if (technologyForDensity.includes(costData.ETechnologyType)) {
-      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0 || !CostingViewMode) {
+      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0 ) {
 
         Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
         return false
@@ -549,7 +554,7 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight / 1000000
       }
       const FinishWeight = finishWeight
-      const GrossWeight = grossWeight
+      const GrossWeight = grossWeight    
       const RecoveryPercentage = weightData.RecoveryPercentage
 
       const scrapWeight = weightData.scrapWeight? weightData.scrapWeight : checkForNull(GrossWeight - FinishWeight)
@@ -810,7 +815,7 @@ function RawMaterialCost(props) {
                   onClick={DrawerToggle}
                   disabled={IsApplyMasterBatch}
                 >
-                  <div className={'plus'}></div>ADD RM
+                  <div className={'plus'}></div>RM
                 </button>
               }
             </Col>
@@ -823,14 +828,14 @@ function RawMaterialCost(props) {
                 <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
                   <thead>
                     <tr>
-                      <th>{`RM Name`}</th>
+                      <th className='rm-name-head'>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
                       {getTechnology.includes(costData.ETechnologyType) && <th style={{ width: "195px" }} className="text-center">{`Weight Calculator`}</th>}
                       <th style={{ width: "190px" }}>{`Gross Weight`}</th>
                       <th style={{ width: "190px" }}>{`Finish Weight`}</th>
-                      {isScrapRecoveryPercentageApplied && <th style={{ width: "190px" }}>{`Scrap Recovery %`}</th>}
+                      {isScrapRecoveryPercentageApplied && <th style={{ width: "200px" }}>{`Scrap Recovery %`}</th>}
                       {costData.TechnologyName === PLASTIC && <th style={{ width: "190px" }}>{'Burning Loss Weight'}</th>}
                       <th style={{ width: "190px" }}>{`Scrap Weight`}</th>
                       {/* //Add i here for MB+ */}
@@ -839,12 +844,12 @@ function RawMaterialCost(props) {
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className='rm-table-body'>
                     {gridData &&
                       gridData.map((item, index) => {
                         return (
-                          <tr key={index}>
-                            <td>{item.RMName}</td>
+                          <tr key={index} className=''>
+                            <td className='rm-part-name'>{item.RMName}</td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
@@ -979,9 +984,9 @@ function RawMaterialCost(props) {
             <Row >
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData.TechnologyName === PLASTIC &&
-                <Col md="2" className="py-3 ">
+                <Col md="2" className="py-3  mb-width">
                   <label
-                    className={`custom-checkbox mb-0 w-auto`}
+                    className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
                   >
                     Apply Master Batch(MB)
@@ -1003,7 +1008,7 @@ function RawMaterialCost(props) {
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
-                  <Col md="2">
+                  <Col md="3">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={CostingViewMode} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </Col>
                   {/* <Col md="2" > */}

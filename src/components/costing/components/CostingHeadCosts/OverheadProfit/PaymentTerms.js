@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
 import Switch from "react-switch";
@@ -66,32 +66,39 @@ function PaymentTerms(props) {
     }
 
     useEffect(() => {
-        if (IsPaymentTermsApplicable === true) {
+        if (IsPaymentTermsApplicable === true && Object.keys(costData).length >0) {
+            console.log('costData: ', costData);
+
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor,
                 Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
             }
-            dispatch(getPaymentTermsDataByHeads(reqParams, res => {
+      
+            if(costData?.IsVendor && (costData.IsVendor !== null|| costData.IsVendor !== undefined)){
+                console.log(reqParams,"reqParamsreqParams");
+                dispatch(getPaymentTermsDataByHeads(reqParams, res => {
+    
+                    if (res && res.data && res.data.Result) {
+                        let Data = res.data.Data;
+                        setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
+                        setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+                        setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
+                        checkPaymentTermApplicability(Data.PaymentTermApplicability)
+                        setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+                        setPaymentTermObj(Data)
+                    } else if (res.status === 204) {
+                        setValue('RepaymentPeriodDays', '')
+                        setValue('RepaymentPeriodPercentage', '')
+                        setValue('RepaymentPeriodCost', '')
+                        checkPaymentTermApplicability('')
+                        setPaymentTermsApplicability([])
+                        setPaymentTermObj({})
+                    }
+    
+                }))
+            }
 
-                if (res && res.data && res.data.Result) {
-                    let Data = res.data.Data;
-                    setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-                    setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
-                    setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-                    checkPaymentTermApplicability(Data.PaymentTermApplicability)
-                    setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
-                    setPaymentTermObj(Data)
-                } else if (res.status === 204) {
-                    setValue('RepaymentPeriodDays', '')
-                    setValue('RepaymentPeriodPercentage', '')
-                    setValue('RepaymentPeriodCost', '')
-                    checkPaymentTermApplicability('')
-                    setPaymentTermsApplicability([])
-                    setPaymentTermObj({})
-                }
-
-            }))
         } else {
             setPaymentTermsApplicability([])
             if (!CostingViewMode) {
@@ -116,14 +123,13 @@ function PaymentTerms(props) {
       */
     const checkPaymentTermApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '') {
-            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
+            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
-            const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
-           
+            const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')         
             const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
-           
             switch (Text) {
                 case 'RM':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))

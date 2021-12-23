@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import {  Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { searchableSelect } from "../../layout/FormInputs";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
@@ -14,8 +13,7 @@ import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { BOP_IMPORT_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
-import ConfirmComponent from "../../../helper/ConfirmComponent";
+import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR } from '../../../config/constants';
@@ -27,7 +25,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
-const ExcelFile = ReactExport.ExcelFile;
+const ExcelFile =ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -113,14 +111,7 @@ class BOPImportListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
+        
     }
 
     /**
@@ -238,7 +229,7 @@ class BOPImportListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue ? 'Vendor Based' : 'Zero Based';
+        return cellValue 
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
@@ -256,45 +247,14 @@ class BOPImportListing extends Component {
         return cellValue
         //!= null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
-
-
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { bopCategorySelectList, plantSelectList, vendorWithVendorCodeSelectList, } = this.props;
-        const temp = [];
-
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'BOPCategory') {
-            bopCategorySelectList && bopCategorySelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'plant') {
-            plantSelectList && plantSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
-        if (label === 'vendor') {
-            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-            });
-            return temp;
-        }
-
+    plantFormatter = (props)=>{
+     
+        const rowData = props.data
+        return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
     }
+
+
+  
 
     /**
     * @method filterList
@@ -368,6 +328,7 @@ class BOPImportListing extends Component {
         const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
         data && data.map((item => {
             tempArr.push(item.data)
+            return null
         }))
 
         return this.returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr)
@@ -418,24 +379,7 @@ class BOPImportListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
 
-        const onExportToCSV = (row) => {
-            // ...
-            let products = []
-            products = this.props.bopImportList
-            return products; // must return the data which you want to be exported
-        }
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.bopImportList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
-
-        };
 
         const isFirstColumn = (params) => {
             if (this.props.isSimulation) {
@@ -463,7 +407,8 @@ class BOPImportListing extends Component {
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
+            effectiveDateFormatter: this.effectiveDateFormatter,
+            plantFormatter:this.plantFormatter
         };
 
         const onRowSelect = () => {
@@ -486,97 +431,7 @@ class BOPImportListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                        {this.state.shown && (
-                            <Col md="12" lg="10" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="costingHead"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Costing Head'}
-                                            isClearable={false}
-                                            options={this.renderListing('costingHead')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleHeadChange}
-                                            valueDescription={this.state.costingHead}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="category"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Category'}
-                                            isClearable={false}
-                                            options={this.renderListing('BOPCategory')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleCategoryChange}
-                                            valueDescription={this.state.BOPCategory}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="vendor"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Vendor'}
-                                            isClearable={false}
-                                            options={this.renderListing('vendor')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorChange}
-                                            valueDescription={this.state.vendor}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="plant"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Plant'}
-                                            isClearable={false}
-                                            options={this.renderListing('plant')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handlePlantChange}
-                                            valueDescription={this.state.plant}
-                                        />
-                                    </div>
-
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="apply"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
+                       
 
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -678,7 +533,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
+                                    <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor"></AgGridColumn>
                                     <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>

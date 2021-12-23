@@ -170,7 +170,7 @@ function Rubber(props) {
                                 </Col>
                                 <Col md="12">
                                     <Row className={'mt15'}>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Input Diameter`}
                                                 name={'inputDiameter'}
@@ -195,7 +195,7 @@ function Rubber(props) {
                                                 disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Thickness`}
                                                 name={'thickness'}
@@ -220,7 +220,7 @@ function Rubber(props) {
                                                 disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Outer Diameter`}
                                                 name={'outerDiameter'}
@@ -245,7 +245,7 @@ function Rubber(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Length`}
                                                 name={'length'}
@@ -270,7 +270,7 @@ function Rubber(props) {
                                                 disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Cutting Allowance`}
                                                 name={'cuttingAllowance'}
@@ -296,7 +296,7 @@ function Rubber(props) {
                                             />
                                         </Col>
 
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Total Length`}
                                                 name={'totalLength'}
@@ -321,7 +321,7 @@ function Rubber(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Volume`}
                                                 name={'volume'}
@@ -346,7 +346,7 @@ function Rubber(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Density`}
                                                 name={'density'}
@@ -371,7 +371,7 @@ function Rubber(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Gross Weight`}
                                                 name={'grossWeight'}

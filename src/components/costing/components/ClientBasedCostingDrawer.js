@@ -539,7 +539,7 @@ export function Clientbasedcostingdrawer(props) {
 
                             <Row className="px-3">
                                 <Col md="12">
-                                    <h5 className="left-border">Attachment <span class="font-weight-normal">( upload up to 3 files )</span></h5> 
+                                    <h5 className="left-border">Attachments <span class="font-weight-normal">( upload up to 3 files )</span></h5> 
                                 </Col>
                                 <Col md="6" className="height152-label">
                                     {files && files.length >= 4 ? (

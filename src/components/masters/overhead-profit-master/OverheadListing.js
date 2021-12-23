@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
 import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, fetchModelTypeAPI, getVendorWithVendorCodeSelectList, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
-import { searchableSelect } from "../../layout/FormInputs";
 import { EMPTY_DATA } from '../../../config/constants';
 import { loggedInUserId, } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
@@ -13,8 +11,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { OVERHEAD_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
 import { OverheadMaster } from '../../../config/constants';
@@ -23,6 +20,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -44,7 +43,8 @@ class OverheadListing extends Component {
             vendorName: [],
             overheadAppli: [],
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            selectedRowData: []
         }
     }
 
@@ -103,14 +103,6 @@ class OverheadListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />
-        };
-        // return Toaster.confirm(`${MESSAGES.OVERHEAD_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
@@ -355,12 +347,41 @@ class OverheadListing extends Component {
             lastPage: <span className="last-page-pg"></span>,
 
         };
+        const onRowSelect = () => {
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (this.props.isSimulation) {
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.setSelectedRowCountForSimulationMessage(length)
 
+                this.props.apply(selectedRows)
+            }
+            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+        // const onFloatingFilterChanged = (p) => {
+        //     this.gridApi.deselectAll()
+        // }
+        const isFirstColumn = (params) => {
+            if (this.props.isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
 
         };
 
@@ -458,6 +479,9 @@ class OverheadListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
+                                // onFilterModified={onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
@@ -469,7 +493,7 @@ class OverheadListing extends Component {
                                     <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="OverheadId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -523,6 +547,7 @@ export default connect(mapStateToProps, {
     getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
+    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OverheadListing',
     enableReinitialize: true,

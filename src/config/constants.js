@@ -465,6 +465,8 @@ export const API = {
   getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
+  getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
+  createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -878,7 +880,9 @@ export const API = {
   runSimulationOnSelectedBoughtOutPartCosting: `${BASE_URL}/simulation/run-simulation-on-bought-out-part-costing`,
   getverifyMachineRateSimulationList: `${BASE_URL}/simulation/get-all-machine-rate-impacted-simulation-costings`,
   getverifyBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-boutght-out-part-impacted-simulation-costings`,
-  getAssemblySimulationList: `${BASE_URL}/simulation/get-all-impacted-assembly-simulation-costings`,
+  getSimulatedAssemblyWiseImpactDate: `${BASE_URL}/simulation/get-simulated-assembly-wise-impact-data`,
+  getVerifyOverheadProfitSimulationList: `${BASE_URL}/simulation/get-all-overhead-profit-impacted-simulation-costings`,
+  runSimulationOnSelectedOverheadProfitCosting: `${BASE_URL}/simulation/run-simulation-on-overhead-profit-costing`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1229,6 +1233,7 @@ export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOL
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
+export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1447,6 +1452,8 @@ export const SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE = 'SET_SELECTED_ROW_C
 export const GET_VERIFY_MACHINERATE_SIMULATION_LIST = 'GET_VERIFY_MACHINERATE_SIMULATION_LIST'
 export const GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST = 'GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST'
 export const GET_ASSEMBLY_SIMULATION_LIST = 'GET_ASSEMBLY_SIMULATION_LIST'
+export const SET_DATA_TEMP = 'SET_DATA_TEMP'
+export const GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST = 'GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1566,6 +1573,7 @@ export const WDM = 'WDM'
 
 export const ZBC = 'ZBC'
 export const VBC = 'VBC'
+export const NCC = 'NCC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'

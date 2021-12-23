@@ -11,6 +11,7 @@ import { INR } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import DayTime from '../../../common/DayTimeWrapper'
 import { useEffect } from 'react'
+import _ from 'lodash'
 
 function PushButtonDrawer(props) {
 
@@ -86,7 +87,11 @@ function PushButtonDrawer(props) {
   const onSubmit = () => {
     if (isSimulation) {
       let temp = []
-      costingList && costingList.map(item => {
+      let uniqueArr = _.uniqBy(costingList, function(o){
+        return o.CostingId;
+    });
+
+      uniqueArr && uniqueArr.map(item => {
         const vendor = item.VendorName.split('(')[1]
         const { netPo, quantity } = getPOPriceAfterDecimal(simulationDetail.DecimalOption, item.NewPOPrice)
         temp.push({
@@ -95,6 +100,9 @@ function PushButtonDrawer(props) {
           Quantity: quantity
         })
       })
+
+
+  
       let simObj = {
         LoggedInUserId: loggedInUserId(),
         Request: temp

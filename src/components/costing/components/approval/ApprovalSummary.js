@@ -327,14 +327,14 @@ function ApprovalSummary(props) {
                   <tfoot>
                     <tr>
                       <td colSpan="12">
-                        <span className="grey-text">Reason:</span>
+                        <span className="grey-text">Reason: </span>
                         {approvalDetails.Reason ? approvalDetails.Reason : '-'}
                       </td>
                     </tr>
                     <tr>
                       <td colSpan="12">
-                        <span className="grey-text">Remark:</span>
-                        {approvalDetails.Remark ? approvalDetails.Remark : '-'}{' '}
+                        <span className="grey-text">Remarks: </span>
+                        {approvalDetails.Remark ? approvalDetails.Remark : ' -'}{' '}
                       </td>
                     </tr>
                   </tfoot>

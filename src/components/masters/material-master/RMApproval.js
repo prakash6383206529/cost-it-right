@@ -327,7 +327,7 @@ function RMApproval(props) {
                 <Col>
                     {loader && <LoaderCustom />}
                     <div className={`ag-grid-react`}>
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper min-height-auto">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -389,7 +389,7 @@ function RMApproval(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="text-right w-100 pb-3 warning-section">
+                                <div className="text-right pb-3">
                                   <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                                  </div>
                             </div>

@@ -106,7 +106,7 @@ function StandardRub(props) {
                                 </Col>
                                 <Col md="12">
                                     <Row className={'mt15'}>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Shot Weight`}
                                                 name={'shotWeight'}
@@ -131,7 +131,7 @@ function StandardRub(props) {
                                                 disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`No. Of Cavity`}
                                                 name={'noOfCavity'}
@@ -156,7 +156,7 @@ function StandardRub(props) {
                                                 disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Finish Weight`}
                                                 name={'finishWeight'}
@@ -182,7 +182,7 @@ function StandardRub(props) {
                                             />
                                         </Col>
 
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Gross Weight`}
                                                 name={'grossWeight'}

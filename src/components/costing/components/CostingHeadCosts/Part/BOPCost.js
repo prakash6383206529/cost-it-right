@@ -9,7 +9,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
 
 let counter = 0;
@@ -33,6 +33,7 @@ function BOPCost(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
+  const [oldGridData,setOldGridData] = useState(data)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -48,6 +49,9 @@ function BOPCost(props) {
       }
       if (!CostingViewMode) {
         props.setBOPCost(gridData, Params,item)
+        if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+          dispatch(isDataChange(true))
+        }
       }
     }, 100)
     selectedIds(gridData)
@@ -287,7 +291,7 @@ function BOPCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD INSERT</button>}
+                <div className={'plus'}></div>INSERT</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >

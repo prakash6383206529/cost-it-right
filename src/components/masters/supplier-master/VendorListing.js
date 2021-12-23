@@ -297,14 +297,6 @@ class VendorListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({showPopup:true, deletedId:Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        // return Toaster.confirm(`Are you sure you want to delete this Vendor?`, toastrConfirmOptions);
     }
 
     /**

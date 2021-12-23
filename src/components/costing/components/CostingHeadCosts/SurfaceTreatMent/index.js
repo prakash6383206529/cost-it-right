@@ -83,24 +83,26 @@ function SurfaceTreatment(props) {
       }
       let assemblyWorkingRow=[]
       surfaceTabData && surfaceTabData.CostingChildPartDetails && surfaceTabData.CostingChildPartDetails.map((item)=>{
-        let subAssemblyObj ={
-        "CostingId":item.CostingId,
-        "CostingNumber": "", // Need to find out how to get it.
-        "TotalRawMaterialsCostWithQuantity": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "TotalBoughtOutPartCostWithQuantity": item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-        "TotalConversionCostWithQuantity": item.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +item.CostingPartDetails?.TotalBoughtOutPartCost+item.CostingPartDetails?.TotalConversionCost,
-        "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
-        "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
-        "TotalOperationCostComponent": item.CostingPartDetails?.TotalOperationCostComponent,
-        "SurfaceTreatmentCostPerAssembly":item.CostingPartDetails?.SurfaceTreatmentCost,
-        "TransportationCostPerAssembly": item.CostingPartDetails?.TransportationCost,
-        "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "TotalCostINR": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity
+        if(item.PartType === 'Sub Assembly'){
+          let subAssemblyObj = {
+            "CostingId": item.CostingId,
+            "CostingNumber": "", // Need to find out how to get it.
+            "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+            "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
+            "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
+            "SurfaceTreatmentCostPerAssembly": 0,
+            "TransportationCostPerAssembly": 0,
+            "TotalSurfaceTreatmentCostPerAssembly": 0,
+            "TotalCostINR": netPOPrice
+          }
+          assemblyWorkingRow.push(subAssemblyObj)
+          return assemblyWorkingRow
         }
-        assemblyWorkingRow.push(subAssemblyObj)
-        return assemblyWorkingRow
       })
       let assemblyRequestedData = {
         
@@ -267,17 +269,16 @@ function SurfaceTreatment(props) {
                 <div className="col-sm-12 text-right">
                   <button
                     type={'button'}
-                    className="submit-button mr5 save-btn"
+                    className="reset mr5 cancel-btn"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                  <button
+                    type={'button'}
+                    className="submit-button mr15 save-btn"
                     onClick={saveData} >
                     <div className={'save-icon'}></div>
                     {'SAVE'}
-                  </button>
-
-                  <button
-                    type={'button'}
-                    className="reset mr15 cancel-btn"
-                    onClick={cancel} >
-                    <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                 </div>
               </Row>

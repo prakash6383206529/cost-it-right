@@ -43,13 +43,6 @@ class RMCategoryDetail extends Component {
     */
     deleteItem = (Id) => {
         this.setState({showPopup:true, deletedId:Id })
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { }
-        };
-        // return Toaster.confirm(`${MESSAGES.CATEGORY_DELETE_ALERT}`, toastrConfirmOptions);
     }
 
     /**
