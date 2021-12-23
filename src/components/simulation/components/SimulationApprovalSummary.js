@@ -105,7 +105,7 @@ function SimulationApprovalSummary(props) {
         reValidateMode: 'onChange',
     })
     const userLoggedIn = loggedInUserId()
-   
+
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -119,7 +119,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,DepartmentId, } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, } = res.data.Data
             setCostingList(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
@@ -598,12 +598,12 @@ function SimulationApprovalSummary(props) {
     const rePush = () => {
         let pushObj = {}
         let temp = []
-        let uniqueArr = _.uniqBy(costingList, function(o){
+        let uniqueArr = _.uniqBy(costingList, function (o) {
             return o.CostingId;
         });
         uniqueArr && uniqueArr.map(item => {
             const vendor = item.VendorName.split('(')[1]
-            temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup:simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+            temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
         })
         pushObj.LoggedInUserId = userLoggedIn
         pushObj.AmmendentDataRequests = temp
@@ -768,11 +768,11 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {fgWiseDataAcc && 
-                         <Fgwiseimactdata
-                         DisplayCompareCosting={DisplayCompareCosting}
-                         SimulationId={simulationDetail.SimulationId}
-                     />
+                        {fgWiseDataAcc &&
+                            <Fgwiseimactdata
+                                DisplayCompareCosting={DisplayCompareCosting}
+                                SimulationId={simulationDetail.SimulationId}
+                            />
                         }
 
                         <Row className='mt-2'>
@@ -798,8 +798,8 @@ function SimulationApprovalSummary(props) {
                             vendorIdState={costingList[0]?.VendorId}
                             impactType={'AssemblySummary'}
                         />
-}
-                      
+                        }
+
 
                         <Row className='mt-2'>
                             <Col md="10">
@@ -895,6 +895,7 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="NewNetCC" cellRenderer='newCCFormatter' headerName="CC New" ></AgGridColumn>
                                                                     </>
                                                                 }
+
                                                                 {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&

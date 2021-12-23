@@ -876,7 +876,7 @@ function CostingSimulation(props) {
                     isSimulation={true}
                 />
             }
-             {showViewAssemblyDrawer &&
+            {showViewAssemblyDrawer &&
                 <ViewAssembly
                     isOpen={showViewAssemblyDrawer}
                     closeDrawer={closeAssemblyDrawer}
