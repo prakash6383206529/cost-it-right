@@ -476,15 +476,21 @@ function CostingSimulation(props) {
     }
 
     const oldRMCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sum = oldRMCalc(row)
-        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
+        const sumold = oldRMCalc(row)
+        const sumnew = newRMCalc(row)
+        const classGreen = (sumnew > sumold) ? 'red-value form-control' :
+            (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        return <span className={classGreen}>{checkForDecimalAndNull(sumold, getConfigurationKey().NoOfDecimalForPrice)}</span>
     }
 
     const newRMCFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sum = newRMCalc(row)
-        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
+        const sumold = oldRMCalc(row)
+        const sumnew = newRMCalc(row)
+        const classGreen = (sumnew > sumold) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        return <span className={classGreen}>{checkForDecimalAndNull(sumnew, getConfigurationKey().NoOfDecimalForPrice)}</span>
     }
 
     const varianceRMCFormatter = (props) => {
