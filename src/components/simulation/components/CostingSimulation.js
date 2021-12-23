@@ -170,7 +170,6 @@ function CostingSimulation(props) {
                         uniqeArray.push(item);
                     }
                 }
-                console.log(uniqeArray, "uniqeArrayuniqeArray");
                 setTableData(uniqeArray)
                 setTokenNo(tokenNo)
                 setCostingArr(Data.SimulatedCostingList)
@@ -448,18 +447,15 @@ function CostingSimulation(props) {
 
     const oldRMCalc = (row) => {
         let temparr = costingArr.filter(item1 => item1.CostingId === row.CostingId)
-        console.log('temparr: ', temparr);
         const sum = temparr.reduce((accumulator, el) => {
             if (temparr.length === 1) {
                 return checkForNull(row.OldRMPrice)
             } else {
                 if (el.CostingId === row.CostingId) {
-                    console.log("COMIING IN ELSE", el.OldRMPrice);
                     return checkForNull(accumulator) + checkForNull(el.OldRMPrice)
                 }
             }
         }, 0)
-        console.log(sum, "sumsusumm");
         return sum
     }
     const newRMCalc = (row) => {
@@ -479,14 +475,12 @@ function CostingSimulation(props) {
     const oldRMCFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const sum = oldRMCalc(row)
-        console.log('sum: ', sum);
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const newRMCFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const sum = newRMCalc(row)
-        console.log('sum: ', sum);
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
     }
 
@@ -495,7 +489,6 @@ function CostingSimulation(props) {
         const sumold = oldRMCalc(row)
         const sumnew = newRMCalc(row)
         const diff = (sumold - sumnew).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-        console.log('diff: ', diff);
         return checkForDecimalAndNull(diff)
     }
 
