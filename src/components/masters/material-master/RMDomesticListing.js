@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form'
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,11 +12,9 @@ import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
-import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
@@ -30,35 +28,15 @@ import { func } from 'prop-types';
 //import {  Controller, useWatch } from 'react-hook-form'
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
+
 const gridOptions = {};
 
-var filterParams = {
-    comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-        if (dateAsString == null) return -1;
-        var dateParts = dateAsString.split('/');
-        var cellDate = new Date(
-            Number(dateParts[2]),
-            Number(dateParts[1]) - 1,
-            Number(dateParts[0])
-        );
-        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-            return 0;
-        }
-        if (cellDate < filterLocalDateAtMidnight) {
-            return -1;
-        }
-        if (cellDate > filterLocalDateAtMidnight) {
-            return 1;
-        }
-    },
-    browserDatePicker: true,
-    minValidYear: 2000,
-};
 
 function RMDomesticListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
@@ -82,8 +60,6 @@ function RMDomesticListing(props) {
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
-    const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [showPopup, setShowPopup] = useState(false)

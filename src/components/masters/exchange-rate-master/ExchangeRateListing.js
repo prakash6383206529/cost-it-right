@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -12,9 +12,6 @@ import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, get
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import DayTime from '../../common/DayTimeWrapper'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -24,6 +21,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -418,8 +416,8 @@ class ExchangeRateListing extends Component {
                                     <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160}></AgGridColumn>
                                     <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' minWidth={160}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' minWidth={160}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -462,7 +460,6 @@ export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
     getCurrencySelectList,
-    getLeftMenu,
     getExchangeRateData
 })(reduxForm({
     form: 'ExchangeRateListing',

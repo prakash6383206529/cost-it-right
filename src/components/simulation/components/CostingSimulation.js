@@ -222,13 +222,16 @@ function CostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
+        console.log('data: ', data);
         let obj = {
             simulationApprovalProcessSummaryId: EMPTY_GUID,
             simulationId: simulationId,
             costingId: data.CostingId
         }
         setId(id)
-        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldRMPrice, NewRMPrice: data.NewRMPrice, CostingHead: data.CostingHead })
+        const oldRmCSum = oldRMCalc(data)
+        const newRmCSum = newRMCalc(data)
+        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: oldRmCSum, NewRMPrice: newRmCSum, CostingHead: data.CostingHead })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)

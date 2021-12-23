@@ -403,7 +403,7 @@ function OperationSTSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation isSurfaceTreatment={true} master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
+                    <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} list={tableData} />
                 }
 
                 {
