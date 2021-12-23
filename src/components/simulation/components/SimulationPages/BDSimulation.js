@@ -508,7 +508,7 @@ function BDSimulation(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation isSurfaceTreatment={false} token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
                 {
