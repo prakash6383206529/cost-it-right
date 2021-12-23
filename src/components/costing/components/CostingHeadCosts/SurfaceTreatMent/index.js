@@ -270,17 +270,16 @@ function SurfaceTreatment(props) {
                 <div className="col-sm-12 text-right">
                   <button
                     type={'button'}
-                    className="submit-button mr5 save-btn"
+                    className="reset mr5 cancel-btn"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                  <button
+                    type={'button'}
+                    className="submit-button mr15 save-btn"
                     onClick={saveData} >
                     <div className={'save-icon'}></div>
                     {'SAVE'}
-                  </button>
-
-                  <button
-                    type={'button'}
-                    className="reset mr15 cancel-btn"
-                    onClick={cancel} >
-                    <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                 </div>
               </Row>
