@@ -138,12 +138,14 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
+                                // console.log('val.length: ', val);
+                                console.log('val.length: ', val[11]);
                                 if (val.length !== 0) {
                                     if (index > 0) {
                                         if (val[11] !== '' && val[11] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[11] === '' && val[15] === '') {
+                                        if ((val[11] === '' && val[15] === '') || val[11] === undefined || val[15] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
