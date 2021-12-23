@@ -76,7 +76,6 @@ function PaymentTerms(props) {
             }
       
             if(costData?.IsVendor && (costData.IsVendor !== null|| costData.IsVendor !== undefined)){
-                console.log(reqParams,"reqParamsreqParams");
                 dispatch(getPaymentTermsDataByHeads(reqParams, res => {
     
                     if (res && res.data && res.data.Result) {
