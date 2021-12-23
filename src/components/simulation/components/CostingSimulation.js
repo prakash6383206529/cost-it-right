@@ -149,11 +149,11 @@ function CostingSimulation(props) {
                     switch (Number(selectedMasterForSimulation.value)) {
                         case Number(RMIMPORT):
                         case Number(RMDOMESTIC):
-                            item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                            item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                            item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                            const diff = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            item.RMVariance = diff
+                            // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                            // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
+                            // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                            const RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMCVariance = RMCVariance
                             return item
 
                         default:
@@ -503,11 +503,19 @@ function CostingSimulation(props) {
     }
 
     const varianceRMCFormatter = (props) => {
+        console.log('props: ', props);
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // const sumold = oldRMCalc(row)
+        // const sumnew = newRMCalc(row)
+        // const diff = (sumold - sumnew).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+        // return checkForDecimalAndNull(diff)
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        console.log('cell: ', cell);
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sumold = oldRMCalc(row)
-        const sumnew = newRMCalc(row)
-        const diff = (sumold - sumnew).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-        return checkForDecimalAndNull(diff)
+        // const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? checkForDecimalAndNull(row.RMVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
+
     }
 
     const varianceFormatter = (props) => {
