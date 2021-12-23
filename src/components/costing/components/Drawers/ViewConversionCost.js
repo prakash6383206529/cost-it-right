@@ -116,7 +116,6 @@ function ViewConversionCost(props) {
     setLoader(false)
   }, [costingProcessCost, costingOperationCost, othercostingOperationCost])
 
-
   //  checkMultiplePart()
   return (
     <>
@@ -183,7 +182,7 @@ function ViewConversionCost(props) {
                             costingProcessCost.map((item, index) => {
                               return (
                                 <tr key={index}>
-                                  {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                  {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                   <td>{item.ProcessName ? item.ProcessName : '-'}</td>
                                   <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
                                   <td>{item.MachineName ? item.MachineName : '-'}</td>
@@ -242,7 +241,7 @@ function ViewConversionCost(props) {
                               costingOperationCost.map((item, index) => {
                                 return (
                                   <tr key={index}>
-                                    {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                    {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                     <td>
                                       {item.OperationName ? item.OperationName : '-'}
                                     </td>
@@ -313,7 +312,7 @@ function ViewConversionCost(props) {
                               othercostingOperationCost.map((item, index) => {
                                 return (
                                   <tr key={index}>
-                                    {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                    {IsAssemblyCosting && partNumberList.length === 0 &&<td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                     <td>
                                       {item.OtherOperationName ? item.OtherOperationName : '-'}
                                     </td>
@@ -430,7 +429,7 @@ function ViewConversionCost(props) {
                             surfaceTreatmentCost.map((item, index) => {
                               return (
                                 <tr key={index}>
-                                  {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                  {IsAssemblyCosting && partNumberList.length === 0 &&<td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                                   <td>{item.OperationName ? item.OperationName : '-'}</td>
                                   <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
                                   <td>{item.UOM ? item.UOM : '-'}</td>
