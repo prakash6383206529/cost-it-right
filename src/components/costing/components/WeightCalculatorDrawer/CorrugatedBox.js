@@ -5,25 +5,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../../helper'
-import { getUOMSelectList } from '../../../../actions/Common'
+import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../common/Toaster'
-import { G, KG, MG, } from '../../../../config/constants'
-import { AcceptableSheetMetalUOM } from '../../../../config/masterData'
-import { ViewCostingContext } from '../CostingDetails'
+import { KG, } from '../../../../config/constants'
 import HeaderTitle from '../../../common/HeaderTitle'
 
 function CorrugatedBox(props) {
 
 
-    // var widthSheetWithDecimal;
-    // var lengthSheetWithDecimal;
-    // var paperWithDecimal;
-    // var burstingStrengthWithDecimal;
-    // var widthIncCuttingDecimal;
-    // var LengthCuttingAllowance;
 
     const [dataSend, setDataSend] = useState({})
 
@@ -40,19 +31,19 @@ function CorrugatedBox(props) {
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
         gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? WeightCalculatorRequest.GSM : '',
-        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForPrice) : '',
-        bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForPrice) : '',
+        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput) : '',
         length_box: WeightCalculatorRequest && WeightCalculatorRequest.LengthBox !== null ? WeightCalculatorRequest.LengthBox : '',
         width_box: WeightCalculatorRequest && WeightCalculatorRequest.WidthBox !== null ? WeightCalculatorRequest.WidthBox : '',
         height_box: WeightCalculatorRequest && WeightCalculatorRequest.HeightBox !== null ? WeightCalculatorRequest.HeightBox : '',
         stiching_length: WeightCalculatorRequest && WeightCalculatorRequest.StitchingLengthInchperJoint !== null ? WeightCalculatorRequest.StitchingLengthInchperJoint : '',
-        width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForPrice) : '', // 
+        width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', // 
         cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
-        length_sheet: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration.NoOfDecimalForPrice) : '',
-        cutting_allowance2: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
-        length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForPrice) : '',
-        paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForPrice) : '',
+        length_sheet: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
+        length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
 
     }
 
@@ -69,12 +60,7 @@ function CorrugatedBox(props) {
 
     const costData = useContext(costingInfoContext)
     const [isChangeApplies, setIsChangeApplied] = useState(true)
-    const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
 
-    const [dataToSend, setDataToSend] = useState({
-        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        // FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
-    })
 
     const [UOMDimension, setUOMDimension] = useState(
         WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
@@ -112,12 +98,8 @@ function CorrugatedBox(props) {
             width: checkForNull(getValues('gsm'))
         }
         const getWeightSheet = (data.length * data.width * data.thickness) / 1000;
-        //burstingStrengthWithDecimal = getWeightSheet;
         setDataSend(prevState => ({ ...prevState, burstingStrengthWithDecimal: getWeightSheet }))
-        //  const updatedValue = dataToSend
-        // updatedValue.WeightOfSheet = getWeightSheet
         setTimeout(() => {
-            // setDataToSend(getWeightSheet)
             setValue('bursting_strength', checkForDecimalAndNull(getWeightSheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }
@@ -137,23 +119,22 @@ function CorrugatedBox(props) {
         }
 
 
-        var widthsheet = (Number(data.widthBox) + parseInt(data.heightBox)) / 25.4;
+        let widthsheet = (Number(data.widthBox) + parseInt(data.heightBox)) / 25.4;
         const lengthsheet = (2 * (parseInt(data.lengthBox) + parseInt(data.widthBox)) + parseInt(data.stichingLength)) / 25.4;
 
-        //widthSheetWithDecimal = widthsheet;
-        //lengthSheetWithDecimal = lengthsheet;
+
         setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthsheet, lengthSheetWithDecimal: lengthsheet }))
 
 
 
         setTimeout(() => {
-            // setDataToSend(getWeightSheet)
+
             setValue('width_sheet', checkForDecimalAndNull(widthsheet, localStorage.NoOfDecimalForPrice))
         }, 200);
 
 
         setTimeout(() => {
-            // setDataToSend(getWeightSheet)
+
             setValue('length_sheet', checkForDecimalAndNull(lengthsheet, localStorage.NoOfDecimalForPrice))
         }, 200);
 
@@ -173,16 +154,14 @@ function CorrugatedBox(props) {
         if (data1.cuttingAllowance) {
 
 
+            const widthCuttingAllowance = data1.widthSheet + (2 * data1.cuttingAllowance);              //
 
-            const widthCuttingAllowance = data1.widthSheet + (2 * data1.cuttingAllowance);
-
-            const wca1 = Math.round(widthCuttingAllowance);
-            // widthIncCuttingDecimal = wca1;
-            setDataSend(prevState => ({ ...prevState, widthIncCuttingDecimal: wca1 }))
+            const widthIncCuttingAllowance = Math.round(widthCuttingAllowance);
+            setDataSend(prevState => ({ ...prevState, widthIncCuttingDecimal: widthIncCuttingAllowance }))
 
             setTimeout(() => {
-                // setDataToSend(getWeightSheet)
-                setValue('width_inc_cutting', wca1);
+
+                setValue('width_inc_cutting', widthIncCuttingAllowance);
             }, 200);
 
         }
@@ -196,19 +175,19 @@ function CorrugatedBox(props) {
 
         let data = {
             widthSheet: getValues('width_sheet'),
-            cuttingAllowance2: getValues('cutting_allowance2'),
+            cuttingAllowanceForLength: getValues('cuttingAllowanceForLength'),
         }
 
 
-        if (data.cuttingAllowance2) {
-            const lca = (parseInt(data.widthSheet) + 2 * parseInt(data.cuttingAllowance2));
-            // LengthCuttingAllowance = lca;
-            setDataSend(prevState => ({ ...prevState, LengthCuttingAllowance: lca }))
+        if (data.cuttingAllowanceForLength) {
+            const lengthIncCuttingAllowance = (parseInt(data.widthSheet) + 2 * parseInt(data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
+
+            setDataSend(prevState => ({ ...prevState, LengthCuttingAllowance: lengthIncCuttingAllowance }))
 
 
             setTimeout(() => {
-                // setDataToSend(getWeightSheet)
-                setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lca, localStorage.NoOfDecimalForPrice));
+
+                setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lengthIncCuttingAllowance, localStorage.NoOfDecimalForPrice));
             }, 200);
 
         }
@@ -222,23 +201,20 @@ function CorrugatedBox(props) {
             length_inc_cutting_allowance: getValues('length_inc_cutting_allowance'),
             no_of_ply: getValues('no_of_ply'),
             gsm: getValues('gsm')
-            // np :
-            // gsm : 
+
         }
 
         if (data.length_inc_cutting_allowance) {
-            const Wca = Number(data.width_inc_cutting);
-            const Lca = parseInt(data.length_inc_cutting_allowance);
-            const Np = parseInt(data.no_of_ply);
+            const WidthIncCuttingAllowance = Number(data.width_inc_cutting);
+            const LengthIncCuttingAllowance = parseInt(data.length_inc_cutting_allowance);
+            const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
 
-            const gross = (Wca * Lca * Np * Gsm) / 1550;
+            const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm) / 1550;
             const finalGross = gross / 1000;
-            //paperWithDecimal = finalGross;
             setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
 
             setTimeout(() => {
-                // setDataToSend(getWeightSheet)
                 setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForPrice));
             }, 200);
 
@@ -251,7 +227,6 @@ function CorrugatedBox(props) {
 
 
     const onSubmit = (Values) => {
-
 
 
 
@@ -283,7 +258,7 @@ function CorrugatedBox(props) {
             BurstingFactor: Values.bursting_factor,
             BurstingStrength: dataSend.burstingStrengthWithDecimal,
             CuttingAllowanceWidth: Values.cutting_allowance,
-            CuttingAllowanceLength: Values.cutting_allowance2,
+            CuttingAllowanceLength: Values.cuttingAllowanceForLength,
             GSM: Values.gsm,
             HeightBox: Values.height_box,
             LengthBox: Values.length_box,
@@ -301,15 +276,11 @@ function CorrugatedBox(props) {
         }
 
 
-
-        let obj = {
-        }
-
         dispatch(saveRawMaterialCalciData(data, res => {
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', data, obj)
+                props.toggleDrawer('', data)
             }
         }))
 
@@ -353,11 +324,11 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -378,11 +349,11 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -404,11 +375,11 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -426,15 +397,7 @@ function CorrugatedBox(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        // rules={{
-                                        //     required: true,
-                                        //     pattern: {
-                                        //         //value: /^[0-9]*$/i,
-                                        //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //         message: 'Invalid Number.',
-                                        //     },
-                                        //     // maxLength: 4,
-                                        // }}
+
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -466,11 +429,11 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -491,11 +454,10 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -518,11 +480,10 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -543,14 +504,11 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                //value: /^[0-9]\d*(\.\d+)?$/i,
                                                 value: /^(0|[1-9]\d*)(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             }
                                         }}
-                                        //     // maxLength: 4,
-                                        // }}
+
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -611,11 +569,10 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -638,11 +595,9 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -665,11 +620,9 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -687,7 +640,7 @@ function CorrugatedBox(props) {
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Cutting Allowance`}
-                                        name={'cutting_allowance2'}
+                                        name={'cuttingAllowanceForLength'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -695,17 +648,16 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.cutting_allowance2}
+                                        errors={errors.cuttingAllowanceForLength}
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
@@ -721,11 +673,10 @@ function CorrugatedBox(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -769,7 +720,7 @@ function CorrugatedBox(props) {
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.'
                                             },
-                                            // maxLength: 3,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
