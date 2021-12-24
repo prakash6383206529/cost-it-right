@@ -11,6 +11,7 @@ import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
 
 function SurfaceTreatmentCost(props) {
+  
 
   const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -39,11 +40,20 @@ function SurfaceTreatmentCost(props) {
     if (props.IsAssemblyCalculation) {
       props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     } else {
+      
       props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     }
     // }, 100)
     selectedIds(gridData)
   }, [gridData]);
+
+
+  useEffect(()=>{
+    if(props?.data && props.data.length >0){
+
+      setGridData(props.data)
+    }
+  },[props.data])
 
   /**
   * @method DrawerToggle
