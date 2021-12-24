@@ -107,7 +107,12 @@ function SimulationApprovalListing(props) {
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
         const tempStatus = getValues('status') ? getValues('status').value : 0
         // const type_of_costing = 
-        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+
+        setTimeout(() => {
+            if (approveDrawer !== true) {
+                getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+            }
+        }, 300);
     }
 
     /**
