@@ -984,12 +984,15 @@ function TabDiscountOther(props) {
                                 <a href={fileURL} target="_blank" rel="noreferrer">
                                   {f.OriginalFileName}
                                 </a>
+                                {
+                                  !CostingViewMode && 
                                 <img
                                   alt={""}
                                   className="float-right"
                                   onClick={() => deleteFile(f.FileId, f.FileName)}
                                   src={redcrossImg}
                                 ></img>
+                                }
                               </div>
                             );
                           })}
