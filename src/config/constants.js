@@ -1538,7 +1538,7 @@ export const APPROVAL_APP = 'Approval'
 export const TAX = 'Tax'
 export const COSTING_DETAILS_REPORT = 'Costing Details Report'
 export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
-export const SIMULATION_INSIGNTS ='Simulation Insignts'
+export const SIMULATION_INSIGNTS = 'Simulation Insignts'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -1650,6 +1650,7 @@ export const PartTruckLoad = 4;
 export const INR = "INR"
 export const G = "Gram"
 export const MG = "Milligram"
+export const COSTINGSIMULATIONROUND = 2
 
 // UOM TYPE ENUM
 export const MASS = 'Mass'
