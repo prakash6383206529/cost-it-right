@@ -1671,6 +1671,7 @@ export const PartTruckLoad = 4;
 export const INR = "INR"
 export const G = "Gram"
 export const MG = "Milligram"
+export const COSTINGSIMULATIONROUND = 2
 
 // UOM TYPE ENUM
 export const MASS = 'Mass'
