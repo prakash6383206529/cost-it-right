@@ -847,7 +847,7 @@ function RawMaterialCost(props) {
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className='rm-table-body'>
                     {gridData &&
                       gridData.map((item, index) => {
 
