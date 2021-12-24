@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -25,7 +25,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
-import _ from 'lodash';
 
 const gridOptions = {};
 
@@ -145,7 +144,7 @@ function CostingSimulation(props) {
                     if (item.IsLockedBySimulation) {
                         setSelectedCostingIds(item.CostingId)
                     }
-                    item.Variance = (item.OldPOPrice - item.NewPOPrice)
+                    item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                     //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
                     switch (Number(selectedMasterForSimulation.value)) {
                         case Number(RMIMPORT):
@@ -153,7 +152,8 @@ function CostingSimulation(props) {
                             // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
                             // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
                             // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                            item.RMCVariance = (item.OldRMPrice - item.NewRMPrice)
+                            const RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMCVariance = RMCVariance
                             return item
 
                         default:
@@ -484,7 +484,7 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{_.round(cell, COSTINGSIMULATIONROUND)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
     }
 
@@ -497,7 +497,7 @@ function CostingSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{_.round(cell, COSTINGSIMULATIONROUND)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
     }
 
@@ -506,21 +506,20 @@ function CostingSimulation(props) {
         // const sumold = oldRMCalc(row)
         // const sumnew = newRMCalc(row)
         // const diff = (sumold - sumnew).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-        // return (diff)
+        // return checkForDecimalAndNull(diff)
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let roudOffOld = 0, rounfOffNew = 0
-        roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
-        rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
-        return cell != null ? (roudOffOld - rounfOffNew).toFixed(2) : ''
+        // const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? checkForDecimalAndNull(row.RMVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
+
     }
 
     const varianceFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cell).toFixed(2)
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
-
     const hideColumn = (props) => {
         setHideDataColumn({
             hideOverhead: costingList && costingList.length > 0 && costingList[0].NewOverheadCost === 0 ? true : false,
@@ -753,7 +752,7 @@ function CostingSimulation(props) {
                                                     </>}
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
                                                         {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
