@@ -82,12 +82,11 @@ function CorrugatedBox(props) {
 
     const setBurstingStrength = () => {
         let data = {
-            density: rmRowData.Density,
-            thickness: getValues('no_of_ply'),
-            length: checkForNull(getValues('bursting_factor')),
-            width: checkForNull(getValues('gsm'))
+            noOfPly: getValues('no_of_ply'),
+            burstingFactor: checkForNull(getValues('bursting_factor')),
+            gsm: checkForNull(getValues('gsm'))
         }
-        const getWeightSheet = (data.length * data.width * data.thickness) / 1000;
+        const getWeightSheet = (data.burstingFactor * data.gsm * data.noOfPly) / 1000;
         setDataSend(prevState => ({ ...prevState, burstingStrengthWithDecimal: getWeightSheet }))
         setTimeout(() => {
             setValue('bursting_strength', checkForDecimalAndNull(getWeightSheet, localStorage.NoOfDecimalForInputOutput))
@@ -119,13 +118,13 @@ function CorrugatedBox(props) {
 
         setTimeout(() => {
 
-            setValue('width_sheet', checkForDecimalAndNull(widthsheet, localStorage.NoOfDecimalForPrice))
+            setValue('width_sheet', checkForDecimalAndNull(widthsheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
 
         setTimeout(() => {
 
-            setValue('length_sheet', checkForDecimalAndNull(lengthsheet, localStorage.NoOfDecimalForPrice))
+            setValue('length_sheet', checkForDecimalAndNull(lengthsheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
 
@@ -170,14 +169,14 @@ function CorrugatedBox(props) {
 
 
         if (data.cuttingAllowanceForLength) {
-            const lengthIncCuttingAllowance = (parseInt(data.widthSheet) + 2 * parseInt(data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
+            const lengthIncCuttingAllowance = ((data.widthSheet) + 2 * (data.cuttingAllowanceForLength));            // Formula to calculate length inc cutting allowance
 
             setDataSend(prevState => ({ ...prevState, LengthCuttingAllowance: lengthIncCuttingAllowance }))
 
 
             setTimeout(() => {
 
-                setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lengthIncCuttingAllowance, localStorage.NoOfDecimalForPrice));
+                setValue('length_inc_cutting_allowance', checkForDecimalAndNull(lengthIncCuttingAllowance, localStorage.NoOfDecimalForInputOutput));
             }, 200);
 
         }
@@ -205,7 +204,7 @@ function CorrugatedBox(props) {
             setDataSend(prevState => ({ ...prevState, paperWithDecimal: finalGross }))
 
             setTimeout(() => {
-                setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForPrice));
+                setValue('paper_process', checkForDecimalAndNull(finalGross, localStorage.NoOfDecimalForInputOutput));
             }, 200);
 
 
@@ -236,7 +235,6 @@ function CorrugatedBox(props) {
             NetLandedCost: dataSend.paperWithDecimal * rmRowData.RMRate,  //(GROSS WEIGHT * RM RATE)
             PartNumber: costData.PartNumber,
             TechnologyName: costData.TechnologyName,
-            Density: rmRowData.Density,
             UOMForDimension: KG,
             GrossWeight: dataSend.paperWithDecimal,
             FinishWeight: dataSend.paperWithDecimal,
