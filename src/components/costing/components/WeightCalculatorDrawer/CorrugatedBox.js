@@ -62,16 +62,6 @@ function CorrugatedBox(props) {
     const [isChangeApplies, setIsChangeApplied] = useState(true)
 
 
-    const [UOMDimension, setUOMDimension] = useState(
-        WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
-            ? {
-                label: WeightCalculatorRequest.UOMForDimension,
-                value: WeightCalculatorRequest.UOMForDimensionId,
-            }
-            : [],
-    )
-
-
 
     const fieldValues = useWatch({
         control,
@@ -247,7 +237,6 @@ function CorrugatedBox(props) {
             PartNumber: costData.PartNumber,
             TechnologyName: costData.TechnologyName,
             Density: rmRowData.Density,
-            UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: KG,
             GrossWeight: dataSend.paperWithDecimal,
             FinishWeight: dataSend.paperWithDecimal,
