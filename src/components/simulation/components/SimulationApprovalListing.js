@@ -50,7 +50,6 @@ function SimulationApprovalListing(props) {
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
-    console.log('simualtionApprovalList: ', simualtionApprovalList);
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
@@ -93,7 +92,6 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            console.log('res: ', res);
             if(res.data.Result){
                 setIsLoader(false)
             }
@@ -111,7 +109,12 @@ function SimulationApprovalListing(props) {
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
         const tempStatus = getValues('status') ? getValues('status').value : 0
         // const type_of_costing = 
-        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+
+        setTimeout(() => {
+            if (approveDrawer !== true) {
+                getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+            }
+        }, 300);
     }
 
     /**
@@ -519,7 +522,6 @@ function SimulationApprovalListing(props) {
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
