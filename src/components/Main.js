@@ -360,7 +360,7 @@ class Main extends Component {
 
                     <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
 
-                    <Route path="/client-master" component={AuthMiddleware(ClientMaster, CUSTOMER)} />
+                    <Route path="/client-master" component={AuthMiddleware(ClientMaster, CLIENT)} />
 
                     <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing, EXCHANGE_RATE,)} />
 

@@ -53,8 +53,8 @@ function SimulationApprovalListing(props) {
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
-    const [isLoader, setIsLoader] = useState(true)
     const [simulationDetail, setSimulationDetail] = useState([])
+    const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -69,6 +69,9 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
 
     }, [selectedIds])
+
+
+
 
     /**
      * @method getTableData
@@ -89,43 +92,12 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            setIsLoader(false)
-
+            if(res.data.Result){
+                setIsLoader(false)
+            }
         }))
     }
 
-    const renderDropdownListing = (label) => {
-        const tempDropdownList = []
-
-        if (label === 'PartList') {
-            partSelectList &&
-                partSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-
-            return tempDropdownList
-        }
-
-        if (label === 'Status') {
-            statusSelectList &&
-                statusSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-            return tempDropdownList
-        }
-        if (label === 'users') {
-            userList && userList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-    }
 
     /**
      * @method onSubmit
@@ -137,7 +109,12 @@ function SimulationApprovalListing(props) {
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
         const tempStatus = getValues('status') ? getValues('status').value : 0
         // const type_of_costing = 
-        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+
+        setTimeout(() => {
+            if (approveDrawer !== true) {
+                getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+            }
+        }, 300);
     }
 
     /**
@@ -487,7 +464,7 @@ function SimulationApprovalListing(props) {
         requestedOnFormatter: requestedOnFormatter,
         statusFormatter: statusFormatter,
         buttonFormatter: buttonFormatter,
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter
@@ -504,7 +481,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
+                            {isLoader &&<LoaderCustom customClass={"simulation-history-loader"} />}
                             <Row className="pt-4 blue-before">
 
                                 <Col md="2" lg="2" className="search-user-block mb-3">
@@ -545,7 +522,6 @@ function SimulationApprovalListing(props) {
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
