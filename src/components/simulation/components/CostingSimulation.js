@@ -229,7 +229,7 @@ function CostingSimulation(props) {
             costingId: data.CostingId
         }
         setId(id)
-        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCostz, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead })
+        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
@@ -770,7 +770,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
                                                     <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
-                                                  
+
                                                     {isRMDomesticOrRMImport && <>
                                                         <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
