@@ -272,6 +272,14 @@ class LabourListing extends Component {
   }
 
   /**
+  * @method hyphenFormatter
+  */
+  hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
+  }
+
+  /**
    * @method dashFormatter
    * @description Renders Costing head
    */
@@ -285,10 +293,8 @@ class LabourListing extends Component {
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
-
-
 
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
@@ -460,7 +466,8 @@ class LabourListing extends Component {
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       costingHeadFormatter: this.costingHeadFormatter,
-      effectiveDateRenderer: this.effectiveDateFormatter
+      effectiveDateRenderer: this.effectiveDateFormatter,
+      hyphenFormatter: this.hyphenFormatter
     };
 
     return (
@@ -563,7 +570,7 @@ class LabourListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="Vendor" headerName="Vendor Name"></AgGridColumn>
+                <AgGridColumn field="Vendor" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>

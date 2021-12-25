@@ -131,8 +131,8 @@ class VolumeListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
 
     }
   }
@@ -221,7 +221,7 @@ class VolumeListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
   /**
@@ -235,13 +235,13 @@ class VolumeListing extends Component {
         this.getTableListData(null, null, null, null, null, null)
       }
     })
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDeleteItem(this.state.deletedId);
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
 * @method buttonFormatter
@@ -269,6 +269,14 @@ closePopUp= () =>{
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue ? 'Vendor Based' : 'Zero Based'
+  }
+
+  /**
+  * @method hyphenFormatter
+  */
+  hyphenFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
   }
 
   onExportToCSV = (row) => {
@@ -443,7 +451,8 @@ closePopUp= () =>{
       costingHeadRenderer: this.costingHeadFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      indexFormatter: this.indexFormatter
+      hyphenFormatter: this.hyphenFormatter,
+
     };
 
     if (showVolumeForm) {
@@ -566,10 +575,10 @@ closePopUp= () =>{
                 <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
                 <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -608,8 +617,8 @@ closePopUp= () =>{
             />
           )}
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`}  />
-         }
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`} />
+          }
         </div>
       </>
     )
