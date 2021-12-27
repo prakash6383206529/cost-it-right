@@ -2491,7 +2491,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
     { label: "Specification", value: "Specification", },
     { label: "NoOfVendors", value: "NoOfVendors", },
-    { label: " ", value: "Plant", },
+    { label: "Plant", value: "Plant", },
     { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
     { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
 ]

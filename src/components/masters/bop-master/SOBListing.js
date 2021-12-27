@@ -236,10 +236,9 @@ class SOBListing extends Component {
   * @method hyphenFormatter
   */
   hyphenFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? cellValue : '-';
+    const cellValue = props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
-
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     params.api.paginationGoToPage(0);
@@ -252,17 +251,17 @@ class SOBListing extends Component {
 
   onBtExport = () => {
     let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
+    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    // data && data.map((item => {
+    tempArr = this.props.bopSobList && this.props.bopSobList
+    // }))
 
     return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } if (item.Plants === '-') {
