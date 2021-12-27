@@ -12,7 +12,7 @@ import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, 
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
-import {  G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
+import { G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
 import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
 import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
@@ -46,7 +46,7 @@ function RawMaterialCost(props) {
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
   const [Ids, setIds] = useState([])
   const [editCalculation, setEditCalculation] = useState(true)
-  const [oldGridData,setOldGridData]= useState(props.data)
+  const [oldGridData, setOldGridData] = useState(props.data)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -83,7 +83,7 @@ function RawMaterialCost(props) {
       if (!CostingViewMode) {
 
         props.setRMCost(gridData, Params, item)
-        if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+        if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
           dispatch(isDataChange(true))
         }
       }
@@ -179,7 +179,7 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
 
     if (technologyForDensity.includes(costData.ETechnologyType)) {
-      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0 ) {
+      if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
 
         Toaster.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
         return false
@@ -537,6 +537,7 @@ function RawMaterialCost(props) {
    */
   const setWeight = (weightData, originalWeight) => {
 
+
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
@@ -554,12 +555,13 @@ function RawMaterialCost(props) {
         finishWeight = weightData.FinishWeight / 1000000
       }
       const FinishWeight = finishWeight
-      const GrossWeight = grossWeight    
+      const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
 
-      const scrapWeight = weightData.scrapWeight? weightData.scrapWeight : checkForNull(GrossWeight - FinishWeight)
+      const scrapWeight = weightData.scrapWeight ? weightData.scrapWeight : checkForNull(GrossWeight - FinishWeight)
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
+
 
 
       tempData = {
@@ -573,17 +575,18 @@ function RawMaterialCost(props) {
         CutOffRMC: CutOffRMC,
         ScrapRecoveryPercentage: RecoveryPercentage,
         BurningLossWeight: weightData.BurningValue,
-        ScrapWeight:scrapWeight
+        ScrapWeight: scrapWeight
       }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setGridData(tempArr)
       setTimeout(() => {
+
         setValue(`${rmGridFields}.${editIndex}.GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.ScrapRecoveryPercentage`, checkForDecimalAndNull(RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${editIndex}.BurningLossWeight`, checkForDecimalAndNull(weightData.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue(`${rmGridFields}.${editIndex}.ScrapWeight`,checkForDecimalAndNull(scrapWeight,getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${editIndex}.ScrapWeight`, checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         dispatch(setRMCCErrors({})) //USED FOR ERROR HANDLING
         counter = 0 //USED FOR ERROR HANDLING
       }, 500)

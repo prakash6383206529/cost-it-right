@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {  reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { Loader } from '../../common/Loader';
@@ -111,7 +111,7 @@ class BOPImportListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        
+
     }
 
     /**
@@ -178,7 +178,7 @@ class BOPImportListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue 
+        return cellValue
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
@@ -194,8 +194,8 @@ class BOPImportListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue
     }
-    plantFormatter = (props)=>{
-     
+    plantFormatter = (props) => {
+
         const rowData = props.data
         return rowData.IsVendor === 'Vendor Based' ? rowData.DestinationPlant : rowData.Plants
     }
@@ -214,19 +214,13 @@ class BOPImportListing extends Component {
 
     }
 
+
     /**
-    * @method hyphenFormatter
-    */
+     * @method hyphenFormatter
+     */
     hyphenFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '') {
-            value = '-';
-        }
-        else {
-            value = cellValue
-        }
-        return value
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
     }
 
     onGridReady = (params) => {
@@ -324,7 +318,7 @@ class BOPImportListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            plantFormatter:this.plantFormatter
+            plantFormatter: this.plantFormatter
         };
 
         const onRowSelect = () => {
@@ -446,7 +440,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
                                     <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant"></AgGridColumn>
-                                    <AgGridColumn field="Vendor" headerName="Vendor"></AgGridColumn>
+                                    <AgGridColumn field="Vendor" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)"></AgGridColumn>

@@ -58,6 +58,7 @@ function SurfaceTreatment(props) {
       const surfaceTabData= SurfaceTabData[0]
       const overHeadAndProfitTabData=OverheadProfitTabData[0]
       const discountAndOtherTabData =DiscountCostData[0]
+      
       let requestData = {
         "CostingId": item.CostingId,
         "PartId": item.PartId,
