@@ -276,8 +276,8 @@ class LabourListing extends Component {
   * @method hyphenFormatter
   */
   hyphenFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
+    const cellValue = props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
   /**

@@ -74,8 +74,8 @@ class VendorListing extends Component {
             warningMessage: false,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
 
         }
     }
@@ -297,7 +297,7 @@ class VendorListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -312,14 +312,14 @@ class VendorListing extends Component {
                 //this.getTableListData(null, null, null)
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -341,8 +341,8 @@ class VendorListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != 'NA' ? cellValue : '-';
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
     handleChange = (cell, row) => {
@@ -861,8 +861,8 @@ class VendorListing extends Component {
                     )
                 }
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
+                }
             </div >
         );
     }
