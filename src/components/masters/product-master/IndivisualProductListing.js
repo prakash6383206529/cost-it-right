@@ -137,15 +137,8 @@ class IndivisualProductListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '') {
-            value = '-'
-        }
-        else {
-            value = cellValue
-        }
-        return value;
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
