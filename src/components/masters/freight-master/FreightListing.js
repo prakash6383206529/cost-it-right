@@ -43,8 +43,8 @@ class FreightListing extends Component {
       sourceLocation: [],
       vendor: [],
       isLoader: true,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -104,7 +104,7 @@ class FreightListing extends Component {
   * @description confirm delete Raw Material details
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
   /**
@@ -118,13 +118,13 @@ class FreightListing extends Component {
         this.getDataList()
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDelete(this.state.deletedId);
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
 
 
@@ -194,11 +194,11 @@ closePopUp= () =>{
   }
 
   /**
-* @method hyphenFormatter
-*/
+  * @method hyphenFormatter
+  */
   hyphenFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? cellValue : '-';
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
   }
 
   /**
@@ -377,8 +377,8 @@ closePopUp= () =>{
           </Col>
         </Row>
         {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FREIGHT_DELETE_ALERT}`}  />
-         }
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FREIGHT_DELETE_ALERT}`} />
+        }
       </div >
     );
   }

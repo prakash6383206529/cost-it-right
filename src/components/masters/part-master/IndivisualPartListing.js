@@ -275,18 +275,11 @@ class IndivisualPartListing extends Component {
     };
 
     /**
-    * @method hyphenFormatter
-    */
+     * @method hyphenFormatter
+     */
     hyphenFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '') {
-            value = '-'
-        }
-        else {
-            value = cellValue
-        }
-        return value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -604,12 +597,12 @@ class IndivisualPartListing extends Component {
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'
-                                    
+
                                 }}
                                 frameworkComponents={frameworkComponents}
                             //    suppressPaginationPanel={true}
                             >
-                                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                                 <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
