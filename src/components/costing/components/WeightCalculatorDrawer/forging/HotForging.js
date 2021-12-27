@@ -1,14 +1,21 @@
-import React, { useState, useEffect, Fragment } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import React, { useState, useEffect, Fragment, useContext } from 'react'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
+import Toaster from '../../../../common/Toaster'
+import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { KG, } from '../../../../../config/constants'
+
 import {
-  SearchableSelectHookForm,
+
   TextFieldHookForm,
 } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
   getConfigurationKey,
+  loggedInUserId
+
 } from '../../../../../helper'
 import LossStandardTable from '../LossStandardTable'
 
@@ -18,8 +25,8 @@ function HotForging(props) {
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
     forgeWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ForgeWeight !== undefined
-      ? WeightCalculatorRequest.ForgeWeight
+      WeightCalculatorRequest.ForgedWeight !== undefined
+      ? WeightCalculatorRequest.ForgedWeight
       : '',
     inputWeight: WeightCalculatorRequest &&
       WeightCalculatorRequest.InputWeight !== undefined
@@ -38,12 +45,12 @@ function HotForging(props) {
       ? WeightCalculatorRequest.ScrapCost
       : '',
     finishedWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FinishedWeight !== undefined
-      ? WeightCalculatorRequest.FinishedWeight
+      WeightCalculatorRequest.FinishWeight !== undefined
+      ? WeightCalculatorRequest.FinishWeight
       : '',
     machiningStock: WeightCalculatorRequest &&
-      WeightCalculatorRequest.MachiningStock !== undefined
-      ? WeightCalculatorRequest.MachiningStock
+      WeightCalculatorRequest.TotalMachiningStock !== undefined
+      ? WeightCalculatorRequest.TotalMachiningStock
       : ''
   }
   const {
@@ -64,10 +71,15 @@ function HotForging(props) {
     control,
     name: ['finishedWeight', 'machiningStock'],
   })
+
+  const dispatch = useDispatch()
   const [inputWeightValue, setInputWeightValue] = useState(0)
   const [lostWeight, setLostWeight] = useState(0)
   const { rmRowData } = props
   const [tableVal, setTableVal] = useState([])
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+  const costData = useContext(costingInfoContext)
   useEffect(() => {
     calculateForgeWeight()
     calculateSacleLoss()
@@ -91,7 +103,7 @@ function HotForging(props) {
       finishedWeight + machiningStock,
       trim,
     )
-    setValue('forgeWeight', forgeWeight)
+    setValue('forgeWeight', checkForDecimalAndNull(forgeWeight, initialConfiguration.NoOfDecimalForInputOutput))
   }
   /**
    * @method calculateSacleLoss
@@ -153,7 +165,7 @@ function HotForging(props) {
       inputWeight - finishedWeight * 0.85,
       trim,
     )
-    setValue('scrapWeight', scrapWeight)
+    setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
   }
   /**
    * @method calculateScrapCost
@@ -171,16 +183,45 @@ function HotForging(props) {
    */
   const onSubmit = (values) => {
     let obj = {}
-    obj.ForgeWeight = getValues('forgeWeight')
+    obj.LayoutType = 'Hot'
+    obj.ForgedWeight = getValues('forgeWeight')
     obj.InputWeight = getValues('inputWeight')
     obj.SlugWeight = getValues('slugWeight')
     obj.ScrapWeight = getValues('scrapWeight')
     obj.ScrapCost = getValues('scrapCost')
-    obj.FinishedWeight = getValues('finishedWeight')
-    obj.MachiningStock = getValues('machiningStock')
-    obj.LossData = tableVal
+    obj.FinishWeight = getValues('finishedWeight')
+    obj.TotalMachiningStock = getValues('machiningStock')
+    obj.LossOfTypeDetails = tableVal
     obj.LostSum = lostWeight
-    props.toggleDrawer('', obj)
+    obj.GrossWeight = getValues('forgeWeight')
+
+
+    obj.CostingId = costData.CostingId
+    obj.TechnologyId = costData.TechnologyId
+    obj.PartId = costData.PartId
+    obj.RawMaterialId = props.rmRowData.RawMaterialId
+    obj.CostingRawMaterialDetailId = props.rmRowData.RawMaterialDetailId
+    obj.RawMaterialName = props.rmRowData.RMName
+    obj.RawMaterialType = props.rmRowData.MaterialType
+    obj.BasicRatePerUOM = props.rmRowData.RMRate
+    obj.ScrapRate = props.rmRowData.ScrapRate
+    obj.PartNumber = costData.PartNumber
+    obj.TechnologyName = costData.TechnologyName
+    obj.UOMForDimension = KG
+    obj.LoggedInUserId = loggedInUserId()
+    obj.UOMId = props.rmRowData.UOMId
+    obj.UOM = props.rmRowData.UOM
+    obj.IsChangeApplied = true
+
+
+
+    dispatch(saveRawMaterialCalciData(obj, res => {
+      if (res.data.Result) {
+        obj.WeightCalculationId = res.data.Identity
+        Toaster.success("Calculation saved successfully")
+        props.toggleDrawer('', obj)
+      }
+    }))
   }
   /**
    * @method onCancel
@@ -220,291 +261,151 @@ function HotForging(props) {
             <Col md="12" className={'mt25'}>
               <div className="border px-3 pt-3">
                 <Row>
-                <Col md="10">
-                  <div className="left-border">
-                    {'Input Weight Calculator:'}
-                  </div>
-                </Col>
-                <Col md="12">
-                  <Row className={'mt15'}>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Finished Weight`}
-                        name={'finishedWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.finishedWeight}
-                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Total Machining Stock`}
-                        name={'machiningStock'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.machiningStock}
-                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Forge Weight`}
-                        name={'forgeWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.forgeWeight}
-                        disabled={true}
-                      />
-                    </Col>
-                    {/* <Col md="2">
-                      <TextFieldHookForm
-                        label={`Sacle Loss`}
-                        name={'sacleLoss'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        // rules={{
-                        //   required: false,
-                        //   pattern: {
-                        //     value: /^[0-9\b]+$/i,
-                        //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.sacleLoss}
-                        disabled={false}
-                      />
-                    </Col> */}
+                  <Col md="10">
+                    <div className="left-border">
+                      {'Input Weight Calculator:'}
+                    </div>
+                  </Col>
+                  <Col md="12">
+                    <Row className={'mt15'}>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label={`Finished Weight`}
+                          name={'finishedWeight'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={true}
+                          rules={{
+                            required: true,
+                            pattern: {
+                              //value: /^[0-9]*$/i,
+                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              message: 'Invalid Number.',
+                            },
 
-                    {/* <Col md="2">
-                      <TextFieldHookForm
-                        label={`Trimming Loss`}
-                        name={'trimmingLoss'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: false,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.trimmingLoss}
-                        disabled={true}
-                      />
-                    </Col> */}
-                    {/* <Col md="2">
-                      <TextFieldHookForm
-                        label={`Bar Cutting Allowance`}
-                        name={'barCutting'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.barCutting}
-                        disabled={true}
-                      />
-                    </Col> */}
-                    {/* <Col md="2">
-                      <TextFieldHookForm
-                        label={`Billet Heating Loss`}
-                        name={'billetLoss'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.billetLoss}
-                        disabled={true}
-                      />
-                    </Col> */}
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Input Weight(UOM)`}
-                        name={'inputWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.inputWeight}
-                        disabled={true}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Slug Weight`}
-                        name={'slugWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.slugWeight}
-                        disabled={true}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Scrap Weight`}
-                        name={'scrapWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.scrapWeight}
-                        disabled={true}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Scrap Cost`}
-                        name={'scrapCost'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.scrapCost}
-                        disabled={true}
-                      />
-                    </Col>
-                  </Row>
-                </Col>
+                          }}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.finishedWeight}
+                          disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label={`Total Machining Stock`}
+                          name={'machiningStock'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={true}
+                          rules={{
+                            required: true,
+                            pattern: {
+                              //value: /^[0-9]*$/i,
+                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              message: 'Invalid Number.',
+                            },
+                            // maxLength: 4,
+                          }}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.machiningStock}
+                          disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label={`Forge Weight`}
+                          name={'forgeWeight'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.forgeWeight}
+                          disabled={true}
+                        />
+                      </Col>
+
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label={`Input Weight(UOM)`}
+                          name={'inputWeight'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.inputWeight}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label={`Slug Weight`}
+                          name={'slugWeight'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.slugWeight}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label={`Scrap Weight`}
+                          name={'scrapWeight'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.scrapWeight}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label={`Scrap Cost`}
+                          name={'scrapCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.scrapCost}
+                          disabled={true}
+                        />
+                      </Col>
+                    </Row>
+                  </Col>
                 </Row>
                 <LossStandardTable
                   dropDownMenu={dropDown}
@@ -512,7 +413,7 @@ function HotForging(props) {
                   calculation={calculateInputWeight}
                   weightValue={inputWeightValue}
                   netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
-                  sendTable={WeightCalculatorRequest ? WeightCalculatorRequest.LossData : []}
+                  sendTable={WeightCalculatorRequest ? WeightCalculatorRequest.LossOfTypeDetails : []}
                   tableValue={tableData}
                 />
               </div>
