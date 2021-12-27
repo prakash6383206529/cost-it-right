@@ -13,6 +13,7 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import SOBListing from './SOBListing';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class BOPMaster extends Component {
   constructor(props) {
@@ -139,12 +140,13 @@ class BOPMaster extends Component {
 
     return (
       <>
-        <div className="container-fluid">
+        <div className="container-fluid" id="go-top-top">
           {/* {this.props.loading && <Loader/>} */}
           <Row>
             <Col sm="4">
               <h1>{`BOP Master`}</h1>
             </Col>
+            <ScrollToTop pointProp ={"go-top-top"} />
           </Row>
 
           <Row>

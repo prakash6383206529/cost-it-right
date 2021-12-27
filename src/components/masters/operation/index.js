@@ -8,6 +8,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
 import OperationApproval from './OperationApproval';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -68,8 +69,9 @@ class OperationsMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
                     {/* {this.props.loading && <Loader/>} */}
+                    <ScrollToTop pointProp ="go-to-top" />
                     <Row>
                         <Col sm="4">
                             <h1>{`Operation Master`}</h1>
