@@ -104,7 +104,7 @@ function CopyCosting(props) {
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
     const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    setMinDate(date[0].EffectiveDate)
+    setMinDate(date[0]?.EffectiveDate ?? "")
   }, [])
 
 
@@ -242,6 +242,7 @@ function CopyCosting(props) {
    * @descriptionfor changing vendor plant  based on vendor for "To"
    */
   const handleToVendorName = (value) => {
+    console.log('value: ', value);
     getVendorPlantDropdown(value.value, 'to')
     if (getConfigurationKey().IsDestinationPlantConfigure) {
       getDestinationPlant(value, 'to')
@@ -279,6 +280,9 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
+    console.log('value: ', value);
+
+
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
@@ -308,11 +312,12 @@ function CopyCosting(props) {
     }
     //COPY FROM VBC
     if (isFromVbc) {
-      const costNo = value.fromVbccostingId.label.split('-')
+      const costNo = value.fromVbccostingId.label.split(' ')
+      console.log('costNo: ', costNo);
       const plantCode = value.fromVendorPlant && value.fromVendorPlant.label.split('(')
       const vendorCode = value.fromVendorName && value.fromVendorName.label.split('(')
       obj.CostingId = value.fromVbccostingId.value
-      obj.CostingNumber = `${costNo[0]}-${costNo[1]}`
+      obj.CostingNumber = `${costNo[0]}`
       obj.FromVendorId = value.fromVendorName.value
       obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1].split(')')[0]
       obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
@@ -353,6 +358,7 @@ function CopyCosting(props) {
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
+      console.log("res", res);
       const Data = res.data.Data
 
       if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
@@ -732,7 +738,6 @@ function CopyCosting(props) {
                     <div className="inputbox date-section">
                       <DatePicker
                         name="EffectiveDate"
-                        //selected={effectiveDate}
                         //selected={effectiveDate ? new Date(effectiveDate) : ''}
                         selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                         onChange={handleEffectiveDateChange}
