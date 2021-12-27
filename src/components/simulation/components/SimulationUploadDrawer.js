@@ -135,45 +135,7 @@ class SimulationUploadDrawer extends Component {
                     let correctRowCount = 0
                     let NoOfRowsWithoutChange = 0
                     switch (Number(this.props.master.value)) {
-                        // case Number(EXCHNAGERATE):
-                        //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                        //         if (res.data.Result) {
-                        //             toastr.success('Simulation process has been run successfully.')
-                        //             runSimulationCosting()
-                        //         }
-                        //     }))
-                        //     break;
-                        case (Number(COMBINED_PROCESS)):
-                            resp.rows.map((val, index) => {
-                                if (val.length !== 0) {
-                                    if (index > 0) {
-                                        if (val[5] !== '' && val[5] !== undefined) {
-                                            basicRateCount = 1
-                                        }
-                                        if (val[5] === '') {
-                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
-                                            return false
-                                        }
-                                        correctRowCount = correctRowCount + 1
-                                        let obj = {}
-                                        val.map((el, i) => {
-                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
-                                                el = getJsDateFromExcel(el)
-                                            }
-                                            obj[fileHeads[i]] = el;
-                                            return null;
-                                        })
-                                        fileData.push(obj)
-                                        obj = {}
-
-                                    }
-                                }
-                                return null;
-                            })
-                            break;
-
-
-                        case (Number(RMDOMESTIC) || Number(RMIMPORT)):
+                        case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
@@ -202,6 +164,35 @@ class SimulationUploadDrawer extends Component {
                             })
                             break;
 
+                        case Number(RMIMPORT):
+                            resp.rows.map((val, index) => {
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[11] !== '' && val[11] !== undefined) {
+                                            basicRateCount = 1
+                                        }
+                                        if ((val[11] === '' && val[13] === '') || val[11] === undefined || val[13] === undefined) {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
+
+                                    }
+                                }
+                                return null;
+                            })
+                            break;
+
                         case Number(SURFACETREATMENT):
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
@@ -209,7 +200,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -238,7 +229,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -266,7 +257,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[9] !== '' && val[9] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[9] === '') {
+                                        if (val[9] === '' || val[9] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -294,7 +285,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -322,7 +313,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -343,6 +334,43 @@ class SimulationUploadDrawer extends Component {
                                 return null;
                             })
                             break;
+                        case (Number(COMBINED_PROCESS)):
+                            resp.rows.map((val, index) => {
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[5] !== '' && val[5] !== undefined) {
+                                            basicRateCount = 1
+                                        }
+                                        if (val[5] === '' || val[5] === undefined) {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
+
+                                    }
+                                }
+                                return null;
+                            })
+                            break;
+                        // case Number(EXCHNAGERATE):
+                        //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        //         if (res.data.Result) {
+                        //             toastr.success('Simulation process has been run successfully.')
+                        //             runSimulationCosting()
+                        //         }
+                        //     }))
+                        //     break;
+
                         default:
                             break;
                     }

@@ -41,12 +41,12 @@ class ZBCPlantListing extends Component {
             city: [],
             country: [],
             state: [],
-            showPopup:false,
-            deletedId:'',
-           
-            cellData:{},
-            cellValue:'',
-            showPopupToggle:false
+            showPopup: false,
+            deletedId: '',
+
+            cellData: {},
+            cellValue: '',
+            showPopupToggle: false
         }
     }
 
@@ -88,7 +88,7 @@ class ZBCPlantListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -103,18 +103,18 @@ class ZBCPlantListing extends Component {
                 //this.getTableListData();
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {        
-            this.confirmDeleteItem(this.state.deletedId);         
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-        this.setState({showPopupToggle:false})
-      }
-      onPopupConfirmToggle =() => {        
-        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)      
-     }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+        this.setState({ showPopupToggle: false })
+    }
+    onPopupConfirmToggle = () => {
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
+    }
     /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -137,7 +137,7 @@ class ZBCPlantListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        this.setState({showPopupToggle:true, cellData:data, cellValue:cell})
+        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeactivateItem(data, cell)
@@ -145,11 +145,11 @@ class ZBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-// this.setState({isTogglePopup:true})
-    //     return (
-    //     //     Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
-    //  <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${cell?MESSAGES.PLANT_DEACTIVE_ALERT:MESSAGES.PLANT_ACTIVE_ALERT}`}  />
-    //     )
+        // this.setState({isTogglePopup:true})
+        //     return (
+        //     //     Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
+        //  <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${cell?MESSAGES.PLANT_DEACTIVE_ALERT:MESSAGES.PLANT_ACTIVE_ALERT}`}  />
+        //     )
     }
 
     confirmDeactivateItem = (data, cell) => {
@@ -164,7 +164,7 @@ class ZBCPlantListing extends Component {
                 this.filterList()
             }
         })
-        this.setState({showPopupToggle:false})
+        this.setState({ showPopupToggle: false })
     }
 
     /**
@@ -334,7 +334,7 @@ class ZBCPlantListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor,isDeletePopoup,isTogglePopup } = this.state;
+        const { isEditFlag, isOpenVendor, isDeletePopoup, isTogglePopup } = this.state;
         const options = {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
@@ -438,7 +438,8 @@ class ZBCPlantListing extends Component {
                         >
                             <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
-                            <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn>
+                            {/* THIS IS COMMENTED IN RE  */}
+                            {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
@@ -465,13 +466,13 @@ class ZBCPlantListing extends Component {
                     />
                 )}
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`}  />
-            
-            // `${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`
-        }
-        {
-            this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`}  />
-        }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
+
+                    // `${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`
+                }
+                {
+                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
+                }
             </div>
         );
     }
