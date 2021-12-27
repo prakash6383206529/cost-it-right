@@ -1272,7 +1272,7 @@ class UserRegistration extends Component {
                       </div>
                       <div className="col-md-3">
                         <div className="row form-group">
-                          <div className="Phone phoneNumber col-md-8 input-withouticon">
+                          <div className="Phone phoneNumber col-md-8">
                             <Field
                               label="Phone Number"
                               name={"PhoneNumber"}
