@@ -850,11 +850,13 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
 
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                                    <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
+                                                                }
+                                                                <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                 {
                                                                     String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <>
-                                                                        <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                     </>
@@ -868,7 +870,6 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="Variance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
-
                                                                 {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
