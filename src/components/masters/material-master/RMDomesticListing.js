@@ -306,12 +306,15 @@ function RMDomesticListing(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
+    /**
+    * @method hyphenFormatter
+    */
     const hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return cellValue != null ? cellValue : '-';
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
     }
 
     /**
@@ -482,10 +485,14 @@ function RMDomesticListing(props) {
 
     const onBtExport = () => {
         let tempArr = []
-        const data = gridApi && gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
+        if (isSimulation === true) {
+            const data = gridApi && gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+            }))
+        } else {
+            tempArr = getFilterRMData()
+        }
 
         return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
