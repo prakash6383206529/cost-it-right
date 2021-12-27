@@ -108,23 +108,23 @@ function CorrugatedBox(props) {
         }
 
 
-        let widthsheet = (Number(data.widthBox) + parseInt(data.heightBox)) / 25.4;
-        const lengthsheet = (2 * (parseInt(data.lengthBox) + parseInt(data.widthBox)) + parseInt(data.stichingLength)) / 25.4;
+        let widthSheet = (Number(data.widthBox) + parseInt(data.heightBox)) / 25.4;
+        const lengthSheet = (2 * (parseInt(data.lengthBox) + parseInt(data.widthBox)) + parseInt(data.stichingLength)) / 25.4;
 
 
-        setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthsheet, lengthSheetWithDecimal: lengthsheet }))
+        setDataSend(prevState => ({ ...prevState, widthSheetWithDecimal: widthSheet, lengthSheetWithDecimal: lengthSheet }))
 
 
 
         setTimeout(() => {
 
-            setValue('width_sheet', checkForDecimalAndNull(widthsheet, localStorage.NoOfDecimalForInputOutput))
+            setValue('width_sheet', checkForDecimalAndNull(widthSheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
 
         setTimeout(() => {
 
-            setValue('length_sheet', checkForDecimalAndNull(lengthsheet, localStorage.NoOfDecimalForInputOutput))
+            setValue('length_sheet', checkForDecimalAndNull(lengthSheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
 
 
@@ -322,7 +322,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.no_of_ply}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -347,7 +347,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.gsm}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
 
@@ -373,7 +373,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.bursting_factor}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -427,7 +427,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.length_box}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -451,7 +451,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.width_box}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
 
@@ -477,7 +477,8 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.height_box}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
+
                                     />
                                 </Col>
                                 <Col md="3">
@@ -501,7 +502,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.stiching_length}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
 
@@ -566,7 +567,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.cutting_allowance}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
 
@@ -645,7 +646,7 @@ function CorrugatedBox(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.cuttingAllowanceForLength}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
 
@@ -732,6 +733,7 @@ function CorrugatedBox(props) {
                             </button>
                             <button
                                 type={'submit'}
+                                disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                 className="submit-button save-btn">
                                 <div className={'save-icon'}></div>
                                 {'Save'}
