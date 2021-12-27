@@ -171,7 +171,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[11] !== '' && val[11] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[11] === '' && val[13] === '') {
+                                        if ((val[11] === '' && val[13] === '') || val[11] === undefined || val[13] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -200,7 +200,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -229,7 +229,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -257,7 +257,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[9] !== '' && val[9] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[9] === '') {
+                                        if (val[9] === '' || val[9] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -285,7 +285,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -313,7 +313,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -341,7 +341,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[5] !== '' && val[5] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[5] === '') {
+                                        if (val[5] === '' || val[5] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
