@@ -77,7 +77,7 @@ function SimulationApprovalSummary(props) {
     const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
-    const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState({});
+    const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState([]);
     const [textFilterSearch, setTextFilterSearch] = useState('')
 
 
@@ -134,15 +134,15 @@ function SimulationApprovalSummary(props) {
                 setLoader(false)
             }, 500);
 
-            const valueTemp = {
-                CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
-                impactPartNumber: SimulatedCostingList[0].PartNo,
-                plantCode: SimulatedCostingList[0].PlantCode,
-                vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
-                delta: SimulatedCostingList[0].Variance,
-                quantity: 1
-            }
-            setdataForAssemblyImpactForFg(valueTemp)
+            // const valueTemp = {
+            //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
+            //     impactPartNumber: SimulatedCostingList[0].PartNo,
+            //     plantCode: SimulatedCostingList[0].PlantCode,
+            //     vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
+            //     delta: SimulatedCostingList[0].Variance,
+            //     quantity: 1
+            // }
+            setdataForAssemblyImpactForFg(SimulatedCostingList)
         }))
 
     }, [])
@@ -779,6 +779,7 @@ function SimulationApprovalSummary(props) {
                             dataForAssemblyImpact={DataForAssemblyImpactForFg}
                             vendorIdState={costingList[0]?.VendorId}
                             impactType={'AssemblySummary'}
+                            isDraft={false}
                         />}
                         {/* FG wise Impact section end */}
 
