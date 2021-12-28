@@ -257,13 +257,8 @@ class UOMMaster extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, this.state.dataList)
+    let tempArr = this.state.dataList && this.state.dataList
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {

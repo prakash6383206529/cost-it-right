@@ -456,13 +456,8 @@ class OperationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, this.props.operationList)
+        let tempArr = this.props.operationList && this.props.operationList
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
