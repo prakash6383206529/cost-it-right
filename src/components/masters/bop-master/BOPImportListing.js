@@ -237,12 +237,15 @@ class BOPImportListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-            return null
-        }))
-
+        if (this.props.isSimulation === true) {
+            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+                return null
+            }))
+        } else {
+            tempArr = this.props.bopImportList && this.props.bopImportList
+        }
         return this.returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr)
     };
 

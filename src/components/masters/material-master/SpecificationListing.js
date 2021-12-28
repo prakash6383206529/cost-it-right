@@ -273,13 +273,8 @@ class SpecificationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, this.props.rmSpecificationList)
+        let tempArr = this.props.rmSpecificationList && this.props.rmSpecificationList
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {

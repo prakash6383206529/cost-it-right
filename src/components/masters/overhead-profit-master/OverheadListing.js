@@ -279,13 +279,8 @@ class OverheadListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, this.props.overheadProfitList)
+        let tempArr = this.props.overheadProfitList && this.props.overheadProfitList
+        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {

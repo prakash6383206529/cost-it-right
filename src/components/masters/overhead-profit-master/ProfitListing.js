@@ -267,13 +267,8 @@ class ProfitListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, this.props.overheadProfitList)
+        let tempArr = this.props.overheadProfitList && this.props.overheadProfitList
+        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
