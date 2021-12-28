@@ -289,7 +289,7 @@ class IndivisualProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -305,7 +305,7 @@ class IndivisualProductListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={temp} name={ComponentPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

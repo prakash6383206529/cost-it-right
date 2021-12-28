@@ -273,7 +273,7 @@ class ProfitListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ClientName === '-') {
                 item.ClientName = ' '
             } if (item.TypeOfHead === 'VBC') {
@@ -306,7 +306,7 @@ class ProfitListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ProfitMaster}>
+            <ExcelSheet data={temp} name={ProfitMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

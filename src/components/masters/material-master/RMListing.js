@@ -218,7 +218,8 @@ class RMListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        TempData && TempData.map((item) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } if (item.RMGrade === '-') {
@@ -228,9 +229,9 @@ class RMListing extends Component {
             }
             return item
         })
-
         return (
-            <ExcelSheet data={TempData} name={RmMaterial}>
+
+            <ExcelSheet data={temp} name={RmMaterial}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
