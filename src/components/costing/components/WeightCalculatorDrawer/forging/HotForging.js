@@ -78,6 +78,7 @@ function HotForging(props) {
   const { rmRowData } = props
   const [tableVal, setTableVal] = useState([])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const [dataSend, setDataSend] = useState({})
 
   const costData = useContext(costingInfoContext)
   useEffect(() => {
@@ -103,6 +104,7 @@ function HotForging(props) {
       finishedWeight + machiningStock,
       trim,
     )
+    setDataSend(prevState => ({ ...prevState, forgeWeight: forgeWeight }))
     setValue('forgeWeight', checkForDecimalAndNull(forgeWeight, initialConfiguration.NoOfDecimalForInputOutput))
   }
   /**
@@ -133,6 +135,8 @@ function HotForging(props) {
       forgeWeight + netLossWeight,
       trim,
     )
+
+    setDataSend(prevState => ({ ...prevState, inputWeight: inputWeight }))
     setValue('inputWeight', inputWeight)
     setInputWeightValue(inputWeight)
   }
@@ -149,6 +153,8 @@ function HotForging(props) {
       inputWeight - barCutting - billetLoss,
       trim,
     )
+
+    setDataSend(prevState => ({ ...prevState, slugWeight: slugWeight }))
     setValue('slugWeight', slugWeight)
   }
   /**
@@ -165,6 +171,8 @@ function HotForging(props) {
       inputWeight - finishedWeight * 0.85,
       trim,
     )
+
+    setDataSend(prevState => ({ ...prevState, scrapWeight: scrapWeight }))
     setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
   }
   /**
@@ -174,6 +182,7 @@ function HotForging(props) {
   const calculateScrapCost = () => {
     const scrapWeight = Number(getValues('scrapWeight'))
     const scrapCost = checkForDecimalAndNull(scrapWeight * rmRowData.ScrapRate, trim)
+    setDataSend(prevState => ({ ...prevState, scrapCost: scrapCost }))
     setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
     //Need to confirm this formula
   }
@@ -184,16 +193,16 @@ function HotForging(props) {
   const onSubmit = (values) => {
     let obj = {}
     obj.LayoutType = 'Hot'
-    obj.ForgedWeight = getValues('forgeWeight')
-    obj.InputWeight = getValues('inputWeight')
-    obj.SlugWeight = getValues('slugWeight')
-    obj.ScrapWeight = getValues('scrapWeight')
-    obj.ScrapCost = getValues('scrapCost')
+    obj.ForgedWeight = dataSend.forgeWeight
+    obj.InputWeight = dataSend.inputWeight
+    obj.SlugWeight = dataSend.slugWeight
+    obj.ScrapWeight = dataSend.scrapWeight
+    obj.ScrapCost = dataSend.scrapCost
     obj.FinishWeight = getValues('finishedWeight')
     obj.TotalMachiningStock = getValues('machiningStock')
     obj.LossOfTypeDetails = tableVal
     obj.LostSum = lostWeight
-    obj.GrossWeight = getValues('forgeWeight')
+    obj.GrossWeight = dataSend.forgeWeight
 
 
     obj.CostingId = costData.CostingId
