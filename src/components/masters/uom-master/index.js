@@ -47,8 +47,8 @@ class UOMMaster extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
 
     }
   }
@@ -138,13 +138,13 @@ class UOMMaster extends Component {
   * @description confirm delete UOM
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDeleteUOM(this.state.deletedId);
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
    * @method confirmDeleteUOM
@@ -157,7 +157,7 @@ class UOMMaster extends Component {
         this.getUOMDataList()
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
 
   renderPaginationShowsTotal(start, to, total) {
@@ -314,7 +314,6 @@ class UOMMaster extends Component {
       totalValueRenderer: this.buttonFormatter,
       // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      hyphenFormatter: this.hyphenFormatter,
     };
 
     return (
@@ -413,9 +412,9 @@ class UOMMaster extends Component {
               anchor={"right"}
             />
           )}
-            {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete UOM?`}  />
-                }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete UOM?`} />
+          }
         </div>
       </>
     );

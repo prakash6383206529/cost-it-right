@@ -179,8 +179,8 @@ function ReportListing(props) {
     * @method hyphenFormatter
     */
     const hyphenFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
-        return cell
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     const statusFormatter = (props) => {

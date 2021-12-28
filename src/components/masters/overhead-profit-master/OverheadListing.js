@@ -59,6 +59,8 @@ class ProfitListing extends Component {
         this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
         this.props.getVendorWithVendorCodeSelectList()
         this.getDataList()
+
+        
     }
 
     // Get updated Table data list after any action performed.
@@ -183,7 +185,7 @@ class ProfitListing extends Component {
      */
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !==undefined) ? cellValue : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**

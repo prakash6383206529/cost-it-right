@@ -190,15 +190,8 @@ class AssemblyProductListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let data;
-        if (cellValue === '' || cellValue === null) {
-            data = '-'
-        }
-        else {
-            data = cellValue
-        }
-        return data;
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {

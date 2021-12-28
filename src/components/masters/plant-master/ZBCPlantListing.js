@@ -359,7 +359,6 @@ class ZBCPlantListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
             statusButtonFormatter: this.statusButtonFormatter
         };
 

@@ -184,8 +184,8 @@ class RMListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     renderDensity = (cell, row, enumObject, rowIndex) => {
@@ -355,7 +355,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

@@ -194,8 +194,8 @@ class AssemblyPartListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -285,35 +285,23 @@ class AssemblyPartListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, this.props.partsListing)
+        // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        // data && data.map((item => {
+        // tempArr.push(item.data)
+        // }))
+        tempArr = this.props.partsListing && this.props.partsListing
+        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.ECNNumber === null) {
-                item.ECNNumber = ' '
-            } else if (item.RevisionNumber === null) {
-                item.RevisionNumber = ' '
-            } else if (item.DrawingNumber === null) {
-                item.DrawingNumber = ' '
-            } else if (item.Technology === '-') {
+            if (item.Technology === '-') {
                 item.Technology = ' '
-            } else {
-                return false
             }
-
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
-
-
-
             return item
         })
         return (

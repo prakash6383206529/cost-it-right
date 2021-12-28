@@ -166,7 +166,7 @@ function TransportationCost(props) {
             <Row>
               <Col md="12">
                 <div className="left-border">
-                  {'Transportation/Other Cost:'}
+                  {'Extra Cost:'}
                 </div>
               </Col>
             </Row>
