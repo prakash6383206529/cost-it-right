@@ -251,17 +251,13 @@ class SOBListing extends Component {
 
   onBtExport = () => {
     let tempArr = []
-    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    // data && data.map((item => {
     tempArr = this.props.bopSobList && this.props.bopSobList
-    // }))
-
     return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } if (item.Plants === '-') {
@@ -273,7 +269,7 @@ class SOBListing extends Component {
     })
     return (
 
-      <ExcelSheet data={TempData} name={Sob}>
+      <ExcelSheet data={temp} name={Sob}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }

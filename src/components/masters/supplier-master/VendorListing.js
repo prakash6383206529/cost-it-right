@@ -549,18 +549,13 @@ class VendorListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, this.props.supplierDataList)
+        let tempArr = this.props.supplierDataList && this.props.supplierDataList
+        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.Country == 'NA') {
                 item.Country = ' '
             } else if (item.State == 'NA') {
@@ -574,7 +569,7 @@ class VendorListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={VendorMaster}>
+            <ExcelSheet data={temp} name={VendorMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -633,7 +628,7 @@ class VendorListing extends Component {
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 {/* {this.props.loading && <Loader />} */}
-               <ScrollToTop pointProp ="go-to-top" />
+                <ScrollToTop pointProp="go-to-top" />
                 <form
 
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}

@@ -476,7 +476,7 @@ function RMDomesticListing(props) {
         })
         return (
 
-            <ExcelSheet data={TempData} name={RmDomestic}>
+            <ExcelSheet data={temp} name={RmDomestic}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
