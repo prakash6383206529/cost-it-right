@@ -8,7 +8,7 @@ import { getPlantBySupplier, getPlantSelectListByType, } from '../../../actions/
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { ZBC, VBC, VIEW_COSTING_DATA, APPROVED, REJECTED, HISTORY } from '../../../config/constants'
+import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
@@ -393,7 +393,6 @@ function AddToComparisonDrawer(props) {
           obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
           obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges : []
 
-          // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
             temp[index] = obj
@@ -520,7 +519,7 @@ function AddToComparisonDrawer(props) {
     if (label === 'costing') {
       if (viewMode === true) {
         costingSelectList && costingSelectList.map((item) => {
-          if (item.Status === APPROVED || item.Status === REJECTED || item.Status === HISTORY) {
+          if (item.Status === APPROVED || item.Status === REJECTED || item.Status === HISTORY ||item.Status === APPROVED_BY_SIMULATION) {
             temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
             return null
           }
