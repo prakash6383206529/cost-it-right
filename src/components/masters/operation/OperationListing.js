@@ -392,7 +392,6 @@ class OperationListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let data = rowData.CostingHead === "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
-        console.log('data: ', data);
         return (data !== ' ' ? data : '-');
 
     }
