@@ -49,11 +49,12 @@ function SimulationApprovalListing(props) {
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
+    console.log('simualtionApprovalList: ', simualtionApprovalList);
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
-    const [isLoader, setIsLoader] = useState(true)
     const [simulationDetail, setSimulationDetail] = useState([])
+    const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -67,6 +68,9 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
 
     }, [selectedIds])
+
+
+
 
     /**
      * @method getTableData
@@ -87,42 +91,12 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            setIsLoader(false)
+            if(res.data.Result){
+                setIsLoader(false)
+            }
         }))
     }
 
-    const renderDropdownListing = (label) => {
-        const tempDropdownList = []
-
-        if (label === 'PartList') {
-            partSelectList &&
-                partSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-
-            return tempDropdownList
-        }
-
-        if (label === 'Status') {
-            statusSelectList &&
-                statusSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-            return tempDropdownList
-        }
-        if (label === 'users') {
-            userList && userList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-    }
 
     /**
      * @method onSubmit
@@ -482,7 +456,7 @@ function SimulationApprovalListing(props) {
         requestedOnFormatter: requestedOnFormatter,
         statusFormatter: statusFormatter,
         buttonFormatter: buttonFormatter,
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter
@@ -497,7 +471,7 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
+                            {isLoader &&<LoaderCustom customClass={"simulation-history-loader"} />}
                             <Row className="pt-4 blue-before">
 
 
