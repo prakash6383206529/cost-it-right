@@ -232,8 +232,8 @@ class ViewUserDetails extends Component {
                         title={'Role & Purchasing Group:'}
                         customClass={'role-department-details'} />
                     </div>
-                    <div className={'right-details'}>
-                      {`${registerUserData ? registerUserData.RoleName : ''} (${registerUserData ? registerUserData.DepartmentName : ''})`}
+                    <div className={'right-details pt-2'}>
+                      {`${registerUserData ? registerUserData.RoleName : ''} (${registerUserData && registerUserData.DepartmentName !==null ? registerUserData.DepartmentName : ' - '})`}
                       {/* <div
                         onClick={this.permissionToggle}
                         className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}>
