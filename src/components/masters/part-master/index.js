@@ -11,6 +11,7 @@ import { checkPermission } from '../../../helper/util';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
 import FetchDrawer from './FetchBOMDrawer'
+import ScrollToTop from '../../common/ScrollToTop';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -158,7 +159,8 @@ class PartMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
+                    <ScrollToTop pointProp="go-to-top" />
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
