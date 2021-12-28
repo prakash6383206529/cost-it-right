@@ -285,10 +285,6 @@ class AssemblyPartListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        // data && data.map((item => {
-        // tempArr.push(item.data)
-        // }))
         tempArr = this.props.partsListing && this.props.partsListing
         return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
     };

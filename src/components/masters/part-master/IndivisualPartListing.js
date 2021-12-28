@@ -418,13 +418,13 @@ class IndivisualPartListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
+        let tempArr = this.props.newPartsListing && this.props.newPartsListing
+        // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        // data && data.map((item => {
+        //     tempArr.push(item.data)
+        // }))
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, this.props.newPartsListing)
+        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {

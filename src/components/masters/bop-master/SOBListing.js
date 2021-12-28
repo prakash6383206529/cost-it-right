@@ -295,11 +295,7 @@ class SOBListing extends Component {
 
   onBtExport = () => {
     let tempArr = []
-    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    // data && data.map((item => {
     tempArr = this.props.bopSobList && this.props.bopSobList
-    // }))
-
     return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 

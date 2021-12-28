@@ -411,12 +411,7 @@ class ProcessListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    // data && data.map((item => {
-    //   tempArr.push(item.data)
-    // }))
-    tempArr = this.props.processList && this.props.processList
+    let tempArr = this.props.processList && this.props.processList
     return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
