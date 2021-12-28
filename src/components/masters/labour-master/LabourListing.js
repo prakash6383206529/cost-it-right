@@ -381,7 +381,7 @@ class LabourListing extends Component {
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } else if (item.IsContractBase === true) {
@@ -399,7 +399,7 @@ class LabourListing extends Component {
     })
     return (
 
-      <ExcelSheet data={TempData} name={LabourMaster}>
+      <ExcelSheet data={temp} name={LabourMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }

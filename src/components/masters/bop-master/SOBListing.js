@@ -301,7 +301,7 @@ class SOBListing extends Component {
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } if (item.Plants === '-') {
@@ -313,7 +313,7 @@ class SOBListing extends Component {
     })
     return (
 
-      <ExcelSheet data={TempData} name={Sob}>
+      <ExcelSheet data={temp} name={Sob}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
