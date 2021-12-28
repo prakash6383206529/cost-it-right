@@ -14,7 +14,7 @@ import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 const gridOptions = {};
 
 function AssemblyWiseImpact(props) {
-    const { impactType, dataForAssemblyImpact } = props;
+    const { impactType, dataForAssemblyImpact,isDraft } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -27,16 +27,24 @@ function AssemblyWiseImpact(props) {
 
     useEffect(() => {
         setloader(true)
-        if (dataForAssemblyImpact !== undefined && Object.keys(dataForAssemblyImpact).length !== 0 && count === 0) {
-            const requestData = {
-                costingHead: dataForAssemblyImpact?.CostingHead,
-                impactPartNumber: dataForAssemblyImpact?.impactPartNumber,
-                plantCode: dataForAssemblyImpact?.plantCode,
-                vendorId: dataForAssemblyImpact?.vendorId,
-                delta: dataForAssemblyImpact?.delta,
-                quantity: 1,
+        if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length >0) && count === 0) {
+            let requestData=[]
+            if(isDraft){
+            let obj= {
+                    CostingId: dataForAssemblyImpact?.CostingId,
+                    delta: dataForAssemblyImpact?.Variance,
+                    IsSinglePartImpact:true
+                }
+                requestData = [obj]
+
+            }else{
+                dataForAssemblyImpact && dataForAssemblyImpact.map(item=>{
+                    requestData.push({CostingId:item.CostingId,delta:item.POVariance,IsSinglePartImpact:false})
+                    return null
+                })
             }
             setCount(1)
+            console.log(requestData,"requestData");
             dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
 
                 if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
