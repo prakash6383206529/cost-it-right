@@ -299,6 +299,7 @@ function TabSurfaceTreatment(props) {
   * @description DISPATCHED SURFACE COST
   */
   const dispatchSurfaceCost = (surfaceGrid, params, arr) => {
+    
     let tempArr = [];
     try {
 
