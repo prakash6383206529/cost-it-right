@@ -297,11 +297,8 @@ class IndivisualProductListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-
-
-        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, this.props.productDataList)
+        let tempArr = this.props.productDataList && this.props.productDataList
+        return this.returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {

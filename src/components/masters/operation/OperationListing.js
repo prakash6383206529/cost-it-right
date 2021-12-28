@@ -456,18 +456,13 @@ class OperationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, this.props.operationList)
+        let tempArr = this.props.operationList && this.props.operationList
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
             } else if (item.CostingHead === true) {
@@ -483,7 +478,7 @@ class OperationListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={OperationMaster}>
+            <ExcelSheet data={temp} name={OperationMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
