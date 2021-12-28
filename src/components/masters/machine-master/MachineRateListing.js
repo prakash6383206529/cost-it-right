@@ -297,7 +297,7 @@ class MachineRateListing extends Component {
             return item
         })
 
-        return (<ExcelSheet data={TempData} name={`${MachineRate}`}>
+        return (<ExcelSheet data={temp} name={`${MachineRate}`}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);
@@ -315,11 +315,15 @@ class MachineRateListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, this.props.machineDatalist)
+        if (this.props.isSimulation === true) {
+            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+            }))
+        } else {
+            tempArr = this.props.machineDatalist && this.props.machineDatalist
+        }
+        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
     };
 
     onFilterTextBoxChanged(e) {

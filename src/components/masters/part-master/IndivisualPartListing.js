@@ -418,18 +418,18 @@ class IndivisualPartListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
+        let tempArr = this.props.newPartsListing && this.props.newPartsListing
+        // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        // data && data.map((item => {
+        //     tempArr.push(item.data)
+        // }))
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, this.props.newPartsListing)
+        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -446,7 +446,7 @@ class IndivisualPartListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={temp} name={ComponentPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

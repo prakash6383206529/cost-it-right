@@ -289,18 +289,18 @@ class PowerListing extends Component {
 
   onBtExport = () => {
     let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
+    // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+    // data && data.map((item => {
+    //   tempArr.push(item.data)
+    // }))
 
     let listing = []
     let downloadTemp = ''
     if (this.state.IsVendor) {
-      listing = this.props.vendorPowerDataList
+      listing = this.props.vendorPowerDataList && this.props.vendorPowerDataList
       downloadTemp = POWERLISTING_VENDOR_DOWNLOAD_EXCEL
     } else {
-      listing = this.props.powerDataList
+      listing = this.props.powerDataList && this.props.powerDataList
       downloadTemp = POWERLISTING_DOWNLOAD_EXCEl
     }
     return this.returnExcelColumn(downloadTemp, listing)

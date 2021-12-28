@@ -259,18 +259,13 @@ class ExchangeRateListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, this.props.exchangeRateDataList)
+        let tempArr = this.props.exchangeRateDataList && this.props.exchangeRateDataList
+        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.BankRate === null) {
                 item.BankRate = ' '
             } else if (item.BankCommissionPercentage === null) {
@@ -284,7 +279,7 @@ class ExchangeRateListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ExchangeMaster}>
+            <ExcelSheet data={temp} name={ExchangeMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

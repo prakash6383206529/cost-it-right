@@ -51,8 +51,8 @@ class ReasonListing extends Component {
       showData: false,
       isLoader: true,
       renderState: true,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -135,7 +135,7 @@ class ReasonListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
   /**
@@ -149,14 +149,14 @@ class ReasonListing extends Component {
         this.getTableListData()
       }
     })
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDeleteItem(this.state.deletedId);
-   
-}
-closePopUp= () =>{
-    this.setState({showPopup:false})
+
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
   * @method buttonFormatter
@@ -273,17 +273,13 @@ closePopUp= () =>{
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, this.props.reasonDataList)
+    let tempArr = this.props.reasonDataList && this.props.reasonDataList
+    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.ECNNumber === null) {
         item.ECNNumber = ' '
       } else if (item.RevisionNumber === null) {
@@ -299,7 +295,7 @@ closePopUp= () =>{
     })
     return (
 
-      <ExcelSheet data={TempData} name={Reasonmaster}>
+      <ExcelSheet data={temp} name={Reasonmaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -438,8 +434,8 @@ closePopUp= () =>{
           </div>
 
           {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.REASON_DELETE_ALERT}`}  />
-                }
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.REASON_DELETE_ALERT}`} />
+          }
         </div>
         {isOpenDrawer && (
           <AddReason

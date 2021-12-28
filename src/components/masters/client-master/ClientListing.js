@@ -270,7 +270,7 @@ class ClientListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
             } else {
@@ -280,7 +280,7 @@ class ClientListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={Clientmaster}>
+            <ExcelSheet data={temp} name={Clientmaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

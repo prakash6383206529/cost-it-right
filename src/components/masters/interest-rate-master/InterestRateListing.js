@@ -348,18 +348,13 @@ class InterestRateListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, this.props.interestRateDataList)
+    let tempArr = this.props.interestRateDataList && this.props.interestRateDataList
+    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.ICCPercent === null) {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {
@@ -377,7 +372,7 @@ class InterestRateListing extends Component {
     })
     return (
 
-      <ExcelSheet data={TempData} name={InterestMaster}>
+      <ExcelSheet data={temp} name={InterestMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }

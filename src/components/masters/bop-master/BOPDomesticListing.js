@@ -15,7 +15,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
-import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
+import { BOP_DOMESTIC_DOWNLOAD_EXCEl, BOP_IMPORT_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
@@ -219,18 +219,20 @@ class BOPDomesticListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-            return null
-        }))
-
+        if (this.props.isSimulation === true) {
+            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+            }))
+        } else {
+            tempArr = this.props.bopDomesticList && this.props.bopDomesticList
+        }
         return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = this.props.bopDomesticList && this.props.bopDomesticList.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } if (item.IsVendor === false) {

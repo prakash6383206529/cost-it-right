@@ -243,12 +243,8 @@ class FreightListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, this.props.freightDetail)
+    let tempArr = this.props.freightDetail && this.props.freightDetail
+    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
   };
 
   onFilterTextBoxChanged(e) {

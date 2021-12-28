@@ -267,18 +267,13 @@ class ProfitListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, this.props.overheadProfitList)
+        let tempArr = this.props.overheadProfitList && this.props.overheadProfitList
+        return this.returnExcelColumn(PROFIT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ClientName === '-') {
                 item.ClientName = ' '
             } if (item.TypeOfHead === 'VBC') {
@@ -311,7 +306,7 @@ class ProfitListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ProfitMaster}>
+            <ExcelSheet data={temp} name={ProfitMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -440,8 +435,8 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn> 
-                               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn> 
+                                    <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="ProfitId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
