@@ -144,7 +144,7 @@ class BOPMaster extends Component {
           {/* {this.props.loading && <Loader/>} */}
           <Row>
             <Col sm="4">
-              <h1>{`Insert Master`}</h1>
+              <h1>{`BOP Master`}</h1>
             </Col>
           </Row>
 
@@ -160,7 +160,7 @@ class BOPMaster extends Component {
                       this.toggle("1");
                     }}
                   >
-                    Manage Inserts (Domestic)
+                    Manage BOP (Domestic)
                   </NavLink>
                 </NavItem>
 
@@ -173,7 +173,7 @@ class BOPMaster extends Component {
                       this.toggle("2");
                     }}
                   >
-                    Manage Inserts (Import)
+                    Manage BOP (Import)
                   </NavLink>
                 </NavItem>
 

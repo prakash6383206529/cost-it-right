@@ -370,13 +370,12 @@ class FreightListing extends Component {
             <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
             <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>  */}
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div
                 className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
