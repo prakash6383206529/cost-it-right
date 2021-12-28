@@ -180,7 +180,7 @@ class InterestRateListing extends Component {
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
 
 
@@ -283,7 +283,7 @@ class InterestRateListing extends Component {
   */
   hyphenFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? cellValue : '-';
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
   }
 
   renderVendorName = () => {
@@ -534,12 +534,12 @@ class InterestRateListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-                <AgGridColumn field="PlantName" headerName="Plant"></AgGridColumn>
+                  <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="PlantName" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability"></AgGridColumn>
-                <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)"></AgGridColumn>
+                <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={120} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

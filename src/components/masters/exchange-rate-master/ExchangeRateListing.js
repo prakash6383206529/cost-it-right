@@ -187,8 +187,13 @@ class ExchangeRateListing extends Component {
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-
-
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
+    }
 
     /**
     * @method buttonFormatter
@@ -297,7 +302,8 @@ class ExchangeRateListing extends Component {
         totalValueRenderer: this.buttonFormatter,
         effectiveDateRenderer: this.effectiveDateFormatter,
         customLoadingOverlay: LoaderCustom,
-        customNoRowsOverlay: NoContentFound
+        customNoRowsOverlay: NoContentFound,
+        hyphenFormatter: this.hyphenFormatter
     };
 
     /**
@@ -414,9 +420,9 @@ class ExchangeRateListing extends Component {
                                 >
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={155}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160}></AgGridColumn>
+                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}

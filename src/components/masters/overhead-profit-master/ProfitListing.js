@@ -179,11 +179,11 @@ class ProfitListing extends Component {
     }
 
     /**
-    * @method hyphenFormatter
-    */
+     * @method hyphenFormatter
+     */
     hyphenFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? cellValue : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '') ? cellValue : '-';
     }
 
     /**
@@ -381,7 +381,6 @@ class ProfitListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
-            plantFormatter: this.plantFormatter
         };
 
         return (
@@ -466,10 +465,10 @@ class ProfitListing extends Component {
                                     }}
                                     frameworkComponents={frameworkComponents}
                                 >
-                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head" ></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-                                    <AgGridColumn field="PlantName" headerName="Plant" cellRenderer='plantFormatter'></AgGridColumn>
-                                    {/* <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn> */}
+                                    <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="PlantName" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="ClientName" headerName="Client Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ModelType" headerName="Model Type"></AgGridColumn>
                                     <AgGridColumn field="ProfitApplicabilityType" headerName="Profit Applicability"></AgGridColumn>
                                     <AgGridColumn field="ProfitPercentage" headerName="Profit Applicability (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
