@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import moment from 'moment'
-import { ProcessMaster,EMPTY_DATA } from '../../../config/constants'
+import { ProcessMaster, EMPTY_DATA } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -90,7 +90,7 @@ export function ProcessListingSimulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } else if (item.IsVendor === false) {

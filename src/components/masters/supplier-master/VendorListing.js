@@ -555,7 +555,7 @@ class VendorListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.Country == 'NA') {
                 item.Country = ' '
             } else if (item.State == 'NA') {
@@ -569,7 +569,7 @@ class VendorListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={VendorMaster}>
+            <ExcelSheet data={temp} name={VendorMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

@@ -354,7 +354,7 @@ class InterestRateListing extends Component {
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.ICCPercent === null) {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {
@@ -372,7 +372,7 @@ class InterestRateListing extends Component {
     })
     return (
 
-      <ExcelSheet data={TempData} name={InterestMaster}>
+      <ExcelSheet data={temp} name={InterestMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }

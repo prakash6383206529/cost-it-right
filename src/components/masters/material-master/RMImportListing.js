@@ -415,14 +415,16 @@ function RMImportListing(props) {
       </ExcelSheet>);
   }
 
-
-
   const onBtExport = () => {
     let tempArr = []
-    const data = gridApi && gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
+    if (isSimulation === true) {
+      const data = gridApi && gridApi.getModel().rowsToDisplay
+      data && data.map((item => {
+        tempArr.push(item.data)
+      }))
+    } else {
+      tempArr = getFilterRMData()
+    }
     return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
   };
 

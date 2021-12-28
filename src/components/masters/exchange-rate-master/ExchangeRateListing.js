@@ -265,7 +265,7 @@ class ExchangeRateListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.BankRate === null) {
                 item.BankRate = ' '
             } else if (item.BankCommissionPercentage === null) {
@@ -279,7 +279,7 @@ class ExchangeRateListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ExchangeMaster}>
+            <ExcelSheet data={temp} name={ExchangeMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

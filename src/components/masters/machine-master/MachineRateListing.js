@@ -297,7 +297,7 @@ class MachineRateListing extends Component {
             return item
         })
 
-        return (<ExcelSheet data={TempData} name={`${MachineRate}`}>
+        return (<ExcelSheet data={temp} name={`${MachineRate}`}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);

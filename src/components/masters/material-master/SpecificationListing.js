@@ -279,7 +279,7 @@ class SpecificationListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } else if (item.RMGrade === '-') {
@@ -291,7 +291,7 @@ class SpecificationListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={RmSpecification}>
+            <ExcelSheet data={temp} name={RmSpecification}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

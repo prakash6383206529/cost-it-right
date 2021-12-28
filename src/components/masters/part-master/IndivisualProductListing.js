@@ -317,7 +317,7 @@ class IndivisualProductListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={PRODUCT}>
+            <ExcelSheet data={temp} name={PRODUCT}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
