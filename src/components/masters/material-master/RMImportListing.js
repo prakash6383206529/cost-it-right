@@ -322,9 +322,12 @@ function RMImportListing(props) {
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
 
+  /**
+  * @method hyphenFormatter
+  */
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
-    return cellValue != null ? cellValue : '-';
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
   /**

@@ -183,7 +183,7 @@ class ProfitListing extends Component {
      */
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !==undefined) ? cellValue : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**

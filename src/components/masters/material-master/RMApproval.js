@@ -300,7 +300,7 @@ function RMApproval(props) {
     };
 
     const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === DRAFT : false
-
+    const EffectivedateClass = ['effetive-date']
 
 
     return (
@@ -375,7 +375,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="155" field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
                                     <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                                     <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
-                                    <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
