@@ -7,14 +7,14 @@ import AssemblyWiseImpact from './AssemblyWiseImpact';
 function ViewAssembly(props) {
 
     const headerName = ['Revision No.', 'Name', 'Level', 'Old Price/Pc', 'New Price/Pc', 'Applicable Quantity', 'Variance', '', '', 'Assembly Number']
-    const dataForAssemblyImpact = {
-        CostingHead: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
-        impactPartNumber: props.dataForAssemblyImpact?.row?.PartNo,
-        plantCode: props.dataForAssemblyImpact?.row?.PlantCode,
-        vendorId: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? props.vendorIdState : EMPTY_GUID,
-        delta: props.dataForAssemblyImpact?.row?.Variance,
-        quantity: 1,
-    }
+    // const dataForAssemblyImpact = {
+    //     CostingHead: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
+    //     impactPartNumber: props.dataForAssemblyImpact?.row?.PartNo,
+    //     plantCode: props.dataForAssemblyImpact?.row?.PlantCode,
+    //     vendorId: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? props.vendorIdState : EMPTY_GUID,
+    //     delta: props.dataForAssemblyImpact?.row?.Variance,
+    //     quantity: 1,
+    // }
     /**
     * @method toggleDrawer
     * @description TOGGLE DRAWER
@@ -51,11 +51,10 @@ function ViewAssembly(props) {
                             vendorIdState={props.vendorIdState}
                             impactType={'Assembly'}
                         /> */}
-                        <AssemblyWiseImpact
-                            headerName={headerName}
-                            dataForAssemblyImpact={dataForAssemblyImpact}
-                            vendorIdState={props.vendorIdState}
+                        <AssemblyWiseImpact                           
+                            dataForAssemblyImpact={props.dataForAssemblyImpact}
                             impactType={'Assembly'}
+                            isDraft={props.isDraft}
                         />
                     </div>
                 </div>

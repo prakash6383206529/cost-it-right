@@ -787,10 +787,11 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
     }
 }
 
-export function getSimulatedAssemblyWiseImpactDate(token, callback) {
+export function getSimulatedAssemblyWiseImpactDate(requestData, callback) {
+    console.log('requestData: ', requestData);
 
     return (dispatch) => {
-        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?costingHead=${token.costingHead}&impactPartNumber=${token.impactPartNumber}&plantCode=${token.plantCode}&vendorId=${token.vendorId}&delta=${token.delta}&quantity=${token.quantity}`, headers);
+        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?strRequest=${JSON.stringify(requestData)}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
