@@ -2460,7 +2460,7 @@ export const CostingSimulationDownload = [
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOAD = [
 
-    { label: "Costing Id", value: "CostingId" },
+    { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
