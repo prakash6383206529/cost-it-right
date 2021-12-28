@@ -980,7 +980,7 @@ class AddRMDomestic extends Component {
       RawMaterialCode: values.Code,
       JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
     }
-    if (isEditFlag) {
+    if (isEditFlag && this.state.isFinalApprovar) {
       this.setState({ updatedObj: requestData })
       if (isSourceChange) {
         this.props.reset()
@@ -1738,7 +1738,7 @@ class AddRMDomestic extends Component {
                             {"Cancel"}
                           </button>
                           {
-                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                            (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 onClick={() => scroll.scrollToTop()}
