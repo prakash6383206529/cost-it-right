@@ -234,7 +234,7 @@ class BOPDomesticListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = this.props.bopDomesticList && this.props.bopDomesticList.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } if (item.IsVendor === false) {

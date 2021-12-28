@@ -251,7 +251,7 @@ class BOPImportListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = this.props.bopImportList && this.props.bopImportList.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } if (item.IsVendor === false) {

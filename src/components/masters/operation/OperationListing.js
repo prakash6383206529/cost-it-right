@@ -462,7 +462,7 @@ class OperationListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
             } else if (item.CostingHead === true) {
@@ -478,7 +478,7 @@ class OperationListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={OperationMaster}>
+            <ExcelSheet data={temp} name={OperationMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

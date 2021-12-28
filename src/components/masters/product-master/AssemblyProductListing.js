@@ -299,7 +299,7 @@ class AssemblyProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
