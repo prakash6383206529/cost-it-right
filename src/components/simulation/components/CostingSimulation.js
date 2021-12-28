@@ -222,7 +222,6 @@ function CostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-        console.log('data: ', data);
         let obj = {
             simulationApprovalProcessSummaryId: EMPTY_GUID,
             simulationId: simulationId,
@@ -478,7 +477,6 @@ function CostingSimulation(props) {
     }
 
     const varianceRMCFormatter = (props) => {
-        console.log('props: ', props);
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // const sumold = oldRMCalc(row)
         // const sumnew = newRMCalc(row)
@@ -486,7 +484,6 @@ function CostingSimulation(props) {
         // return checkForDecimalAndNull(diff)
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        console.log('cell: ', cell);
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? checkForDecimalAndNull(row.RMVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
