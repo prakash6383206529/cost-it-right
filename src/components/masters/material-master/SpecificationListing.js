@@ -273,8 +273,8 @@ class SpecificationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = this.props.rmSpecificationList && this.props.rmSpecificationList
-        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
+        let tempArr = this.props.rmSpecificationList
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, this.props.rmSpecificationList)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -284,8 +284,6 @@ class SpecificationListing extends Component {
                 item.RMName = ' '
             } else if (item.RMGrade === '-') {
                 item.RMGrade = ' '
-            } else {
-                return false
             }
             return item
         })

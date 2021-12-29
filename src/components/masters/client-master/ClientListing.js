@@ -273,8 +273,6 @@ class ClientListing extends Component {
         temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
-            } else {
-                return false
             }
             return item
         })
