@@ -289,8 +289,6 @@ class ReasonListing extends Component {
         item.DrawingNumber = ' '
       } else if (item.Technology === '-') {
         item.Technology = ' '
-      } else {
-        return false
       }
       return item
     })
