@@ -6563,3 +6563,11 @@ left: 17rem;
 }
 .width33 {width: 33.33%;}
 .fs1.font-weight-500.py-3 {font-size: 16px;}
+
+.sticky-btn-footer {
+  position: sticky !important;
+  bottom: 0;
+  .bluefooter-butn {
+    padding: 5px 12px !important;
+  }
+}

@@ -5,10 +5,11 @@ import classnames from 'classnames';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import OperationInsights from './OperationInsights';
 import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
+import OperationApproval from './OperationApproval';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -69,8 +70,9 @@ class OperationsMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
                     {/* {this.props.loading && <Loader/>} */}
+                    <ScrollToTop pointProp ="go-to-top" />
                     <Row>
                         <Col sm="4">
                             <h1>{`Operation Master`}</h1>
@@ -131,9 +133,5 @@ function mapStateToProps({ auth }) {
 }
 
 
-export default connect(
-    mapStateToProps, {
-    getLeftMenu
-}
-)(OperationsMaster);
 
+export default connect(mapStateToProps, {})(OperationsMaster);

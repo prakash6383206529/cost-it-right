@@ -14,7 +14,7 @@ import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 const gridOptions = {};
 
 function AssemblyWiseImpact(props) {
-    const { impactType, dataForAssemblyImpact,isDraft } = props;
+    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, loaderAssembly } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -27,24 +27,23 @@ function AssemblyWiseImpact(props) {
 
     useEffect(() => {
         setloader(true)
-        if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length >0) && count === 0) {
-            let requestData=[]
-            if(isDraft){
-            let obj= {
+        if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
+            let requestData = []
+            if (isPartImpactAssembly) {
+                let obj = {
                     CostingId: dataForAssemblyImpact?.CostingId,
                     delta: dataForAssemblyImpact?.Variance,
-                    IsSinglePartImpact:true
+                    IsSinglePartImpact: true
                 }
                 requestData = [obj]
 
-            }else{
-                dataForAssemblyImpact && dataForAssemblyImpact.map(item=>{
-                    requestData.push({CostingId:item.CostingId,delta:item.POVariance,IsSinglePartImpact:false})
+            } else {
+                dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
+                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
                     return null
                 })
             }
             setCount(1)
-            console.log(requestData,"requestData");
             dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
 
                 if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
@@ -60,6 +59,10 @@ function AssemblyWiseImpact(props) {
 
     }, [dataForAssemblyImpact])
 
+    useEffect(() => {
+        setloader(loaderAssembly)
+    }, [loaderAssembly])
+
     const onGridReady = (params) => {
         setgridApi(params.api);
 
@@ -74,10 +77,10 @@ function AssemblyWiseImpact(props) {
     };
 
     const resetState = () => {
-        gridApi.setQuickFilter('');
+        gridApi?.setQuickFilter('');
         setTextFilterSearch('')
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
+        gridOptions.columnApi?.resetColumnState();
+        gridOptions.api?.setFilterModel(null);
     }
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -99,13 +102,13 @@ function AssemblyWiseImpact(props) {
             {/* { this.props.loading && <Loader />} */}
             <Row>
                 <Col className="mb-3">
-                <div className="ag-grid-header">
-                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
-                     <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
+                    <div className="ag-grid-header">
+                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
-                     </button>
-                     </div>
-                    <div>     
+                        </button>
+                    </div>
+                    <div>
                     </div>
                 </Col>
             </Row>
@@ -136,10 +139,10 @@ function AssemblyWiseImpact(props) {
                                 <AgGridColumn field="PartNumber" headerName='Assembly Number'></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName='Revision No.'></AgGridColumn>
                                 <AgGridColumn field="PartName" headerName='Name'></AgGridColumn>
+                                <AgGridColumn field="Level" headerName="Child's Level"></AgGridColumn>
+                                {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity'></AgGridColumn>}
                                 <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly'></AgGridColumn>
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly'></AgGridColumn>}
-                                <AgGridColumn field="Level" headerName='Level'></AgGridColumn>
-                                {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity'></AgGridColumn>}
                                 <AgGridColumn field="Variance" headerName='Variance/Assembly'></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">

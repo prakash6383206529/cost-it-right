@@ -11,7 +11,8 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import MachineApproval from './MachineApproval';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -181,13 +182,13 @@ class MachineMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-top-top'>
                     <Row>
                         <Col sm="4">
                             <h1>{`Machine Master`}</h1>
                         </Col>
                     </Row>
-
+                    <ScrollToTop pointProp ={"go-top-top"} />
                     <Row>
                         <Col>
                             <div>
@@ -261,6 +262,5 @@ function mapStateToProps({ auth }) {
 
 
 export default connect(mapStateToProps,
-    { getLeftMenu, }
+    {}
 )(MachineMaster);
-
