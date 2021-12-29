@@ -563,8 +563,6 @@ class VendorListing extends Component {
                 item.State = ' '
             } else if (item.City == 'NA') {
                 item.City = ' '
-            } else {
-                return false
             }
             return item
         })

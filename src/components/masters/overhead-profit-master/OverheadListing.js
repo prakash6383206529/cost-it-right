@@ -296,8 +296,6 @@ class ProfitListing extends Component {
                 item.ProfitRMPercentage = ' '
             } if (item.VendorName === '-') {
                 item.VendorName = ' '
-            } else {
-                return false
             }
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
