@@ -136,7 +136,7 @@ function HotForging(props) {
     )
 
     setDataSend(prevState => ({ ...prevState, inputWeight: inputWeight }))
-    setValue('inputWeight', inputWeight)
+    setValue('inputWeight', checkForDecimalAndNull(inputWeight, initialConfiguration.NoOfDecimalForInputOutput))
     setInputWeightValue(inputWeight)
   }
   /**
@@ -154,7 +154,7 @@ function HotForging(props) {
     )
 
     setDataSend(prevState => ({ ...prevState, slugWeight: slugWeight }))
-    setValue('slugWeight', slugWeight)
+    setValue('slugWeight', checkForDecimalAndNull(slugWeight, initialConfiguration.NoOfDecimalForInputOutput))
   }
   /**
    * @method calculateScrapWeight
@@ -313,7 +313,6 @@ function HotForging(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.',
                             },
-                            // maxLength: 4,
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
@@ -418,7 +417,7 @@ function HotForging(props) {
                   calculation={calculateInputWeight}
                   weightValue={inputWeightValue}
                   netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
-                  sendTable={WeightCalculatorRequest ? WeightCalculatorRequest.LossOfTypeDetails : []}
+                  sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                 />
               </div>
