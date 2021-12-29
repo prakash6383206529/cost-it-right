@@ -22,7 +22,7 @@ import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
 import { isFinalApprover } from '../actions/Approval'
-import { isSafeInteger } from 'lodash'
+
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
@@ -1171,7 +1171,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                              {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalTabSum, initialConfiguration.NoOfDecimalForPrice) : ''}
                               {/* <button
                             type="button"
                             class="float-right mb-0 View "
