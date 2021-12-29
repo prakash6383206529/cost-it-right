@@ -273,8 +273,8 @@ class SpecificationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = this.props.rmSpecificationList
-        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, this.props.rmSpecificationList)
+        let tempArr = this.props.rmSpecificationList && this.props.rmSpecificationList
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
