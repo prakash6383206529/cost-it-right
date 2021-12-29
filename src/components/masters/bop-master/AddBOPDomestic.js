@@ -992,7 +992,7 @@ class AddBOPDomestic extends Component {
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={this.state.UOM.label === 'No' ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10]}
+                              validate={[postiveNumber, maxLength10]}
                               component={renderText}
                               required={false}
                               className=""
