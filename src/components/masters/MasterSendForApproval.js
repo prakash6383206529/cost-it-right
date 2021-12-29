@@ -27,6 +27,7 @@ function MasterSendForApproval(props) {
 
     const [effectiveDate, setEffectiveDate] = useState('')
     const [approvalDropDown, setApprovalDropDown] = useState([])
+    const [isDisable, setIsDisable] = useState(false)
 
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
@@ -132,7 +133,7 @@ function MasterSendForApproval(props) {
         const reason = getValues('reason')
         const dept = getValues('dept')
         const approver = getValues('approver')
-
+        setIsDisable(true)
         if (type === 'Sender') {
             //THIS OBJ IS FOR SIMULATION SEND FOR APPROVAL
             let senderObj = {}
@@ -170,7 +171,8 @@ function MasterSendForApproval(props) {
 
             //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
             dispatch(masterApprovalRequestBySender(senderObj, res => {
-                if (res.data.Result) {
+                setIsDisable(false)
+                if (res?.data?.Result) {
                     Toaster.success('Raw Material has been sent for approval.')
                     props.closeDrawer('', 'submit')
                 }
@@ -198,7 +200,8 @@ function MasterSendForApproval(props) {
             if (type === 'Approve') {
                 reset()
                 dispatch(approvalRequestByMasterApprove(obj, res => {
-                    if (res.data.Result) {
+                    setIsDisable(false)
+                    if (res?.data?.Result) {
                         if (IsPushDrawer) {
                             Toaster.success('The token has been approved')
 
@@ -609,6 +612,7 @@ function MasterSendForApproval(props) {
                                         type="button"
                                         className="submit-button  save-btn"
                                         onClick={onSubmit}
+                                        disabled={isDisable}
                                     >
                                         <div className={'save-icon'}></div>
                                         {'Submit'}
