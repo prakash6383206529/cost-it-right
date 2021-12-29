@@ -733,7 +733,7 @@ function Tool(props) {
 
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between mt25 tab-tool-cost-footer">
+            <Row className="sf-btn-footer no-gutters justify-content-between mt25 sticky-btn-footer tab-tool-cost-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
 
                 {!CostingViewMode && <button
