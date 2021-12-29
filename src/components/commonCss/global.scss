@@ -984,7 +984,7 @@ a:hover {
 }
 .ag-cell-focus{
   border-width: 1px 1px 1px 1px !important;
-  transition: all 0.15s ease-in;
+  transition: all 0.150s ease-in;
   &:first-child:focus{
     border-left: 1px solid #256bd1 !important;
   }
