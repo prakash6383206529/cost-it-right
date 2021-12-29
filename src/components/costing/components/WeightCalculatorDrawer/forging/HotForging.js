@@ -417,7 +417,7 @@ function HotForging(props) {
                   calculation={calculateInputWeight}
                   weightValue={inputWeightValue}
                   netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
-                  sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
+                  sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                 />
               </div>
