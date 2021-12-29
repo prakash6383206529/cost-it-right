@@ -29,6 +29,7 @@ import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
 import OPSimulation from './SimulationPages/OPSimulation';
 import OverheadListing from '../../masters/overhead-profit-master/OverheadListing'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -653,13 +654,13 @@ function Simulation(props) {
         <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <div className="simulation-main">
+                <div className="simulation-main" id="go-to-top">
                     <Row>
                         <Col sm="12">
                             <h1>{`Simulation`}</h1>
                         </Col>
                     </Row>
-
+                   <ScrollToTop pointProp={"go-to-top"} />
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
 
@@ -711,9 +712,9 @@ function Simulation(props) {
                     {showMasterList && renderModule(master)}
 
                     {showMasterList &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
+                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                                     {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>

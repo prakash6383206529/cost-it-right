@@ -30,6 +30,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -630,9 +631,9 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 {/* {this.props.loading && <Loader />} */}
-
+               <ScrollToTop pointProp ="go-to-top" />
                 <form
 
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}

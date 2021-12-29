@@ -23,6 +23,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
+import ScrollToTop from '../../common/ScrollToTop'
 
 const gridOptions = {};
 
@@ -472,14 +473,15 @@ function SimulationApprovalListing(props) {
         <Fragment>
             {
                 !showApprovalSumary &&
-                <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`}>
+                <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
                             {isLoader &&<LoaderCustom customClass={"simulation-history-loader"} />}
+                            <ScrollToTop pointProp={"history-go-to-top"} />
                             <Row className="pt-4 blue-before">
 
-
+                              
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <button

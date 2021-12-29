@@ -18,6 +18,7 @@ import { getConfigurationKey } from '../../../helper';
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RMApproval from './RMApproval';
+import ScrollToTop from '../../common/ScrollToTop';
 
 
 
@@ -203,10 +204,11 @@ function RowMaterialMaster(props) {
 
     return (
         <Container fluid>
-            <Row>
+            <Row id="go-top-top">
                 <Col sm="4">
                     <h1>{`Raw Material Master`}</h1>
                 </Col>
+                <ScrollToTop pointProp ={"go-top-top"} />
             </Row>
             <Row>
                 <Col>
