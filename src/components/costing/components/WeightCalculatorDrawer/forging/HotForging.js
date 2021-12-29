@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
-import { KG, } from '../../../../../config/constants'
 
 import {
 
@@ -216,10 +215,7 @@ function HotForging(props) {
     obj.ScrapRate = props.rmRowData.ScrapRate
     obj.PartNumber = costData.PartNumber
     obj.TechnologyName = costData.TechnologyName
-    obj.UOMForDimension = KG
     obj.LoggedInUserId = loggedInUserId()
-    obj.UOMId = props.rmRowData.UOMId
-    obj.UOM = props.rmRowData.UOM
     obj.IsChangeApplied = true
 
 
@@ -288,7 +284,7 @@ function HotForging(props) {
                           rules={{
                             required: true,
                             pattern: {
-                              //value: /^[0-9]*$/i,
+
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.',
                             },
@@ -313,7 +309,7 @@ function HotForging(props) {
                           rules={{
                             required: true,
                             pattern: {
-                              //value: /^[0-9]*$/i,
+
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.',
                             },
@@ -440,7 +436,6 @@ function HotForging(props) {
               <button
                 type="submit"
                 onClick={onSubmit}
-                // disabled={isSubmitted ? true : false}
                 disabled={props.CostingViewMode ? props.CostingViewMode : false}
                 className="btn-primary save-btn"
               >
