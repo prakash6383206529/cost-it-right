@@ -381,8 +381,6 @@ class VolumeListing extends Component {
         item.VendorName = ' '
       } else if (item.Plant === '-') {
         item.Plant = ' '
-      } else {
-        return false
       }
       return item
     })
