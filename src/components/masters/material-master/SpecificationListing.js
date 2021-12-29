@@ -284,8 +284,6 @@ class SpecificationListing extends Component {
                 item.RMName = ' '
             } else if (item.RMGrade === '-') {
                 item.RMGrade = ' '
-            } else {
-                return false
             }
             return item
         })

@@ -365,8 +365,6 @@ class InterestRateListing extends Component {
         item.IsVendor = 'Zero Based'
       } else if (item.VendorName === '-') {
         item.VendorName = ' '
-      } else {
-        return false
       }
       return item
     })

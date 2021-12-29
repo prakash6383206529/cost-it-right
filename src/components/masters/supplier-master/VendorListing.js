@@ -21,7 +21,6 @@ import AddVendorDrawer from './AddVendorDrawer';
 import { checkPermission } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -556,14 +555,12 @@ class VendorListing extends Component {
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.Country == 'NA') {
+            if (String(item.Country) === 'NA') {
                 item.Country = ' '
-            } else if (item.State == 'NA') {
+            } else if (String(item.State) === 'NA') {
                 item.State = ' '
-            } else if (item.City == 'NA') {
+            } else if (String(item.City) === 'NA') {
                 item.City = ' '
-            } else {
-                return false
             }
             return item
         })

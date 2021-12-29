@@ -469,8 +469,6 @@ function RMDomesticListing(props) {
                 item.CostingHead = 'Vendor Based'
             } else if (item.CostingHead === false) {
                 item.CostingHead = 'Zero Based'
-            } else {
-                return false
             }
             return item
         })
