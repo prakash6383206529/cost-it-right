@@ -316,7 +316,7 @@ class UOMMaster extends Component {
       <>
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           {/* {this.props.loading && <Loader />} */}
-          <ScrollToTop pointProp ="go-to-top" />
+          <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}>
               <h1 className="mb-0">{`Unit of Measurement Master`}</h1>

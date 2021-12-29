@@ -351,7 +351,7 @@ class ReasonListing extends Component {
 
         {this.state.isLoader && <LoaderCustom />}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-       <ScrollToTop pointProp ="go-to-top" />
+          <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>

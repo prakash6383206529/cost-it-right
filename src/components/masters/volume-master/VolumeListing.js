@@ -463,7 +463,7 @@ class VolumeListing extends Component {
       <>
         {/* {this.props.loading && <Loader />} */}
         <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-        <ScrollToTop pointProp ="go-to-top" />
+          <ScrollToTop pointProp="go-to-top" />
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>

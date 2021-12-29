@@ -346,7 +346,7 @@ class ExchangeRateListing extends Component {
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                     <div className="container-fluid">
-                        <ScrollToTop pointProp ="go-to-top" />
+                        <ScrollToTop pointProp="go-to-top" />
                         {/* {this.props.loading && <Loader />} */}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             {!this.props.isSimulation &&

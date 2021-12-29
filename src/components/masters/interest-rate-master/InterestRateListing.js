@@ -441,7 +441,7 @@ class InterestRateListing extends Component {
       <>
         {this.state.isLoader && <LoaderCustom />}
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
-          <ScrollToTop pointProp ='go-to-top'/>
+          <ScrollToTop pointProp='go-to-top' />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate

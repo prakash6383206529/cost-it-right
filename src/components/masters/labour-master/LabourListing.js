@@ -468,7 +468,7 @@ class LabourListing extends Component {
       <>
         {/* {this.state.isLoader && <LoaderCustom />} */}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-           <ScrollToTop pointProp ="go-to-top"/>
+          <ScrollToTop pointProp="go-to-top" />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate

@@ -629,7 +629,7 @@ class VendorListing extends Component {
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 {/* {this.props.loading && <Loader />} */}
-               <ScrollToTop pointProp ="go-to-top" />
+                <ScrollToTop pointProp="go-to-top" />
                 <form
 
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}

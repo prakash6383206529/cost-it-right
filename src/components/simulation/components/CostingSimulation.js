@@ -240,7 +240,7 @@ function CostingSimulation(props) {
 
     const viewAssembly = (cell, row, rowIndex) => {
         console.log('row: ', row);
-        const data =row
+        const data = row
         setDataForAssemblyImpact(data)
         setShowViewAssemblyDrawer(true)
     }
@@ -918,8 +918,8 @@ function CostingSimulation(props) {
                     anchor={'bottom'}
                     dataForAssemblyImpact={dataForAssemblyImpact}
                     vendorIdState={vendorIdState}
-                    isDraft={true}
-                    />
+                    isPartImpactAssembly={true}
+                />
             }
         </>
 
