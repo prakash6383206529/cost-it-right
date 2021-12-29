@@ -517,8 +517,7 @@ function SimulationApprovalListing(props) {
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
-                                    gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    gridOptions={gridOptions}                                  
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
