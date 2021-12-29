@@ -8,7 +8,7 @@ import OverheadListing from './OverheadListing';
 import ProfitListing from './ProfitListing';
 import { ADDITIONAL_MASTERS, OVERHEAD_AND_PROFIT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class OverheadProfit extends Component {
   constructor(props) {
@@ -114,8 +114,9 @@ class OverheadProfit extends Component {
 
     return (
       <>
-        <div className="container-fluid">
+        <div className="container-fluid" id='go-to-top'>
           {/* {this.props.loading && <Loader/>} */}
+          <ScrollToTop pointProp ="go-to-top" />
           <Row>
             <Col sm="4">
               <h1>{`Overhead & Profit Master`}</h1>
@@ -202,6 +203,5 @@ function mapStateToProps({ overheadProfit, auth }) {
 
 export default connect(mapStateToProps,
   {
-    getLeftMenu,
   })(OverheadProfit);
 

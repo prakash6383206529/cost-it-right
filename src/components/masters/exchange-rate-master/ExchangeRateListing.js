@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { filterParams } from '../../common/DateFilter'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -343,8 +344,9 @@ class ExchangeRateListing extends Component {
         return (
             <>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
-                <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                     <div className="container-fluid">
+                        <ScrollToTop pointProp ="go-to-top" />
                         {/* {this.props.loading && <Loader />} */}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             {!this.props.isSimulation &&

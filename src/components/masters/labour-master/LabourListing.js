@@ -27,6 +27,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -466,8 +467,8 @@ class LabourListing extends Component {
     return (
       <>
         {/* {this.state.isLoader && <LoaderCustom />} */}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+           <ScrollToTop pointProp ="go-to-top"/>
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
