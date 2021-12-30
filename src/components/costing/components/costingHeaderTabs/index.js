@@ -14,7 +14,7 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
@@ -105,6 +105,7 @@ function CostingHeaderTabs(props) {
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
+
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
@@ -128,11 +129,20 @@ function CostingHeaderTabs(props) {
             checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
         },
       }
-      dispatch(saveComponentOverheadProfitTab(reqData, res => {
-        callAssemblyAPi(3)
-        dispatch(setComponentOverheadItemData({}, () => { }))
-        InjectDiscountAPICall()
-      }))
+      if(ComponentItemOverheadData.IsAssemblyPart){
+        dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
+          callAssemblyAPi(3)
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }))
+      }else{
+
+        dispatch(saveComponentOverheadProfitTab(reqData, res => {
+          callAssemblyAPi(3)
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }))
+      }
 
 
     }
@@ -145,11 +155,11 @@ function CostingHeaderTabs(props) {
         "PartNumber": costData.PartNumber,
         "NetPOPrice": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
         "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails,
-        "EffectiveDate": CostingEffectiveDate,
-        "TotalCost": netPOPrice,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         callAssemblyAPi(4)
