@@ -124,7 +124,7 @@ class MachineRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        // return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
+
     }
 
     /**
@@ -226,14 +226,8 @@ class MachineRateListing extends Component {
     }
 
 
-    // renderPlantFormatter = (props) => {
-    //     const row = props?.data;
-    //     return row.IsVendor ? row.DestinationPlant : row.Plants
-    // }
     renderPlantFormatter = (props) => {
-
         const row = props?.data;
-
 
         const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
         return value
@@ -250,17 +244,6 @@ class MachineRateListing extends Component {
             this.getDataList()
         })
     }
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
 
 
     displayForm = () => {
@@ -380,18 +363,12 @@ class MachineRateListing extends Component {
                 this.props.setSelectedRowCountForSimulationMessage(length)
                 this.props.apply(selectedRows)
             }
-            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-            // this.setState({ selectedRowData: selectedRows })
 
         }
 
-        const onFloatingFilterChanged = (p) => {
-            this.state.gridApi.deselectAll()
-        }
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
 
@@ -442,8 +419,6 @@ class MachineRateListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
@@ -470,7 +445,6 @@ class MachineRateListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    // columnDefs={c}
                                     rowData={this.props.machineDatalist}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -486,7 +460,6 @@ class MachineRateListing extends Component {
 
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
-                                    onFilterModified={onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}

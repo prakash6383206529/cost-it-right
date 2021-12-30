@@ -38,28 +38,23 @@ const gridOptions = {};
 
 function RMDomesticListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
-    const [tableData, settableData] = useState([]);
-    const [RawMaterial, setRawMaterial] = useState([]);
-    const [RMGrade, setRMGrade] = useState([]);
-    const [vendorName, setvendorName] = useState([]);
-    const [costingHead, setcostingHead] = useState([]);
-    const [plant, setplant] = useState([]);
+
+
+
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
-    const [shown, setshown] = useState(false);
-    const [technology, settechnology] = useState([]);
-    const [gridApi, setgridApi] = useState(null);
-    const [gridColumnApi, setgridColumnApi] = useState(null);
+    const [shown, setshown] = useState(isSimulation ? true : false);
+
+    const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+    const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+
     const [loader, setloader] = useState(true);
-    const [statusId, setstatusId] = useState(0);
-    const [count, setCount] = useState(0)
     const dispatch = useDispatch();
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
-    const [selectedRowData, setSelectedRowData] = useState([]);
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
@@ -70,11 +65,6 @@ function RMDomesticListing(props) {
     * @description Called after rendering the component
     */
 
-    //////////
-    // useEffect(() => {
-    //     // callFilterApi()
-    //     getDataList()
-    // }, [])
 
     const callFilterApi = () => {
         if (isSimulation || shown) {
@@ -92,20 +82,11 @@ function RMDomesticListing(props) {
         callFilterApi()
     }, [shown])
 
-    // const handleFilterButton = ()=>{
-    //     setshown(!shown)
-    //     callFilterApi()
-    // }
 
     useEffect(() => {
 
         if (isSimulation) {
-            setcostingHead(filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : []);
-            setplant(filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : []);
-            setRawMaterial(filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : []);
-            setRMGrade(filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : []);
-            setvendorName(filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : []);
-            setstatusId(CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0);
+
             setvalue({ min: 0, max: 0 });
         }
         getDataList()
@@ -119,40 +100,6 @@ function RMDomesticListing(props) {
             return rmDataList
         }
     }
-
-    /**
-    * @method getInitialRange
-    * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
-    */
-    const getInitialRange = () => {
-        // const { value } = this.state;
-
-        // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
-        // const filterData = {
-        //     costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
-        //     plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
-        //     material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
-        //     grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
-        //     vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
-        //     // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
-        //     technologyId: isSimulation ? props.technology : 0,
-        //     net_landed_min_range: value.min,
-        //     net_landed_max_range: value.max,
-        //     statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
-        // }
-
-        // //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
-        // if (!props.isMasterSummaryDrawer) {
-        //     dispatch(getRMDomesticDataList(filterData, (res) => {
-        //         if (res && res.status === 200) {
-        //             let DynamicData = res.data.DynamicData;
-        //             setvalue({ min: 0, max: DynamicData.MaxRange });
-        //         }
-        //         setloader(false);
-        //     }))
-        // }
-    }
-
 
 
 
@@ -181,24 +128,14 @@ function RMDomesticListing(props) {
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     let DynamicData = res.data.DynamicData;
-                    settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
-                    // if (isSimulation) {
-                    //     apply(Data)
-                    // }
-
-                    // const func = () => {
-                    // }
-                    // func()
 
                 } else if (res && res.response && res.response.status === 412) {
-                    settableData([]);
                     setmaxRange(0);
                     setloader(false);
 
                 } else {
-                    settableData([]);
                     setmaxRange(0);
                     setloader(false);
                 }
@@ -262,7 +199,7 @@ function RMDomesticListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
-        //const { EditAccessibility, DeleteAccessibility } = props;
+
 
         if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
             if (EditAccessibility && !rowData.IsRMAssociated) {
@@ -353,86 +290,6 @@ function RMDomesticListing(props) {
 
 
 
-
-  
-    /**
-    * @method handleRMChange
-    * @description  used to handle row material selection
-    */
-    const handleRMChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setRawMaterial(newValue);
-            dispatch(getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
-            dispatch(getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
-            dispatch(getGradeSelectList(res => { }))
-
-        } else {
-            setRawMaterial([]);
-        }
-    }
-
-
-
-
-
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    const filterList = () => {
-        // const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
-        const plants = getValues('Plant')
-
-        const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
-        const plantId = plants ? plants.value : null;
-        const RMid = RawMaterial ? RawMaterial.value : null;
-        const RMGradeid = RMGrade ? RMGrade.value : null;
-        const Vendorid = vendorName ? vendorName.value : null;
-        const technologyId = technology ? technology.value : 0
-
-        if (isSimulation) {
-            dispatch(setFilterForRM({ costingHeadTemp: { label: costingHead.label, value: costingHead.value }, plantId: { label: plants.label, value: plants.value }, RMid: { label: RawMaterial.label, value: RawMaterial.value }, RMGradeid: { label: RMGrade.label, value: RMGrade.value }, Vendorid: { label: vendorName.label, value: vendorName.value } }))
-            setTimeout(() => {
-
-                getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
-                // this.props.apply()  
-                // props.apply()
-
-            }, 500);
-        } else {
-            getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
-
-        }
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    const resetFilter = () => {
-        if (isSimulation) {
-            dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
-        }
-
-        setcostingHead([]);
-        setRawMaterial([]);
-        setRMGrade([]);
-        setvendorName([]);
-        setplant([]);
-        settechnology([]);
-        setvalue({ min: 0, max: 0 });
-        setValue('CostingHead', '')
-        setValue('Plant', '')
-        setValue('Technology', '')
-        setValue('RawMaterialId', '')
-        setValue('RawMaterialGradeId', '')
-        setValue('VendorId', '')
-        getDataList(null)
-        dispatch(getRawMaterialFilterSelectList(() => { }))
-
-    }
-
     const formToggle = () => {
         props.formToggle()
     }
@@ -443,7 +300,6 @@ function RMDomesticListing(props) {
 
     const closeBulkUploadDrawer = () => {
         setisBulkUpload(false);
-        getInitialRange()
         getDataList(null, null, null)
 
 
@@ -456,29 +312,8 @@ function RMDomesticListing(props) {
     const densityAlert = () => {
     }
 
-    const handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setcostingHead(newValue);
-        } else {
-            setcostingHead([]);
-        }
-    };
 
-    const handlePlantChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setplant(newValue);
-        } else {
-            setplant([]);
-        }
-    }
 
-    const handleTechnologyChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            settechnology(newValue);
-        } else {
-            settechnology([]);
-        }
-    }
     /**
     * @method confirmDensity
     * @description confirm density popup.
@@ -553,7 +388,6 @@ function RMDomesticListing(props) {
     */
 
 
-    //const { isBulkUpload, } = this.state;
     const isFirstColumn = (params) => {
         if (isSimulation) {
 
@@ -574,13 +408,10 @@ function RMDomesticListing(props) {
             dispatch(setSelectedRowCountForSimulationMessage(length))
 
             apply(selectedRows)
+
         }
-        setSelectedRowData(selectedRows)
     }
 
-    const onFloatingFilterChanged = (p) => {
-        gridApi.deselectAll()
-    }
 
     const defaultColDef = {
         resizable: true,
@@ -609,7 +440,7 @@ function RMDomesticListing(props) {
 
     return (
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-            {/* { this.props.loading && <Loader />} */}
+
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
                 <Row className="filter-row-large pt-4 ">
 
@@ -666,7 +497,6 @@ function RMDomesticListing(props) {
 
                                             </>
 
-                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                         }
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -694,13 +524,11 @@ function RMDomesticListing(props) {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                // columnDefs={c}
                                 rowData={getFilterRMData()}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
-                                // loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -709,7 +537,6 @@ function RMDomesticListing(props) {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
-                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Head"></AgGridColumn>
 
@@ -790,5 +617,8 @@ function RMDomesticListing(props) {
         </div >
     );
 }
+
+
+
 export default RMDomesticListing;
 
