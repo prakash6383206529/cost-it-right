@@ -96,6 +96,7 @@ function RMImportListing(props) {
     if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
       return getFilteredRMData(rmImportDataList)
     } else {
+
       return rmImportDataList
     }
   }
@@ -531,6 +532,7 @@ function RMImportListing(props) {
                 <AgGridColumn field="Plant"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
+                <AgGridColumn field="Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate"></AgGridColumn>
                 <AgGridColumn field="ScrapRate"></AgGridColumn>
                 <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
