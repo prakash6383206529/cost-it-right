@@ -96,7 +96,7 @@ function RMImportListing(props) {
     if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
       return getFilteredRMData(rmImportDataList)
     } else {
-      console.log(rmImportDataList, "DATALISTIMPORT")
+
       return rmImportDataList
     }
   }
