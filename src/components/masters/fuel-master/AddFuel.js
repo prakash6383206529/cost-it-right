@@ -256,9 +256,12 @@ class AddFuel extends Component {
       rateGridEditIndex: index,
       isEditIndex: true,
       //effectiveDate: new Date(moment(tempData.effectiveDate).format('DD/MM/YYYY')),
-      effectiveDate: tempData.effectiveDate,
+      effectiveDate: new Date(DayTime(tempData.effectiveDate).format("MM/DD/YYYY")),
+
       StateName: { label: tempData.StateLabel, value: tempData.StateId },
     }, () => this.props.change('Rate', tempData.Rate))
+
+
   }
 
   /**
@@ -292,9 +295,9 @@ class AddFuel extends Component {
   }
 
   /**
- * @method handleChange
- * @description Handle Effective Date
- */
+  * @method handleChange
+  * @description Handle Effective Date
+  */
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
@@ -599,7 +602,7 @@ class AddFuel extends Component {
                                 <DatePicker
                                   required
                                   name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
+                                  selected={(this.state.effectiveDate)}
                                   onChange={this.handleEffectiveDateChange}
                                   showMonthDropdown
                                   showYearDropdown

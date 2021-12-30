@@ -51,8 +51,8 @@ function TabDiscountOther(props) {
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData,CostingDataList } = useSelector(state => state.costing)
-  const [totalCost,setTotalCost] = useState(0)
-  
+const [totalCost,setTotalCost] = useState(0)
+
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
