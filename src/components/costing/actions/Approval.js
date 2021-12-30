@@ -257,6 +257,7 @@ export function sendForApprovalBySender(data, callback) {
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error)
       })
   }
 }
@@ -311,6 +312,7 @@ export function approvalRequestByApprove(data, callback) {
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error)
       })
   }
 }
