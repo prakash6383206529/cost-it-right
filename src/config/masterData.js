@@ -2591,9 +2591,9 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "RMShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "CutOffPrice", value: "CutOffPrice", },
     { label: "EffectiveDate", value: "EffectiveDate", },
-
-
+    { label: "Remark", value: "Remark", }
 
 ]
 
@@ -2613,7 +2613,9 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "RMShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "CutOffPrice", value: "CutOffPrice", },
     { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Remark", value: "Remark", }
 ]
 
 export const RMLISTING_DOWNLOAD_EXCEl = [

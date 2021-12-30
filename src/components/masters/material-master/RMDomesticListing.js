@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList
+    getRawMaterialFilterSelectList,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
@@ -332,14 +332,24 @@ function RMDomesticListing(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
+
         temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
+                item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+
             } else if (item.CostingHead === false) {
                 item.CostingHead = 'Zero Based'
+                item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+
+            } else {
+                item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+
             }
             return item
         })
+
+
         return (
 
             <ExcelSheet data={temp} name={RmDomestic}>
