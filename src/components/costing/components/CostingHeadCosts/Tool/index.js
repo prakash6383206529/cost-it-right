@@ -28,7 +28,7 @@ function Tool(props) {
     Life: ObjectForOverAllApplicability && ObjectForOverAllApplicability.Life !== undefined ? ObjectForOverAllApplicability.Life : '',
     NetToolCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.NetToolCost !== undefined ? ObjectForOverAllApplicability.NetToolCost : '',
     toolCostType:ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCostType !== undefined ? {label:ObjectForOverAllApplicability.ToolCostType,value:ObjectForOverAllApplicability.ToolCostTypeId}:[],
-    maintanencePercentage:ObjectForOverAllApplicability && ObjectForOverAllApplicability.MaintanencePercentage !== undefined ? ObjectForOverAllApplicability.MaintanencePercentage:'',
+    maintanencePercentage:ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenancePercentage !== undefined ? ObjectForOverAllApplicability.ToolMaintenancePercentage:'',
     MaintananceCostApplicability:ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolApplicabilityCost !== undefined ? ObjectForOverAllApplicability.ToolApplicabilityCost:'',
     ToolAmortizationCost:ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !==undefined ? ObjectForOverAllApplicability.ToolAmortizationCost:''
   }
@@ -139,8 +139,8 @@ function Tool(props) {
         "TotalToolCost": null,
         "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
         "ToolCostType":toolObj.ToolApplicability,
-        "ToolCostTypeId":toolObj.ToolApplicabilityId,
-        "MaintanencePercentage":toolObj.MaintanencePercentage,
+        "ToolApplicabilityTypeId":toolObj.ToolApplicabilityId,
+        "ToolMaintenancePercentage":toolObj.MaintanencePercentage,
         "ToolApplicabilityCost":toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost":ToolAmortizationCost,
         "IsCostForPerAssembly": null
@@ -187,8 +187,8 @@ function Tool(props) {
         "TotalToolCost": null,
         "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
         "ToolCostType":toolObj.ToolApplicability,
-        "ToolCostTypeId":toolObj.ToolApplicabilityId,
-        "MaintanencePercentage":toolObj.MaintanencePercentage,
+        "ToolApplicabilityTypeId":toolObj.ToolApplicabilityId,
+        "ToolMaintenancePercentage":toolObj.MaintanencePercentage,
         "ToolApplicabilityCost":toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost":ToolAmortizationCost,
         "IsCostForPerAssembly": null
@@ -231,8 +231,8 @@ function Tool(props) {
         "TotalToolCost": null,
         "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
         "ToolCostType":toolObj.ToolApplicability,
-        "ToolCostTypeId":toolObj.ToolApplicabilityId,
-        "MaintanencePercentage":toolObj.MaintanencePercentage,
+        "ToolApplicabilityTypeId":toolObj.ToolApplicabilityId,
+        "ToolMaintenancePercentage":toolObj.MaintanencePercentage,
         "ToolApplicabilityCost":toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost":ToolAmortizationCost,
         "IsCostForPerAssembly": null
@@ -445,8 +445,8 @@ function Tool(props) {
         "TotalToolCost": null,
         "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
         "ToolCostType":toolObj.ToolApplicability,
-        "ToolCostTypeId":toolObj.ToolApplicabilityId,
-        "MaintanencePercentage":toolObj.MaintanencePercentage,
+        "ToolApplicabilityTypeId":toolObj.ToolApplicabilityId,
+        "ToolMaintenancePercentage":toolObj.MaintanencePercentage,
         "ToolApplicabilityCost":toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost":ToolAmortizationCost,
         "IsCostForPerAssembly": null
@@ -733,7 +733,7 @@ function Tool(props) {
 
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between mt25 tab-tool-cost-footer">
+            <Row className="sf-btn-footer no-gutters justify-content-between mt25 sticky-btn-footer tab-tool-cost-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
 
                 {!CostingViewMode && <button

@@ -1048,7 +1048,6 @@ export function getVendorWithVendorCodeSelectList() {
  * @description Used to get RM Domestic Datalist
  */
 export function getRMDomesticDataList(data, callback) {
-    console.log('data: ', data);
     return (dispatch) => {
 
         dispatch({ type: GET_RM_DOMESTIC_LIST });
@@ -1674,6 +1673,7 @@ export function masterApprovalRequestBySender(data, callback) {
                 }
             }
         }).catch((error) => {
+            callback(error)
             dispatch({ type: API_FAILURE })
             apiErrors(error)
         })
@@ -1702,6 +1702,7 @@ export function approvalRequestByMasterApprove(data, callback) {
             .catch((error) => {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
+                callback(error)
             })
     }
 }
