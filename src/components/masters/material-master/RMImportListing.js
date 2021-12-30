@@ -96,6 +96,7 @@ function RMImportListing(props) {
     if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
       return getFilteredRMData(rmImportDataList)
     } else {
+      console.log(rmImportDataList, "DATALISTIMPORT")
       return rmImportDataList
     }
   }
@@ -562,7 +563,9 @@ function RMImportListing(props) {
 
                 <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='companyFormatter'></AgGridColumn>
 
-                <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                <AgGridColumn field="UOM"></AgGridColumn>
+                
+                <AgGridColumn field="Currency"></AgGridColumn>
 
                 <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
 
