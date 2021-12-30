@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmmendentStatus,getImpactedMasterData,getLastSimulationData,uploadSimulationAttachment,getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmmendentStatus,getImpactedMasterData,getLastSimulationData,uploadSimulationAttachment } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,FILE_URL } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -37,6 +37,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
+import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -94,7 +95,6 @@ function SimulationApprovalSummary(props) {
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
     const [count, setCount] = useState(0);
-    const [loaderAssembly, setLoaderAssembly] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -489,21 +489,21 @@ function SimulationApprovalSummary(props) {
     }
 
     const closeAssemblyDrawer = () => {
-        setLoaderAssembly(true)
-        if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg).length !== 0 || DataForAssemblyImpactForFg.length > 0) && count === 0) {
-            let requestData = []
-            DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map(item => {
-                requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
-                return null
-            })
-            setCount(1)
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => { }))
-            setCount(0)
-        }
+        // setAssemblyWiseAcc(false)
+        // if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg).length !== 0 || DataForAssemblyImpactForFg.length > 0) && count === 0) {
+        //     let requestData = []
+        //     DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map(item => {
+        //         requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+        //         return null
+        //     })
+        //     setCount(1)
+        //     dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => { }))
+        //     setCount(0)
+        // }
         setShowViewAssemblyDrawer(false)
-        setTimeout(() => {
-            setLoaderAssembly(false)
-        }, 350);
+        // setTimeout(() => {
+        // setAssemblyWiseAcc(true)
+        // }, 350);
     }
 
     const buttonFormatter = (props) => {
@@ -984,13 +984,11 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         <div>
-                            {/* {loaderAssembly && <LoaderCustom />} */}
-                            {assemblyWiseAcc && <AssemblyWiseImpact
+                            {assemblyWiseAcc && <AssemblyWiseImpactSummary
                                 dataForAssemblyImpact={DataForAssemblyImpactForFg}
                                 vendorIdState={costingList[0]?.VendorId}
                                 impactType={'AssemblySummary'}
                                 isPartImpactAssembly={false}
-                                loaderAssembly={loaderAssembly}
                             />}
                         </div>
                         <Row className="mt-2">

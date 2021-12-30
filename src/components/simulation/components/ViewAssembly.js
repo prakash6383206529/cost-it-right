@@ -7,7 +7,7 @@ import AssemblyWiseImpact from './AssemblyWiseImpact';
 function ViewAssembly(props) {
 
     const { impactType } = props
-    const [impactTypeState, setImpactTypeState] = useState('');
+    // const [impactTypeState, setImpactTypeState] = useState('');
 
     // const dataForAssemblyImpact = {
     //     CostingHead: props.dataForAssemblyImpact?.row?.CostingHead === 'VBC' ? 1 : 0,
@@ -19,7 +19,7 @@ function ViewAssembly(props) {
     // }
 
     useEffect(() => {
-        setImpactTypeState((impactType === undefined) ? 'Assembly' : impactType)
+        // setImpactTypeState((impactType === undefined) ? 'Assembly' : impactType)
 
     }, [])
 
@@ -62,7 +62,7 @@ function ViewAssembly(props) {
                         /> */}
                         <AssemblyWiseImpact
                             dataForAssemblyImpact={props.dataForAssemblyImpact}
-                            impactType={impactTypeState}
+                            impactType={'Assembly'}
                             isPartImpactAssembly={props.isPartImpactAssembly}
                         />
                     </div>
