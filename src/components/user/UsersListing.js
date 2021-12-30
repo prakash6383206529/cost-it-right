@@ -126,18 +126,18 @@ class UsersListing extends Component {
 			DepartmentId: departmentId,
 			RoleId: roleId,
 		}
-		// this.props.getAllUserDataAPI(data, res => {
-		// 	if (res.status === 204 && res.data === '') {
-		// 		this.setState({ userData: [], })
-		// 	} else if (res && res.data && res.data.DataList) {
-		// 		let Data = res.data.DataList;
-		// 		this.setState({
-		// 			userData: Data,
-		// 		})
-		// 	} else {
+		this.props.getAllUserDataAPI(data, res => {
+			if (res.status === 204 && res.data === '') {
+				this.setState({ userData: [], })
+			} else if (res && res.data && res.data.DataList) {
+				let Data = res.data.DataList;
+				this.setState({
+					userData: Data,
+				})
+			} else {
 
-		// 	}
-		// });
+			}
+		});
 	}
 
 	/**
