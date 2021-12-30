@@ -3196,17 +3196,16 @@ opacity: 0.5;
   display: inline-block;
   .tooltiptext {
     visibility: hidden;
-    min-width: 300px;
+    min-width: 250px;
     background-color: #D0D8E5;
-    color: #3D4465;
-    text-align: center;
+    color: #3d4465;
+    text-align: right;
     border-radius: 6px;
-    padding: 5px 10px;
-    /* Position the tooltip */
+    padding: 5px 15px 5px 5px;
     position: absolute;
     z-index: 1;
     bottom: 100%;
-    left: -140px;
+    left: -115px;
     margin-left: -4px;
     font-size: 14px;
     &:after {
@@ -6513,6 +6512,16 @@ left: 17rem;
   position: sticky !important;
   bottom: 0;
   .bluefooter-butn {
-    padding: 5px 12px !important;
+    padding: 2px 12px !important;
   }
+}
+.overhead-profit-save-btn {
+  margin: 0 -15px;
+  padding: 0 !important;
+  .bluefooter-butn {
+    padding: 2px 15px !important;
+  }
+}
+.packaging-freight-btn-save {
+  padding: 2px 15px !important;
 }

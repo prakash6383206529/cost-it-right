@@ -1746,8 +1746,8 @@ function OverheadProfit(props) {
               setPaymentTermsDetail={props.setPaymentTermsDetail}
             />
 
-            <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
-              <div className="col-sm-12 text-right bluefooter-butn">
+            <Row className=" no-gutters justify-content-between btn-stciky-container overhead-profit-save-btn">
+              <div className="col-sm-12 text-right bluefooter-butn ">
                 {!CostingViewMode && <Link to="assembly-costing-header" spy={true} smooth={true} offset={-330} delay={200}> <button
                   type={'submit'}
                   onClick={handleSubmit(onSubmit)}

@@ -1043,7 +1043,7 @@ const [totalCost,setTotalCost] = useState(0)
                       </div>
                     </Col>
                   </Row>
-                  <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
+                  <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button
