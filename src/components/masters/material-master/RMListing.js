@@ -224,8 +224,6 @@ class RMListing extends Component {
                 item.RMName = ' '
             } if (item.RMGrade === '-') {
                 item.RMGrade = ' '
-            } else {
-                return false
             }
             return item
         })

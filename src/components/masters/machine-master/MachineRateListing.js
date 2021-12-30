@@ -289,8 +289,6 @@ class MachineRateListing extends Component {
                 item.MachineTypeName = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
-            } else {
-                return false
             }
             if (item.EffectiveDate !== null) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')

@@ -273,8 +273,6 @@ class ExchangeRateListing extends Component {
                 item.BankCommissionPercentage = ' '
             } else if (item.CustomRate === null) {
                 item.CustomRate = ' '
-            } else {
-                return false
             }
             return item
         })

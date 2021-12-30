@@ -306,8 +306,6 @@ class SOBListing extends Component {
         item.Specification = ' '
       } if (item.Plants === '-') {
         item.Plants = ' '
-      } else {
-        return false
       }
       return item
     })

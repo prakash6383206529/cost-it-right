@@ -296,8 +296,6 @@ class OverheadListing extends Component {
                 item.TypeOfHead = 'Zero Based'
             } if (item.TypeOfHead === 'CBC') {
                 item.TypeOfHead = 'Client Based'
-            } else {
-                return false
             }
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
