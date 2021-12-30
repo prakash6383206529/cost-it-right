@@ -98,7 +98,7 @@ function BOPCost(props) {
           LandedCostINR: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
           Quantity: 1,
           NetBoughtOutPartCost: el.Currency === '-' ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
-          UOM:el.UOM
+          BoughtOutPartUOM:el.UOM
         }
       })
 
@@ -150,7 +150,7 @@ function BOPCost(props) {
 
   const SaveItem = (index) => {
     let bopGridData = gridData[index]
-    if(bopGridData.UOM === 'Number'){
+    if(bopGridData.BoughtOutPartUOM === 'Number'){
       
       let isValid =Number.isInteger(bopGridData.Quantity);
       if(!isValid){
@@ -336,11 +336,11 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
-                               <td>{item.UOM}</td>
+                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
-                                  item.UOM === 'Number'?
+                                  item.BoughtOutPartUOM === 'Number'?
                                   <>
                                   <NumberFieldHookForm
                                   label=""
@@ -404,7 +404,7 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
-                              <td>{item.UOM}</td>
+                              <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
