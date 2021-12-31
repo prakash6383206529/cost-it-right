@@ -395,6 +395,7 @@ export function simulationApprovalRequestByApprove(data, callback) {
             .catch((error) => {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
+                callback(error)
             })
     }
 }
@@ -418,6 +419,7 @@ export function simulationRejectRequestByApprove(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }

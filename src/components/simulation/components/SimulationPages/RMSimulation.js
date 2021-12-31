@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
+import { debounce } from 'lodash'
 import Simulation from '../Simulation';
 import { VBC, ZBC } from '../../../../config/constants';
 const gridOptions = {
@@ -37,6 +37,7 @@ function RMSimulation(props) {
     const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
+    const [isDisable, setIsDisable] = useState(false)
 
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -59,10 +60,14 @@ function RMSimulation(props) {
 
     }, [])
 
-    const verifySimulation = () => {
+    const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
-
+        if (basicRateCount === list.length && basicScrapCount === list.length) {
+            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            return false
+        }
+        setIsDisable(true)
         list && list.map((li) => {
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
@@ -74,10 +79,6 @@ function RMSimulation(props) {
             return null;
         })
 
-        if (basicRateCount === list.length && basicScrapCount === list.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
-            return false
-        }
         basicRateCount = 0
         basicScrapCount = 0
         // setShowVerifyPage(true)
@@ -123,15 +124,16 @@ function RMSimulation(props) {
             return null;
         })
         obj.SimulationRawMaterials = tempArr
-
         dispatch(runVerifySimulation(obj, res => {
+            setIsDisable(false)
 
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
-    }
+    }, 600)
+
 
     const cancelVerifyPage = () => {
 
@@ -534,7 +536,7 @@ function RMSimulation(props) {
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}
