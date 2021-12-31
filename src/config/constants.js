@@ -1749,3 +1749,6 @@ export const EMPTY_DATA = 'No Record Found';
 export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
+
+//VERSION 
+export const VERSION = "V1.1.53";

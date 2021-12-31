@@ -6538,10 +6538,21 @@ left: 17rem;
 .alert-danger, .attachment.images {
   font-size: 15px;   //maximum file upload font
 }
+//START Navbar version css
 .version {
   color: #256bd1;
   margin-right: 15px;
 }
+//END Navbar version css
+//START login page version css
+.login-version {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: #4a4a4af7;
+  font-size: 14px;
+}
+//END login page version css
 .loader_container.simulation-history-loader {
   background-color: rgba(255, 255, 255, 0.97);
 }
@@ -6570,4 +6581,12 @@ left: 17rem;
 }
 .packaging-freight-btn-save {
   padding: 2px 15px !important;
+}
+.ag-pinned-right-header {
+  .ag-header-row-column-group {
+    border-right:  solid #e5eaf9;
+  }
+}
+.ag-header-group-cell.ag-focus-managed.ag-header-group-cell-no-group:first-child {
+  border-left: 1px solid #e5eaf9;
 }
