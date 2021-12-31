@@ -96,6 +96,7 @@ function RMImportListing(props) {
     if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
       return getFilteredRMData(rmImportDataList)
     } else {
+
       return rmImportDataList
     }
   }
@@ -334,8 +335,12 @@ function RMImportListing(props) {
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
         item.CostingHead = 'Vendor Based'
+        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
       } else if (item.CostingHead === false) {
         item.CostingHead = 'Zero Based'
+        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+      } else {
+        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
       }
       return item
     })
@@ -529,6 +534,7 @@ function RMImportListing(props) {
                 <AgGridColumn field="Plant"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
+                <AgGridColumn field="Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate"></AgGridColumn>
                 <AgGridColumn field="ScrapRate"></AgGridColumn>
                 <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
