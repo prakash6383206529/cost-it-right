@@ -309,8 +309,6 @@ class AssemblyProductListing extends Component {
                 item.DrawingNumber = ' '
             } else if (item.Technology === '-') {
                 item.Technology = ' '
-            } else {
-                return false
             }
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
