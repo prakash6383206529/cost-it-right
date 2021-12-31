@@ -39,6 +39,7 @@ import _ from 'lodash'
 import { SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
+import imgRedcross from '../../../assests/images/red-cross.png'
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
 const gridOptions = {};
@@ -80,6 +81,7 @@ function SimulationApprovalSummary(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [id, setId] = useState('')
     const [status, setStatus] = useState('')
+    const [amendentStatus, setAmendentstatus] = useState('')
     const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [noContent, setNoContent] = useState(false)
     const [initialFiles, setInitialFiles] = useState([]);
@@ -91,6 +93,9 @@ function SimulationApprovalSummary(props) {
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
     const [count, setCount] = useState(0);
+
+    const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
+    const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
 
     const dispatch = useDispatch()
 
@@ -164,9 +169,15 @@ function SimulationApprovalSummary(props) {
             setNoContent(res.status === 204 ? true : false)
 
             if (res.status !== 204) {
-                const { RecordInsertStatus, IsSuccessfullyInsert } = res.data.DataList[0]
+                const { RecordInsertStatus, IsSuccessfullyInsert, AmmendentStatus, IsAmmendentDone, AmmendentNumber } = res.data.DataList[0]
                 setStatus(RecordInsertStatus)
                 setIsSuccessfullyInsert(IsSuccessfullyInsert)
+                if (IsAmmendentDone) {
+                    setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
+                } else {
+                    setAmendentstatus(`Amendment Status: \u00A0 ${AmmendentStatus}`)
+                }
+
             }
         }))
     }, [])
@@ -295,8 +306,13 @@ function SimulationApprovalSummary(props) {
 
 
 
+    const deleteInsertStatusBox = () => {
+        setRecordInsertStatusBox(false)
+    }
 
-
+    const deleteAmendmentStatusBox = () => {
+        setAmendmentStatusBox(false)
+    }
 
 
     /**
@@ -421,7 +437,7 @@ function SimulationApprovalSummary(props) {
     const rmNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell ? `${cell}-${row.RMGrade}` : '-'
+        return cell ? `${cell} - ${row.RMGrade}` : '-'
     }
 
     const varianceFormatter = (props) => {
@@ -492,7 +508,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.BasicRate} </span>
+                <span className={`${!isbulkUpload ? '' : ''} `} >{cell ? cell : row.BasicRate} </span>
             </>
         )
     }
@@ -502,7 +518,7 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <span className={`${!isbulkUpload ? '' : ''}`} >{cell ? cell : row.ScrapRate}</span>
+                <span className={`${!isbulkUpload ? '' : ''} `} >{cell ? cell : row.ScrapRate}</span>
             </>
         )
     }
@@ -543,7 +559,7 @@ function SimulationApprovalSummary(props) {
     const rawMaterailFormat = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? `${cell}- ${row.RMGrade}` : '-';
+        return cell != null ? `${cell} - ${row.RMGrade} ` : '-';
     }
 
     if (showListing === true) {
@@ -621,6 +637,8 @@ function SimulationApprovalSummary(props) {
         temp = isSuccessfullyInsert === false ? '' : 'success'
         if (noContent === true) {
             temp = 'd-none'
+            setRecordInsertStatusBox(false)
+            setAmendmentStatusBox(false)
         }
         return temp
     }
@@ -650,14 +668,39 @@ function SimulationApprovalSummary(props) {
                 <>
                     {loader && <LoaderCustom />}
                     <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
-                        <Errorbox customClass={errorBoxClass()} errorText={status} />
+
+
+                        {recordInsertStatusBox &&
+                            <div className="error-box-container">
+                                <Errorbox customClass={errorBoxClass()} errorText={status} />
+                                <img
+                                    className="float-right"
+                                    alt={""}
+                                    onClick={deleteInsertStatusBox}
+                                    src={imgRedcross}
+                                ></img>
+                            </div>
+                        }
+
+                        {amendmentStatusBox &&
+                            <div className="error-box-container">
+                                <Errorbox customClass={errorBoxClass()} errorText={amendentStatus} />
+                                <img
+                                    className="float-right"
+                                    alt={""}
+                                    onClick={deleteAmendmentStatusBox}
+                                    src={imgRedcross}
+                                ></img>
+                            </div>
+
+                        }
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
                             <Col md="8">
                                 <div className="left-border">
                                     {'Approval Workflow (Token No. '}
-                                    {`${simulationDetail && simulationDetail.Token ? simulationDetail.Token : '-'}) :`}
+                                    {`${simulationDetail && simulationDetail.Token ? simulationDetail.Token : '-'}) : `}
                                 </div>
                             </Col>
                             <Col md="4" className="text-right">
@@ -700,51 +743,51 @@ function SimulationApprovalSummary(props) {
                                     <thead>
                                         <tr>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Token No.:`}</span>
+                                                <span className="d-block grey-text">{`Token No.: `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.TokenNumber}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Technology:`}</span>
+                                                <span className="d-block grey-text">{`Technology: `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Technology}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Parts Supplied:`}</span>
+                                                <span className="d-block grey-text">{`Parts Supplied: `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
-                                                    <span className="d-block grey-text">{`Costing Head:`}</span>
+                                                    <span className="d-block grey-text">{`Costing Head: `}</span>
                                                     <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.CostingHead}</span>
                                                 </th>)
                                             }
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Vendor Name:`}</span>
+                                                <span className="d-block grey-text">{`Vendor Name: `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`No. of Costing:`}</span>
+                                                <span className="d-block grey-text">{`No.of Costing: `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Reason:`}</span>
+                                                <span className="d-block grey-text">{`Reason: `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</span>
                                             </th>
 
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Masters:`}</span>
+                                                <span className="d-block grey-text">{`Masters: `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Effective Date:`}</span>
+                                                <span className="d-block grey-text">{`Effective Date: `}</span>
                                                 <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</span>
                                             </th>
                                             {/* <th className="align-top">
-                                                <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
+                                                <span className="d-block grey-text">{`Impact for Annum(INR): `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.ImpactForAnnum}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Impact for the Quarter(INR):`}</span>
+                                                <span className="d-block grey-text">{`Impact for the Quarter(INR): `}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.ImpactForTheQuarter}</span>
                                             </th> */}
                                         </tr>
@@ -826,7 +869,7 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <div className={`ag-grid-react`}>
+                                <div className={`ag - grid - react`}>
                                     { }
                                     <Row className="pb-2">
                                         <Col md="12">
@@ -991,7 +1034,7 @@ function SimulationApprovalSummary(props) {
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
-                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
+                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn - small - primary - circle ml - 1`}>{lastRevisionDataAccordian ? (
                                         <i className="fa fa-minus" ></i>
                                     ) : (
                                         <i className="fa fa-plus"></i>
@@ -1021,7 +1064,7 @@ function SimulationApprovalSummary(props) {
                             }
                             {/* {lastRevisionDataAccordian &&
                                 <div className="accordian-content w-100">
-                                    <div className={`ag-grid-react`}>
+                                    <div className={`ag - grid - react`}>
                                         <Col md="12" className="mb-3">
                                             <div className="ag-grid-wrapper height-width-wrapper">
                                                 <div className="ag-grid-header">
