@@ -17,6 +17,7 @@ import {
     SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
+    GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
 } from '../../../config/constants';
 
 const initialState = {
@@ -147,6 +148,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 simulationAssemblyList: action.payload
+            }
+        case GET_ASSEMBLY_SIMULATION_LIST_SUMMARY:
+            return {
+                ...state,
+                loading: false,
+                simulationAssemblyListSummary: action.payload
             }
 
         case SET_DATA_TEMP:
