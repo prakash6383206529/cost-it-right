@@ -3262,6 +3262,7 @@ opacity: 0.5;
 .refresh-icon.tooltip-n{
    .tooltiptext{
     left: -130px;
+    min-width: 300px;
    }
 }
 // ========tooltip css=============
@@ -6335,7 +6336,7 @@ left: 17rem;
     .share-of-business {min-width: 110px;}
     .costing-status {min-width: 230px;}
     .costing-price {min-width: 115px;}
-    .costing-action {min-width: 240px;}
+    .costing-action {min-width: 250px;}
   }
   @media screen and (max-width:$miniDesktop) {
    td, th {
@@ -6560,6 +6561,9 @@ left: 17rem;
 .overhead-profit-save-btn {
   margin: 0 -15px;
   padding: 0 !important;
+  @media screen and (min-width:1600px) {
+    margin: 0 -30px;
+  }
   .bluefooter-butn {
     padding: 2px 15px !important;
   }
