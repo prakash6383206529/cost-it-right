@@ -1,7 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from "react-router-dom";
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -16,6 +15,7 @@ import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
 import { debounce } from 'lodash'
+import Toaster from '../../common/Toaster'
 
 
 
@@ -23,16 +23,15 @@ const gridOptions = {};
 
 function RMApproval(props) {
 
-    const [gridApi, setGridApi] = useState(null);
-    const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
+    const [gridApi, setGridApi] = useState(null);     // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
+    const [gridColumnApi, setGridColumnApi] = useState(null);   // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
+
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { approvalList } = useSelector((state) => state.material)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
-    const [approvalObj, setApprovalObj] = useState([])
     const [loader, setLoader] = useState(true)
     const dispatch = useDispatch()
 
@@ -91,7 +90,7 @@ function RMApproval(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
+
                 {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
             </>
         )
@@ -102,7 +101,7 @@ function RMApproval(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
+
                 {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
             </>
         )
@@ -180,7 +179,6 @@ function RMApproval(props) {
     const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
         setShowApprovalSummary(true)
-        // props.closeDashboard()
 
     }
 
@@ -238,11 +236,18 @@ function RMApproval(props) {
     const resetState = debounce(() => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        setLoader(true)
         getTableData()
-     },500)
+    }, 500)
 
     const sendForApproval = () => {
-        setApprovalDrawer(true)
+
+        if (selectedRowData.length > 0) {
+            setApprovalDrawer(true)
+        }
+        else {
+            Toaster.warning('Please select draft token to send for approval.')
+        }
     }
 
 
@@ -259,12 +264,6 @@ function RMApproval(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
-        // var allColumnIds = [];
-        // params.columnApi.getAllColumns().forEach(function (column) {
-        //     allColumnIds.push(column.colId);
-        // });
-        // params.columnApi.autoSizeColumns(allColumnIds);
-
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -278,7 +277,6 @@ function RMApproval(props) {
 
     const frameworkComponents = {
         renderPlant: renderPlant,
-        renderVendor: renderVendor,
         renderVendor: renderVendor,
         priceFormatter: priceFormatter,
         oldpriceFormatter: oldpriceFormatter,
@@ -302,7 +300,6 @@ function RMApproval(props) {
     const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === DRAFT : false
 
 
-
     return (
         <div>
             <Row className="pt-4 blue-before">
@@ -310,9 +307,7 @@ function RMApproval(props) {
                 <Col md="6" lg="6" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
                         <div>
-                            {/* <button title="send-for-approval" class="user-btn approval-btn mr5" onClick={sendForApproval}>
-                      <div className="send-for-approval mr-0" ></div>
-                    </button> */}
+
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
@@ -339,7 +334,6 @@ function RMApproval(props) {
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
-                                    // columnDefs={c}
                                     rowData={approvalList}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -389,8 +383,8 @@ function RMApproval(props) {
                                     </select>
                                 </div>
                                 <div className="text-right pb-3">
-                                  <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                                 </div>
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                                </div>
                             </div>
                         </div>
                     </div>
