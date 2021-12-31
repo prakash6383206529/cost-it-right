@@ -178,12 +178,7 @@ class OperationListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    // editItemDetails = (Id) => {
-    //     this.setState({
-    //         data: { isEditFlag: true, ID: Id },
-    //         toggleForm: true,
-    //     })
-    // }
+
 
     editItemDetails = (Id, rowData) => {
         let data = {
@@ -245,16 +240,7 @@ class OperationListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        // this.props.activeInactiveVendorStatus(data, res => {
-        //     if (res && res.data && res.data.Result) {
-        //         if (cell == true) {
-        //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-        //         } else {
-        //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-        //         }
-        //         this.getTableListData(null, null, null, null)
-        //     }
-        // })
+
     }
 
     /**
@@ -413,7 +399,7 @@ class OperationListing extends Component {
     }
 
     formToggle = () => {
-        // this.setState({ toggleForm: true })
+
         this.props.formToggle()
     }
 
@@ -517,7 +503,6 @@ class OperationListing extends Component {
                 this.props.setSelectedRowCountForSimulationMessage(len)
                 this.props.apply(selectedRows)
             }
-            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
             this.setState({ selectedRowData: selectedRows })
 
         }
@@ -574,12 +559,7 @@ class OperationListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
-                        {
-                            // !this.props.isSimulation &&
-                            // <Row>
-                            //     <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
-                            // </Row>
-                        }
+
                         <Row className="pt-4 filter-row-large blue-before">
 
                             <Col md="6" lg="6" className="search-user-block mb-3">
@@ -628,7 +608,6 @@ class OperationListing extends Component {
 
                                             </>
 
-                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                         }
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -653,11 +632,8 @@ class OperationListing extends Component {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
-
-                                // <AgGridColumn field="country" filter={true} floatingFilter={true} />
 
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}

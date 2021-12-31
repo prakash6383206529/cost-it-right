@@ -279,7 +279,7 @@ dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{    
                     </Table>
                   </Col>
                 </Row>
-                <div className="col-sm-12 text-right bluefooter-butn">
+                <div className="col-sm-12 text-right bluefooter-butn sticky-btn-footer packaging-freight-btn-save">
                   {!CostingViewMode &&  <Link  to="costing-header" spy={true} smooth={true} offset={-350} delay={100}> <button
                     type={"button"}
                     className="submit-button mr5 save-btn"
