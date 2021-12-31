@@ -284,20 +284,6 @@ class ProfitListing extends Component {
                 item.TypeOfHead = 'Zero Based'
             } if (item.TypeOfHead === 'CBC') {
                 item.TypeOfHead = 'Client Based'
-            } if (item.ClientName === null) {
-                item.ClientName = ' '
-            } if (item.ProfitBOPPercentage === null) {
-                item.ProfitBOPPercentage = ' '
-            } if (item.ProfitMachiningCCPercentage === null) {
-                item.ProfitMachiningCCPercentage = ' '
-            } if (item.ProfitPercentage === null) {
-                item.ProfitPercentage = ' '
-            } if (item.ProfitRMPercentage === null) {
-                item.ProfitRMPercentage = ' '
-            } if (item.VendorName === '-') {
-                item.VendorName = ' '
-            } else {
-                return false
             }
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
