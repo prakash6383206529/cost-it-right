@@ -299,7 +299,7 @@ function BOPCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'BOP Cost:'}
+                {'Insert Cost:'}
               </div>
             </Col>
             <Col md={'2'}>
