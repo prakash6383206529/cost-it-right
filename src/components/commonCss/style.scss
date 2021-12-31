@@ -6582,3 +6582,11 @@ left: 17rem;
 .packaging-freight-btn-save {
   padding: 2px 15px !important;
 }
+.ag-pinned-right-header {
+  .ag-header-row-column-group {
+    border-right:  solid #e5eaf9;
+  }
+}
+.ag-header-group-cell.ag-focus-managed.ag-header-group-cell-no-group:first-child {
+  border-left: 1px solid #e5eaf9;
+}
