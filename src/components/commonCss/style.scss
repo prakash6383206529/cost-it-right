@@ -6581,3 +6581,14 @@ left: 17rem;
 .packaging-freight-btn-save {
   padding: 2px 15px !important;
 }
+
+//START error box delete icon spacing css
+.error-box-container {
+  position: relative;
+  img {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+  }
+}
+//END error box delete icon spacing css

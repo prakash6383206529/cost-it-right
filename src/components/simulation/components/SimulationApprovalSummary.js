@@ -495,9 +495,10 @@ function SimulationApprovalSummary(props) {
 
         return (
             <>
-                <Link to="fg-compare-costing" spy={true} smooth={true}><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} /></Link>
-                {/* <Link to="campare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link> */}
+                 <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
                 <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
+
+                
             </>
         )
     }
@@ -957,7 +958,7 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
@@ -1005,7 +1006,7 @@ function SimulationApprovalSummary(props) {
                         </div>
                         <Row className="mt-2">
                             <Col md="10">
-                                <div id="fg-compare-costing" className="left-border">{'Compare Costing:'}</div>
+                                <div id="compare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
