@@ -10,6 +10,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import _ from 'lodash'
 
 const gridOptions = {};
 
@@ -39,6 +40,13 @@ function AssemblyWiseImpactSummary(props) {
                 requestData = [obj]
 
             } else {
+                let uniqueArr = _.uniqBy(dataForAssemblyImpact, function(o){
+                    return o.CostingId;
+                });
+                uniqueArr && uniqueArr.map(item => {
+                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+                    return null
+                })
                 dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
                     requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
                     return null
