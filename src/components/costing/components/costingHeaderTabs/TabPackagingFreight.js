@@ -195,17 +195,20 @@ function TabPackagingFreight(props) {
     "LoggedInUserId": loggedInUserId()
   
 }
-console.log(assemblyRequestedData,"assemblyRequestedData");
-dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
-    }
 
-    dispatch(saveCostingPackageFreightTab(data, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
-        dispatch(setComponentPackageFreightItemData({}, () => { }))
-        InjectDiscountAPICall()
+if(!CostingViewMode){
+
+  dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
       }
-    }))
+  
+      dispatch(saveCostingPackageFreightTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentPackageFreightItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }
+      }))
+}
 
   }
 
