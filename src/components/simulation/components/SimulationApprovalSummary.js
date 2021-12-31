@@ -450,7 +450,11 @@ function SimulationApprovalSummary(props) {
 
     const varianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let roudOffOld = 0, rounfOffNew = 0
+        roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
+        rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
+        return cell != null ? (roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND) : ''
     }
 
     const POVarianceFormatter = (props) => {
