@@ -694,7 +694,7 @@ class SideBar extends Component {
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
-                    V1.1.37.1
+                    V1.1.48.1
                   </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">

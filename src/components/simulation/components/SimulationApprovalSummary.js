@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
@@ -40,6 +40,7 @@ import { SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import imgRedcross from '../../../assests/images/red-cross.png'
+import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -92,7 +93,6 @@ function SimulationApprovalSummary(props) {
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
     const [count, setCount] = useState(0);
-    const [loaderAssembly, setLoaderAssembly] = useState(false);
 
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
@@ -472,21 +472,21 @@ function SimulationApprovalSummary(props) {
     }
 
     const closeAssemblyDrawer = () => {
-        setLoaderAssembly(true)
-        if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg).length !== 0 || DataForAssemblyImpactForFg.length > 0) && count === 0) {
-            let requestData = []
-            DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map(item => {
-                requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
-                return null
-            })
-            setCount(1)
-            dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => { }))
-            setCount(0)
-        }
+        // setAssemblyWiseAcc(false)
+        // if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg).length !== 0 || DataForAssemblyImpactForFg.length > 0) && count === 0) {
+        //     let requestData = []
+        //     DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map(item => {
+        //         requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+        //         return null
+        //     })
+        //     setCount(1)
+        //     dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => { }))
+        //     setCount(0)
+        // }
         setShowViewAssemblyDrawer(false)
-        setTimeout(() => {
-            setLoaderAssembly(false)
-        }, 350);
+        // setTimeout(() => {
+        // setAssemblyWiseAcc(true)
+        // }, 350);
     }
 
     const buttonFormatter = (props) => {
@@ -636,6 +636,8 @@ function SimulationApprovalSummary(props) {
         temp = isSuccessfullyInsert === false ? '' : 'success'
         if (noContent === true) {
             temp = 'd-none'
+            setRecordInsertStatusBox(false)
+            setAmendmentStatusBox(false)
         }
         return temp
     }
@@ -994,13 +996,11 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
                         <div>
-                            {/* {loaderAssembly && <LoaderCustom />} */}
-                            {assemblyWiseAcc && <AssemblyWiseImpact
+                            {assemblyWiseAcc && <AssemblyWiseImpactSummary
                                 dataForAssemblyImpact={DataForAssemblyImpactForFg}
                                 vendorIdState={costingList[0]?.VendorId}
                                 impactType={'AssemblySummary'}
                                 isPartImpactAssembly={false}
-                                loaderAssembly={loaderAssembly}
                             />}
                         </div>
                         <Row className="mt-2">
