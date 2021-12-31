@@ -1675,6 +1675,7 @@ export function masterApprovalRequestBySender(data, callback) {
                 }
             }
         }).catch((error) => {
+            callback(error)
             dispatch({ type: API_FAILURE })
             apiErrors(error)
         })
@@ -1703,6 +1704,7 @@ export function approvalRequestByMasterApprove(data, callback) {
             .catch((error) => {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
+                callback(error)
             })
     }
 }

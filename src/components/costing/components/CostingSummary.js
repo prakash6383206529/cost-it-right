@@ -224,6 +224,7 @@ function CostingSummary(props) {
                             dispatch(setCostingViewData(temp))
                           } else {
                             dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
+                              console.log('res: ', res);
                               // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                               if (res.data.Data) {
                                 let dataFromAPI = res.data.Data

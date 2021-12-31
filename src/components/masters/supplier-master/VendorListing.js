@@ -21,7 +21,6 @@ import AddVendorDrawer from './AddVendorDrawer';
 import { checkPermission } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -30,6 +29,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -73,8 +73,8 @@ class VendorListing extends Component {
             warningMessage: false,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
 
         }
     }
@@ -296,7 +296,7 @@ class VendorListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -311,14 +311,14 @@ class VendorListing extends Component {
                 //this.getTableListData(null, null, null)
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -340,8 +340,8 @@ class VendorListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != 'NA' ? cellValue : '-';
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
     handleChange = (cell, row) => {
@@ -548,32 +548,25 @@ class VendorListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, this.props.supplierDataList)
+        let tempArr = this.props.supplierDataList && this.props.supplierDataList
+        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
-            if (item.Country == 'NA') {
+        temp = TempData && TempData.map((item) => {
+            if (String(item.Country) === 'NA') {
                 item.Country = ' '
-            } else if (item.State == 'NA') {
+            } else if (String(item.State) === 'NA') {
                 item.State = ' '
-            } else if (item.City == 'NA') {
+            } else if (String(item.City) === 'NA') {
                 item.City = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={VendorMaster}>
+            <ExcelSheet data={temp} name={VendorMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -630,9 +623,9 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                 {/* {this.props.loading && <Loader />} */}
-
+                <ScrollToTop pointProp="go-to-top" />
                 <form
 
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -775,7 +768,7 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                         <Row className="pt-5 no-filter-row">
                         </Row>
@@ -860,8 +853,8 @@ class VendorListing extends Component {
                     )
                 }
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
+                }
             </div >
         );
     }

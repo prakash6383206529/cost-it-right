@@ -1559,7 +1559,7 @@ class AddPower extends Component {
                                     <div className="inputbox date-section">
                                       <DatePicker
                                         name="EffectiveDate"
-                                        selected={this.state.effectiveDate}
+                                        selected={new Date(this.state.effectiveDate)}
                                         onChange={this.handleEffectiveDateChange}
                                         showMonthDropdown
                                         showYearDropdown

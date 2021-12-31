@@ -178,12 +178,7 @@ class OperationListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    // editItemDetails = (Id) => {
-    //     this.setState({
-    //         data: { isEditFlag: true, ID: Id },
-    //         toggleForm: true,
-    //     })
-    // }
+
 
     editItemDetails = (Id, rowData) => {
         let data = {
@@ -245,16 +240,7 @@ class OperationListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        // this.props.activeInactiveVendorStatus(data, res => {
-        //     if (res && res.data && res.data.Result) {
-        //         if (cell == true) {
-        //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-        //         } else {
-        //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-        //         }
-        //         this.getTableListData(null, null, null, null)
-        //     }
-        // })
+
     }
 
     /**
@@ -361,7 +347,13 @@ class OperationListing extends Component {
         )
     }
 
-
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
 
     /**
     * @method costingHeadFormatter
@@ -378,7 +370,7 @@ class OperationListing extends Component {
  */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
 
@@ -386,7 +378,7 @@ class OperationListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let data = rowData.CostingHead === "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
-        return data;
+        return (data !== ' ' ? data : '-');
 
     }
 
@@ -406,7 +398,7 @@ class OperationListing extends Component {
     }
 
     formToggle = () => {
-        // this.setState({ toggleForm: true })
+
         this.props.formToggle()
     }
 
@@ -449,18 +441,13 @@ class OperationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, this.props.operationList)
+        let tempArr = this.props.operationList && this.props.operationList
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
             } else if (item.CostingHead === true) {
@@ -476,7 +463,7 @@ class OperationListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={OperationMaster}>
+            <ExcelSheet data={temp} name={OperationMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -515,8 +502,7 @@ class OperationListing extends Component {
                 this.props.setSelectedRowCountForSimulationMessage(len)
                 this.props.apply(selectedRows)
             }
-            // console.log(setSelectedRowCountForSimulationMessage, 'nn (selectedRowCountForSimulationMessage !== 0) && ')
-            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+
             this.setState({ selectedRowData: selectedRows })
 
         }
@@ -541,7 +527,7 @@ class OperationListing extends Component {
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
-            plantFilter: this.plantFilter
+            hyphenFormatter: this.hyphenFormatter
         };
 
         return (
@@ -549,12 +535,7 @@ class OperationListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
-                        {
-                            // !this.props.isSimulation &&
-                            // <Row>
-                            //     <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
-                            // </Row>
-                        }
+
                         <Row className="pt-4 filter-row-large blue-before">
 
                             <Col md="6" lg="6" className="search-user-block mb-3">
@@ -603,7 +584,6 @@ class OperationListing extends Component {
 
                                             </>
 
-                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                         }
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -616,23 +596,19 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-wrapper height-width-wrapper">
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div
                             className="ag-theme-material"
-                            style={{ height: '100%', width: '100%' }}
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
-
-                                // <AgGridColumn field="country" filter={true} floatingFilter={true} />
 
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
@@ -649,11 +625,11 @@ class OperationListing extends Component {
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
-                                <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plants" floatingFilter={true} cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
-                                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                                <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plants" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
-                                <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
+                                <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {!this.props.isSimulation&& <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>

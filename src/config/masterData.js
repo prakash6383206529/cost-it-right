@@ -2438,7 +2438,7 @@ export const CostingSimulationDownload = [
     { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
-    { label: "RM Variance", value: "RMVariance" },
+    { label: "RM Variance", value: "RMCVariance" },
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
     { label: "OldProfitCost", value: "OldProfitCost" },
@@ -2462,7 +2462,7 @@ export const CostingSimulationDownload = [
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOAD = [
 
-    { label: "Costing Id", value: "CostingId" },
+    { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Grade", value: "RMGrade" },
     { label: "Part No", value: "PartNo" },
     { label: "Part Name", value: "PartName" },
@@ -2518,7 +2518,7 @@ export const BOP_SOBLISTING_DOWNLOAD_EXCEl = [
     { label: "BoughtOutPartCategory", value: "BoughtOutPartCategory", },
     { label: "Specification", value: "Specification", },
     { label: "NoOfVendors", value: "NoOfVendors", },
-    { label: " ", value: "Plant", },
+    { label: "Plant", value: "Plant", },
     { label: "ShareOfBusinessPercentage", value: "ShareOfBusinessPercentage", },
     { label: "WeightedNetLandedCost", value: "WeightedNetLandedCost", },
 ]
@@ -2619,9 +2619,9 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "RMShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "CutOffPrice", value: "CutOffPrice", },
     { label: "EffectiveDate", value: "EffectiveDate", },
-
-
+    { label: "Remark", value: "Remark", }
 
 ]
 
@@ -2641,7 +2641,9 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "RMShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "CutOffPrice", value: "CutOffPrice", },
     { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Remark", value: "Remark", }
 ]
 
 export const RMLISTING_DOWNLOAD_EXCEl = [

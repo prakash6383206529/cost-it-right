@@ -23,6 +23,7 @@ import ApproveRejectDrawer from '../../costing/components/approval/ApproveReject
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
+import ScrollToTop from '../../common/ScrollToTop'
 
 const gridOptions = {};
 
@@ -49,11 +50,12 @@ function SimulationApprovalListing(props) {
     const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { simualtionApprovalList } = useSelector(state => state.simulation)
+    console.log('simualtionApprovalList: ', simualtionApprovalList);
     const userList = useSelector(state => state.auth.userList)
     const [deletedId, setDeletedId] = useState('')
     const [showPopup, setShowPopup] = useState(false)
-    const [isLoader, setIsLoader] = useState(true)
-    const [simulationDetail,setSimulationDetail] = useState([])
+    const [simulationDetail, setSimulationDetail] = useState([])
+    const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -67,6 +69,9 @@ function SimulationApprovalListing(props) {
     useEffect(() => {
 
     }, [selectedIds])
+
+
+
 
     /**
      * @method getTableData
@@ -86,43 +91,13 @@ function SimulationApprovalListing(props) {
             // createdBy: createdBy,
         }
         setIsLoader(true)
-        dispatch(getSimulationApprovalList(filterData, (res) => { 
-            setIsLoader(false)
+        dispatch(getSimulationApprovalList(filterData, (res) => {
+            if(res.data.Result){
+                setIsLoader(false)
+            }
         }))
     }
 
-    const renderDropdownListing = (label) => {
-        const tempDropdownList = []
-
-        if (label === 'PartList') {
-            partSelectList &&
-                partSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-
-            return tempDropdownList
-        }
-
-        if (label === 'Status') {
-            statusSelectList &&
-                statusSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-            return tempDropdownList
-        }
-        if (label === 'users') {
-            userList && userList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-    }
 
     /**
      * @method onSubmit
@@ -134,7 +109,12 @@ function SimulationApprovalListing(props) {
         const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
         const tempStatus = getValues('status') ? getValues('status').value : 0
         // const type_of_costing = 
-        getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+
+        setTimeout(() => {
+            if (approveDrawer !== true) {
+                getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+            }
+        }, 300);
     }
 
     /**
@@ -349,7 +329,7 @@ function SimulationApprovalListing(props) {
         // }
     }
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.DisplayStatus === APPROVED || rowNode.data.DisplayStatus === REJECTED || rowNode.data.DisplayStatus === WAITING_FOR_APPROVAL || rowNode.data.DisplayStatus === PUSHED || rowNode.data.DisplayStatus === ERROR) {
+        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === ERROR) {
             return false;
         } else {
             return true
@@ -482,7 +462,7 @@ function SimulationApprovalListing(props) {
         requestedOnFormatter: requestedOnFormatter,
         statusFormatter: statusFormatter,
         buttonFormatter: buttonFormatter,
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
         conditionFormatter: conditionFormatter
@@ -493,20 +473,22 @@ function SimulationApprovalListing(props) {
         <Fragment>
             {
                 !showApprovalSumary &&
-                <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`}>
+                <div className={`${!isSmApprovalListing && 'container-fluid'} approval-listing-page`} id='history-go-to-top'>
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader  && <LoaderCustom customClass={"simulation-history-loader"}/>}
+                            {isLoader &&<LoaderCustom customClass={"simulation-history-loader"} />}
+                            <ScrollToTop pointProp={"history-go-to-top"} />
                             <Row className="pt-4 blue-before">
 
-
+                              
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={sendForApproval}
-                                        // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                            // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
+                                            title="Send For Approval"
                                         >
                                             <div className="send-for-approval"></div>
                                             {/* {'Send For Approval'} */}
@@ -537,8 +519,7 @@ function SimulationApprovalListing(props) {
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
-                                    gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    gridOptions={gridOptions}                                  
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,

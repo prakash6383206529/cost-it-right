@@ -48,6 +48,7 @@ const SendForApproval = (props) => {
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const [dataToPush, setDataToPush] = useState({})
+  const [isDisable, setIsDisable] = useState('')
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
@@ -280,9 +281,9 @@ const SendForApproval = (props) => {
         count = count + 1
       }
     })
-    if (count != 0) {
+    if (Number(count) !== 0) {
       Toaster.warning('Please select effective date for all the costing')
-      return
+      return false
     }
     let obj = {
       ApproverDepartmentId: selectedDepartment.value,
@@ -334,12 +335,15 @@ const SendForApproval = (props) => {
     if (viewApprovalData.length > 1) {
 
       if (plantCount > 0) {
-        return Toaster.warning('Costings with same plant cannot be sent for approval')
+        Toaster.warning('Costings with same plant cannot be sent for approval')
+        return false
       }
       if (venderCount > 0) {
-        return Toaster.warning('Costings with same vendor cannot be sent for approval')
+        Toaster.warning('Costings with same vendor cannot be sent for approval')
+        return false
       }
     }
+    setIsDisable(true)
 
     viewApprovalData.map((data) => {
       // const { netPo, quantity } = getPOPriceAfterDecimal(SAPData.DecimalOption.value, data.revisedPrice)
@@ -408,6 +412,7 @@ const SendForApproval = (props) => {
     // props.closeDrawer()
     dispatch(
       sendForApprovalBySender(obj, (res) => {
+        setIsDisable(false)
         Toaster.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
@@ -769,6 +774,7 @@ const SendForApproval = (props) => {
                       className="btn btn-primary save-btn"
                       type="button"
                       // className="submit-button save-btn"
+                      disabled={isDisable}
                       onClick={onSubmit}
                     >
                       <div className={'save-icon'}></div>

@@ -9,7 +9,7 @@ import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
@@ -53,6 +53,8 @@ function ProcessCost(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+
+  const { rmFinishWeight } = props
 
   // const fieldValues = useWatch({
   //   control,
@@ -190,6 +192,10 @@ function ProcessCost(props) {
     let tempArr2 = [];
     if (Object.keys(rowData).length > 0) {
       let rowArray = rowData && rowData.map((el) => {
+        let processQuantity = 1
+        if (el.UnitType === MASS) {
+          processQuantity = rmFinishWeight ? rmFinishWeight:1
+        }
         return {
           ProcessId: el.ProcessId,
           ProcessDetailId: '',
@@ -202,8 +208,8 @@ function ProcessCost(props) {
           UOM: el.UnitOfMeasurement,
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           Tonnage: el.MachineTonnage,
-          Quantity:1,
-          ProcessCost: el.MachineRate * 1,
+          Quantity:processQuantity,
+          ProcessCost: el.MachineRate * processQuantity,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId
         }

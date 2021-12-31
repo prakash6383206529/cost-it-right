@@ -149,11 +149,11 @@ function CostingSimulation(props) {
                     switch (Number(selectedMasterForSimulation.value)) {
                         case Number(RMIMPORT):
                         case Number(RMDOMESTIC):
-                            item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                            item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                            item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                            const diff = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            item.RMVariance = diff
+                            // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                            // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
+                            // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                            const RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            item.RMCVariance = RMCVariance
                             return item
 
                         default:
@@ -222,16 +222,13 @@ function CostingSimulation(props) {
     }
 
     const viewCosting = (id, data, rowIndex) => {
-        console.log('data: ', data);
         let obj = {
             simulationApprovalProcessSummaryId: EMPTY_GUID,
             simulationId: simulationId,
             costingId: data.CostingId
         }
         setId(id)
-        const oldRmCSum = oldRMCalc(data)
-        const newRmCSum = newRMCalc(data)
-        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: oldRmCSum, NewRMPrice: newRmCSum, CostingHead: data.CostingHead })
+        setPricesDetail({ CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
@@ -241,7 +238,8 @@ function CostingSimulation(props) {
     }
 
     const viewAssembly = (cell, row, rowIndex) => {
-        const data = { row: row }
+        console.log('row: ', row);
+        const data = row
         setDataForAssemblyImpact(data)
         setShowViewAssemblyDrawer(true)
     }
@@ -451,23 +449,46 @@ function CostingSimulation(props) {
     }
 
     const oldRMCFormatter = (props) => {
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // const sumold = oldRMCalc(row)
+        // const sumnew = newRMCalc(row)
+        // const classGreen = (sumnew > sumold) ? 'red-value form-control' :
+        //     (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        // return <span className={classGreen}>{checkForDecimalAndNull(sumold, getConfigurationKey().NoOfDecimalForPrice)}</span>
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sum = oldRMCalc(row)
-        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+
     }
 
     const newRMCFormatter = (props) => {
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // const sumold = oldRMCalc(row)
+        // const sumnew = newRMCalc(row)
+        // const classGreen = (sumnew > sumold) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
+        // return <span className={classGreen}>{checkForDecimalAndNull(sumnew, getConfigurationKey().NoOfDecimalForPrice)}</span>
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sum = newRMCalc(row)
-        return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForPrice)
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+
     }
 
     const varianceRMCFormatter = (props) => {
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // const sumold = oldRMCalc(row)
+        // const sumnew = newRMCalc(row)
+        // const diff = (sumold - sumnew).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+        // return checkForDecimalAndNull(diff)
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const sumold = oldRMCalc(row)
-        const sumnew = newRMCalc(row)
-        const diff = (sumold - sumnew).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-        return checkForDecimalAndNull(diff)
+        // const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? checkForDecimalAndNull(row.RMVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
+
     }
 
     const varianceFormatter = (props) => {
@@ -755,7 +776,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
                                                     <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
-                                                  
+
                                                     {isRMDomesticOrRMImport && <>
                                                         <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
@@ -765,9 +786,14 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
-                                                        <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn> */}
+
+
+                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
                                                         {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
                                                         {/* <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn> */}
                                                         <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
@@ -914,7 +940,9 @@ function CostingSimulation(props) {
                     // approvalData={approvalData}
                     anchor={'bottom'}
                     dataForAssemblyImpact={dataForAssemblyImpact}
-                    vendorIdState={vendorIdState} />
+                    vendorIdState={vendorIdState}
+                    isPartImpactAssembly={true}
+                />
             }
         </>
 

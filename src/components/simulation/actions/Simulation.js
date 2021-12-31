@@ -26,6 +26,7 @@ import {
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
+    GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -393,6 +394,7 @@ export function simulationApprovalRequestByApprove(data, callback) {
             .catch((error) => {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
+                callback(error)
             })
     }
 }
@@ -414,11 +416,12 @@ export function simulationRejectRequestByApprove(data, callback) {
                         toastr.error(response.data.Message)
                     }
                 }
-            })
-            .catch((error) => {
-                dispatch({ type: API_FAILURE })
-                apiErrors(error)
-            })
+            
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
     }
 }
 
@@ -787,17 +790,28 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
     }
 }
 
-export function getSimulatedAssemblyWiseImpactDate(token, callback) {
-
+export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?costingHead=${token.costingHead}&impactPartNumber=${token.impactPartNumber}&plantCode=${token.plantCode}&vendorId=${token.vendorId}&delta=${token.delta}&quantity=${token.quantity}`, headers);
+        dispatch({
+            type: GET_ASSEMBLY_SIMULATION_LIST,
+            payload: [],
+        })
+        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?strRequest=${JSON.stringify(requestData)}`, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: GET_ASSEMBLY_SIMULATION_LIST,
-                    payload: response.data.DataList
-                })
-                callback(response)
+                if (isAssemblyInDraft === true) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST,
+                        payload: response.data.DataList
+                    })
+                } if (isAssemblyInDraft === false) {
+
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+                        payload: response.data.DataList
+                    })
+                    callback(response)
+                }
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

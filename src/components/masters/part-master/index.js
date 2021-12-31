@@ -10,7 +10,7 @@ import { MASTERS, PART } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
-
+import ScrollToTop from '../../common/ScrollToTop';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -41,13 +41,6 @@ class PartMaster extends Component {
         if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
             this.applyPermission(nextProps.topAndLeftMenuData)
         }
-    }
-
-    toggleFetchDrawer = () => {
-
-        this.setState({
-            openDrawer: false
-        });
     }
 
     /**
@@ -120,12 +113,7 @@ class PartMaster extends Component {
         this.setState({ getDetails: data, isProductForm: true, isAddBOMForm: false, })
     }
 
-    //Open the Fetch Drawer
 
-    openFetchDrawer = () => {
-        this.setState({ openDrawer: true })
-
-    }
 
     /**
     * @method render
@@ -158,7 +146,8 @@ class PartMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
+                    <ScrollToTop pointProp="go-to-top" />
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
