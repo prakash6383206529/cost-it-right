@@ -25,7 +25,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
-const ExcelFile =ReactExport.ExcelFile
+const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -83,11 +83,11 @@ class BOPImportListing extends Component {
         this.props.getBOPImportDataList(filterData, (res) => {
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                this.setState({ tableData: Data, loader: false })
             } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], loader: false })
             } else {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], loader: false })
             }
         })
     }
@@ -255,7 +255,7 @@ class BOPImportListing extends Component {
     }
 
 
-  
+
 
     /**
     * @method filterList
@@ -427,7 +427,7 @@ class BOPImportListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                       
+
 
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
