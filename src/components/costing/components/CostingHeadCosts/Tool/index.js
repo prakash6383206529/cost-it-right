@@ -704,7 +704,7 @@ function Tool(props) {
                       customClassName={'withBorder'}
                       handleChange={(e) => {}}
                       errors={errors && errors.ToolAmortizationCost}
-                      disabled={CostingViewMode ? true : false}
+                      disabled={true}
                     />
                   </Col>
 
