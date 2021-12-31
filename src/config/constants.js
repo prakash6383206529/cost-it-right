@@ -505,7 +505,7 @@ export const API = {
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
-  saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
+saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
 
   getToolTabData: `${BASE_URL}/costing/get-costing-detail-for-tools-cost`,
   saveToolTab: `${BASE_URL}/costing/save-costing-detail-for-tool-cost`,
