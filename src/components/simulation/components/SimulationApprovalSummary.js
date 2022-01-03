@@ -175,7 +175,7 @@ function SimulationApprovalSummary(props) {
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
                 } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${AmmendentStatus}`)
+                    setAmendentstatus(`Amendment Status: \u00A0 ${AmmendentStatus ? AmmendentStatus : "-"}`)
                 }
 
             }
@@ -868,7 +868,7 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <div className={`ag - grid - react`}>
+                                <div className={`ag-grid-react`}>
                                     { }
                                     <Row className="pb-2">
                                         <Col md="12">
