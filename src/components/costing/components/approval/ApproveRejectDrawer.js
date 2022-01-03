@@ -263,11 +263,16 @@ function ApproveRejectDrawer(props) {
               status = res && res?.response?.status
             }
 
-            if (status !== undefined && (status === 400 || status === 412 || status === 500)) {
-              setDisableSubmitbutton(true)
-            } else {
+            if(status !== undefined && status === 200){
               setDisableSubmitbutton(false)
+            }else{
+              setDisableSubmitbutton(true)
             }
+            // if (status !== undefined && (status === 400 || status === 412 || status === 500)) {
+            //   setDisableSubmitbutton(true)
+            // } else {
+            //   setDisableSubmitbutton(false)
+            // }
             setLoader(false)
           }))
         }

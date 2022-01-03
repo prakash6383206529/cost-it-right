@@ -17,7 +17,6 @@ export const config = {
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = 'http://10.148.80.4:10122/api/v1';
-
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
