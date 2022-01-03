@@ -13,7 +13,7 @@ import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getCombinedProcessList } from '../../simulation/actions/Simulation'
+import { getCombinedProcessList, setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation'
 import { Row, Col, } from 'reactstrap';
 
 const gridOptions = {};
@@ -35,6 +35,7 @@ export function ProcessListingSimulation(props) {
     const [gridApi, setGridApi] = useState(null)
     const [gridColumnApi, setGridColumnApi] = useState(null)
     const [shown, setShown] = useState(false)
+    const [selectedRows, setSelectedRows] = useState(false)
 
     const dispatch = useDispatch()
     const processCostingList = useSelector(state => state.simulation.combinedProcessList)
@@ -141,10 +142,22 @@ export function ProcessListingSimulation(props) {
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
 
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+        return thisIsFirstColumn;
+
+    }
+
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
 
     };
 
@@ -155,6 +168,14 @@ export function ProcessListingSimulation(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         statusFormatter: statusFormatter
     };
+
+    const onRowSelect = () => {
+        var selectedRowsList = gridApi.getSelectedRows();
+        let length = gridApi.getSelectedRows().length
+        dispatch(setSelectedRowCountForSimulationMessage(length))
+        props.apply(selectedRowsList)
+        setSelectedRows(selectedRowsList)
+    }
 
     return (
         <div className={`ag-grid-react ${props.DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -220,9 +241,11 @@ export function ProcessListingSimulation(props) {
                                     title: EMPTY_DATA,
                                 }}
                                 frameworkComponents={frameworkComponents}
+                                rowSelection={'multiple'}
+                                onSelectionChanged={onRowSelect}
                             >
                                 {/* <AgGridColumn field="TechnologyName" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                <AgGridColumn field="CostingNumber" editable='false' headerName="CostingNumber" minWidth={190}></AgGridColumn>
+                                <AgGridColumn field="CostingNumber" editable='false' headerName="Costing Number" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="PlantName" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={190}></AgGridColumn>
