@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, isOverheadProfitDataChange
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
@@ -19,7 +19,7 @@ function PartOverheadProfit(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate,checkIsOverheadProfitChange } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -68,28 +68,31 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = (values) => {
-    let reqData = {
-      "CostingId": item.CostingId,
-      "LoggedInUserId": loggedInUserId(),
-      "IsSurfaceTreatmentApplicable": true,
-      "IsApplicableForChildParts": false,
-      "CostingNumber": costData.CostingNumber,
-      "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
-      "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
-      "CostingPartDetails": {
-        ...item.CostingPartDetails,
-        NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
-      },
-      "EffectiveDate": CostingEffectiveDate,
-      "TotalCost": netPOPrice,
-    }
-    dispatch(saveComponentOverheadProfitTab(reqData, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
-        dispatch(setComponentOverheadItemData({}, () => { }))
-        InjectDiscountAPICall()
+    if(checkIsOverheadProfitChange){
+      let reqData = {
+        "CostingId": item.CostingId,
+        "LoggedInUserId": loggedInUserId(),
+        "IsSurfaceTreatmentApplicable": true,
+        "IsApplicableForChildParts": false,
+        "CostingNumber": costData.CostingNumber,
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
+        "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
+        "CostingPartDetails": {
+          ...item.CostingPartDetails,
+          NetOverheadAndProfitCost: checkForNull(item.CostingPartDetails.OverheadCost) + checkForNull(item.CostingPartDetails.RejectionCost) + checkForNull(item.CostingPartDetails.ProfitCost) + checkForNull(item.CostingPartDetails.ICCCost) + checkForNull(item.CostingPartDetails.PaymentTermCost),
+        },
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
       }
-    }))
+      dispatch(saveComponentOverheadProfitTab(reqData, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+          dispatch(isOverheadProfitDataChange(false))
+        }
+      }))
+    }
   }
 
   const InjectDiscountAPICall = () => {
