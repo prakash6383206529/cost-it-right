@@ -43,7 +43,7 @@ function OverheadProfit(props) {
     RepaymentPeriodCost: PaymentTermDetail !== null ? PaymentTermDetail.NetCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, clearErrors, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -1714,6 +1714,7 @@ function OverheadProfit(props) {
               getValues={getValues}
               errors={errors}
               useWatch={useWatch}
+              clearErrors={clearErrors}
               CostingRejectionDetail={CostingRejectionDetail}
               data={data}
               setRejectionDetail={props.setRejectionDetail}

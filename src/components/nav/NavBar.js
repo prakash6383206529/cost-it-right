@@ -30,7 +30,7 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { VERSION } from '../../config/constants'; 
+import { VERSION } from '../../config/constants';
 
 class SideBar extends Component {
   constructor(props) {
@@ -686,7 +686,7 @@ class SideBar extends Component {
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
-                   {VERSION}
+                    {VERSION}
                   </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
