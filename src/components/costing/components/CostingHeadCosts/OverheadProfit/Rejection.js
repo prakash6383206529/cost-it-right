@@ -300,7 +300,7 @@ function Rejection(props) {
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
-                            errors={errors.RejectionPercentage}
+                            // errors={errors.RejectionPercentage}   //MANUAL CSS TO BE APPLIED FOR ERROR VALIDATION MESSAGE
                             disabled={CostingViewMode ? true : false}
                         />}
                 </Col>
