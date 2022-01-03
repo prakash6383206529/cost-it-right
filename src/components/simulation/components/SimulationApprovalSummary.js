@@ -183,7 +183,8 @@ function SimulationApprovalSummary(props) {
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
                 } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${AmmendentStatus !== null || AmmendentStatus !== "" ? AmmendentStatus : "-"}`)
+                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
+                        } `)
                 }
 
             }
@@ -445,7 +446,7 @@ function SimulationApprovalSummary(props) {
     const rmNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell ? `${cell} - ${row.RMGrade}` : '-'
+        return cell ? `${cell} - ${row.RMGrade} ` : '-'
     }
 
     const varianceFormatter = (props) => {
@@ -881,7 +882,7 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <div className={`ag-grid-react`}>
+                                <div className={`ag - grid - react`}>
                                     { }
                                     <Row className="pb-2">
                                         <Col md="12">
