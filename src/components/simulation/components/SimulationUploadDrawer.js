@@ -61,7 +61,6 @@ class SimulationUploadDrawer extends Component {
     }
 
     toggleDrawer = (event, isSaveButtonClicked) => {
-        console.log('event: ', event);
 
         const { fileData, correctRowCount, NoOfRowsWithoutChange } = this.state
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
