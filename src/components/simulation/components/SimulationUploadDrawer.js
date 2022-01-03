@@ -140,10 +140,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[11] !== '' && val[11] !== undefined) {
+                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null) || (val[15] !== '' && val[15] !== undefined && val[15] !== null)) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' && val[15] === '') || val[11] === undefined || val[15] === undefined) {
+                                        if ((val[11] === '' && val[15] === '') || (val[11] === undefined && val[15] === undefined) || (val[11] === null && val[15] === null)) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -169,10 +169,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[11] !== '' && val[11] !== undefined) {
+                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null) || (val[13] !== '' && val[13] !== undefined && val[13] !== null)) {
                                             basicRateCount = 1
                                         }
-                                        if (val[11] === '' && val[13] === '') {
+                                        if ((val[11] === '' && val[13] === '') || (val[11] === undefined && val[13] === undefined) || (val[11] === null && val[13] === null)) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -201,7 +201,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -230,7 +230,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -258,7 +258,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[9] !== '' && val[9] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[9] === '') {
+                                        if (val[9] === '' || val[9] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -286,7 +286,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -314,7 +314,7 @@ class SimulationUploadDrawer extends Component {
                                         if (val[8] !== '' && val[8] !== undefined) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '') {
+                                        if (val[8] === '' || val[8] === undefined) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -343,7 +343,7 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one basic rate.')
+                                Toaster.warning('Please fill at least one basic rate or one scrap rate.')
                                 return false
                             }
                             break;
