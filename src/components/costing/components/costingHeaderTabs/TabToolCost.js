@@ -263,7 +263,9 @@ function TabToolCost(props) {
         "LoggedInUserId": loggedInUserId()
       
     };
-    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+    if(!CostingViewMode){
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+    }
     }
 
     dispatch(saveToolTab(data, res => {
