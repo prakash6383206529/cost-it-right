@@ -6,7 +6,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded } from '../../../actions/Costing';
+import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
 import { checkForDecimalAndNull } from '../../../../../helper';
 
 function FreightCost(props) {
@@ -24,6 +24,9 @@ function FreightCost(props) {
 
   useEffect(() => {
     props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+      dispatch(isPackageAndFreightDataChange(true))
+    }
   }, [gridData]);
 
   /**

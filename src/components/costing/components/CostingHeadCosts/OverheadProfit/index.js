@@ -5,7 +5,7 @@ import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType, gridDataAdded, } from '../../../actions/Costing';
+import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -928,6 +928,7 @@ function OverheadProfit(props) {
         }
         // END HERE ADD CC IN PROFIT COMBINED
       }
+      dispatch(isOverheadProfitDataChange(true))
     }
   }
 
