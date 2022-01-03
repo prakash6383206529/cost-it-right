@@ -6648,3 +6648,14 @@ left: 17rem;
 .ag-header-group-cell.ag-focus-managed.ag-header-group-cell-no-group:first-child {
   border-left: 1px solid #e5eaf9;
 }
+
+//START Radio hook custom css//
+.label-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  input {
+    margin-bottom: 2px;
+  }
+}
+//END Radio hook custom css//
