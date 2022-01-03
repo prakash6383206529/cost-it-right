@@ -93,7 +93,7 @@ function SimulationApprovalSummary(props) {
 
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
-    const [dataForDownload,setDataForDownload] = useState([])
+    const [dataForDownload, setDataForDownload] = useState([])
     const [count, setCount] = useState(0);
 
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
@@ -132,9 +132,9 @@ function SimulationApprovalSummary(props) {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, } = res.data.Data
-            let uniqueArr = _.uniqBy(SimulatedCostingList, function(o){
-                    return o.CostingId;
-                });
+            let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                return o.CostingId;
+            });
 
 
             setCostingList(uniqueArr)
@@ -183,7 +183,7 @@ function SimulationApprovalSummary(props) {
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
                 } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${AmmendentStatus ? AmmendentStatus : "-"}`)
+                    setAmendentstatus(`Amendment Status: \u00A0 ${AmmendentStatus !== null || AmmendentStatus !== "" ? AmmendentStatus : "-"}`)
                 }
 
             }
@@ -507,10 +507,10 @@ function SimulationApprovalSummary(props) {
 
         return (
             <>
-                 <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
+                <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
                 <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
 
-                
+
             </>
         )
     }
