@@ -139,9 +139,12 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
+                                console.log('val[10]: ', val[10]);
+                                console.log('val[11]: ', val[11]);
+                                console.log('val[11]:ddddddddd');
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null) || (val[15] !== '' && val[15] !== undefined && val[15] !== null)) {
+                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[15] !== '' && val[15] !== undefined && val[15] !== null && val[15] !== null && val[14] !== val[15])) {
                                             basicRateCount = 1
                                         }
                                         if ((val[11] === '' && val[15] === '') || (val[11] === undefined && val[15] === undefined) || (val[11] === null && val[15] === null)) {
@@ -170,7 +173,7 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null) || (val[13] !== '' && val[13] !== undefined && val[13] !== null)) {
+                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[13] !== '' && val[13] !== undefined && val[13] !== null && val[12] !== val[13])) {
                                             basicRateCount = 1
                                         }
                                         if ((val[11] === '' && val[13] === '') || (val[11] === undefined && val[13] === undefined) || (val[11] === null && val[13] === null)) {
