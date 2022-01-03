@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation,MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation,OverheadProfitSimulation } from '../../../config/masterData';
+import { CombinedProcessSimulation, getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
@@ -239,7 +239,7 @@ function Simulation(props) {
                 return returnExcelColumn(RMImportSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
 
             case COMBINED_PROCESS:
-                return returnExcelColumn(CombinedProcessSimulation, processCostingList)
+                return returnExcelColumn(CombinedProcessSimulation, tableData && tableData.length > 0 ? tableData : [])
             // return returnExcelColumn(CombinedProcessSimulation, getFilteredRMData(rmDomesticListing) && getFilteredRMData(rmDomesticListing).length > 0 ? getFilteredRMData(rmImportListing) : [])
             case SURFACETREATMENT:
                 return returnExcelColumn(SurfaceTreatmentSimulation, tableData && tableData.length > 0 ? tableData : [])
@@ -323,7 +323,6 @@ function Simulation(props) {
         if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
-        // console.log(selectedRowCountForSimulationMessage, 'selectedRowCountForSimulationMessageselectedRowCountForSimulationMessage')
         switch (master.value) {
             case RMDOMESTIC:
                 if (Data.length === 0) {
@@ -590,37 +589,13 @@ function Simulation(props) {
                 // }
                 break;
 
-            // case COMBINED_PROCESS:
-
-            //     rmDomesticListing && rmDomesticListing.forEach((element, index) => {
-
-
-            //         if (index !== 0) {
-            //             if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
-            //                 //     toastr.warning('Please select either ZBC or VBC costing head at a time.')
-            //                 setEditWarning(true);
-            //                 flag = false
-            //                 return false
-            //             }
-            //             // if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
-            //             //     // toastr.warning('Please select one vendor at a time.')
-            //             //     setEditWarning(true);
-            //             //     vendorFlag = false
-            //             //     return false
-            //             // }
-            //             // if (element.PlantId !== rmDomesticListing[index - 1].PlantId) {
-            //             //     // toastr.warning('Please select one Plant at a time.')
-            //             //     setEditWarning(true);
-            //             //     plantFlag = false
-            //             //     return false
-            //             // }
-            //         }
-            //     });
-            //     if (flag === true && vendorFlag === true && plantFlag === true) {
-            //         // setShowEditTable(true)
-            //         setEditWarning(false)
-            //     }
-            //     break;
+            case COMBINED_PROCESS:
+                if (Data && Data.length === 0) {
+                    setEditWarning(true)
+                } else {
+                    setEditWarning(false)
+                }
+                break;
 
             default:
                 break;
@@ -651,9 +626,9 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.value} />
             case COMBINED_PROCESS:
-                return <CPSimulation cancelEditPage={cancelEditPage} list={isbulkUpload ? tableData : processCostingList} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
-            case OPERATIONS:
-                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            // case OPERATIONS:
+            //     return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             case SURFACETREATMENT:
                 return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             case OPERATIONS:
@@ -713,7 +688,7 @@ function Simulation(props) {
                             <h1>{`Simulation`}</h1>
                         </Col>
                     </Row>
-                   <ScrollToTop pointProp={"go-to-top"} />
+                    <ScrollToTop pointProp={"go-to-top"} />
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
 
