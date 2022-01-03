@@ -10,6 +10,7 @@ import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -25,6 +26,7 @@ function SurfaceTreatment(props) {
   const { ComponentItemDiscountData, CostingEffectiveDate,RMCCTabData,SurfaceTabData,OverheadProfitTabData,PackageAndFreightTabData,DiscountCostData } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   /**
   * @method toggleDrawer
@@ -139,14 +141,17 @@ function SurfaceTreatment(props) {
         
       }
       
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
-      dispatch(saveComponentCostingSurfaceTab(requestData, res => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-          InjectDiscountAPICall()
-        }
-        props.closeDrawer('')
-      }))
+      if(!CostingViewMode){
+
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+        dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+            InjectDiscountAPICall()
+          }
+          props.closeDrawer('')
+        }))
+      }
 
     } else {
 

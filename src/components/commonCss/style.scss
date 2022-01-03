@@ -3262,6 +3262,7 @@ opacity: 0.5;
 .refresh-icon.tooltip-n{
    .tooltiptext{
     left: -130px;
+    min-width: 300px;
    }
 }
 // ========tooltip css=============
@@ -6335,7 +6336,7 @@ left: 17rem;
     .share-of-business {min-width: 110px;}
     .costing-status {min-width: 230px;}
     .costing-price {min-width: 115px;}
-    .costing-action {min-width: 240px;}
+    .costing-action {min-width: 250px;}
   }
   @media screen and (max-width:$miniDesktop) {
    td, th {
@@ -6537,10 +6538,21 @@ left: 17rem;
 .alert-danger, .attachment.images {
   font-size: 15px;   //maximum file upload font
 }
+//START Navbar version css
 .version {
   color: #256bd1;
   margin-right: 15px;
 }
+//END Navbar version css
+//START login page version css
+.login-version {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: #4a4a4af7;
+  font-size: 14px;
+}
+//END login page version css
 .loader_container.simulation-history-loader {
   background-color: rgba(255, 255, 255, 0.97);
 }
@@ -6560,10 +6572,21 @@ left: 17rem;
 .overhead-profit-save-btn {
   margin: 0 -15px;
   padding: 0 !important;
+  @media screen and (min-width:1600px) {
+    margin: 0 -30px;
+  }
   .bluefooter-butn {
     padding: 2px 15px !important;
   }
 }
 .packaging-freight-btn-save {
   padding: 2px 15px !important;
+}
+.ag-pinned-right-header {
+  .ag-header-row-column-group {
+    border-right:  solid #e5eaf9;
+  }
+}
+.ag-header-group-cell.ag-focus-managed.ag-header-group-cell-no-group:first-child {
+  border-left: 1px solid #e5eaf9;
 }
