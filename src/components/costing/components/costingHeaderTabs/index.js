@@ -14,7 +14,7 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
@@ -28,7 +28,8 @@ function CostingHeaderTabs(props) {
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData,checkIsDataChange } = useSelector(state => state.costing)
+    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData,checkIsDataChange,checkIsOverheadProfitChange,checkIsFreightPackageChange,checkIsToolTabChange } = useSelector(state => state.costing)
+    console.log('checkIsToolTabChange: ', checkIsToolTabChange);
 
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
@@ -104,7 +105,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
+    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
       console.log("FROM OVERHEAD");
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
@@ -148,7 +149,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true) {
+    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true &&checkIsFreightPackageChange) {
       console.log("FROM Packaging");
       const data = {
         "CostingId": costData.CostingId,
@@ -170,7 +171,8 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true &&ComponentItemToolData.CostingPartDetails.TotalToolCost >0 && activeTab !== '5') {
+
+    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true &&ComponentItemToolData.CostingPartDetails.TotalToolCost >0 && activeTab !== '5' && checkIsToolTabChange) {
       console.log("FROM TOOL");
       const data = {
         "IsToolCostProcessWise": false,
@@ -186,6 +188,7 @@ function CostingHeaderTabs(props) {
       dispatch(saveToolTab(data, res => {
         callAssemblyAPi(5)
         dispatch(setComponentToolItemData({}, () => { }))
+        dispatch(isToolDataChange(false))
         InjectDiscountAPICall()
       }))
     }

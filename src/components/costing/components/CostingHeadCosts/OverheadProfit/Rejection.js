@@ -6,6 +6,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../..
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
+import { isOverheadProfitDataChange } from '../../../actions/Costing';
 
 
 
@@ -216,6 +217,8 @@ function Rejection(props) {
                     break;
             }
         }
+
+        dispatch(isOverheadProfitDataChange(true))
     }
 
 
