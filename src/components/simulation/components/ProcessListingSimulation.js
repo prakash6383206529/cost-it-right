@@ -181,37 +181,39 @@ export function ProcessListingSimulation(props) {
         <div className={`ag-grid-react ${props.DownloadAccessibility ? "show-table-btn" : ""}`}>
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
                 <Row className="pt-4">
-                    <Col md="6" className="search-user-block mb-3">
-                        <div className="d-flex justify-content-end bd-highlight w100">
-                            <div>
-                                {shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setShown(!shown)}>
-                                        <div className="cancel-icon-white"></div></button>
-                                ) : (
-                                    ''
-                                )}
-                                {props.AddAccessibility && <button
-                                    type="button"
-                                    className={'user-btn mr5'}
-                                    title="Add"
-                                    onClick={processToggler}>
-                                    <div className={'plus mr-0'}></div></button>}
-                                {
-                                    props.DownloadAccessibility &&
-                                    <>
-                                        <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
-                                            {onBtExport()}
-                                        </ExcelFile>
-                                    </>
-                                }
+                    {(!props.isSimulation) &&
+                        <Col md="6" className="search-user-block mb-3">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                    {shown ? (
+                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setShown(!shown)}>
+                                            <div className="cancel-icon-white"></div></button>
+                                    ) : (
+                                        ''
+                                    )}
+                                    {props.AddAccessibility && <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        title="Add"
+                                        onClick={processToggler}>
+                                        <div className={'plus mr-0'}></div></button>}
+                                    {
+                                        props.DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                                                {onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                    }
 
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
 
+                                </div>
                             </div>
-                        </div>
-                    </Col>
+                        </Col>
+                    }
                 </Row>
 
             </form>
