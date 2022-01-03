@@ -26,13 +26,15 @@ export function Fgwiseimactdata(props) {
         if (SimulationId) {
             setLoader(true)
             dispatch(getFgWiseImpactData(SimulationId, (res) => {
-
                 if (res && res.data && res.data.Result) {
                     setshowTableData(true)
                 }
                 else if (res?.response?.status !== "200") {
                     setshowTableData(false)
+                }else{
+                    setLoader(false)
                 }
+
                 setLoader(false)
             }))
         }

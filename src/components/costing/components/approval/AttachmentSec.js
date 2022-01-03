@@ -101,7 +101,8 @@ function AttachmentSec(props) {
                 files.push(Data)
                 setFiles(files)
                 setIsOpen(!IsOpen)
-                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let Category = Data.AttachementCategory.replaceAll(' ','_')
+                let path = `${Category}\\\\${Data.FileName}`
                 let uploadData = new FormData()
                 uploadData.append('path', path)
                 dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
@@ -142,7 +143,8 @@ function AttachmentSec(props) {
                 supplierFiles.push(Data)
                 setSupplierFiles(supplierFiles)
                 setIsOpen(!IsOpen)
-                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let Category = Data.AttachementCategory.replaceAll(' ','_')
+                let path = `${Category}\\\\${Data.FileName}`
                 let uploadData = new FormData()
                 uploadData.append('path', path)
                 dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
@@ -183,7 +185,8 @@ function AttachmentSec(props) {
                 invoiceFiles.push(Data)
                 setInvoiceFiles(invoiceFiles)
                 setIsOpen(!IsOpen)
-                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let Category = Data.AttachementCategory.replaceAll(' ','_')
+                let path = `${Category}\\\\${Data.FileName}`
                 let uploadData = new FormData()
                 uploadData.append('path', path)
                 dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
@@ -222,7 +225,8 @@ function AttachmentSec(props) {
                 otherFiles.push(Data)
                 setOtherFiles(otherFiles)
                 setIsOpen(!IsOpen)
-                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let Category = Data.AttachementCategory.replaceAll(' ','_')
+                let path = `${Category}\\\\${Data.FileName}`
                 let uploadData = new FormData()
                 uploadData.append('path', path)
                 dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
@@ -261,7 +265,8 @@ function AttachmentSec(props) {
                 attachmentFiles.push(Data)
                 setAttachmentFiles(attachmentFiles)
                 setIsOpen(!IsOpen)
-                let path = `${Data.AttachementCategory}\\\\${Data.FileName}`
+                let Category = Data.AttachementCategory.replaceAll(' ','_')
+                let path = `${Category}\\\\${Data.FileName}`
                 let uploadData = new FormData()
                 uploadData.append('path', path)
                 dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))

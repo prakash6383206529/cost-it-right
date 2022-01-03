@@ -716,13 +716,21 @@ export function getFgWiseImpactData(data, callback) {
         
         const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            console.log('response: ', response);
+            if (response.data.Result ) {
                 dispatch({
                     type: GET_FG_WISE_IMPACT_DATA,
                     payload: response.data.DataList,
                 })
                 callback(response)
+            }else if(response.status === 204){
+                dispatch({
+                    type: GET_FG_WISE_IMPACT_DATA,
+                    payload:[],
+                })
+                callback(response)
             }
+
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
