@@ -391,14 +391,14 @@ function TabToolCost(props) {
                                       {item.PartName}
                                     </span>
                                   </td>
-                                  <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                  <td className="pl10">{checkForDecimalAndNull(item?.CostingPartDetails?.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                                 </tr>
                                 <tr>
                                   <td colSpan={2} className="cr-innerwrap-td pb-3">
                                     <div>
                                       <Tool
                                         index={index}
-                                        IsApplicableProcessWise={item.CostingPartDetails.IsToolCostProcessWise}
+                                        IsApplicableProcessWise={item?.CostingPartDetails?.IsToolCostProcessWise}
                                         data={item}
                                         // headCostRMCCBOPData={props.headCostRMCCBOPData}
                                         setOverAllApplicabilityCost={setOverAllApplicabilityCost}

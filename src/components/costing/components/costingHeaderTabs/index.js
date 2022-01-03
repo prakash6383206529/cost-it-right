@@ -33,7 +33,7 @@ function CostingHeaderTabs(props) {
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
-  const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
+  const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData?.EffectiveDate).isValid() ? DayTime(costingData?.EffectiveDate) : '');
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);

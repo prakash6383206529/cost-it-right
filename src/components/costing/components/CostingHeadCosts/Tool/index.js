@@ -39,8 +39,8 @@ function Tool(props) {
     defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},
   });
 
-  const [gridData, setGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])
-  const [OldGridData, setOldGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])
+  const [gridData, setGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
+  const [OldGridData, setOldGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -60,7 +60,7 @@ function Tool(props) {
 
   useEffect(() => {
     dispatch(setComponentToolItemData(data, () => { }))
-  }, [data && data.CostingPartDetails.CostingToolCostResponse])
+  }, [data && data?.CostingPartDetails?.CostingToolCostResponse])
 
   useEffect(() => {
     dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
