@@ -59,17 +59,19 @@ class SimulationUploadDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, isSaveButtonClicked) => {
+        console.log('event: ', event);
+
         const { fileData, correctRowCount, NoOfRowsWithoutChange } = this.state
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', fileData, correctRowCount, NoOfRowsWithoutChange)
+        this.props.closeDrawer('', fileData, correctRowCount, NoOfRowsWithoutChange, isSaveButtonClicked)
     };
 
     cancel = () => {
 
-        this.toggleDrawer('')
+        this.toggleDrawer('', true)
     }
 
     Preview = ({ meta }) => {
@@ -518,7 +520,7 @@ class SimulationUploadDrawer extends Component {
                                             </h3>
                                         </div>
                                         <div
-                                            onClick={(e) => this.toggleDrawer(e)}
+                                            onClick={(e) => this.toggleDrawer(e, false)}
                                             className={"close-button right"}
                                         ></div>
                                     </Col>
