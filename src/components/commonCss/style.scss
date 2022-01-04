@@ -6640,6 +6640,18 @@ left: 17rem;
 .packaging-freight-btn-save {
   padding: 2px 15px !important;
 }
+
+// PDF Img style
+.pdf-header-wrapper{
+  display: flex;
+  grid-gap: 10px;
+  justify-content: center;
+  img {
+    height: 50px;
+    display: block;
+    margin:8px;
+  }
+}
 .ag-pinned-right-header {
   .ag-header-row-column-group {
     border-right:  solid #e5eaf9;
