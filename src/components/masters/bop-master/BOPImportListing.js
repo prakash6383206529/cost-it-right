@@ -23,7 +23,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -328,9 +327,8 @@ class BOPImportListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
-                let len = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(len)
-                this.props.apply(selectedRows)
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
             }
             this.setState({ selectedRowData: selectedRows })
         }
@@ -502,7 +500,6 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,
