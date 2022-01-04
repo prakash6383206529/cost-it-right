@@ -95,7 +95,7 @@ function SimulationApprovalSummary(props) {
 
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
-    const [dataForDownload,setDataForDownload] = useState([])
+    const [dataForDownload, setDataForDownload] = useState([])
     const [count, setCount] = useState(0);
 
     const dispatch = useDispatch()
@@ -753,6 +753,10 @@ function SimulationApprovalSummary(props) {
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Department Code:`}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.DepartmentCode}</span>
                                             </th>
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
