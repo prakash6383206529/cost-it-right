@@ -689,8 +689,8 @@ const generatorPDF = () => {
             }
             {
               !simulationMode &&
-              <Col md="8" className="text-right d-flex">
-              <button Type="button" className=" mr-1 pdf" title='pdf' onClick={generatorPDF}></button>
+              <Col md="8" className="text-right">
+              <button Type="button" className="mr-1 mb-1 user-btn pdf-btn" title='pdf' onClick={generatorPDF}> </button>
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                     <div className="send-for-approval"></div>
