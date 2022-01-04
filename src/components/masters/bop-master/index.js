@@ -145,7 +145,7 @@ class BOPMaster extends Component {
           {/* {this.props.loading && <Loader/>} */}
           <Row>
             <Col sm="4">
-              <h1>{`BOP Master`}</h1>
+              <h1>{`Insert Master`}</h1>
             </Col>
             <ScrollToTop pointProp ={"go-top-top"} />
           </Row>
@@ -162,7 +162,7 @@ class BOPMaster extends Component {
                       this.toggle("1");
                     }}
                   >
-                    Manage BOP (Domestic)
+                    Manage Insert (Domestic)
                   </NavLink>
                 </NavItem>
 
@@ -175,7 +175,7 @@ class BOPMaster extends Component {
                       this.toggle("2");
                     }}
                   >
-                    Manage BOP (Import)
+                    Manage Insert (Import)
                   </NavLink>
                 </NavItem>
 

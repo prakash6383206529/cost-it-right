@@ -755,7 +755,7 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Department Code:`}</span>
+                                                <span className="d-block grey-text">{`Company:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.DepartmentCode}</span>
                                             </th>
                                             {
