@@ -339,10 +339,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[5] !== '' && val[5] !== undefined) {
+                                        if (val[5] !== '' && val[5] !== undefined && val[4] !== val[5]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[5] === '' || val[5] === undefined) {
+                                        if (val[5] === '' || val[5] === undefined || val[4] === val[5]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -390,12 +390,6 @@ class SimulationUploadDrawer extends Component {
                                 return false
                             }
                             break;
-                        case Number(COMBINED_PROCESS):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one Conversion Cost.')
-                                return false
-                            }
-                            break;
                         case Number(SURFACETREATMENT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please fill at least one rate.')
@@ -423,6 +417,12 @@ class SimulationUploadDrawer extends Component {
                         case Number(BOPIMPORT):
                             if (basicRateCount === 0) {
                                 Toaster.warning('Please fill at least one basic rate.')
+                                return false
+                            }
+                            break;
+                        case Number(COMBINED_PROCESS):
+                            if (basicRateCount === 0) {
+                                Toaster.warning('Please change at least one Conversion Cost.')
                                 return false
                             }
                             break;
