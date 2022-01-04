@@ -882,7 +882,7 @@ function SimulationApprovalSummary(props) {
 
                         {costingSummary &&
                             <>
-                                <div className={`ag - grid - react`}>
+                                <div className={`ag-grid-react`}>
                                     { }
                                     <Row className="pb-2">
                                         <Col md="12">
