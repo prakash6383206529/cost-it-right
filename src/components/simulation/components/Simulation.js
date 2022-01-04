@@ -254,9 +254,9 @@ function Simulation(props) {
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
    */
-    const closeDrawer = (e = '', tableData = {}, correctRow = 0, NoOfRowsWithoutChange = 0) => {
+    const closeDrawer = (e = '', tableData = {}, correctRow = 0, NoOfRowsWithoutChange = 0, isSaveButtonClicked) => {
         setShowDrawer(false)
-        if (Object.keys(tableData).length > 0) {
+        if (Object.keys(tableData).length > 0 && isSaveButtonClicked === true) {
             setTableData(tableData)
             setRowCount({ correctRow: correctRow, NoOfRowsWithoutChange: NoOfRowsWithoutChange })
             setShowEditTable(true)
@@ -275,7 +275,6 @@ function Simulation(props) {
         if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
-        // console.log(selectedRowCountForSimulationMessage, 'selectedRowCountForSimulationMessageselectedRowCountForSimulationMessage')
         switch (master.value) {
             case RMDOMESTIC:
                 if (Data.length === 0) {
@@ -660,7 +659,7 @@ function Simulation(props) {
                             <h1>{`Simulation`}</h1>
                         </Col>
                     </Row>
-                   <ScrollToTop pointProp={"go-to-top"} />
+                    <ScrollToTop pointProp={"go-to-top"} />
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
 
