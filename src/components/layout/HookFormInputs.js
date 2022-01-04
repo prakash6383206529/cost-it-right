@@ -366,10 +366,10 @@ export const RadioHookForm = (field) => {
       <div
         className={className}
       >
-        <label>
+        <label className="label-container">
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
-        </label>
+       
         <Controller
           name={name}
           control={control}
@@ -396,6 +396,7 @@ export const RadioHookForm = (field) => {
           }
           }
         />
+         </label>
         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
       </div>
     </>
