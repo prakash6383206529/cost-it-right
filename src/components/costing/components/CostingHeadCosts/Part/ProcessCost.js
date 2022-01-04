@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, useWatch } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
-import Switch from "react-switch";
 import OperationCost from './OperationCost';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import ToolCost from './ToolCost';
@@ -41,7 +40,7 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
-  const[oldGridData,setOldGridData] =useState(data && data.CostingProcessCostResponse)
+  const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
@@ -73,8 +72,8 @@ function ProcessCost(props) {
     }
     if (!CostingViewMode) {
       selectedIds(gridData)
- 
-      if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+
+      if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
       props.setProcessCost(tabData, Params, item)
@@ -194,7 +193,7 @@ function ProcessCost(props) {
       let rowArray = rowData && rowData.map((el) => {
         let processQuantity = 1
         if (el.UnitType === MASS) {
-          processQuantity = rmFinishWeight ? rmFinishWeight:1
+          processQuantity = rmFinishWeight ? rmFinishWeight : 1
         }
         return {
           ProcessId: el.ProcessId,
@@ -208,7 +207,7 @@ function ProcessCost(props) {
           UOM: el.UnitOfMeasurement,
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           Tonnage: el.MachineTonnage,
-          Quantity:processQuantity,
+          Quantity: processQuantity,
           ProcessCost: el.MachineRate * processQuantity,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId
@@ -220,8 +219,8 @@ function ProcessCost(props) {
 
 
       tempArr && tempArr.map((el, index) => {
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, el.ProcessCost)
-        setValue(`${ProcessGridFields}.${index}.Quantity`,el.Quantity)
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${index}.Quantity`, el.Quantity)
       })
 
       let ProcessCostTotal = 0
@@ -287,8 +286,8 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setTabData(tempArr2)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
-        setValue(`${ProcessGridFields}.${i}.ProcessCost`, el.ProcessCost)
-        setValue(`${ProcessGridFields}.${i}.Quantity`,el.Quantity)
+        setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${i}.Quantity`, el.Quantity)
       })
     }, 200)
   }
@@ -393,7 +392,7 @@ function ProcessCost(props) {
     setTimeout(() => {
       setTabData(gridTempArr)
       setGridData(gridTempArr)
-      setValue(`${ProcessGridFields}.${index}.ProcessCost`, netCost)
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
     }, 100)
   }
 
