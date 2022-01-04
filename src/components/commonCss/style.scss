@@ -5649,6 +5649,7 @@ body{
       td,.ag-cell {
         .Error,
         .Pushed,
+        .POUpdate,
         .Draft,
         [class^="Pending"],
         [class^="Awaiting"],
@@ -6635,3 +6636,7 @@ left: 17rem;
   }
 }
 //END Radio hook custom css//
+.wrap-container {
+  max-height: calc(100vh - 1024px);
+  overflow: hidden;
+}

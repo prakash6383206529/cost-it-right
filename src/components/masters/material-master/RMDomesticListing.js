@@ -24,7 +24,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } from '../../../helper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
+
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 
@@ -415,9 +415,8 @@ function RMDomesticListing(props) {
         // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         if (isSimulation) {
             let length = gridApi.getSelectedRows().length
-            dispatch(setSelectedRowCountForSimulationMessage(length))
 
-            apply(selectedRows)
+            apply(selectedRows, length)
 
         }
     }

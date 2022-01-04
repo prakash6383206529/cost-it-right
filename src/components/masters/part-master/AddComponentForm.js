@@ -42,6 +42,10 @@ class AddComponentForm extends Component {
     this.setState({ selectedParts: tempArr })
   }
 
+  componentWillUnmount() {
+    this.props.getDrawerComponentPartData('', res => { })
+  }
+
   checkRadio = (radioType) => {
     this.setState({ childType: radioType })
   }

@@ -380,6 +380,7 @@ const [totalCost,setTotalCost] = useState(0)
   const onPressChangeCurrency = () => {
     setCurrency([])
     setIsCurrencyChange(!IsCurrencyChange)
+    setCurrencyExchangeRate('')
   }
 
   /**
