@@ -672,7 +672,7 @@ const generatorPDF = () => {
       {
         stepOne &&
         <Fragment>
-        {(loader && <LoaderCustom />)}
+        {(loader &&  <LoaderCustom customClass="pdf-loader" />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -722,7 +722,7 @@ const generatorPDF = () => {
               </Col>
               </>}
           
-            <Col md="12"  className={`${loader ===true ? 'wrap-container': ''}`}>
+            <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
                   <thead>
