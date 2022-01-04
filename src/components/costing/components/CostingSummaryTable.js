@@ -722,7 +722,7 @@ const generatorPDF = () => {
               </Col>
               </>}
           
-            <Col md="12">
+            <Col md="12"  className={`${loader ===true ? 'wrap-container': ''}`}>
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
                   <thead>
