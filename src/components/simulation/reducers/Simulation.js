@@ -13,8 +13,7 @@ import {
     GET_COMBINED_PROCESS_LIST,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_FG_WISE_IMPACT_DATA,
-    SET_SELECTED_VENDOR_SIMULATION,
-    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
+    SET_SELECTED_VENDOR_SIMULATION,    
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
@@ -136,12 +135,6 @@ export default function SimulationReducer(state = initialState, action) {
                 selectedVendorForSimulation: action.payload
             }
 
-        case SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE:
-            return {
-                ...state,
-                loading: false,
-                selectedRowCountForSimulationMessage: action.payload
-            }
 
         case GET_ASSEMBLY_SIMULATION_LIST:
             return {

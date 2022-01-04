@@ -13,7 +13,7 @@ import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getCombinedProcessList, setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation'
+import { getCombinedProcessList } from '../../simulation/actions/Simulation'
 import { Row, Col, } from 'reactstrap';
 
 const gridOptions = {};
@@ -172,7 +172,7 @@ export function ProcessListingSimulation(props) {
     const onRowSelect = () => {
         var selectedRowsList = gridApi.getSelectedRows();
         let length = gridApi.getSelectedRows().length
-        dispatch(setSelectedRowCountForSimulationMessage(length))
+       
         props.apply(selectedRowsList)
         setSelectedRows(selectedRowsList)
     }

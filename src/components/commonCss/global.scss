@@ -421,6 +421,20 @@ a:hover {
   background: transparent url('../../assests/images/Path 15286.svg') 0% 0%
     no-repeat padding-box;
 }
+.pdf-btn {
+  width: 32px;
+  height: 33px;
+  background: transparent url('../../assests/images/pdf.svg') 0% 0%
+    no-repeat padding-box;
+    &:hover {
+      background: transparent url('../../assests/images/pdf.svg') 0% 0%
+      no-repeat padding-box;;
+    }
+    &:focus {
+      background: transparent url('../../assests/images/pdf.svg') 0% 0%
+      no-repeat padding-box;;
+    }
+}
 .download{
   width: 14px;
   height: 14px;
@@ -445,6 +459,7 @@ a:hover {
 }
 
 .plus,
+.pdf-btn,
 .cross-icon,
 .check-icon,
 .upload {

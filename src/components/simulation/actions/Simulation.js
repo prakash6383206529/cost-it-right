@@ -22,7 +22,6 @@ import {
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
     SET_ATTACHMENT_FILE_DATA,
-    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
     GET_ASSEMBLY_SIMULATION_LIST,
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
@@ -841,14 +840,6 @@ export function getImpactedMasterData(simulationId, callback) {
     };
 }
 
-export function setSelectedRowCountForSimulationMessage(selectedMaster) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
-            payload: selectedMaster,
-        });
-    }
-}
 
 export function getVerifySurfaceTreatmentSimulationList(token, callback) {
     return (dispatch) => {

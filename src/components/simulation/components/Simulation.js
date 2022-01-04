@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, setSelectedRowCountForSimulationMessage } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
@@ -46,7 +46,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedVendorForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedVendorForSimulation,  } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -83,11 +83,6 @@ function Simulation(props) {
         }
         setOnLoad(true)
     }, [])
-
-    useEffect(() => {
-
-        // console.log(selectedRowCountForSimulationMessage, 'selectedRowCountForSimulationMessageselectedRowCountForSimulationMessages')
-    }, [selectedRowCountForSimulationMessage])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
@@ -343,7 +338,7 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
@@ -371,7 +366,7 @@ function Simulation(props) {
                     }
                 })
                 if (flag === true && vendorFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
@@ -398,7 +393,7 @@ function Simulation(props) {
                     }
                 });
                 if (flag === true && vendorFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
                         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
