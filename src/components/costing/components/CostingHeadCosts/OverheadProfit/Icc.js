@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
-import { getInventoryDataByHeads, gridDataAdded, } from '../../../actions/Costing';
+import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
@@ -140,6 +140,8 @@ function Icc(props) {
                 default:
                     break;
             }
+
+            dispatch(isOverheadProfitDataChange(true))
         }
     }
 

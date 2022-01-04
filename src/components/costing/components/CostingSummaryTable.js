@@ -21,7 +21,10 @@ import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
-import { isFinalApprover } from '../actions/Approval'
+import { isFinalApprover } from '../actions/Approval';
+import { jsPDF } from "jspdf";
+import cirHeader from "../../../assests/images/logo/CIRlogo.jpg";
+import LoaderCustom from '../../common/LoaderCustom'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -58,6 +61,10 @@ const CostingSummaryTable = (props) => {
   const [isWarningFlag, setIsWarningFlag] = useState(false)
   const [rmMBDetail, setrmMBDetail] = useState({})
   const [viewAtttachments, setViewAttachment] = useState([])
+  const [pdfHead, setPdfHead]=useState(false);
+  const [icons, setIcon]=useState(true);
+  const [loader, setLoader]=useState(false);
+
 
 
   const [flag, setFlag] = useState(false)
@@ -642,8 +649,22 @@ const CostingSummaryTable = (props) => {
   // useEffect(() => {
   //   
   // }, [multipleCostings])
-
   // 
+// We have used jsPDF to Generate PDF
+const generatorPDF = () => {
+  setLoader(true)
+  var doc =new jsPDF('p', 'mm',[1300, 1300]);
+  setPdfHead(true);
+  setIcon(false)
+  doc.html(document.querySelector("#summaryPdf"),{
+    callback: function(pdf){
+      pdf.save("CostingSummary.pdf");
+      setPdfHead(false);
+      setIcon(true);
+      setLoader(false)
+    }
+  });
+}
 
   return (
 
@@ -651,6 +672,7 @@ const CostingSummaryTable = (props) => {
       {
         stepOne &&
         <Fragment>
+        {(loader && <LoaderCustom />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -668,6 +690,7 @@ const CostingSummaryTable = (props) => {
             {
               !simulationMode &&
               <Col md="8" className="text-right">
+              <button Type="button" className="user-btn mr-1 mb-2 pdf-btn" onClick={generatorPDF}>{'PDF'}</button>
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                     <div className="send-for-approval"></div>
@@ -688,7 +711,17 @@ const CostingSummaryTable = (props) => {
             }
           </Row>
 
-          <Row className={customClass}>
+          <Row className={customClass} id="summaryPdf">
+          {pdfHead && 
+          <Row> 
+             <Col md="12" className='pdf-header-wrapper'>
+                <img src={cirHeader} className="pdf-header-img"/>
+              </Col>
+              <Col md="12" className='pdf-header-wrapper' >
+                <h3>Costing Summary</h3>
+              </Col>
+          </Row>
+          }
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
@@ -746,10 +779,10 @@ const CostingSummaryTable = (props) => {
                                   isApproval ? <span className="checkbox-text">{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                                 }
                               </div>
-                              {!viewMode && (
+                              {(!viewMode && icons ) && (
                                 <div class="action w-40 d-inline-block text-right">
-                                  {EditAccessibility && (data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
-                                  {AddAccessibility && <button className="Add-file mr-2 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
+                                  {EditAccessibility && (data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                  {AddAccessibility && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                   <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>
                                 </div>
                               )}
@@ -864,7 +897,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                !simulationDrawer &&
+                                (!simulationDrawer && icons )  &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -885,7 +918,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               {
-                                data.CostingHeading !== VARIANCE &&
+                                (data.CostingHeading !== VARIANCE && icons ) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -944,7 +977,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                data.CostingHeading !== VARIANCE &&
+                                (data.CostingHeading !== VARIANCE && icons )  &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1043,7 +1076,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                data.CostingHeading !== VARIANCE &&
+                                (data.CostingHeading !== VARIANCE && icons )  &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1085,7 +1118,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               {
-                                data.CostingHeading !== VARIANCE &&
+                                (data.CostingHeading !== VARIANCE && icons ) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1151,7 +1184,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               {
-                                data.CostingHeading !== VARIANCE &&
+                                (data.CostingHeading !== VARIANCE && icons)&&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1324,7 +1357,7 @@ const CostingSummaryTable = (props) => {
 
                             <td class="text-center costing-summary">
                               {(!viewMode && !isFinalApproverShow) &&
-                                data.status === DRAFT &&
+                                (data.status === DRAFT && icons)  &&
                                 <button
                                   class="user-btn"
                                   disabled={isWarningFlag}
