@@ -1093,7 +1093,7 @@ export function getPaymentTermsDataByHeads(data, callback) {
   console.log('data: ', data);
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}`, headers,)
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}/${data.Plantid}`, headers,)
 
     request.then((response) => {
       callback(response)

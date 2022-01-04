@@ -371,12 +371,12 @@ function CostingDetails(props) {
       }))
 
 
-      dispatch(getNCCExistingCosting(part.value,(res=>{
-        if(res.data.Result){
-          let Data = res.data.DataList
-          setNccGrid(Data)
-        }
-      })))
+      // dispatch(getNCCExistingCosting(part.value,(res=>{
+      //   if(res.data.Result){
+      //     let Data = res.data.DataList
+      //     setNccGrid(Data)
+      //   }
+      // })))
 
       setIsOpenVendorSOBDetails(true)
     } else {
