@@ -209,9 +209,7 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
    */
   const onSubmit = (values) => {
-    setIsZbcSelected(true)
-    setIsVbcSelected(false)
-    setisCbcSelected(false)
+  
     setPlantValue(values.plant)
     setVendorValue(values.vendor)
     setVendorPlant(values.vendorPlant)
@@ -384,10 +382,24 @@ function AddToComparisonDrawer(props) {
             if (index == -1) {
 
               temp.push(obj)
+              setIsZbcSelected(true)
+              setIsVbcSelected(false)
+              setisCbcSelected(false)
             } else {
-              setIsVbcSelected(true)
-              setIsZbcSelected(false)
-              setisCbcSelected(true)
+              if(isVbcSelected){
+
+                setIsVbcSelected(true)
+                setIsZbcSelected(false)
+                setisCbcSelected(false)
+              }else if(isZbcSelected){
+                setIsVbcSelected(false)
+                setIsZbcSelected(true)
+                setisCbcSelected(false)
+              }else{
+                setIsVbcSelected(false)
+                setIsZbcSelected(false)
+                setisCbcSelected(true)
+              }
 
               Toaster.warning('This costing is already present for comparison.')
               return
