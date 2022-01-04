@@ -858,15 +858,6 @@ input.form-control{
   border: none;
   cursor: pointer;
 }
-.pdf {
-  width: 32px;
-  height: 32px;
-  background: transparent url("../../assests/images/pdf-icon.png") 0% 0% no-repeat padding-box;
-  opacity: 1;
-  border: none;
-  cursor: pointer;
-}
-
 .Balance {
   width: 32px;
   height: 32px;
@@ -950,7 +941,6 @@ input.form-control{
 .Add,
 .Balance,
 .Edit,
-.pdf,
 .Delete,
 .View,
 .Download,
@@ -1202,6 +1192,14 @@ input.form-control{
   width: 13px;
   height: 16px;
   background: transparent url("../../assests/images/send-for-approval.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+.pdf-btn{
+  margin-right: 5px;
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/pdf.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   background-size: contain;
 }
@@ -5649,7 +5647,7 @@ body{
       td,.ag-cell {
         .Error,
         .Pushed,
-        .POUpdate,
+        .POUpdated,
         .Draft,
         [class^="Pending"],
         [class^="Awaiting"],
@@ -6636,7 +6634,6 @@ left: 17rem;
   }
 }
 //END Radio hook custom css//
-.wrap-container {
-  max-height: calc(100vh - 1024px);
-  overflow: hidden;
+.pdf-loader {
+  top: -1900;
 }
