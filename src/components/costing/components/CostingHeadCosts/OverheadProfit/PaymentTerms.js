@@ -5,7 +5,7 @@ import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 // import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
+import { getPaymentTermsDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { EMPTY_GUID } from '../../../../../config/constants';
 import TooltipCustom from '../../../../common/Tooltip';
@@ -67,7 +67,6 @@ function PaymentTerms(props) {
 
     useEffect(() => {
         if (IsPaymentTermsApplicable === true && Object.keys(costData).length >0) {
-            console.log('costData: ', costData);
 
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
@@ -76,7 +75,6 @@ function PaymentTerms(props) {
             }
       
             if(costData?.IsVendor && (costData.IsVendor !== null|| costData.IsVendor !== undefined)){
-                console.log(reqParams,"reqParamsreqParams");
                 dispatch(getPaymentTermsDataByHeads(reqParams, res => {
     
                     if (res && res.data && res.data.Result) {
@@ -162,6 +160,7 @@ function PaymentTerms(props) {
                 default:
                     break;
             }
+            dispatch(isOverheadProfitDataChange(true))
         }
     }
 
