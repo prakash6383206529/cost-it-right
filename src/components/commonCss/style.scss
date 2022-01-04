@@ -6613,3 +6613,15 @@ left: 17rem;
   }
 }
 //END Radio hook custom css//
+
+// PDF Img style
+.pdf-header-wrapper{
+  display: flex;
+  grid-gap: 10px;
+  justify-content: center;
+  img {
+    height: 50px;
+    display: block;
+    margin:8px;
+  }
+}
