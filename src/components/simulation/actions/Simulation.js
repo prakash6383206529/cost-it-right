@@ -674,15 +674,6 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
     };
 }
 
-export function setSelectedRowCountForSimulationMessage(selectedMaster) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
-            payload: selectedMaster,
-        });
-    }
-}
-
 export function runVerifyMachineRateSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
