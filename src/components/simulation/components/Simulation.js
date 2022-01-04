@@ -42,7 +42,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -73,11 +73,6 @@ function Simulation(props) {
         }
         setOnLoad(true)
     }, [])
-
-    useEffect(() => {
-
-        // console.log(selectedRowCountForSimulationMessage, 'selectedRowCountForSimulationMessageselectedRowCountForSimulationMessages')
-    }, [selectedRowCountForSimulationMessage])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
