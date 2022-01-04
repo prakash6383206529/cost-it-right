@@ -2651,6 +2651,7 @@ input:disabled,
 td,.ag-cell{
   .Error,
   .Pushed,
+  .POUpdated,
   .Draft,
   [class^="Pending"],
   [class^="Awaiting"],
@@ -2689,7 +2690,7 @@ td,.ag-cell{
   .Error{
     background-color: #f73d3d;
   }
-  .Pushed{
+  .Pushed, .POUpdated {
     background-color: #498cef;
   }
 }
