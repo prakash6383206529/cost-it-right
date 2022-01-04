@@ -781,8 +781,8 @@ const generatorPDF = () => {
                               </div>
                               {(!viewMode && icons ) && (
                                 <div class="action w-40 d-inline-block text-right">
-                                  {EditAccessibility && (data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
-                                  {AddAccessibility && <button className="Add-file mr-2 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
+                                  {EditAccessibility && (data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                  {AddAccessibility && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                   <button type="button" class="CancelIcon mb-0 align-middle" title={"Remove Costing"} onClick={() => deleteCostingFromView(index)}></button>
                                 </div>
                               )}

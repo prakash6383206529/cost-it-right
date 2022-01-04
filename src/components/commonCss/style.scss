@@ -1843,10 +1843,27 @@ $roboto: "Roboto", sans-serif;
   thead{
     .main-row{
       th{
-        width: 33%;
-        min-width: 410px;
+        width: 23%;
+        min-width: 384px;
         vertical-align: middle;
         font-weight: 500;
+        &:first-child {
+          width: 15%;
+          min-width: 238px;
+        }
+        .checkbox-text {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          background-color: #fff;
+          padding:9px 5px;
+          min-width: 186px;
+          &:hover {
+            overflow: visible;
+            min-width: fit-content;
+            z-index: 1;
+          }
+        }
       }
     }
   }
@@ -6517,6 +6534,47 @@ left: 17rem;
     min-width: 125px;
   }
 }
+
+@media screen and (max-width:$middleDesktop) {
+  .costing-summary-table {
+    thead{
+      .main-row{
+        th{
+          min-width: 340px;
+          font-size: 14px;
+          width: 27%;
+          &:first-child{
+            width: 19%;
+            min-width: 180px;
+          }
+          
+        }
+      }
+    }
+    tr {
+      td {
+        .bg-grey {
+          font-size: 14px;
+          small {
+            font-size: 13px;
+          }
+        }
+         span {
+          font-size: 14px;
+        }
+      }
+      &.background-light-blue {
+        th {
+          font-size: 14px;
+        }
+      }
+    }
+    .custom-check {
+      font-size: 14px;
+    }
+  }
+}
+
 .align-table {
   transform: translateY(-13px);
 }
