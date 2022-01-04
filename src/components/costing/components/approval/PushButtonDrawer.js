@@ -95,7 +95,7 @@ function PushButtonDrawer(props) {
         temp.push({
           CostingId: item.CostingId, effectiveDate: moment(simulationDetail.EffectiveDate).local().format('MM/DD/yyyy'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: netPo, plant: item.PlantCode ? item.PlantCode : '1511',
           currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW', TokenNumber: simulationDetail.Token,
-          Quantity: quantity
+          Quantity: quantity, DecimalOption: simulationDetail.DecimalOption
         })
       })
       let simObj = {
@@ -123,7 +123,8 @@ function PushButtonDrawer(props) {
         purchasingGroup: PurchasingGroup?.label ? PurchasingGroup.label.split('(')[0] : '',
         purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
         CostingId: approvalData[0].CostingId,
-        Quantity: quantity
+        Quantity: quantity,
+        DecimalOption: approvalData[0].DecimalOption
         // effectiveDate: '11/30/2021',
         // vendorCode: '203670',
         // materialNumber: 'S07004-003A0Y',
