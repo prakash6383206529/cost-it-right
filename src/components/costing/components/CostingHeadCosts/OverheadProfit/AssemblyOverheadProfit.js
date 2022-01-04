@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../../helper';
-import { getOverheadProfitTabData, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, setComponentOverheadItemData } from '../../../actions/Costing';
+import { getOverheadProfitTabData, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, setComponentOverheadItemData } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
@@ -19,7 +19,7 @@ function AssemblyOverheadProfit(props) {
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData,checkIsOverheadProfitChange } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -136,11 +136,12 @@ function AssemblyOverheadProfit(props) {
       "LoggedInUserId": loggedInUserId()
 
     }
-    if(!CostingViewMode){
+    if(!CostingViewMode && checkIsOverheadProfitChange){
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+          dispatch(isOverheadProfitDataChange(false))
         }
       }))
     }
