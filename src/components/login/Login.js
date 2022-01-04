@@ -15,6 +15,7 @@ import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.png'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
+import { VERSION } from '../../config/constants'
 
 class Login extends Component {
   constructor(props) {
@@ -180,6 +181,7 @@ class Login extends Component {
             </div>
           </div>
         </div >
+        <p className="login-version">{VERSION}</p>
       </div>
     );
   }
