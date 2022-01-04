@@ -139,8 +139,6 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             resp.rows.map((val, index) => {
-                                console.log('val[10]: ', val[10]);
-                                console.log('val[11]: ', val[11]);
                                 if (val.length !== 0) {
                                     if (index > 0) {
                                         if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[15] !== '' && val[15] !== undefined && val[15] !== null && val[15] !== null && val[14] !== val[15])) {
