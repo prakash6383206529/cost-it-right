@@ -1588,8 +1588,12 @@ function TabRMCC(props) {
           "LoggedInUserId": loggedInUserId()
 
         }
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        if(!CostingViewMode){
+
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
       }
+
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
@@ -1710,8 +1714,10 @@ function TabRMCC(props) {
         "LoggedInUserId": loggedInUserId()
   
       }
-  
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+  if(!CostingViewMode && checkIsDataChange){
+
+    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+  }
      }))
   }
 

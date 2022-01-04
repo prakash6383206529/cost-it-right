@@ -6,6 +6,7 @@ import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTw
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function AssemblyOverheadProfit(props) {
   const { children, item, index } = props;
@@ -16,6 +17,7 @@ function AssemblyOverheadProfit(props) {
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData } = useSelector(state => state.costing)
 
@@ -134,13 +136,14 @@ function AssemblyOverheadProfit(props) {
       "LoggedInUserId": loggedInUserId()
 
     }
-
-    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-    dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
-      }
-    }))
+    if(!CostingViewMode){
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+        }
+      }))
+    }
   }
 
   useEffect(() => {

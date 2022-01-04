@@ -623,19 +623,24 @@ const [totalCost,setTotalCost] = useState(0)
 
       }
 
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-    }
+      if(!CostingViewMode){
 
-    dispatch(saveDiscountOtherCostTab(data, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-        dispatch(setComponentDiscountOtherItemData({}, () => { }))
-        if (GoToNext) {
-          props.toggle('2')
-          history.push('/costing-summary')
-        }
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-    }))
+    }
+    if(!CostingViewMode){
+
+      dispatch(saveDiscountOtherCostTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentDiscountOtherItemData({}, () => { }))
+          if (GoToNext) {
+            props.toggle('2')
+            history.push('/costing-summary')
+          }
+        }
+      }))
+    }
   }
   return (
     <>
