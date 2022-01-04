@@ -8,7 +8,7 @@ import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
-import { setComponentToolItemData } from '../../../actions/Costing';
+import { isToolDataChange, setComponentToolItemData } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
@@ -39,8 +39,8 @@ function Tool(props) {
     defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},
   });
 
-  const [gridData, setGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])
-  const [OldGridData, setOldGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])
+  const [gridData, setGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
+  const [OldGridData, setOldGridData] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 ? data?.CostingPartDetails?.CostingToolCostResponse : [])
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -56,11 +56,12 @@ function Tool(props) {
 
   useEffect(() => {
     props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+
   }, [gridData]);
 
   useEffect(() => {
     dispatch(setComponentToolItemData(data, () => { }))
-  }, [data && data.CostingPartDetails.CostingToolCostResponse])
+  }, [data && data?.CostingPartDetails?.CostingToolCostResponse])
 
   useEffect(() => {
     dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
@@ -195,7 +196,7 @@ function Tool(props) {
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
-
+      dispatch(isToolDataChange(true))
     } else {
       Toaster.warning('Please enter valid number.')
     }
@@ -239,7 +240,7 @@ function Tool(props) {
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
-
+      dispatch(isToolDataChange(true))
     } else {
       Toaster.warning('Please enter valid number.')
     }
@@ -276,6 +277,7 @@ function Tool(props) {
         setValue('ToolMaintainancePerentage', '')
         setApplicability(newValue)
         setValueOfToolCost(newValue.label)
+        dispatch(isToolDataChange(true))
         // setIsChangedApplicability(!IsChangedApplicability)
     } else {
         setApplicability([])
@@ -453,6 +455,7 @@ function Tool(props) {
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
+     
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
@@ -557,7 +560,10 @@ function Tool(props) {
                                 pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
                                 max: { value: 100, message: 'Percentage cannot be greater than 100' },
                             }}
-                            handleChange={() => { }}
+                            handleChange={(e) => {
+                              e.preventDefault()
+                              dispatch(isToolDataChange(true))
+                             }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
@@ -762,4 +768,4 @@ function Tool(props) {
   );
 }
 
-export default Tool;
+export default React.memo(Tool);

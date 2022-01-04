@@ -93,7 +93,7 @@ function SimulationApprovalSummary(props) {
 
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
-    const [dataForDownload,setDataForDownload] = useState([])
+    const [dataForDownload, setDataForDownload] = useState([])
     const [count, setCount] = useState(0);
 
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
@@ -132,9 +132,9 @@ function SimulationApprovalSummary(props) {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
                 SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, } = res.data.Data
-            let uniqueArr = _.uniqBy(SimulatedCostingList, function(o){
-                    return o.CostingId;
-                });
+            let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                return o.CostingId;
+            });
 
 
             setCostingList(uniqueArr)
@@ -183,7 +183,8 @@ function SimulationApprovalSummary(props) {
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${AmmendentStatus}`)
                 } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${AmmendentStatus}`)
+                    setAmendentstatus(`Amendment Status: \u00A0 ${(AmmendentStatus && AmmendentStatus !== null && AmmendentStatus !== "") ? AmmendentStatus : "-"
+                        } `)
                 }
 
             }
@@ -445,7 +446,7 @@ function SimulationApprovalSummary(props) {
     const rmNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell ? `${cell} - ${row.RMGrade}` : '-'
+        return cell ? `${cell} - ${row.RMGrade} ` : '-'
     }
 
     const varianceFormatter = (props) => {
@@ -507,10 +508,10 @@ function SimulationApprovalSummary(props) {
 
         return (
             <>
-                 <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
+                <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
                 <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
 
-                
+
             </>
         )
     }
@@ -971,7 +972,7 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={140} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
+                                                                <AgGridColumn width={140} field="SimulationCostingId"  pinned="right"  cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 

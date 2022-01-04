@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Toaster from "../common/Toaster";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -11,7 +10,6 @@ import {
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
-import ConfirmComponent from "../../helper/ConfirmComponent"
 import masterImage from '../../assests/images/list.svg'
 import masterActive from '../../assests/images/masters-active.svg'
 import additionalMaster from '../../assests/images/list-add.png'
@@ -33,8 +31,8 @@ import userPic from '../../assests/images/user-pic.png'
 import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
-import { toastr } from "react-redux-toastr";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
+import { VERSION } from '../../config/constants'; 
 
 class SideBar extends Component {
   constructor(props) {
@@ -694,7 +692,7 @@ class SideBar extends Component {
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
-                    V1.1.50.1
+                   {VERSION}
                   </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">

@@ -12,7 +12,7 @@ function PackageAndFreight(props) {
 
   useEffect(() => {
     dispatch(setComponentPackageFreightItemData(item, () => { }))
-  }, [item.CostingPartDetails.CostingPackagingDetail, item.CostingPartDetails.CostingFreightDetail])
+  }, [item?.CostingPartDetails?.CostingPackagingDetail, item?.CostingPartDetails?.CostingFreightDetail])
 
   /**
   * @method render
@@ -25,13 +25,13 @@ function PackageAndFreight(props) {
           <PackageCost
             index={props.index}
             item={item}
-            data={item.CostingPartDetails.CostingPackagingDetail}
+            data={item?.CostingPartDetails?.CostingPackagingDetail}
             setPackageCost={props.setPackageCost}
           />
           <FreightCost
             index={props.index}
             item={item}
-            data={item.CostingPartDetails.CostingFreightDetail}
+            data={item?.CostingPartDetails?.CostingFreightDetail}
             setFreightCost={props.setFreightCost}
           />
         </div>

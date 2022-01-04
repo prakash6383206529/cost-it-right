@@ -16,8 +16,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = 'http://10.10.1.100:10122/api/v1';
-
+// const BASE_URL = 'http://10.148.80.4:10122/api/v1';
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -1252,6 +1251,13 @@ export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
 export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
+export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE'
+export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE='CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
+export const CHECK_IS_TOOL_DATA_CHANGE='CHECK_IS_TOOL_DATA_CHANGE'
+export const CHECK_IS_DISCOUNT_DATA_CHANGE='CHECK_IS_DISCOUNT_DATA_CHANGE'
+
+
+
 
 //WEIGHT CALCULATION COSTING
 
@@ -1776,3 +1782,6 @@ export const EMPTY_DATA = 'No Record Found';
 export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
+
+//VERSION 
+export const VERSION = "V1.1.56";
