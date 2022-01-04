@@ -10,7 +10,6 @@ import {
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
     GET_SELECTLIST_SIMULATION_TOKENS,
-    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
@@ -96,14 +95,6 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 TokensList: action.payload
             }
-
-        case SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE:
-            return {
-                ...state,
-                loading: false,
-                selectedRowCountForSimulationMessage: action.payload
-            }
-
         case GET_ASSEMBLY_SIMULATION_LIST:
             return {
                 ...state,
