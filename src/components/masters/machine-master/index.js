@@ -187,7 +187,7 @@ class MachineMaster extends Component {
                             <h1>{`Machine Master`}</h1>
                         </Col>
                     </Row>
-                    <ScrollToTop pointProp ={"go-top-top"} />
+                    <ScrollToTop pointProp={"go-top-top"} />
                     <Row>
                         <Col>
                             <div>
@@ -224,6 +224,7 @@ class MachineMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                ViewAccessibility={this.state.ViewAccessibility}
                                             />
                                         </TabPane>}
 
