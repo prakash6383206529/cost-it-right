@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT,SURFACETREATMENT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
@@ -42,7 +42,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation,selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -283,7 +283,7 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (userDetails().Role !== 'Group Category Head') {
+                        if (userDetails().Role !== 'Group Category Head') {
                             if (element.VendorName !== Data[index - 1].VendorName) {
                                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                                 // toastr.warning('Please select one vendor at a time.')
@@ -291,7 +291,7 @@ function Simulation(props) {
                                 vendorFlag = false
                                 // return false
                             }
-                          
+
                             if (element.PlantId !== Data[index - 1].PlantId) {
                                 (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                                 setEditWarning(true);
@@ -300,22 +300,26 @@ function Simulation(props) {
                             }
                         }
 
-                       
+
+
                     }
                 });
-                if (userDetails().Role !== 'Group Category Head') {
-                if (flag === true && vendorFlag === true && plantFlag === true) {
+                if (flag === true && userDetails().Role === 'Group Category Head') {
                     setEditWarning(false)
-                } if (flag === false && vendorFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-                } if (vendorFlag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
-                } if (flag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
-                } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-            }
+                if (userDetails().Role !== 'Group Category Head') {
+                    if (flag === true && vendorFlag === true && plantFlag === true) {
+                        setEditWarning(false)
+                    } if (flag === false && vendorFlag === false) {
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    } if (vendorFlag === false && plantFlag === false) {
+                        (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    } if (flag === false && plantFlag === false) {
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    } if (flag === false && vendorFlag === false && plantFlag === false) {
+                        (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    }
+                }
                 //  else {
                 //     setEditWarning(true)
                 // }
@@ -335,14 +339,14 @@ function Simulation(props) {
                             return false
                         }
                     }
-                    if (userDetails().Role !== 'Group Category Head') {
+                    if (userDetails().Role !== 'Group Category Head') {
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                         }
-                      
+
                         if (element.PlantId !== Data[index - 1].PlantId) {
 
                             setEditWarning(true);
@@ -350,7 +354,7 @@ function Simulation(props) {
                         }
                     }
                 })
-                if (userDetails().Role !== 'Group Category Head') {
+                if (userDetails().Role !== 'Group Category Head') {
                     if (flag === true && vendorFlag === true && plantFlag === true) {
                         (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                         setEditWarning(false)
@@ -379,7 +383,7 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (userDetails().Role !== 'Group Category Head') {
+                        if (userDetails().Role !== 'Group Category Head') {
 
                             if (element.VendorName !== Data[index - 1].VendorName) {
                                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
@@ -397,7 +401,7 @@ function Simulation(props) {
                         }
                     }
                 });
-                if (userDetails().Role !== 'Group Category Head') {
+                if (userDetails().Role !== 'Group Category Head') {
 
                     if (flag === true && vendorFlag === true && plantFlag === true) {
                         (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
@@ -423,7 +427,7 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
-                        if (userDetails().Role !== 'Group Category Head') {
+                        if (userDetails().Role !== 'Group Category Head') {
 
                             if (element.VendorName !== Data[index - 1].VendorName) {
                                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
@@ -441,7 +445,7 @@ function Simulation(props) {
                         }
                     }
                 })
-                if (userDetails().Role !== 'Group Category Head') {
+                if (userDetails().Role !== 'Group Category Head') {
                     if (flag === true && vendorFlag === true && plantFlag === true) {
                         (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                         setEditWarning(false)
