@@ -512,13 +512,15 @@ class IndivisualPartListing extends Component {
                     {/* {this.props.loading && <Loader />} */}
 
                     <Row className="pt-3 no-filter-row">
-                        <Col md="8" className="filter-block">
-
+                        <Col md="8">
+                        <div className="warning-message mt-1">
+                                {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
+                            </div>
                         </Col>
                         <Col md="6" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -569,18 +571,10 @@ class IndivisualPartListing extends Component {
 
 
                     <div className="ag-grid-wrapper height-width-wrapper">
-                        <div className="ag-grid-header">
-                            <Row className="pt-5 no-filter-row">
-                            </Row>
-                            <div className="warning-message">
-                                {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
-                            </div>
-
+                        <div className="ag-grid-header mt-4 pt-1">
+                           
                         </div>
-                        <div
-                            className="ag-theme-material"
-
-                        >
+                        <div className="ag-theme-material">
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
