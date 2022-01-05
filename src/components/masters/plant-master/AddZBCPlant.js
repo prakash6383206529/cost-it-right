@@ -21,6 +21,7 @@ class AddZBCPlant extends Component {
     this.child = React.createRef();
     this.state = {
       isEditFlag: false,
+      isViewMode: false,
       isLoader: false,
       PlantId: '',
       city: [],
@@ -39,8 +40,7 @@ class AddZBCPlant extends Component {
   componentDidMount() {
     this.props.fetchCountryDataAPI(() => { })
     this.props.getComapanySelectList(() => { })
-    // this.props.fetchStateDataAPI(0, () => { })
-    // this.props.fetchCityDataAPI(0, () => { })
+
     this.getDetails()
 
   }
@@ -76,6 +76,9 @@ class AddZBCPlant extends Component {
             const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
             const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityIdRef)
             const CompanyObj = companySelectList && companySelectList.find(item => Number(item.Value) === Data.CompanyId)
+            if (this.props.isViewMode) {
+              this.setState({ isViewMode: true })
+            }
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -309,7 +312,7 @@ class AddZBCPlant extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag } = this.props;
-    const { country } = this.state;
+    const { country, isViewMode } = this.state;
     return (
       <>
         <Drawer
@@ -351,6 +354,7 @@ class AddZBCPlant extends Component {
                       required={true}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -380,6 +384,7 @@ class AddZBCPlant extends Component {
                         placeholder={"Select"}
                         options={this.selectType("Company")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
+                        disabled={isViewMode ? true : false}
                         validate={
                           this.state.company == null ||
                             this.state.company.length === 0
@@ -402,10 +407,10 @@ class AddZBCPlant extends Component {
                           placeholder={""}
                           validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                           component={renderText}
-                          //  required={true}
                           maxLength={10}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode ? true : false}
                         />
                       </Col>
                       <Col className="Ext phoneNumber pr-0" md="4">
@@ -416,10 +421,10 @@ class AddZBCPlant extends Component {
                           placeholder={""}
                           validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
                           component={renderText}
-                          // required={true}
                           maxLength={3}
                           className=""
                           customClassName={"withBorder"}
+                          disabled={isViewMode ? true : false}
                         />
                       </Col>
                     </Row>
@@ -434,10 +439,10 @@ class AddZBCPlant extends Component {
                       placeholder={""}
                       validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
-                      // required={true}
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode ? true : false}
                     />
                   </Col>
                   <Col md="6">
@@ -452,6 +457,7 @@ class AddZBCPlant extends Component {
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode ? true : false}
                     />
                   </Col>
                 </Row>
@@ -464,7 +470,7 @@ class AddZBCPlant extends Component {
                       component={searchableSelect}
                       placeholder={"Select"}
                       options={this.selectType("country")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      disabled={isViewMode ? true : false}
                       validate={
                         this.state.country == null ||
                           this.state.country.length === 0
@@ -485,7 +491,7 @@ class AddZBCPlant extends Component {
                         component={searchableSelect}
                         placeholder={"Select"}
                         options={this.selectType("state")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        disabled={isViewMode ? true : false}
                         validate={
                           this.state.state == null ||
                             this.state.state.length === 0
@@ -509,6 +515,7 @@ class AddZBCPlant extends Component {
                       component={searchableSelect}
                       placeholder={"Select"}
                       options={this.selectType("city")}
+                      disabled={isViewMode ? true : false}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
                         this.state.city == null ||
@@ -533,6 +540,7 @@ class AddZBCPlant extends Component {
                       maxLength={6}
                       className=""
                       customClassName={"withBorder"}
+                      disabled={isViewMode ? true : false}
                     />
                   </Col>
                 </Row>
@@ -550,6 +558,7 @@ class AddZBCPlant extends Component {
                     <button
                       type="submit"
                       className="user-btn save-btn"
+                      disabled={isViewMode ? true : false}
                     >
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}
