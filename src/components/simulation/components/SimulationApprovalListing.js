@@ -8,7 +8,7 @@ import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull } from '../../../helper'
-import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED } from '../../../config/constants'
+import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
@@ -330,7 +330,7 @@ function SimulationApprovalListing(props) {
     }
 
     const isRowSelectable = (rowNode) => {
-        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === ERROR) {
+        if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR) {
             return false;
         } else {
             return true
