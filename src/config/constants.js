@@ -503,7 +503,7 @@ export const API = {
   getImpactedMasterData: `${BASE_URL}/app-simulation-approval-system/get-impacted-master-data`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
-saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
+  saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
 
   getToolTabData: `${BASE_URL}/costing/get-costing-detail-for-tools-cost`,
   saveToolTab: `${BASE_URL}/costing/save-costing-detail-for-tool-cost`,
@@ -530,7 +530,7 @@ saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freig
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-view-costing`,
- 
+
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
@@ -1237,9 +1237,9 @@ export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
 export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
 export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE'
-export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE='CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
-export const CHECK_IS_TOOL_DATA_CHANGE='CHECK_IS_TOOL_DATA_CHANGE'
-export const CHECK_IS_DISCOUNT_DATA_CHANGE='CHECK_IS_DISCOUNT_DATA_CHANGE'
+export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
+export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
+export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
 
 
 
@@ -1485,7 +1485,7 @@ export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
-export const POUPDATED ='POUpdated'
+export const POUPDATED = 'POUpdated'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1757,4 +1757,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.63.1";
+export const VERSION = "V1.1.63.2";
