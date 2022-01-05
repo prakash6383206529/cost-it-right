@@ -636,7 +636,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
                         {/* <Errorbox customClass="" errorText="There is some error in your page" /> */}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
