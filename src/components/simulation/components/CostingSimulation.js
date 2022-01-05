@@ -738,10 +738,8 @@ function CostingSimulation(props) {
                                             </div>
                                             <div
                                                 className="ag-theme-material"
-                                                style={{ height: '100%', width: '100%' }}
                                             >
                                                 <AgGridReact
-                                                    style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
                                                     domLayout='autoHeight'
@@ -845,7 +843,7 @@ function CostingSimulation(props) {
                                     </Col>
                                 </Row>
                             </div>
-                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
                                     <button
