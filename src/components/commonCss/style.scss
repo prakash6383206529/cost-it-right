@@ -6637,3 +6637,10 @@ left: 17rem;
 .pdf-loader {
   top: -1900;
 }
+.loader-wrapper {
+  height: calc(100vh - 924px);
+  overflow: hidden;
+  @media screen and (max-width: $miniDesktop) {
+    height: calc(100vh - 668px);
+  }
+}
