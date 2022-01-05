@@ -25,7 +25,6 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 
@@ -125,9 +124,9 @@ class OperationListing extends Component {
                 this.setState({
                     tableData: Data,
                 })
-                if (this.props.isSimulation) {
-                    this.props.apply(Data)
-                }
+                // if (this.props.isSimulation) {
+                //     this.props.apply(Data)
+                // }
             } else {
 
             }
@@ -500,9 +499,8 @@ class OperationListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (isSimulation) {
-                let len = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(len)
-                this.props.apply(selectedRows)
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
             }
 
             this.setState({ selectedRowData: selectedRows })
@@ -711,7 +709,6 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

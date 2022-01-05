@@ -24,7 +24,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getFilteredRMData } from '../../../helper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 
@@ -405,9 +404,8 @@ function RMDomesticListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         if (isSimulation) {
             let length = gridApi.getSelectedRows().length
-            dispatch(setSelectedRowCountForSimulationMessage(length))
 
-            apply(selectedRows)
+            apply(selectedRows, length)
 
         }
 

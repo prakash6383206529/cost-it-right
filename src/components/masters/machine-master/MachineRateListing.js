@@ -24,7 +24,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -373,8 +372,7 @@ class MachineRateListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (isSimulation) {
                 let length = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(length)
-                this.props.apply(selectedRows)
+                this.props.apply(selectedRows, length)
             }
 
         }
@@ -554,7 +552,6 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectListByTechnology,
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

@@ -672,7 +672,7 @@ const generatorPDF = () => {
       {
         stepOne &&
         <Fragment>
-        {(loader && <LoaderCustom />)}
+        {(loader &&  <LoaderCustom customClass="pdf-loader" />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -690,7 +690,7 @@ const generatorPDF = () => {
             {
               !simulationMode &&
               <Col md="8" className="text-right">
-              <button Type="button" className="user-btn mr-1 mb-2 pdf-btn" onClick={generatorPDF}>{'PDF'}</button>
+              <button Type="button" className="mr-1 mb-1 user-btn pdf-btn" title='pdf' onClick={generatorPDF}> </button>
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                     <div className="send-for-approval"></div>
@@ -713,15 +713,15 @@ const generatorPDF = () => {
 
           <Row className={customClass} id="summaryPdf">
           {pdfHead && 
-          <Row> 
+          <>
              <Col md="12" className='pdf-header-wrapper'>
                 <img src={cirHeader} className="pdf-header-img"/>
               </Col>
-              <Col md="12" className='pdf-header-wrapper' >
-                <h3>Costing Summary</h3>
+              <Col md="12">
+                <h3 className='left-border'>Costing Summary:</h3>
               </Col>
-          </Row>
-          }
+              </>}
+          
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">

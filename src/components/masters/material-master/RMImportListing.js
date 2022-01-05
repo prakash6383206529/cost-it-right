@@ -27,7 +27,6 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 const ExcelFile = ReactExport.ExcelFile;
@@ -129,9 +128,9 @@ function RMImportListing(props) {
           let DynamicData = res.data.DynamicData;
           setmaxRange(DynamicData.MaxRange);
           setloader(false);
-          if (isSimulation) {
-            props.apply(Data)
-          }
+          // if (isSimulation) {
+          //   props.apply(Data)
+          // }
 
 
         } else if (res && res.response && res.response.status === 412) {
@@ -392,9 +391,8 @@ function RMImportListing(props) {
 
     var selectedRows = gridApi.getSelectedRows();
     if (isSimulation) {
-      let len = gridApi.getSelectedRows().length
-      dispatch(setSelectedRowCountForSimulationMessage(len))
-      props.apply(selectedRows)
+      let length = gridApi.getSelectedRows().length
+      props.apply(selectedRows, length)
 
     }
   }

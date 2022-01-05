@@ -20,7 +20,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -354,9 +353,7 @@ class OverheadListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
                 let length = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(length)
-
-                this.props.apply(selectedRows)
+                this.props.apply(selectedRows, length)
             }
             // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
             this.setState({ selectedRowData: selectedRows })
@@ -547,7 +544,6 @@ export default connect(mapStateToProps, {
     getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OverheadListing',
     enableReinitialize: true,
