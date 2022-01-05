@@ -264,7 +264,6 @@ function OtherVerifySimulation(props) {
 
                                         >
                                             <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
@@ -317,7 +316,7 @@ function OtherVerifySimulation(props) {
 
                         </Col>
                     </Row>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
                                 <div className={"cancel-icon"}></div>
