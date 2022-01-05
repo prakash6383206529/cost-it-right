@@ -29,6 +29,7 @@ class AddIndivisualPart extends Component {
       isEditFlag: false,
       isLoader: false,
       PartId: '',
+      isViewMode: false,
 
       selectedPlants: [],
       effectiveDate: '',
@@ -66,6 +67,7 @@ class AddIndivisualPart extends Component {
         isEditFlag: false,
         isLoader: true,
         PartId: data.Id,
+        isViewMode: false,
       })
       this.props.getPartData(data.Id, res => {
         if (res && res.data && res.data.Result) {
@@ -77,6 +79,9 @@ class AddIndivisualPart extends Component {
           })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          if (this.props.data.isViewMode) {
+            this.setState({ isViewMode: true })
+          }
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -237,7 +242,6 @@ class AddIndivisualPart extends Component {
   Preview = ({ meta }) => {
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
-        {/* {Math.round(percent)}% */}
       </span>
     )
   }
@@ -293,7 +297,6 @@ class AddIndivisualPart extends Component {
         GroupCode: values.GroupCode,
         Remark: values.Remark,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        // Plants: [],
         Attachements: updatedFiles,
         IsForcefulUpdated: true,
         GroupCodeList: productArray
@@ -320,7 +323,6 @@ class AddIndivisualPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        // Plants: [],
         Attachements: files,
         GroupCodeList: productArray
       }
@@ -358,7 +360,7 @@ class AddIndivisualPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, } = this.state;
+    const { isEditFlag, isViewMode } = this.state;
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -412,25 +414,10 @@ class AddIndivisualPart extends Component {
                               required={true}
                               className=""
                               customClassName={"withBorder"}
+                              disabled={isViewMode ? true : false}
                             />
                           </Col>
-                          {/* {initialConfiguration &&
-                            initialConfiguration.IsBOMNumberDisplay && (
-                              <Col md="3">
-                                <Field
-                                  label={`BOM No.`}
-                                  name={"BOMNumber"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
-                                  component={renderText}
-                                  required={true}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </Col>
-                            )} */}
+
                           <Col md="3">
                             <Field
                               label={`Part Description`}
@@ -442,10 +429,11 @@ class AddIndivisualPart extends Component {
                               required={false}
                               className=""
                               customClassName={"withBorder"}
+                              disabled={isViewMode ? true : false}
                             />
                           </Col>
                           {initialConfiguration?.IsProductMasterConfigurable ? (
-                            // initialConfiguration.IsGroupCodeDisplay && (
+
                             <Col md="3">
                               <Field
                                 label="Group Code"
@@ -464,6 +452,7 @@ class AddIndivisualPart extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={false}
                                 className="multiselect-with-border"
+                                disabled={isViewMode ? true : false}
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>
@@ -479,6 +468,7 @@ class AddIndivisualPart extends Component {
                                 required={false}
                                 className=""
                                 customClassName={"withBorder"}
+                                disabled={isViewMode ? true : false}
                               />
                             </Col>
                           }
@@ -493,9 +483,9 @@ class AddIndivisualPart extends Component {
                               placeholder={""}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                               component={renderText}
-                              //required={true}
                               className=""
                               customClassName={"withBorder"}
+                              disabled={isViewMode ? true : false}
                             />
                           </Col>
                           <Col md="3">
@@ -506,9 +496,9 @@ class AddIndivisualPart extends Component {
                               placeholder={""}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                               component={renderText}
-                              //required={true}
                               className=""
                               customClassName={"withBorder"}
+                              disabled={isViewMode ? true : false}
                             />
                           </Col>
                           <Col md="3">
@@ -519,35 +509,17 @@ class AddIndivisualPart extends Component {
                               placeholder={""}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                               component={renderText}
-                              //required={true}
                               className=""
                               customClassName={"withBorder"}
+                              disabled={isViewMode ? true : false}
                             />
                           </Col>
 
                           <Col md="3">
                             <div className="form-group">
-                              {/* <label>
-                                Effective Date
-                                    <span className="asterisk-required">*</span>
-                              </label> */}
+
                               <div className="inputbox date-section">
-                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
+
                                 <Field
                                   label="Effective Date"
                                   name="EffectiveDate"
@@ -558,11 +530,10 @@ class AddIndivisualPart extends Component {
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {
-                                    //e.preventDefault()
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
+                                  disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode ? true : false)}
 
                                 />
 
@@ -573,27 +544,6 @@ class AddIndivisualPart extends Component {
                         </Row>
 
                         <Row>
-                          {/* <Col md="3">
-                            <Field
-                              label="Plant"
-                              name="Plant"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPlants == null ||
-                                  this.state.selectedPlants.length === 0
-                                  ? []
-                                  : this.state.selectedPlants
-                              }
-                              options={this.renderListing("plant")}
-                              selectionChanged={this.handlePlant}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              //mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={isEditFlag ? true : false}
-                            />
-                          </Col> */}
 
 
                         </Row>
@@ -612,9 +562,9 @@ class AddIndivisualPart extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512, checkWhiteSpaces]}
-                              //required={true}
                               component={renderTextAreaField}
                               maxLength="5000"
+                              disabled={isViewMode ? true : false}
                             />
                           </Col>
                           <Col md="3">
@@ -630,10 +580,10 @@ class AddIndivisualPart extends Component {
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
-                                //onSubmit={this.handleSubmit}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
+                                disabled={isViewMode ? true : false}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
@@ -678,14 +628,9 @@ class AddIndivisualPart extends Component {
                                       <a href={fileURL} target="_blank">
                                         {f.OriginalFileName}
                                       </a>
-                                      {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                      {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
 
-                                      <img
+
+                                      {!isViewMode && <img
                                         alt={""}
                                         className="float-right"
                                         onClick={() =>
@@ -695,7 +640,7 @@ class AddIndivisualPart extends Component {
                                           )
                                         }
                                         src={imgRedcross}
-                                      ></img>
+                                      ></img>}
                                     </div>
                                   );
                                 })}
@@ -715,6 +660,7 @@ class AddIndivisualPart extends Component {
                             {"Cancel"}
                           </button>
                           <button
+                            disabled={isViewMode ? true : false}
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >

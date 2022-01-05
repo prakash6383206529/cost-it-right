@@ -27,6 +27,7 @@ class AddIndivisualProduct extends Component {
             isEditFlag: false,
             isLoader: false,
             PartId: '',
+            isViewMode: false,
 
             selectedPlants: [],
             effectiveDate: '',
@@ -65,6 +66,7 @@ class AddIndivisualProduct extends Component {
                 isEditFlag: false,
                 isLoader: true,
                 ProductId: data.Id,
+                isViewMode: false
             })
             this.props.getProductData(data.Id, res => {
                 if (res && res.data && res.data.Result) {
@@ -73,6 +75,9 @@ class AddIndivisualProduct extends Component {
                     this.setState({ DataToCheck: Data })
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+                    if (this.props.data.isViewMode) {
+                        this.setState({ isViewMode: true })
+                    }
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
@@ -282,14 +287,7 @@ class AddIndivisualProduct extends Component {
                         this.cancel()
                     }
                 });
-                // const toastrConfirmOptions = {
-                //     onOk: () => {
 
-                //     },
-                //     onCancel: () => { },
-                //     component: () => <ConfirmComponent />,
-                // }
-                // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
             }
 
 
@@ -333,7 +331,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration } = this.props;
-        const { isEditFlag, } = this.state;
+        const { isEditFlag, isViewMode } = this.state;
         return (
             <>
                 {this.state.isLoader && <LoaderCustom />}
@@ -390,23 +388,7 @@ class AddIndivisualProduct extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
-                                                    {/* {initialConfiguration &&
-                            initialConfiguration.IsBOMNumberDisplay && (
-                              <Col md="3">
-                                <Field
-                                  label={`BOM No.`}
-                                  name={"BOMNumber"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
-                                  component={renderText}
-                                  required={true}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </Col>
-                            )} */}
+
                                                     <Col md="3">
                                                         <Field
                                                             label={`Description`}
@@ -438,7 +420,7 @@ class AddIndivisualProduct extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
-                                                                    disabled={false}
+                                                                    disabled={isViewMode ? true : false}
                                                                 />
                                                             </Col>
                                                         )}
@@ -491,27 +473,9 @@ class AddIndivisualProduct extends Component {
 
                                                     <Col md="3">
                                                         <div className="form-group">
-                                                            {/* <label>
-                                Effective Date
-                                    <span className="asterisk-required">*</span>
-                              </label> */}
+
                                                             <div className="inputbox date-section">
-                                                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
+
                                                                 <Field
                                                                     label="Effective Date"
                                                                     name="EffectiveDate"
@@ -522,12 +486,12 @@ class AddIndivisualProduct extends Component {
                                                                     autoComplete={'off'}
                                                                     required={true}
                                                                     changeHandler={(e) => {
-                                                                        //e.preventDefault()
+
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={false}
-                                                                //minDate={moment()}
+                                                                    disabled={isViewMode ? true : false}
+
                                                                 />
 
                                                             </div>
@@ -537,27 +501,7 @@ class AddIndivisualProduct extends Component {
                                                 </Row>
 
                                                 <Row>
-                                                    {/* <Col md="3">
-                            <Field
-                              label="Plant"
-                              name="Plant"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPlants == null ||
-                                  this.state.selectedPlants.length === 0
-                                  ? []
-                                  : this.state.selectedPlants
-                              }
-                              options={this.renderListing("plant")}
-                              selectionChanged={this.handlePlant}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              //mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={isEditFlag ? true : false}
-                            />
-                          </Col> */}
+
 
 
                                                 </Row>
@@ -600,6 +544,7 @@ class AddIndivisualProduct extends Component {
                                                                 initialFiles={this.state.initialFiles}
                                                                 maxFiles={3}
                                                                 maxSizeBytes={2000000}
+                                                                disabled={isViewMode ? true : false}
                                                                 inputContent={(files, extra) =>
                                                                     extra.reject ? (
                                                                         "Image, audio and video files only"
@@ -626,7 +571,7 @@ class AddIndivisualProduct extends Component {
                                                                         extra.reject ? { color: "red" } : {},
                                                                 }}
                                                                 classNames="draper-drop"
-                                                            // disabled={isEditFlag ? true : false}
+
                                                             />
                                                         </div>
                                                     </Col>
@@ -644,24 +589,19 @@ class AddIndivisualProduct extends Component {
                                                                             <a href={fileURL} target="_blank">
                                                                                 {f.OriginalFileName}
                                                                             </a>
-                                                                            {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                                                            {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
 
-                                                                            <img
-                                                                                alt={""}
-                                                                                className="float-right"
-                                                                                onClick={() =>
-                                                                                    this.deleteFile(
-                                                                                        f.FileId,
-                                                                                        f.FileName
-                                                                                    )
-                                                                                }
-                                                                                src={imgRedcross}
-                                                                            ></img>
+                                                                            {!isViewMode &&
+                                                                                <img
+                                                                                    alt={""}
+                                                                                    className="float-right"
+                                                                                    onClick={() =>
+                                                                                        this.deleteFile(
+                                                                                            f.FileId,
+                                                                                            f.FileName
+                                                                                        )
+                                                                                    }
+                                                                                    src={imgRedcross}
+                                                                                ></img>}
                                                                         </div>
                                                                     );
                                                                 })}
@@ -683,6 +623,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type="submit"
                                                         className="user-btn mr5 save-btn"
+                                                        disabled={isViewMode ? true : false}
                                                     >
                                                         <div className={"save-icon"}></div>
                                                         {isEditFlag ? "Update" : "Save"}
