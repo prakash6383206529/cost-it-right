@@ -42,7 +42,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -333,30 +333,32 @@ function Simulation(props) {
 
                     if (index !== 0) {
                         if (element.CostingHead !== Data[index - 1].CostingHead) {
-                            // toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            return false
                         }
                     }
                     if (userDetails().Role !== 'Group Category Head') {
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
                         }
 
                         if (element.PlantId !== Data[index - 1].PlantId) {
-
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
                         }
                     }
                 })
+
+                if (flag === true && userDetails().Role === 'Group Category Head') {
+                    setEditWarning(false)
+                }
                 if (userDetails().Role !== 'Group Category Head') {
                     if (flag === true && vendorFlag === true && plantFlag === true) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                        (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                         setEditWarning(false)
                     } if (flag === false && vendorFlag === false) {
                         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
@@ -404,14 +406,14 @@ function Simulation(props) {
                 if (userDetails().Role !== 'Group Category Head') {
 
                     if (flag === true && vendorFlag === true && plantFlag === true) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                        (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                         setEditWarning(false)
                     } if (flag === false && vendorFlag === false) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                     } if (vendorFlag === false && plantFlag === false) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                     } if (flag === false && plantFlag === false) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                     }
                 }
                 break;
@@ -447,14 +449,14 @@ function Simulation(props) {
                 })
                 if (userDetails().Role !== 'Group Category Head') {
                     if (flag === true && vendorFlag === true && plantFlag === true) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                        (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                         setEditWarning(false)
                     } if (flag === false && vendorFlag === false) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                     } if (vendorFlag === false && plantFlag === false) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                     } if (flag === false && plantFlag === false) {
-                        (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                     }
                 }
                 break;
