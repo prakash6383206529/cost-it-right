@@ -5,7 +5,7 @@ import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
-import { EMPTY_DATA } from '../../../../../config/constants'
+import { EMPTY_DATA, MECHANICAL_PROPRIETARY } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isMultipleRMAllow, isRMDivisorApplicable } from '../../../../../helper'
@@ -779,7 +779,7 @@ function RawMaterialCost(props) {
       isShow = true;
     }
 
-    if (costData && costData.TechnologyName === PLASTIC) {
+    if (costData && (costData.TechnologyName === PLASTIC || costData.TechnologyName === MECHANICAL_PROPRIETARY)) {
       isShow = true;
     }
 
