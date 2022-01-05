@@ -12,7 +12,6 @@ import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
 import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { CLIENT_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -40,6 +39,7 @@ class ClientListing extends Component {
             isOpenVendor: false,
             tableData: [],
             ID: '',
+            isViewMode: false,
 
             AddAccessibility: false,
             EditAccessibility: false,
@@ -124,6 +124,16 @@ class ClientListing extends Component {
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: false,
+        })
+    }
+
+    viewItemDetails = (Id) => {
+        this.setState({
+            isOpenVendor: true,
+            isEditFlag: true,
+            ID: Id,
+            isViewMode: true,
         })
     }
 
@@ -162,9 +172,10 @@ class ClientListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility, } = this.state;
         return (
             <>
+                {<button className="View mr-2" type={'button'} onClick={() => this.viewItemDetails(cellValue, rowData)} />}
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -359,7 +370,7 @@ class ClientListing extends Component {
                                                 {this.onBtExport()}
                                             </ExcelFile>
                                         </>
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -424,6 +435,7 @@ class ClientListing extends Component {
                             isOpen={isOpenVendor}
                             closeDrawer={this.closeVendorDrawer}
                             isEditFlag={isEditFlag}
+                            isViewMode={this.state.isViewMode}
                             ID={this.state.ID}
                             anchor={'right'}
                         />
