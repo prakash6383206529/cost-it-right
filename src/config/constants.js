@@ -530,6 +530,7 @@ export const API = {
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-view-costing`,
+
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
@@ -1235,6 +1236,13 @@ export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
 export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
 export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
+export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE'
+export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
+export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
+export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
+
+
+
 
 //WEIGHT CALCULATION COSTING
 
@@ -1449,10 +1457,10 @@ export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 
 
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
-export const SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE = 'SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE'
 export const GET_VERIFY_MACHINERATE_SIMULATION_LIST = 'GET_VERIFY_MACHINERATE_SIMULATION_LIST'
 export const GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST = 'GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST'
 export const GET_ASSEMBLY_SIMULATION_LIST = 'GET_ASSEMBLY_SIMULATION_LIST'
+export const GET_ASSEMBLY_SIMULATION_LIST_SUMMARY = 'GET_ASSEMBLY_SIMULATION_LIST_SUMMARY'
 export const SET_DATA_TEMP = 'SET_DATA_TEMP'
 export const GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST = 'GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST'
 
@@ -1477,6 +1485,7 @@ export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
+export const POUPDATED = 'POUpdated'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1746,3 +1755,6 @@ export const EMPTY_DATA = 'No Record Found';
 export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
+
+//VERSION 
+export const VERSION = "V1.1.63.2";

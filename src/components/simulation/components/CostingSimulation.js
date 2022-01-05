@@ -239,7 +239,7 @@ function CostingSimulation(props) {
 
     const viewAssembly = (cell, row, rowIndex) => {
         console.log('row: ', row);
-        const data =row
+        const data = row
         setDataForAssemblyImpact(data)
         setShowViewAssemblyDrawer(true)
     }
@@ -250,7 +250,7 @@ function CostingSimulation(props) {
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
-                {/* <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button> */}
+                <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
 
             </>
         )
@@ -941,8 +941,8 @@ function CostingSimulation(props) {
                     anchor={'bottom'}
                     dataForAssemblyImpact={dataForAssemblyImpact}
                     vendorIdState={vendorIdState}
-                    isDraft={true}
-                    />
+                    isPartImpactAssembly={true}
+                />
             }
         </>
 

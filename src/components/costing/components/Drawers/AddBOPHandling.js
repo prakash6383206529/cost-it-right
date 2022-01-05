@@ -7,19 +7,21 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { useDispatch } from 'react-redux';
-import { saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
+import { isDataChange, saveAssemblyBOPHandlingCharge } from '../../actions/Costing';
 import { NetPOPriceContext } from '../CostingDetailStepTwo';
 
 function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);
-  const { RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
-  console.log('getAssemBOPCharge: ', getAssemBOPCharge);
+  const { RMCCTabData, getAssemBOPCharge } = useSelector(state => state.costing)
   const dispatch = useDispatch()
-  const netPOPrice = useContext(NetPOPriceContext);
-  const [totalBopCost,setTotalBopCost]= useState('')
+
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  })
 
 
   useEffect(() => {
@@ -39,7 +41,6 @@ function AddBOPHandling(props) {
       }
     })
     setValue('BOPCost', BOPSum)
-    setTotalBopCost(BOPSum)
     if (RMCCTabData[0].CostingPartDetails.IsApplyBOPHandlingCharges) {
       setValue('BOPHandlingPercentage', RMCCTabData[0].CostingPartDetails.BOPHandlingPercentage)
       setValue('BOPHandlingCharges', RMCCTabData[0].CostingPartDetails.BOPHandlingCharges)
@@ -51,10 +52,7 @@ function AddBOPHandling(props) {
 
   }, [])
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  })
+ 
 
 
   const handleBOPPercentageChange = (value) => {
@@ -65,6 +63,7 @@ function AddBOPHandling(props) {
         setValue('BOPHandlingCharges', 0)
         return false;
       }
+      dispatch(isDataChange(true))
       setValue('BOPHandlingCharges', checkForDecimalAndNull(getValues('BOPCost') * calculatePercentage(value), getConfigurationKey().NoOfDecimalForPrice))
 
     } else {

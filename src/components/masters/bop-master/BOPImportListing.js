@@ -23,9 +23,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
-const ExcelFile =ReactExport.ExcelFile
+const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -83,11 +82,11 @@ class BOPImportListing extends Component {
         this.props.getBOPImportDataList(filterData, (res) => {
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                this.setState({ tableData: Data, loader: false })
             } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], loader: false })
             } else {
-                this.setState({ tableData: [] })
+                this.setState({ tableData: [], loader: false })
             }
         })
     }
@@ -255,7 +254,7 @@ class BOPImportListing extends Component {
     }
 
 
-  
+
 
     /**
     * @method filterList
@@ -320,18 +319,21 @@ class BOPImportListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-            return null
-        }))
-
+        if (this.props.isSimulation === true) {
+            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+                return null
+            }))
+        } else {
+            tempArr = this.props.bopImportList && this.props.bopImportList
+        }
         return this.returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = this.props.bopImportList && this.props.bopImportList.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } if (item.IsVendor === false) {
@@ -410,23 +412,20 @@ class BOPImportListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
-                let len = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(len)
-                this.props.apply(selectedRows)
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
             }
             this.setState({ selectedRowData: selectedRows })
         }
 
-        const onFloatingFilterChanged = (p) => {
-            this.state.gridApi.deselectAll()
-        }
+
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                       
+
 
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -517,7 +516,6 @@ class BOPImportListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
-                                    onFilterModified={onFloatingFilterChanged}
                                 >
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -590,7 +588,6 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

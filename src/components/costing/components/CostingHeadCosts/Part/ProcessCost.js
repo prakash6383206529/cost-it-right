@@ -2,14 +2,13 @@ import React, { useState, useEffect, useContext, useWatch } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
-import Switch from "react-switch";
 import OperationCost from './OperationCost';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
@@ -41,7 +40,7 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
-  const[oldGridData,setOldGridData] =useState(data && data.CostingProcessCostResponse)
+  const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
   const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
@@ -53,6 +52,8 @@ function ProcessCost(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
+
+  const { rmFinishWeight } = props
 
   // const fieldValues = useWatch({
   //   control,
@@ -71,8 +72,8 @@ function ProcessCost(props) {
     }
     if (!CostingViewMode) {
       selectedIds(gridData)
- 
-      if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+
+      if (JSON.stringify(gridData) !== JSON.stringify(oldGridData)) {
         dispatch(isDataChange(true))
       }
       props.setProcessCost(tabData, Params, item)
@@ -190,6 +191,10 @@ function ProcessCost(props) {
     let tempArr2 = [];
     if (Object.keys(rowData).length > 0) {
       let rowArray = rowData && rowData.map((el) => {
+        let processQuantity = 1
+        if (el.UnitType === MASS) {
+          processQuantity = rmFinishWeight ? rmFinishWeight : 1
+        }
         return {
           ProcessId: el.ProcessId,
           ProcessDetailId: '',
@@ -202,8 +207,8 @@ function ProcessCost(props) {
           UOM: el.UnitOfMeasurement,
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           Tonnage: el.MachineTonnage,
-          Quantity:1,
-          ProcessCost: el.MachineRate * 1,
+          Quantity: processQuantity,
+          ProcessCost: el.MachineRate * processQuantity,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId
         }
@@ -214,8 +219,8 @@ function ProcessCost(props) {
 
 
       tempArr && tempArr.map((el, index) => {
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, el.ProcessCost)
-        setValue(`${ProcessGridFields}.${index}.Quantity`,el.Quantity)
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${index}.Quantity`, el.Quantity)
       })
 
       let ProcessCostTotal = 0
@@ -281,8 +286,8 @@ function ProcessCost(props) {
       setIds(selectedIds)
       setTabData(tempArr2)
       tempArrAfterDelete && tempArrAfterDelete.map((el, i) => {
-        setValue(`${ProcessGridFields}.${i}.ProcessCost`, el.ProcessCost)
-        setValue(`${ProcessGridFields}.${i}.Quantity`,el.Quantity)
+        setValue(`${ProcessGridFields}.${i}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+        setValue(`${ProcessGridFields}.${i}.Quantity`, el.Quantity)
       })
     }, 200)
   }
@@ -387,7 +392,7 @@ function ProcessCost(props) {
     setTimeout(() => {
       setTabData(gridTempArr)
       setGridData(gridTempArr)
-      setValue(`${ProcessGridFields}.${index}.ProcessCost`, netCost)
+      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
     }, 100)
   }
 

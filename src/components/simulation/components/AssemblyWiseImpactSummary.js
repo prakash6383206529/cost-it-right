@@ -10,10 +10,11 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import _ from 'lodash'
 
 const gridOptions = {};
 
-function AssemblyWiseImpact(props) {
+function AssemblyWiseImpactSummary(props) {
     const { impactType, dataForAssemblyImpact, isPartImpactAssembly } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
@@ -23,13 +24,13 @@ function AssemblyWiseImpact(props) {
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const dispatch = useDispatch();
 
-    const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
+    const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
 
     useEffect(() => {
         setloader(true)
         if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
             let requestData = []
-            let isAssemblyInDraft = true
+            let isAssemblyInDraft = false
             if (isPartImpactAssembly) {
                 let obj = {
                     CostingId: dataForAssemblyImpact?.CostingId,
@@ -39,6 +40,13 @@ function AssemblyWiseImpact(props) {
                 requestData = [obj]
 
             } else {
+                let uniqueArr = _.uniqBy(dataForAssemblyImpact, function(o){
+                    return o.CostingId;
+                });
+                uniqueArr && uniqueArr.map(item => {
+                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+                    return null
+                })
                 dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
                     requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
                     return null
@@ -121,7 +129,7 @@ function AssemblyWiseImpact(props) {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                rowData={simulationAssemblyList}
+                                rowData={simulationAssemblyListSummary}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
@@ -170,5 +178,5 @@ function AssemblyWiseImpact(props) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default AssemblyWiseImpact;
+export default AssemblyWiseImpactSummary;
 

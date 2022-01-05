@@ -325,30 +325,23 @@ class SpecificationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, this.props.rmSpecificationList)
+        let tempArr = this.props.rmSpecificationList && this.props.rmSpecificationList
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } else if (item.RMGrade === '-') {
                 item.RMGrade = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={RmSpecification}>
+            <ExcelSheet data={temp} name={RmSpecification}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }

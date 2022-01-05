@@ -41,6 +41,11 @@ class AddAssemblyForm extends Component {
 
     }
 
+    componentWillUnmount() {
+        this.props.getDrawerAssemblyPartDetail('', res => { })
+    }
+
+
     /**
     * @method handleAssemblyPartChange
     * @description  used to handle 

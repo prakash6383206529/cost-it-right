@@ -26,6 +26,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -348,18 +349,13 @@ class InterestRateListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, this.props.interestRateDataList)
+    let tempArr = this.props.interestRateDataList && this.props.interestRateDataList
+    return this.returnExcelColumn(INTERESTRATE_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.ICCPercent === null) {
         item.ICCPercent = ' '
       } else if (item.PaymentTermPercent === null) {
@@ -370,14 +366,12 @@ class InterestRateListing extends Component {
         item.IsVendor = 'Zero Based'
       } else if (item.VendorName === '-') {
         item.VendorName = ' '
-      } else {
-        return false
       }
       return item
     })
     return (
 
-      <ExcelSheet data={TempData} name={InterestMaster}>
+      <ExcelSheet data={temp} name={InterestMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -437,7 +431,8 @@ class InterestRateListing extends Component {
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+          <ScrollToTop pointProp='go-to-top' />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate

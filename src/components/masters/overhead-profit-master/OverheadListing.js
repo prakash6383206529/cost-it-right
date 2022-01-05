@@ -20,7 +20,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -269,13 +268,8 @@ class OverheadListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, this.props.overheadProfitList)
+        let tempArr = this.props.overheadProfitList && this.props.overheadProfitList
+        return this.returnExcelColumn(OVERHEAD_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -301,10 +295,8 @@ class OverheadListing extends Component {
                 item.TypeOfHead = 'Zero Based'
             } if (item.TypeOfHead === 'CBC') {
                 item.TypeOfHead = 'Client Based'
-            } else {
-                return false
             }
-            if (item.EffectiveDate.includes('T')) {
+            if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
 
             }
@@ -313,7 +305,7 @@ class OverheadListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={OverheadMaster}>
+            <ExcelSheet data={temp} name={OverheadMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -351,9 +343,7 @@ class OverheadListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
                 let length = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(length)
-
-                this.props.apply(selectedRows)
+                this.props.apply(selectedRows, length)
             }
             // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
             this.setState({ selectedRowData: selectedRows })
@@ -546,7 +536,6 @@ export default connect(mapStateToProps, {
     getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OverheadListing',
     enableReinitialize: true,

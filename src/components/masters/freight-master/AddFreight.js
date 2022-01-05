@@ -297,7 +297,7 @@ class AddFreight extends Component {
    * @description Handle Effective Date
    */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: date });
+    this.setState({ effectiveDate: date, });
     this.setState({ HandleChanged: false })
   };
   gridHandler = () => {
@@ -369,6 +369,7 @@ class AddFreight extends Component {
     }
     let tempArray = [];
     let tempData = gridTable[gridEditIndex];
+
     tempData = {
       Capacity: FullTruckCapacity.label,
       RateCriteria: RateCriteria.label,
@@ -383,9 +384,12 @@ class AddFreight extends Component {
         RateCriteria: [],
         gridEditIndex: "",
         isEditIndex: false,
+        effectiveDate: "",
+
       },
       () => this.props.change("Rate", 0)
     );
+
     this.setState({ AddUpdate: false })
   };
   /**
@@ -422,10 +426,11 @@ class AddFreight extends Component {
           label: tempData.RateCriteria,
           value: tempData.RateCriteria,
         },
-        effectiveDate: tempData.EffectiveDate,
+        effectiveDate: DayTime(tempData?.EffectiveDate).isValid() && tempData?.EffectiveDate !== null ? new Date(DayTime(tempData.EffectiveDate).format("MM/DD/YYYY")) : "",
       },
       () => this.props.change("Rate", tempData.Rate)
     );
+
   };
   /**
    * @method deleteGridItem
@@ -489,6 +494,7 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
       };
+
       this.props.reset()
       this.props.updateFright(requestData, (res) => {
         if (res.data.Result) {
@@ -830,7 +836,7 @@ class AddFreight extends Component {
                               <div className="inputbox date-section">
                                 <DatePicker
                                   name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
+                                  selected={DayTime(this.state.effectiveDate).isValid() ? this.state.effectiveDate : ""}
                                   onChange={this.handleEffectiveDateChange}
                                   showMonthDropdown
                                   showYearDropdown

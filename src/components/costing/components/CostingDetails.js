@@ -371,12 +371,12 @@ function CostingDetails(props) {
       }))
 
 
-      dispatch(getNCCExistingCosting(part.value,(res=>{
-        if(res.data.Result){
-          let Data = res.data.DataList
-          setNccGrid(Data)
-        }
-      })))
+      // dispatch(getNCCExistingCosting(part.value,(res=>{
+      //   if(res.data.Result){
+      //     let Data = res.data.DataList
+      //     setNccGrid(Data)
+      //   }
+      // })))
 
       setIsOpenVendorSOBDetails(true)
     } else {
@@ -1217,6 +1217,7 @@ const nccDrawerToggle=()=>{
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+    
 
     dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
     dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA

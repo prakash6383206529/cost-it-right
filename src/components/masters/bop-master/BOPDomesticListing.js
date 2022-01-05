@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
@@ -15,8 +12,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
-import { BOP_DOMESTIC_DOWNLOAD_EXCEl, costingHeadObjs } from '../../../config/masterData';
-import ConfirmComponent from "../../../helper/ConfirmComponent";
+import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { getConfigurationKey } from '../../../helper';
@@ -26,7 +22,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -258,7 +253,6 @@ class BOPDomesticListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
         return cellValue
-        //!= null ? moment(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -281,18 +275,20 @@ class BOPDomesticListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-            return null
-        }))
-
+        if (this.props.isSimulation === true) {
+            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+            }))
+        } else {
+            tempArr = this.props.bopDomesticList && this.props.bopDomesticList
+        }
         return this.returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = this.props.bopDomesticList && this.props.bopDomesticList.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.IsVendor === true) {
                 item.IsVendor = 'Vendor Based'
             } if (item.IsVendor === false) {
@@ -372,118 +368,22 @@ class BOPDomesticListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
-                let len = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(len)
-                this.props.apply(selectedRows)
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
             }
-            // console.log(setSelectedRowCountForSimulationMessage, 'nn (selectedRowCountForSimulationMessage !== 0) && ')
-            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+
             this.setState({ selectedRowData: selectedRows })
 
         }
 
-        const onFloatingFilterChanged = (p) => {
-            this.state.gridApi.deselectAll()
-        }
 
         return (
-            // <div>
+
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
-                {/* {this.props.loading && <Loader />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                        {this.state.shown && (
-                            <Col md="12" lg="10" className="filter-block ">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="costingHead"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Costing Head'}
-                                            isClearable={false}
-                                            options={this.renderListing('costingHead')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleHeadChange}
-                                            valueDescription={this.state.costingHead}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="category"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Category'}
-                                            isClearable={false}
-                                            options={this.renderListing('BOPCategory')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleCategoryChange}
-                                            valueDescription={this.state.BOPCategory}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="vendor"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Vendor'}
-                                            isClearable={false}
-                                            options={this.renderListing('vendor')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handleVendorChange}
-                                            valueDescription={this.state.vendor}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="plant"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Plant'}
-                                            isClearable={false}
-                                            options={this.renderListing('plant')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.handlePlantChange}
-                                            valueDescription={this.state.plant}
-                                        />
-                                    </div>
-
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
+                    
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -554,8 +454,6 @@ class BOPDomesticListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    floatingFilter={true}
-                                    // columnDefs={c}
                                     rowData={this.props.bopDomesticList}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -570,7 +468,6 @@ class BOPDomesticListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
-                                    onFilterModified={onFloatingFilterChanged}
                                 >
 
                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -645,7 +542,6 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getPlantSelectListByVendor,
     getVendorWithVendorCodeSelectList,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,

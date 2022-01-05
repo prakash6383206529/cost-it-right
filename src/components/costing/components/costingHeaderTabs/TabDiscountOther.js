@@ -7,7 +7,7 @@ import {
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
@@ -38,6 +38,7 @@ function TabDiscountOther(props) {
   const [GoToNext, setGoToNext] = useState(false);
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
+  
 
   const dispatch = useDispatch()
   let history = useHistory();
@@ -45,10 +46,13 @@ function TabDiscountOther(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const headerCosts = useContext(netHeadCostContext);
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData,CostingDataList } = useSelector(state => state.costing)
+const [totalCost,setTotalCost] = useState(0)
+
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
@@ -72,7 +76,18 @@ function TabDiscountOther(props) {
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
+
   }, [])
+
+
+  useEffect(()=>{
+    if(CostingDataList && CostingDataList.length >0){
+      let dataList =CostingDataList[0]
+      const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
+      setTotalCost(total)
+    }
+
+  },[CostingDataList])
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
@@ -365,6 +380,7 @@ function TabDiscountOther(props) {
   const onPressChangeCurrency = () => {
     setCurrency([])
     setIsCurrencyChange(!IsCurrencyChange)
+    setCurrencyExchangeRate('')
   }
 
   /**
@@ -608,19 +624,24 @@ function TabDiscountOther(props) {
 
       }
 
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-    }
+      if(!CostingViewMode){
 
-    dispatch(saveDiscountOtherCostTab(data, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-        dispatch(setComponentDiscountOtherItemData({}, () => { }))
-        if (GoToNext) {
-          props.toggle('2')
-          history.push('/costing-summary')
-        }
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-    }))
+    }
+    if(!CostingViewMode){
+
+      dispatch(saveDiscountOtherCostTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentDiscountOtherItemData({}, () => { }))
+          if (GoToNext) {
+            props.toggle('2')
+            history.push('/costing-summary')
+          }
+        }
+      }))
+    }
   }
   return (
     <>
@@ -638,7 +659,7 @@ function TabDiscountOther(props) {
                           <th className="fs1 font-weight-500 py-3" className="width33">{``}</th>
                           <th className="fs1 font-weight-500 py-3" className="width33">{``}</th>
                           {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountCostData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(getValues('NetPOPriceINR'), initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
@@ -1028,7 +1049,7 @@ function TabDiscountOther(props) {
                       </div>
                     </Col>
                   </Row>
-                  <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
+                  <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button

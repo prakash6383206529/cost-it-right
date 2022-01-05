@@ -564,8 +564,12 @@ export function formViewData(costingSummary) {
   obj.pCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetProcessCost ? dataFromAPI.CostingPartDetails.NetProcessCost : 0
   obj.oCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOperationCost ? dataFromAPI.CostingPartDetails.NetOperationCost : 0
   obj.sTreatment = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
+ obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost:0
   obj.tCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetTransportationCost ? dataFromAPI.CostingPartDetails.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
+  obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
+  
+ 
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
@@ -589,11 +593,13 @@ export function formViewData(costingSummary) {
     paymentValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
   }
   obj.nOverheadProfit = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadAndProfitCost ? dataFromAPI.CostingPartDetails.NetOverheadAndProfitCost : 0
+  
   obj.packagingCost = dataFromAPI.CostingPartDetails
     && dataFromAPI.CostingPartDetails.NetPackagingCost !== null ? dataFromAPI.CostingPartDetails.NetPackagingCost
     : 0
   obj.freight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightCost !== null ? dataFromAPI.CostingPartDetails.NetFreightCost : 0
   obj.nPackagingAndFreight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightPackagingCost ? dataFromAPI.CostingPartDetails.NetFreightPackagingCost : 0
+  
 
   obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails.BOPHandlingCharges : 0
   obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails.BOPHandlingPercentage : 0
@@ -604,12 +610,13 @@ export function formViewData(costingSummary) {
 
   obj.toolApplicability =  { applicability: 'Applicability', value: 'Value', }
   obj.toolApplicabilityValue= {
-    toolTitle:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceApplicability !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceApplicability : 0,
+    toolTitle:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType : 0,
     toolValue:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
   }
   obj.toolAmortizationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost : 0
 
   obj.totalToolCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetToolCost !== null ? dataFromAPI.CostingPartDetails.NetToolCost : 0
+  
   obj.totalCost = dataFromAPI.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : '-'
   obj.otherDiscount = { discount: 'Discount %', value: 'Value', }
   obj.otherDiscountValue = {
@@ -650,6 +657,8 @@ export function formViewData(costingSummary) {
   obj.netFreightCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingFreightDetail : []
   // //Tool Cost
   obj.netToolCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingToolCostResponse : []
+  obj.totalTabSum =checkForNull(obj.nTotalRMBOPCC )+ checkForNull(obj.nsTreamnt) +   checkForNull(obj.nOverheadProfit) +checkForNull(obj.nPackagingAndFreight) +   checkForNull(obj.totalToolCost) 
+  
   // //For Drawer Edit
   obj.partId = dataFromAPI.PartNumber ? dataFromAPI.PartNumber : '-'
   obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'

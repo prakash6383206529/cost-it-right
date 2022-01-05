@@ -20,6 +20,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -286,17 +287,15 @@ class ClientListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={Clientmaster}>
+            <ExcelSheet data={temp} name={Clientmaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -351,8 +350,8 @@ class ClientListing extends Component {
 
         return (
             // <div className="">
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+                <ScrollToTop pointProp="go-to-top" />
                 {/* {this.props.loading && <Loader />} */}
                 < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>

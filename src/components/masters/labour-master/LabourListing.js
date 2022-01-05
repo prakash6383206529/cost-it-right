@@ -26,6 +26,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -374,18 +375,13 @@ class LabourListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, this.props.labourDataList)
+    let tempArr = this.props.labourDataList && this.props.labourDataList
+    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } else if (item.IsContractBase === true) {
@@ -396,14 +392,12 @@ class LabourListing extends Component {
         item.Vendor = ' '
       } else if (item.Plant === '-') {
         item.Plant = ' '
-      } else {
-        return false
       }
       return item
     })
     return (
 
-      <ExcelSheet data={TempData} name={LabourMaster}>
+      <ExcelSheet data={temp} name={LabourMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -467,8 +461,8 @@ class LabourListing extends Component {
     return (
       <>
         {/* {this.state.isLoader && <LoaderCustom />} */}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+          <ScrollToTop pointProp="go-to-top" />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate

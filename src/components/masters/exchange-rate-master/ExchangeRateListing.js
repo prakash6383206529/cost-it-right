@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { filterParams } from '../../common/DateFilter'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -259,32 +260,25 @@ class ExchangeRateListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, this.props.exchangeRateDataList)
+        let tempArr = this.props.exchangeRateDataList && this.props.exchangeRateDataList
+        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.BankRate === null) {
                 item.BankRate = ' '
             } else if (item.BankCommissionPercentage === null) {
                 item.BankCommissionPercentage = ' '
             } else if (item.CustomRate === null) {
                 item.CustomRate = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={ExchangeMaster}>
+            <ExcelSheet data={temp} name={ExchangeMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -348,8 +342,9 @@ class ExchangeRateListing extends Component {
         return (
             <>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
-                <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                     <div className="container-fluid">
+                        <ScrollToTop pointProp="go-to-top" />
                         {/* {this.props.loading && <Loader />} */}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             {!this.props.isSimulation &&

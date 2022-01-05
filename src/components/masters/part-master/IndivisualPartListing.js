@@ -408,7 +408,7 @@ class IndivisualPartListing extends Component {
         // dont remove this
 
         //if resolution greater than 1920 table listing fit to 100%
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         //if resolution greater than 1920 table listing fit to 100%
     };
 
@@ -418,18 +418,18 @@ class IndivisualPartListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
+        let tempArr = this.props.newPartsListing && this.props.newPartsListing
+        // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+        // data && data.map((item => {
+        //     tempArr.push(item.data)
+        // }))
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, this.props.newPartsListing)
+        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -438,15 +438,13 @@ class IndivisualPartListing extends Component {
                 item.DrawingNumber = ' '
             } else if (item.Technology === '-') {
                 item.Technology = ' '
-            } else {
-                return false
             }
 
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={temp} name={ComponentPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -609,7 +607,7 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                <AgGridColumn field="PartId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="PartId" headerName="Action" width={120} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
                                 <div className="paging-container d-inline-block float-right">
