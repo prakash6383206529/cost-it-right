@@ -12,7 +12,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ComponentPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -21,7 +20,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
-import { apiErrors } from '../../../helper/util'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -37,9 +35,7 @@ const gridOptions = {
     paginationPageSize: 10
 };
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+
 
 class IndivisualPartListing extends Component {
     constructor(props) {
@@ -107,7 +103,6 @@ class IndivisualPartListing extends Component {
 
             const nextNo = data.state.currentRowIndex + 10;
 
-            //     //gridApi.paginationGoToNextPage();
             data.ApiActionCreator(nextNo, 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: nextNo })
         }
@@ -185,7 +180,6 @@ class IndivisualPartListing extends Component {
         this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
 
 
-        //this.props.checkStatusCodeAPI(412, () => { })
     }
 
 
@@ -225,10 +219,20 @@ class IndivisualPartListing extends Component {
         let requestData = {
             isEditFlag: true,
             Id: Id,
+            isViewMode: false,
         }
         this.props.getDetails(requestData)
     }
 
+
+    viewItemDetails = (Id) => {
+        let requestData = {
+            isEditFlag: true,
+            Id: Id,
+            isViewMode: true,
+        }
+        this.props.getDetails(requestData)
+    }
     /**
     * @method deleteItem
     * @description confirm delete part
@@ -265,9 +269,10 @@ class IndivisualPartListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewItemDetails(cellValue, rowData)} />}
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -290,11 +295,7 @@ class IndivisualPartListing extends Component {
         }
         this.props.activeInactivePartStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                // if (cell === true) {
-                //     Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-                // } else {
-                //     Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-                // }
+
                 this.getTableListData()
             }
         })
@@ -310,7 +311,7 @@ class IndivisualPartListing extends Component {
             return (
                 <>
                     <label htmlFor="normal-switch" className="normal-switch">
-                        {/* <span>Switch with default style</span> */}
+
                         <Switch
                             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
                             checked={cell}
@@ -419,10 +420,6 @@ class IndivisualPartListing extends Component {
 
     onBtExport = () => {
         let tempArr = this.props.newPartsListing && this.props.newPartsListing
-        // const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        // data && data.map((item => {
-        //     tempArr.push(item.data)
-        // }))
 
         return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
@@ -450,16 +447,7 @@ class IndivisualPartListing extends Component {
     }
 
 
-    // resetState() {
-    //     gridOptions.columnApi.resetColumnState();
-    //     gridOptions.api.setFilterModel(null);
-    // }
 
-    // resetState() {
-    //     gridOptions.columnApi.resetColumnState();
-    //     this.onSearchExit(null)
-
-    // }
 
     /**
     * @method render
@@ -480,11 +468,6 @@ class IndivisualPartListing extends Component {
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            // exportCSVBtn: this.createCustomExportCSVButton,
-            // onExportToCSV: this.handleExportCSVButtonClick,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -552,7 +535,6 @@ class IndivisualPartListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
@@ -585,12 +567,10 @@ class IndivisualPartListing extends Component {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                // columnDefs={c}
                                 rowData={this.props.newPartsListing}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
-                                //onPaginationChanged={this.onPageChange}
                                 gridOptions={gridOptions}
                                 onFilterModified={this.onFloatingFilterChanged}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -600,7 +580,6 @@ class IndivisualPartListing extends Component {
 
                                 }}
                                 frameworkComponents={frameworkComponents}
-                            //    suppressPaginationPanel={true}
                             >
                                 <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
@@ -609,7 +588,7 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                <AgGridColumn field="PartId" headerName="Action" width={120} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
                                 <div className="paging-container d-inline-block float-right">
