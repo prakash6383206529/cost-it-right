@@ -140,10 +140,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null) || (val[15] !== '' && val[15] !== undefined && val[15] !== null)) {
+                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[15] !== '' && val[15] !== undefined && val[15] !== null && val[15] !== null && val[14] !== val[15])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' && val[15] === '') || (val[11] === undefined && val[15] === undefined) || (val[11] === null && val[15] === null)) {
+                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[15] === '' || val[15] === undefined || val[15] === null || val[14] === val[15])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -169,10 +169,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null) || (val[13] !== '' && val[13] !== undefined && val[13] !== null)) {
+                                        if ((val[11] !== '' && val[11] !== undefined && val[11] !== null && val[10] !== val[11]) || (val[13] !== '' && val[13] !== undefined && val[13] !== null && val[12] !== val[13])) {
                                             basicRateCount = 1
                                         }
-                                        if ((val[11] === '' && val[13] === '') || (val[11] === undefined && val[13] === undefined) || (val[11] === null && val[13] === null)) {
+                                        if ((val[11] === '' || val[11] === undefined || val[11] === null || val[10] === val[11]) && (val[13] === '' || val[13] === undefined || val[13] === null || val[12] === val[13])) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -198,10 +198,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined) {
+                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -227,10 +227,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined) {
+                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -255,10 +255,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[9] !== '' && val[9] !== undefined) {
+                                        if (val[9] !== '' && val[9] !== undefined && val[8] !== val[9]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[9] === '' || val[9] === undefined) {
+                                        if (val[9] === '' || val[9] === undefined || val[8] === val[9]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -283,10 +283,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined) {
+                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -311,10 +311,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[8] !== '' && val[8] !== undefined) {
+                                        if (val[8] !== '' && val[8] !== undefined && val[7] !== val[8]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[8] === '' || val[8] === undefined) {
+                                        if (val[8] === '' || val[8] === undefined || val[7] === val[8]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -339,10 +339,10 @@ class SimulationUploadDrawer extends Component {
                             resp.rows.map((val, index) => {
                                 if (val.length !== 0) {
                                     if (index > 0) {
-                                        if (val[5] !== '' && val[5] !== undefined) {
+                                        if (val[5] !== '' && val[5] !== undefined && val[4] !== val[5]) {
                                             basicRateCount = 1
                                         }
-                                        if (val[5] === '' || val[5] === undefined) {
+                                        if (val[5] === '' || val[5] === undefined || val[4] === val[5]) {
                                             NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
                                             return false
                                         }
@@ -380,49 +380,49 @@ class SimulationUploadDrawer extends Component {
                     switch (Number(this.props.master.value)) {
                         case Number(RMDOMESTIC):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one basic rate or one scrap rate.')
+                                Toaster.warning('Please change at least one basic rate or scrap rate.')
                                 return false
                             }
                             break;
                         case Number(RMIMPORT):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one basic rate.')
-                                return false
-                            }
-                            break;
-                        case Number(COMBINED_PROCESS):
-                            if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one Conversion Cost.')
+                                Toaster.warning('Please change at least one basic rate.')
                                 return false
                             }
                             break;
                         case Number(SURFACETREATMENT):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one rate.')
+                                Toaster.warning('Please change at least one rate.')
                                 return false
                             }
                             break;
                         case Number(OPERATIONS):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one rate.')
+                                Toaster.warning('Please change at least one rate.')
                                 return false
                             }
                             break;
                         case Number(MACHINERATE):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one machine rate.')
+                                Toaster.warning('Please change at least one machine rate.')
                                 return false
                             }
                             break;
                         case Number(BOPDOMESTIC):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one basic rate.')
+                                Toaster.warning('Please change at least one basic rate.')
                                 return false
                             }
                             break;
                         case Number(BOPIMPORT):
                             if (basicRateCount === 0) {
-                                Toaster.warning('Please fill at least one basic rate.')
+                                Toaster.warning('Please change at least one basic rate.')
+                                return false
+                            }
+                            break;
+                        case Number(COMBINED_PROCESS):
+                            if (basicRateCount === 0) {
+                                Toaster.warning('Please change at least one Conversion Cost.')
                                 return false
                             }
                             break;

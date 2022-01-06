@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation, setSelectedRowCountForSimulationMessage } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation, setVendorForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
@@ -46,7 +46,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedVendorForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedVendorForSimulation,  } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -81,14 +81,8 @@ function Simulation(props) {
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
-        // setFilterStatus(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
         setOnLoad(true)
     }, [])
-
-    // useEffect(() => {
-
-    //     editTable(tableData)
-    // }, [selectedRowCountForSimulationMessage])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
@@ -118,6 +112,7 @@ function Simulation(props) {
         }
 
         setEditWarning(applyEditCondSimulation(value.value))
+        setFilterStatus(`Please check the ${(value.label)} that you want to edit.`)
 
     }
 
@@ -125,11 +120,11 @@ function Simulation(props) {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
         setShowMasterList(false)
+        setEditWarning(true);
         setTimeout(() => {
             setValue('Vendor', '')
             dispatch(setTechnologyForSimulation(value))
-            dispatch(setSelectedRowCountForSimulationMessage(0))
-            if (value !== '' && Object.keys(master).length > 0 && !(master.value === '3')) {
+            if (value !== '' && Object.keys(master).length > 0&& !(master.value === '3')) {
                 setShowMasterList(true)
             }
         }, 100);
@@ -313,14 +308,14 @@ function Simulation(props) {
         }
     }
 
-    const editTable = (Data) => {
+    const editTable = (Data, length) => {
         setTableData(Data)
         // alert('Hello')
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
-        if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
+        if (length === 0 || length === undefined || length === null) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
         switch (master.value) {
@@ -334,35 +329,27 @@ function Simulation(props) {
                         if (element.CostingHead !== Data[index - 1].CostingHead) {
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            // Toaster.warning('Please select one vendor at a time.')
-                            setEditWarning(true);
-                            vendorFlag = false
-                            return false
-                        }
-
                     }
                 });
                 if (flag === true && vendorFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
+               
                 break;
             case RMIMPORT:
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
                 Data && Data.forEach((element, index) => {
 
                     if (index !== 0) {
@@ -370,21 +357,19 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                     }
                 })
                 if (flag === true && vendorFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 }
                 break;
 
@@ -399,26 +384,20 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head and Vendor')
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                        (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case OPERATIONS:
                 if (Data.length === 0) {
@@ -434,10 +413,9 @@ function Simulation(props) {
                             return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
-                            // toastr.warning('Please select one vendor at a time.')
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
-                            return false
                         }
                         // if (element.PlantId !== Data[index - 1].PlantId) {
                         //     // toastr.warning('Please select one Plant at a time.')
@@ -450,13 +428,13 @@ function Simulation(props) {
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
             case MACHINERATE:
@@ -470,37 +448,30 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case BOPDOMESTIC:
                 if (Data.length === 0) {
@@ -513,37 +484,30 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case BOPIMPORT:
                 if (Data.length === 0) {
@@ -556,37 +520,19 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
-                if (flag === true && vendorFlag === true && plantFlag === true) {
-                    setEditWarning(false)
-                } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-                } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
-                } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
-                } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
-                }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
 
             case COMBINED_PROCESS:
@@ -600,10 +546,6 @@ function Simulation(props) {
             default:
                 break;
         }
-        if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
-            setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
-        }
-
     }
 
     const openEditPage = () => {

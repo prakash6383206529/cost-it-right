@@ -50,6 +50,7 @@ function PaymentTerms(props) {
 
             if (!CostingViewMode) {
                 props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+                dispatch(isOverheadProfitDataChange(true))
             }
         }, 200)
     }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues, paymentTermsApplicability]);
@@ -159,7 +160,7 @@ function PaymentTerms(props) {
                 default:
                     break;
             }
-            dispatch(isOverheadProfitDataChange(true))
+           
         }
     }
 
