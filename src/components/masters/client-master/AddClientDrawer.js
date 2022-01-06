@@ -11,8 +11,8 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
+
+
 
 class AddClientDrawer extends Component {
     constructor(props) {
@@ -20,6 +20,7 @@ class AddClientDrawer extends Component {
         this.state = {
             isEditFlag: false,
             isShowForm: false,
+            isViewMode: this.props?.isViewMode ? true : false,
             ClientId: '',
             city: [],
             country: [],
@@ -37,6 +38,7 @@ class AddClientDrawer extends Component {
     componentDidMount() {
         this.props.fetchCountryDataAPI(() => { })
         this.getDetail()
+
     }
 
     getAllCityData = () => {
@@ -182,6 +184,7 @@ class AddClientDrawer extends Component {
             city: [],
             country: [],
             state: [],
+            isViewMode: false
         })
         this.props.getClientData('', () => { })
         this.props.fetchStateDataAPI(0, () => { })
@@ -261,7 +264,7 @@ class AddClientDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
-        const { country } = this.state;
+        const { country, isViewMode } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -313,6 +316,7 @@ class AddClientDrawer extends Component {
                                             required={false}
                                             className=""
                                             customClassName={'withBorder'}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -324,7 +328,7 @@ class AddClientDrawer extends Component {
                                             validate={[required, email, minLength7, maxLength70]}
                                             required={true}
                                             maxLength={70}
-                                            isDisabled={this.state.isEditFlag ? true : false}
+                                            isDisabled={isEditFlag ? true : false}
                                             customClassName={'withBorderEmail withBorder remove-double-border'}
                                         />
                                     </Col>
@@ -343,6 +347,7 @@ class AddClientDrawer extends Component {
                                                     // maxLength={12}
                                                     className=""
                                                     customClassName={'withBorder'}
+                                                    disabled={isViewMode}
                                                 />
                                             </Col>
                                             <Col className="Ext phoneNumber pr-0" md="4">
@@ -357,6 +362,7 @@ class AddClientDrawer extends Component {
                                                     maxLength={3}
                                                     className=""
                                                     customClassName={'withBorder'}
+                                                    disabled={isViewMode}
                                                 />
                                             </Col>
                                         </Row>
@@ -371,7 +377,7 @@ class AddClientDrawer extends Component {
                                             type="text"
                                             placeholder={''}
                                             component={renderText}
-                                            isDisabled={false}
+                                            disabled={isViewMode}
                                             validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                                             // required={true}
                                             maxLength={10}
@@ -391,6 +397,7 @@ class AddClientDrawer extends Component {
                                             required={true}
                                             handleChangeDescription={this.countryHandler}
                                             valueDescription={this.state.country}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                 </Row>
@@ -409,6 +416,7 @@ class AddClientDrawer extends Component {
                                                 required={true}
                                                 handleChangeDescription={this.stateHandler}
                                                 valueDescription={this.state.state}
+                                                disabled={isViewMode}
                                             />
                                         </Col>}
                                     <Col md='6'>
@@ -424,6 +432,7 @@ class AddClientDrawer extends Component {
                                             required={true}
                                             handleChangeDescription={this.cityHandler}
                                             valueDescription={this.state.city}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
 
@@ -438,6 +447,7 @@ class AddClientDrawer extends Component {
                                             // required={true}
                                             maxLength={6}
                                             customClassName={'withBorder'}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                 </Row>
@@ -453,6 +463,7 @@ class AddClientDrawer extends Component {
                                             </button>
                                             <button
                                                 type="submit"
+                                                disabled={isViewMode}
                                                 className="user-btn save-btn" >
                                                 <div className={"save-icon"}></div>
                                                 {this.props.isEditFlag ? 'Update' : 'Save'}
