@@ -6465,6 +6465,8 @@ left: 17rem;
   min-width: 14.725rem;
 }
 .re-warning {
+  margin-left: 15px;
+  margin-top: -15px;
   img {
     margin-bottom: 20px;
   }
@@ -6526,10 +6528,7 @@ left: 17rem;
   padding: 0 28px !important;
 }
 .rmcc-main-headings {
-  position: relative;
   th {
-    position: sticky;
-    top: 0;
     padding: 5px 15px !important;
   }
 }
