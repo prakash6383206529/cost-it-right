@@ -636,7 +636,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         {/* <Errorbox customClass="" errorText="There is some error in your page" /> */}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
@@ -922,30 +922,32 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </>
                         }
-                        <Row className='mt-2'>
-                            <Col md="10">
-                                <div className="left-border">{'Assembly wise Impact:'}</div>
-                            </Col>
-                            <Col md="2" className="text-right">
-                                <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
-                                        {assemblyWiseAcc ? (
-                                            <i className="fa fa-minus" ></i>
-                                        ) : (
-                                            <i className="fa fa-plus"></i>
-                                        )}
-                                    </button>
-                                </div>
-                            </Col>
-                        </Row>
-                        <div>
-                            {assemblyWiseAcc && <AssemblyWiseImpactSummary
-                                dataForAssemblyImpact={DataForAssemblyImpactForFg}
-                                vendorIdState={costingList[0]?.VendorId}
-                                impactType={'AssemblySummary'}
-                                isPartImpactAssembly={false}
-                            />}
-                        </div>
+                        {DataForAssemblyImpactForFg[0]?.IsAssemblyExist && <>
+                            <Row className='mt-2'>
+                                <Col md="10">
+                                    <div className="left-border">{'Assembly wise Impact:'}</div>
+                                </Col>
+                                <Col md="2" className="text-right">
+                                    <div className="right-border">
+                                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
+                                            {assemblyWiseAcc ? (
+                                                <i className="fa fa-minus" ></i>
+                                            ) : (
+                                                <i className="fa fa-plus"></i>
+                                            )}
+                                        </button>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <div>
+                                {assemblyWiseAcc && <AssemblyWiseImpactSummary
+                                    dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                                    vendorIdState={costingList[0]?.VendorId}
+                                    impactType={'AssemblySummary'}
+                                    isPartImpactAssembly={false}
+                                />}
+                            </div>
+                        </>}
                         <Row className="mt-2">
                             <Col md="10">
                                 <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
