@@ -810,10 +810,7 @@ export function CheckApprovalApplicableMaster(number) {
   return isApproval
 }
 
-export function isMultipleRMAllow(technology) {
-  const allowedMultipleRM = [MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, MACHINING, FORGING, PLASTIC];
-  return allowedMultipleRM.includes(technology);
-}
+
 
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {
