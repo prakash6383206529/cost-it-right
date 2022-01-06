@@ -116,7 +116,7 @@ class OverheadProfit extends Component {
       <>
         <div className="container-fluid" id='go-to-top'>
           {/* {this.props.loading && <Loader/>} */}
-          <ScrollToTop pointProp ="go-to-top" />
+          <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col sm="4">
               <h1>{`Overhead & Profit Master`}</h1>
@@ -163,6 +163,7 @@ class OverheadProfit extends Component {
                         EditAccessibility={this.state.EditAccessibility}
                         DeleteAccessibility={this.state.DeleteAccessibility}
                         DownloadAccessibility={this.state.DownloadAccessibility}
+                        ViewAccessibility={this.state.ViewAccessibility}
                       />
                     </TabPane>
                   )}
@@ -176,6 +177,8 @@ class OverheadProfit extends Component {
                         EditAccessibility={this.state.EditAccessibility}
                         DeleteAccessibility={this.state.DeleteAccessibility}
                         DownloadAccessibility={this.state.DownloadAccessibility}
+                        ViewAccessibility={this.state.ViewAccessibility}
+
                       />
                     </TabPane>
                   )}
