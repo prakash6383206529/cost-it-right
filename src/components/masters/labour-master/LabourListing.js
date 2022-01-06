@@ -136,12 +136,12 @@ class LabourListing extends Component {
 
 
   /**
-   * @method editItemDetails
-   * @description confirm edit item
+   * @method viewOrEditItemDetails
+   * @description confirm edit or view item
    */
-  editItemDetails = (Id) => {
+  viewOrEditItemDetails = (Id, isViewMode) => {
     this.setState({
-      data: { isEditFlag: true, ID: Id },
+      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
       toggleForm: true,
     })
   }
@@ -186,10 +186,11 @@ class LabourListing extends Component {
     const cellValue = props?.value;
     const rowData = props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.state;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -201,16 +202,7 @@ class LabourListing extends Component {
       ModifiedBy: loggedInUserId(),
       IsActive: !cell, //Status of the user.
     }
-    // this.props.activeInactiveVendorStatus(data, res => {
-    //     if (res && res.data && res.data.Result) {
-    //         if (cell == true) {
-    //             Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-    //         } else {
-    //             Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-    //         }
-    //         this.getTableListData(null, null, null, null)
-    //     }
-    // })
+
   }
 
 
@@ -436,9 +428,6 @@ class LabourListing extends Component {
     const options = {
       clearSearch: true,
       noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      // onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -523,7 +512,7 @@ class LabourListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -547,7 +536,6 @@ class LabourListing extends Component {
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout='autoHeight'
-                // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
                 paginationPageSize={10}
@@ -569,7 +557,7 @@ class LabourListing extends Component {
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
                 <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
