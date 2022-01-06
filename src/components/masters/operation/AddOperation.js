@@ -44,6 +44,10 @@ class AddOperation extends Component {
       files: [],
       isVisible: false,
       imageURL: '',
+      isFinalApprovar: false,
+      approveDrawer: false,
+      approvalObj: {},
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       isEditFlag: false,
       isShowForm: false,
@@ -78,12 +82,7 @@ class AddOperation extends Component {
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getVendorWithVendorCodeSelectList()
     this.getDetail()
-    // if (initialConfiguration && initialConfiguration.IsOperationCodeConfigure && data.isEditFlag === false) {
-    //   this.props.checkAndGetOperationCode('', (res) => {
-    //     let Data = res.data.DynamicData;
-    //     this.props.change('OperationCode', Data.OperationCode)
-    //   })
-    // }
+
 
   }
 
@@ -162,9 +161,7 @@ class AddOperation extends Component {
   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
-      // vendorName: [],
-      // selectedVendorPlants: [],
-      // vendorLocation: [],
+
     });
   }
 
@@ -600,7 +597,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode } = this.state;
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -706,7 +703,6 @@ class AddOperation extends Component {
                           placeholder={"Enter"}
                           validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
-                          //required={true}
                           disabled={isEditFlag ? true : false}
                           className=" "
                           customClassName=" withBorder"
@@ -745,7 +741,6 @@ class AddOperation extends Component {
                                 component={searchableSelect}
                                 placeholder={"Select"}
                                 options={this.renderListing("VendorNameList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                 required={true}
                                 handleChangeDescription={this.handleVendorName}
@@ -792,14 +787,10 @@ class AddOperation extends Component {
                             label={'Destination Plant'}
                             name="DestinationPlant"
                             placeholder={"Select"}
-                            // selection={
-                            //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("singlePlant")}
                             handleChangeDescription={this.handleDestinationPlant}
                             validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
                             required={true}
-                            // optionValue={(option) => option.Value}
-                            // optionLabel={(option) => option.Text}
                             component={searchableSelect}
                             valueDescription={this.state.destinationPlant}
                             mendatory={true}
@@ -816,12 +807,11 @@ class AddOperation extends Component {
                           component={searchableSelect}
                           placeholder={"Select"}
                           options={this.renderListing("UOM")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={false}
+                          disabled={isViewMode}
                         />
                       </Col>
                       <Col md="3">
@@ -832,9 +822,8 @@ class AddOperation extends Component {
                           placeholder={"Enter"}
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
-                          //onChange={this.handleBasicRate}
                           required={true}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -847,8 +836,6 @@ class AddOperation extends Component {
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          //onChange={this.handleBasicRate}
-                          //required={true}
                           disabled={isEditFlag ? true : false}
                           className=" "
                           customClassName=" withBorder"
@@ -866,13 +853,11 @@ class AddOperation extends Component {
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {
-                              //e.preventDefault()
                             }}
                             component={renderDatePicker}
                             className=" "
                             disabled={isEditFlag ? true : false}
                             customClassName=" withBorder"
-                          //minDate={moment()}
                           />
                         </div>
                       </Col>
@@ -899,22 +884,7 @@ class AddOperation extends Component {
                           />
                         </label>
                       </Col>
-                      {/* {this.state.isSurfaceTreatment &&
-                          <Col md='3'>
-                              <Field
-                                  label={`Surface Treatment Charges`}
-                                  name={"SurfaceTreatmentCharges"}
-                                  type="text"
-                                  placeholder={'Enter'}
-                                  validate={[required]}
-                                  component={renderNumberInputField}
-                                  //onChange={this.handleBasicRate}
-                                  required={true}
-                                  disabled={isEditFlag ? true : false}
-                                  className=" "
-                                  customClassName=" withBorder"
-                              />
-                          </Col>} */}
+
                     </Row>
 
                     <Row>
@@ -933,7 +903,7 @@ class AddOperation extends Component {
                           customClassName=" textAreaWithBorder"
                           onChange={this.handleMessageChange}
                           validate={[maxLength512]}
-                          //required={true}
+                          disabled={isViewMode}
                           component={renderTextAreaField}
                           maxLength="512"
                         />
@@ -949,7 +919,7 @@ class AddOperation extends Component {
                             getUploadParams={this.getUploadParams}
                             onChangeStatus={this.handleChangeStatus}
                             PreviewComponent={this.Preview}
-                            //onSubmit={this.handleSubmit}
+                            disabled={isViewMode}
                             accept="*"
                             initialFiles={this.state.initialFiles}
                             maxFiles={3}
@@ -981,22 +951,17 @@ class AddOperation extends Component {
                               const fileURL = `${FILE_URL}${withOutTild}`;
                               return (
                                 <div className={'attachment images'}>
-                                  <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
-                                  {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                  {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
+                                  <a href={fileURL} target="_blank" rel="noreferrer">{f.OriginalFileName}</a>
 
-                                  <img
+
+                                  {!isViewMode && <img
                                     alt={""}
                                     className="float-right"
                                     onClick={() =>
                                       this.deleteFile(f.FileId, f.FileName)
                                     }
                                     src={imgRedcross}
-                                  ></img>
+                                  ></img>}
                                 </div>
                               );
                             })}
@@ -1029,6 +994,7 @@ class AddOperation extends Component {
                       <button
                         type="submit"
                         className="user-btn mr5 save-btn"
+                        disabled={isViewMode}
                       >
                         <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}

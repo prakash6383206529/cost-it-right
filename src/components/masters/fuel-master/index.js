@@ -159,6 +159,7 @@ class FuelMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                ViewAccessibility={this.state.ViewAccessibility}
                                             />
                                         </TabPane>}
 
@@ -172,6 +173,7 @@ class FuelMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                ViewAccessibility={this.state.ViewAccessibility}
                                             />
                                         </TabPane>}
 
