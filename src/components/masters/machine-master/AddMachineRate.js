@@ -49,7 +49,7 @@ class AddMachineRate extends Component {
       IsDetailedEntry: false,
       isViewFlag: false,
       approveDrawer: false,
-      isViewMode: false,
+      isViewMode: this.props.editDetails?.isViewMode ? true : false,
 
       selectedTechnology: [],
       vendorName: [],
@@ -202,7 +202,6 @@ class AddMachineRate extends Component {
         isEditFlag: false,
         isLoader: true,
         MachineID: editDetails.Id,
-        isViewMode: false,
       })
       this.props.getMachineData(editDetails.Id, res => {
         if (res && res.data && res.data.Result) {
@@ -236,9 +235,6 @@ class AddMachineRate extends Component {
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
-            if (this.props.editDetails.isViewMode) {
-              this.setState({ isViewMode: true })
-            }
 
             this.setState({
               isEditFlag: true,
@@ -1094,7 +1090,7 @@ class AddMachineRate extends Component {
                             validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : [])}
                             className="multiselect-with-border"
                             valueDescription={this.state.selectedTechnology}
-                            disabled={isViewFlag ? true : isViewMode ? true : false}
+                            disabled={isViewFlag ? true : isViewMode}
                           //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                           />
                         </Col>
@@ -1176,7 +1172,7 @@ class AddMachineRate extends Component {
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
                             // required={true}
-                            disabled={this.state.isViewFlag ? true : isViewMode ? true : false}
+                            disabled={this.state.isViewFlag ? true : isViewMode}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1211,7 +1207,7 @@ class AddMachineRate extends Component {
                                 required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
-                                disabled={this.state.isViewFlag ? true : isViewMode ? true : false}
+                                disabled={this.state.isViewFlag ? true : isViewMode}
                               />
                             </div>
                             {!isEditFlag && <div
@@ -1230,7 +1226,7 @@ class AddMachineRate extends Component {
                             validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
                             required={false}
-                            disabled={this.state.isViewFlag ? true : isViewMode ? true : false}
+                            disabled={this.state.isViewFlag ? true : isViewMode}
                             className=" "
                             customClassName="withBorder"
                           />
@@ -1306,7 +1302,7 @@ class AddMachineRate extends Component {
                                 //required={true}
                                 handleChangeDescription={this.handleProcessName}
                                 valueDescription={this.state.processName}
-                                disabled={isViewMode ? true : false}
+                                disabled={isViewMode}
                               />
                             </div>
                             {(!isEditFlag || this.state.isViewFlag) && <div
@@ -1327,7 +1323,7 @@ class AddMachineRate extends Component {
                             //required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -1340,7 +1336,7 @@ class AddMachineRate extends Component {
                             component={renderText}
                             onChange={this.handleMachineRate}
                             //required={true}
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                             className=" "
                             customClassName=" withBorder"
                           />
@@ -1350,7 +1346,7 @@ class AddMachineRate extends Component {
                             {this.state.isEditIndex ?
                               <>
                                 <button
-                                  disabled={isViewMode ? true : false}
+                                  disabled={isViewMode}
                                   type="button"
                                   className={'btn btn-primary mt30 pull-left mr5'}
                                   onClick={this.updateProcessGrid}
@@ -1358,7 +1354,7 @@ class AddMachineRate extends Component {
 
                                 <button
                                   type={'button'}
-                                  disabled={isViewMode ? true : false}
+                                  disabled={isViewMode}
                                   className="reset-btn mt30 "
                                   onClick={this.resetProcessGridData}>{'Cancel'}
                                 </button>
@@ -1369,7 +1365,7 @@ class AddMachineRate extends Component {
                                 <button
                                   type="button"
                                   className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} mt30 pull-left mr5`}
-                                  disabled={this.state.isViewFlag ? true : isViewMode ? true : false}
+                                  disabled={this.state.isViewFlag ? true : isViewMode}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>
                                 <button
@@ -1441,7 +1437,7 @@ class AddMachineRate extends Component {
                             component={renderTextAreaField}
                             maxLength="512"
                             rows="6"
-                            disabled={this.state.isViewFlag ? true : isViewMode ? true : false}
+                            disabled={this.state.isViewFlag ? true : isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -1460,7 +1456,7 @@ class AddMachineRate extends Component {
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}
-                              disabled={this.state.isViewFlag ? true : isViewMode ? true : false}
+                              disabled={this.state.isViewFlag ? true : isViewMode}
                               inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
                                 <i className="text-primary fa fa-cloud-upload"></i>
                                 <span className="d-block">
@@ -1533,7 +1529,7 @@ class AddMachineRate extends Component {
                                 <button
                                   type="submit"
                                   className="user-btn mr5 save-btn"
-                                  disabled={isViewMode ? true : false}
+                                  disabled={isViewMode}
                                 >
                                   <div className={"save-icon"}></div>
                                   {isEditFlag ? "Update" : "Save"}

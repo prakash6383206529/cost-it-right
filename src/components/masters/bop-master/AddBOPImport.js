@@ -45,7 +45,7 @@ class AddBOPImport extends Component {
     this.state = {
       isEditFlag: false,
       IsVendor: false,
-      isViewMode: false,
+      isViewMode: this.props.data?.isViewMode ? true : false,
 
       BOPCategory: [],
       isCategoryDrawerOpen: false,
@@ -164,7 +164,6 @@ class AddBOPImport extends Component {
         isEditFlag: false,
         isLoader: true,
         BOPID: data.Id,
-        isViewMode: false,
       })
 
       this.props.getBOPImportById(data.Id, res => {
@@ -200,9 +199,7 @@ class AddBOPImport extends Component {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
 
-            if (this.props.data.isViewMode) {
-              this.setState({ isViewMode: true })
-            }
+
             this.setState({
               isEditFlag: true,
               // isLoader: false,
@@ -993,7 +990,7 @@ class AddBOPImport extends Component {
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
                                   // required={true}
-                                  disabled={isViewMode ? true : false}
+                                  disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -1006,7 +1003,7 @@ class AddBOPImport extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("SourceLocation")}
-                                  disabled={isViewMode ? true : false}
+                                  disabled={isViewMode}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   // validate={
                                   //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
@@ -1079,7 +1076,7 @@ class AddBOPImport extends Component {
                               component={renderText}
                               required={false}
                               className=""
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                               customClassName=" withBorder"
                             />
                           </Col>
@@ -1092,7 +1089,7 @@ class AddBOPImport extends Component {
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1149,7 +1146,7 @@ class AddBOPImport extends Component {
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512]}
                               //required={true}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                               component={renderTextAreaField}
                               maxLength="5000"
                             />
@@ -1169,7 +1166,7 @@ class AddBOPImport extends Component {
                                 PreviewComponent={this.Preview}
                                 //onSubmit={this.handleSubmit}
                                 accept="*"
-                                disabled={isViewMode ? true : false}
+                                disabled={isViewMode}
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
                                 maxSizeBytes={2000000}
@@ -1266,7 +1263,7 @@ class AddBOPImport extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}

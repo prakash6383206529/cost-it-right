@@ -27,7 +27,7 @@ class AddIndivisualProduct extends Component {
             isEditFlag: false,
             isLoader: false,
             PartId: '',
-            isViewMode: false,
+            isViewMode: this.props.data?.isViewMode ? true : false,
 
             selectedPlants: [],
             effectiveDate: '',
@@ -66,7 +66,6 @@ class AddIndivisualProduct extends Component {
                 isEditFlag: false,
                 isLoader: true,
                 ProductId: data.Id,
-                isViewMode: false
             })
             this.props.getProductData(data.Id, res => {
                 if (res && res.data && res.data.Result) {
@@ -75,9 +74,7 @@ class AddIndivisualProduct extends Component {
                     this.setState({ DataToCheck: Data })
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-                    if (this.props.data.isViewMode) {
-                        this.setState({ isViewMode: true })
-                    }
+
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
@@ -434,7 +431,7 @@ class AddIndivisualProduct extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
-                                                                    disabled={isViewMode ? true : false}
+                                                                    disabled={isViewMode}
                                                                 />
                                                             </Col>
                                                         )}
@@ -504,7 +501,7 @@ class AddIndivisualProduct extends Component {
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={isViewMode ? true : false}
+                                                                    disabled={isViewMode}
 
                                                                 />
 
@@ -522,6 +519,7 @@ class AddIndivisualProduct extends Component {
                                                         >
                                                             Preferred for Impact Calculation
                                                             <input
+                                                                disabled={isViewMode}
                                                                 type="checkbox"
                                                                 checked={this.state.isSurfaceTreatment}
 
@@ -579,7 +577,7 @@ class AddIndivisualProduct extends Component {
                                                                 initialFiles={this.state.initialFiles}
                                                                 maxFiles={3}
                                                                 maxSizeBytes={2000000}
-                                                                disabled={isViewMode ? true : false}
+                                                                disabled={isViewMode}
                                                                 inputContent={(files, extra) =>
                                                                     extra.reject ? (
                                                                         "Image, audio and video files only"
@@ -658,7 +656,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type="submit"
                                                         className="user-btn mr5 save-btn"
-                                                        disabled={isViewMode ? true : false}
+                                                        disabled={isViewMode}
                                                     >
                                                         <div className={"save-icon"}></div>
                                                         {isEditFlag ? "Update" : "Save"}

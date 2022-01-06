@@ -119,23 +119,16 @@ class ClientListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
-            isViewMode: false,
+            isViewMode: isViewMode,
         })
     }
 
-    viewItemDetails = (Id) => {
-        this.setState({
-            isOpenVendor: true,
-            isEditFlag: true,
-            ID: Id,
-            isViewMode: true,
-        })
-    }
+
 
     /**
     * @method deleteItem
@@ -175,8 +168,8 @@ class ClientListing extends Component {
         const { EditAccessibility, DeleteAccessibility, } = this.state;
         return (
             <>
-                {<button className="View mr-2" type={'button'} onClick={() => this.viewItemDetails(cellValue, rowData)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {<button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -234,7 +227,7 @@ class ClientListing extends Component {
 
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {

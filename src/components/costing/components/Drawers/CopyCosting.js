@@ -59,7 +59,7 @@ function CopyCosting(props) {
   const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
   const [showPopup, setShowPopup] = useState(false)
   const [updatedObj, setUpdatedObj] = useState({})
-  const [msgObj,setMsgObj] = useState({})
+  const [msgObj, setMsgObj] = useState({})
 
   useEffect(() => {
     const ZbcTemp = []
@@ -243,7 +243,7 @@ function CopyCosting(props) {
    * @descriptionfor changing vendor plant  based on vendor for "To"
    */
   const handleToVendorName = (value) => {
-    console.log('value: ', value);
+
     getVendorPlantDropdown(value.value, 'to')
     if (getConfigurationKey().IsDestinationPlantConfigure) {
       getDestinationPlant(value, 'to')
@@ -281,7 +281,7 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
-    console.log('value: ', value);
+
 
 
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
@@ -358,7 +358,7 @@ function CopyCosting(props) {
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
-      console.log("res", res);
+
       const Data = res.data.Data
 
       if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
@@ -803,7 +803,7 @@ function CopyCosting(props) {
         </Container>
       </Drawer>
       {
-        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`} />
+        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : ` is not available for the selected vendor. Do you still wish to continue ?`}`} />
       }
     </>
   );
