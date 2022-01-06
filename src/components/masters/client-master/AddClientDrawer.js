@@ -20,7 +20,7 @@ class AddClientDrawer extends Component {
         this.state = {
             isEditFlag: false,
             isShowForm: false,
-            isViewMode: this.props.isViewMode ? true : false,
+            isViewMode: this.props?.isViewMode ? true : false,
             ClientId: '',
             city: [],
             country: [],
