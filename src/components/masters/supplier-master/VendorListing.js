@@ -637,7 +637,7 @@ class VendorListing extends Component {
                         </Col>
 
                     </Row>
-                    <Row className="pt-4 px-15 blue-before">
+                    <Row className="pt-2 align-items-center">
                         {this.state.shown && (
                             <Col md="12" lg="8" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -708,7 +708,10 @@ class VendorListing extends Component {
                                 </div>
                             </Col>
                         )}
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Col md="6"> 
+                        {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
+                        </Col>
+                        <Col md="6" lg="6">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {/* {this.state.shown ? (
@@ -719,7 +722,7 @@ class VendorListing extends Component {
                                             <div className="filter mr-0"></div>
                                         </button>
                                     )} */}
-                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -768,16 +771,8 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className="ag-grid-wrapper height-width-wrapper">
-                    <div className="ag-grid-header">
-                        <Row className="pt-5 no-filter-row">
-                        </Row>
-                        {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
-                    </div>
-                    <div
-                        className="ag-theme-material"
-
-                    >
+                <div className="ag-grid-wrapper height-width-wrapper pt-2">
+                    <div className="ag-theme-material">
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
