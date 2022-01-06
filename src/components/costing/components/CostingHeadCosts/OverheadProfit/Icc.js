@@ -42,9 +42,9 @@ function Icc(props) {
      * @description  USED TO HANDLE INVENTORY CHANGE
      */
     const onPressInventory = (value) => {
-        console.log('value: ', value);
+
         setIsInventoryApplicable(!IsInventoryApplicable)
-        if(value){
+        if (value) {
             callInventoryAPI()
         }
         dispatch(gridDataAdded(true))
@@ -55,8 +55,8 @@ function Icc(props) {
      * @method callInventoryAPI
      * @description When we toogle on ICC to call API
     */
-    const callInventoryAPI = ()=>{
-        if ( Object.keys(costData).length >0) {
+    const callInventoryAPI = () => {
+        if (Object.keys(costData).length > 0) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor
@@ -158,7 +158,7 @@ function Icc(props) {
                     break;
 
                 case 'RM + BOP':
-                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP), initialConfiguration.NoOfDecimalForPrice)
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
