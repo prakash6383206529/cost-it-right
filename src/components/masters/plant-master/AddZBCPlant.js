@@ -21,7 +21,7 @@ class AddZBCPlant extends Component {
     this.child = React.createRef();
     this.state = {
       isEditFlag: false,
-      isViewMode: this.props.isViewMode ? true : false,
+      isViewMode: this.props?.isViewMode ? true : false,
       isLoader: false,
       PlantId: '',
       city: [],
@@ -226,9 +226,9 @@ class AddZBCPlant extends Component {
 
     if (isEditFlag) {
 
-      if (DropdownChanged && DataToCheck.PlantName == values.PlantName && DataToCheck.PhoneNumber == values.PhoneNumber &&
-        DataToCheck.Extension == values.Extension && DataToCheck.AddressLine1 == values.AddressLine1 &&
-        DataToCheck.AddressLine2 == values.AddressLine2 && DataToCheck.ZipCode == values.ZipCode) {
+      if (DropdownChanged && DataToCheck.PlantName === values.PlantName && DataToCheck.PhoneNumber === values.PhoneNumber &&
+        DataToCheck.Extension === values.Extension && DataToCheck.AddressLine1 === values.AddressLine1 &&
+        DataToCheck.AddressLine2 === values.AddressLine2 && DataToCheck.ZipCode === values.ZipCode) {
 
         this.toggleDrawer('')
         return false

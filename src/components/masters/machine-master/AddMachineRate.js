@@ -49,7 +49,7 @@ class AddMachineRate extends Component {
       IsDetailedEntry: false,
       isViewFlag: false,
       approveDrawer: false,
-      isViewMode: this.props.editDetails?.isViewMode ? true : false,
+      isViewMode: this.props?.editDetails?.isViewMode ? true : false,
 
       selectedTechnology: [],
       vendorName: [],

@@ -37,7 +37,7 @@ class AddAssemblyPart extends Component {
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
-      isViewMode: this.props.data?.isViewMode ? true : false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       isLoader: false,
       PartId: '',
 
