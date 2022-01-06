@@ -95,27 +95,16 @@ class BOPImportListing extends Component {
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
-            isViewMode: false,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(data);
     }
 
-    viewItemDetails = (Id, rowData) => {
-
-        let data = {
-            isEditFlag: true,
-            Id: Id,
-            IsVendor: rowData.CostingHead,
-            isViewMode: true
-        }
-        this.props.getDetails(data);
-
-    }
 
     /**
     * @method deleteItem
@@ -230,8 +219,8 @@ class BOPImportListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewItemDetails(cellValue, rowData)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )

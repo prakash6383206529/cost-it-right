@@ -82,24 +82,16 @@ class AssemblyPartListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         let requestData = {
             isEditFlag: true,
             Id: Id,
-            isViewMode: false,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(requestData)
     }
 
 
-    viewItemDetails = (Id) => {
-        let requestData = {
-            isEditFlag: true,
-            Id: Id,
-            isViewMode: true,
-        }
-        this.props.getDetails(requestData)
-    }
 
     /**
     * @method deleteItem
@@ -195,8 +187,8 @@ class AssemblyPartListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewItemDetails(cellValue, rowData)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )

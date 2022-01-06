@@ -85,12 +85,12 @@ class ZBCPlantListing extends Component {
 
     }
 
-    viewItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
-            isViewMode: true
+            isViewMode: isViewMode
         })
 
     }
@@ -138,8 +138,8 @@ class ZBCPlantListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewItemDetails(cellValue, rowData)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -359,7 +359,7 @@ class ZBCPlantListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
