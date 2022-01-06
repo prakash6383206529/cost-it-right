@@ -140,7 +140,7 @@ class FreightMaster extends Component {
             <>
                 <div className="container-fluid" id='go-to-top'>
                     {/* {this.props.loading && <Loader/>} */}
-                    <ScrollToTop pointProp= "go-to-top"/>
+                    <ScrollToTop pointProp="go-to-top" />
                     <Row>
                         <Col sm="4">
                             {/* <h1>{`Freight & Packaging Master`}</h1> */}
@@ -174,6 +174,7 @@ class FreightMaster extends Component {
                                             EditAccessibility={this.state.EditAccessibility}
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
 
