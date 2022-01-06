@@ -95,26 +95,16 @@ class MachineRateListing extends Component {
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
-            isViewMode: false,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(data);
     }
 
-
-    viewItemDetails = (Id, rowData) => {
-        let data = {
-            isEditFlag: true,
-            Id: Id,
-            IsVendor: rowData.CostingHead,
-            isViewMode: true,
-        }
-        this.props.getDetails(data);
-    }
 
     /**
     * @method copyItem
@@ -183,8 +173,8 @@ class MachineRateListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewItemDetails(cellValue, rowData)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>

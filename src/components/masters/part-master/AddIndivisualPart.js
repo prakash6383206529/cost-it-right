@@ -30,7 +30,7 @@ class AddIndivisualPart extends Component {
       isEditFlag: false,
       isLoader: false,
       PartId: '',
-      isViewMode: false,
+      isViewMode: this.props.data?.isViewMode ? true : false,
 
       selectedPlants: [],
       effectiveDate: '',
@@ -68,7 +68,6 @@ class AddIndivisualPart extends Component {
         isEditFlag: false,
         isLoader: true,
         PartId: data.Id,
-        isViewMode: false,
       })
       this.props.getPartData(data.Id, res => {
         if (res && res.data && res.data.Result) {
@@ -81,9 +80,7 @@ class AddIndivisualPart extends Component {
           })
           this.setState({ DataToCheck: Data })
           this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          if (this.props.data.isViewMode) {
-            this.setState({ isViewMode: true })
-          }
+
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -416,7 +413,7 @@ class AddIndivisualPart extends Component {
                               required={true}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
 
@@ -431,7 +428,7 @@ class AddIndivisualPart extends Component {
                               required={false}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
                           {initialConfiguration?.IsProductMasterConfigurable ? (
@@ -454,7 +451,7 @@ class AddIndivisualPart extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={false}
                                 className="multiselect-with-border"
-                                disabled={isViewMode ? true : false}
+                                disabled={isViewMode}
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>
@@ -470,7 +467,7 @@ class AddIndivisualPart extends Component {
                                 required={false}
                                 className=""
                                 customClassName={"withBorder"}
-                                disabled={isViewMode ? true : false}
+                                disabled={isViewMode}
                               />
                             </Col>
                           }
@@ -487,7 +484,7 @@ class AddIndivisualPart extends Component {
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
                           <Col md="3">
@@ -500,7 +497,7 @@ class AddIndivisualPart extends Component {
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
                           <Col md="3">
@@ -513,7 +510,7 @@ class AddIndivisualPart extends Component {
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
 
@@ -535,7 +532,7 @@ class AddIndivisualPart extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode ? true : false)}
+                                  disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
 
                                 />
 
@@ -566,7 +563,7 @@ class AddIndivisualPart extends Component {
                               validate={[maxLength512, checkWhiteSpaces]}
                               component={renderTextAreaField}
                               maxLength="5000"
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
                           <Col md="3">
@@ -585,7 +582,7 @@ class AddIndivisualPart extends Component {
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
-                                disabled={isViewMode ? true : false}
+                                disabled={isViewMode}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
@@ -662,7 +659,7 @@ class AddIndivisualPart extends Component {
                             {"Cancel"}
                           </button>
                           <button
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                             type="submit"
                             className="user-btn mr5 save-btn"
                           >

@@ -38,7 +38,7 @@ class AddVendorDrawer extends Component {
             vendor: '',
             DataToCheck: [],
             DropdownChanged: true,
-            isViewMode: false
+            isViewMode: this.props.isViewMode ? true : false
         }
     }
 
@@ -262,7 +262,7 @@ class AddVendorDrawer extends Component {
                 isEditFlag: true,
                 VendorId: ID,
                 isVisible: true,
-                isViewMode: false,
+
             })
             this.props.getSupplierByIdAPI(ID, isEditFlag, (res) => {
                 if (res && res.data && res.data.Data) {
@@ -288,10 +288,6 @@ class AddVendorDrawer extends Component {
                         const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
                         const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
                         const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
-
-                        if (this.props.isViewMode) {
-                            this.setState({ isViewMode: true })
-                        }
 
                         this.setState({
                             isEditFlag: true,
@@ -498,7 +494,7 @@ class AddVendorDrawer extends Component {
                                             component={renderMultiSelectField}
                                             mendatory={true}
                                             className="multiselect-with-border"
-                                            disabled={isViewMode ? true : false}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -544,7 +540,7 @@ class AddVendorDrawer extends Component {
                                             required={false}
                                             customClassName={'withBorder '}
                                             className=" "
-                                            isDisabled={isViewMode ? true : false}
+                                            isDisabled={isViewMode}
 
                                         />
                                     </Col>
@@ -563,7 +559,7 @@ class AddVendorDrawer extends Component {
                                                     //required={true}
                                                     maxLength={12}
                                                     customClassName={'withBorder'}
-                                                    disabled={isViewMode ? true : false}
+                                                    disabled={isViewMode}
                                                 />
                                             </Col>
                                             <Col md={4} className="pr-0">
@@ -577,7 +573,7 @@ class AddVendorDrawer extends Component {
                                                     //required={true}
                                                     // maxLength={5}
                                                     customClassName={'withBorder'}
-                                                    disabled={isViewMode ? true : false}
+                                                    disabled={isViewMode}
                                                 /></Col>
                                         </Row>
                                     </Col>
@@ -592,7 +588,7 @@ class AddVendorDrawer extends Component {
                                             validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                                             maxLength={12}
                                             customClassName={'withBorder'}
-                                            disabled={isViewMode ? true : false}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
 
@@ -660,7 +656,7 @@ class AddVendorDrawer extends Component {
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
-                                            disabled={isViewMode ? true : false}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                 </Row>
@@ -677,7 +673,7 @@ class AddVendorDrawer extends Component {
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
-                                            disabled={isViewMode ? true : false}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -692,7 +688,7 @@ class AddVendorDrawer extends Component {
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
-                                            disabled={isViewMode ? true : false}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                 </Row>

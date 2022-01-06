@@ -37,7 +37,7 @@ class AddAssemblyPart extends Component {
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
-      isViewMode: false,
+      isViewMode: this.props.data?.isViewMode ? true : false,
       isLoader: false,
       PartId: '',
 
@@ -86,7 +86,6 @@ class AddAssemblyPart extends Component {
         isEditFlag: false,
         isLoader: true,
         PartId: data.Id,
-        isViewMode: false,
       })
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
@@ -99,9 +98,7 @@ class AddAssemblyPart extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.setState({ DataToCheck: Data })
-          if (this.props.data.isViewMode) {
-            this.setState({ isViewMode: true })
-          }
+
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -708,7 +705,7 @@ class AddAssemblyPart extends Component {
                             required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -722,7 +719,7 @@ class AddAssemblyPart extends Component {
                             required={false}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                       </Row>
@@ -739,7 +736,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -753,7 +750,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -767,7 +764,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             className=""
                             customClassName={"withBorder"}
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                       </Row>
@@ -793,7 +790,7 @@ class AddAssemblyPart extends Component {
                               mendatory={false}
                               className="multiselect-with-border"
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
                         ) :
@@ -807,7 +804,7 @@ class AddAssemblyPart extends Component {
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
                         }
@@ -831,7 +828,7 @@ class AddAssemblyPart extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode ? true : false)}
+                                disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
 
                               />
                             </div>
@@ -840,7 +837,7 @@ class AddAssemblyPart extends Component {
                         <Col md="3">
                           <button
                             type="button"
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
@@ -865,7 +862,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="5000"
-                            disabled={isViewMode ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -879,7 +876,7 @@ class AddAssemblyPart extends Component {
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              disabled={isViewMode ? true : false}
+                              disabled={isViewMode}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -962,7 +959,7 @@ class AddAssemblyPart extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
-                          disabled={isViewMode ? true : false}
+                          disabled={isViewMode}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
