@@ -28,7 +28,7 @@ class AddIndivisualPart extends Component {
       isEditFlag: false,
       isLoader: false,
       PartId: '',
-      isViewMode: this.props.data?.isViewMode ? true : false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       selectedPlants: [],
       effectiveDate: '',

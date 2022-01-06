@@ -45,7 +45,7 @@ class AddBOPImport extends Component {
     this.state = {
       isEditFlag: false,
       IsVendor: false,
-      isViewMode: this.props.data?.isViewMode ? true : false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       BOPCategory: [],
       isCategoryDrawerOpen: false,

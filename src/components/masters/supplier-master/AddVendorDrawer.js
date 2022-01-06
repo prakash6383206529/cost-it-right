@@ -38,7 +38,7 @@ class AddVendorDrawer extends Component {
             vendor: '',
             DataToCheck: [],
             DropdownChanged: true,
-            isViewMode: this.props.isViewMode ? true : false
+            isViewMode: this.props?.isViewMode ? true : false
         }
     }
 

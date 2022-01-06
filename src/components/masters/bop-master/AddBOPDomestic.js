@@ -42,7 +42,7 @@ class AddBOPDomestic extends Component {
       BOPID: '',
       isEditFlag: false,
       IsVendor: false,
-      isViewMode: this.props.data?.isViewMode ? true : false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       BOPCategory: [],
       isCategoryDrawerOpen: false,
