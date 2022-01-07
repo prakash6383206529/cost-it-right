@@ -781,9 +781,6 @@ class AddAssemblyPart extends Component {
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : this.state.ProductGroup}
                               options={this.renderListing("ProductGroup")}
                               selectionChanged={this.handleProductGroup}
-                              validate={
-                                this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : []}
-                              required={true}
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
