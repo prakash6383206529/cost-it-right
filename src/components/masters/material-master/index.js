@@ -208,7 +208,7 @@ function RowMaterialMaster(props) {
                 <Col sm="4">
                     <h1>{`Raw Material Master`}</h1>
                 </Col>
-                <ScrollToTop pointProp ={"go-top-top"} />
+                <ScrollToTop pointProp={"go-top-top"} />
             </Row>
             <Row>
                 <Col>
@@ -220,33 +220,33 @@ function RowMaterialMaster(props) {
                             {ViewRMAccessibility && <NavItem>
                                 <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                                     Manage Raw Material (Domestic)
-                                    </NavLink>
+                                </NavLink>
                             </NavItem>}
                             {ViewRMAccessibility && <NavItem>
                                 <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                     Manage Raw Material (Import)
-                                    </NavLink>
+                                </NavLink>
                             </NavItem>}
                             {ViewRMAccessibility && <NavItem>
                                 <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                                     Manage Specification
-                                    </NavLink>
+                                </NavLink>
                             </NavItem>}
                             {ViewRMAccessibility && <NavItem>
                                 <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                                     Manage Material
-                                    </NavLink>
+                                </NavLink>
                             </NavItem>}
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
                             {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
-                            {/* {ViewRMAccessibility && <NavItem> */}
+                                {/* {ViewRMAccessibility && <NavItem> */}
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
                                     // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                 }}>
                                     Approval Status
-                                    </NavLink>
+                                </NavLink>
                             </NavItem>}
                         </Nav>
 
@@ -265,6 +265,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                     />
                                 </TabPane>}
 
@@ -279,6 +280,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                     />
                                 </TabPane>}
 
@@ -305,7 +307,7 @@ function RowMaterialMaster(props) {
                                         DownloadAccessibility={DownloadAccessibility}
                                     />
                                 </TabPane>}
-                            {activeTab ==5 && ViewRMAccessibility &&
+                            {activeTab == 5 && ViewRMAccessibility &&
                                 <TabPane tabId="5">
                                     {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
