@@ -498,7 +498,7 @@ function ApproveRejectDrawer(props) {
                 props.closeDrawer('', 'submit', status)
               } else {
                 Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
-                props.closeDrawer('', 'submit', status)
+                props.closeDrawer('', 'submit')
               }
             }
           }
