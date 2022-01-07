@@ -27,9 +27,9 @@ import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import TooltipCustom from '../../common/Tooltip';
-import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 export const ViewCostingContext = React.createContext()
 
@@ -106,6 +106,9 @@ function CostingDetails(props) {
     index: []
   })
   const [titleObj, setTitleObj] = useState({})
+  //dropdown loader 
+  const [inputLoader, setInputLoader] = useState(false)
+  
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -257,7 +260,10 @@ function CostingDetails(props) {
   const handleTechnologyChange = (newValue) => {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
-      dispatch(getPartSelectListByTechnology(newValue.value, () => { }))
+      setInputLoader(true)
+      dispatch(getPartSelectListByTechnology(newValue.value, () => { 
+        setInputLoader(false)
+      }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
@@ -1644,6 +1650,7 @@ const nccDrawerToggle=()=>{
                         />
                       </Col>
                       <Col className="col-md-15">
+                      {inputLoader  && <LoaderCustom customClass="input-loader"/>}
                         <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
