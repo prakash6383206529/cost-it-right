@@ -151,7 +151,12 @@ class PartMaster extends Component {
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
-                        <h1>Part Master</h1>
+                            <div className="d-flex justify-content-between">
+                                <h1>Part Master</h1>
+                              
+                            </div>
+
+
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
@@ -183,6 +188,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '2' &&
@@ -195,6 +201,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '3' &&
@@ -207,6 +214,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                             </TabContent>

@@ -610,7 +610,7 @@ export function formViewData(costingSummary) {
 
   obj.toolApplicability =  { applicability: 'Applicability', value: 'Value', }
   obj.toolApplicabilityValue= {
-    toolTitle:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceApplicability !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceApplicability : 0,
+    toolTitle:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType : 0,
     toolValue:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
   }
   obj.toolAmortizationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost : 0
@@ -805,10 +805,7 @@ export function CheckApprovalApplicableMaster(number) {
   return isApproval
 }
 
-export function isMultipleRMAllow(technology) {
-  const allowedMultipleRM = [MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, MACHINING, FORGING, PLASTIC];
-  return allowedMultipleRM.includes(technology);
-}
+
 
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {

@@ -13,7 +13,8 @@ import { EMPTY_GUID, PLASTIC, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
-import { checkForDecimalAndNull, getConfigurationKey, isMultipleRMAllow } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
+import { isMultipleRMAllow} from '../../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -87,7 +88,7 @@ function AddRM(props) {
   const onRowSelect = (row, isSelected, e) => {
 
     //BELOW CONDITION, WHEN PLASTIC TECHNOLOGY SELECTED, MULTIPLE RM'S CAN BE ADDED
-    if (isMultipleRMAllow(costData.TechnologyName)) {
+    if (isMultipleRMAllow(costData.ETechnologyType)) {
       var selectedRows = gridApi.getSelectedRows();
       if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
       setSelectedRowData(selectedRows)
@@ -112,7 +113,7 @@ function AddRM(props) {
   }
 
   const onSelectAll = (isSelected, rows) => {
-    if (isMultipleRMAllow(costData.TechnologyName)) {
+    if (isMultipleRMAllow(costData.ETechnologyType)) {
       if (isSelected) {
         setSelectedRowData(rows)
       } else {
@@ -124,7 +125,7 @@ function AddRM(props) {
   }
 
   const selectRowProp = {
-    mode: isMultipleRMAllow(costData.TechnologyName) ? 'checkbox' : 'radio',
+    mode: isMultipleRMAllow(costData.ETechnologyType) ? 'checkbox' : 'radio',
     //onSelect: onRowSelect,
     //mode: 'checkbox',
     clickToSelect: true,
@@ -288,7 +289,7 @@ function AddRM(props) {
     resizable: true,
     filter: true,
     sortable: true,
-    headerCheckboxSelection: isMultipleRMAllow(costData.TechnologyName) ? isFirstColumn : false,
+    headerCheckboxSelection: isMultipleRMAllow(costData.ETechnologyType)? isFirstColumn : false,
     checkboxSelection: isFirstColumn
   };
 
@@ -431,7 +432,7 @@ function AddRM(props) {
                           imagClass: "imagClass"
                         }}
                         suppressRowClickSelection={true}
-                        rowSelection={isMultipleRMAllow(costData.TechnologyName) && !IsApplyMasterBatch ? 'multiple' : 'single'}
+                        rowSelection={isMultipleRMAllow(costData.ETechnologyType)&& !IsApplyMasterBatch ? 'multiple' : 'single'}
                         frameworkComponents={frameworkComponents}
                         onSelectionChanged={onRowSelect}
                         isRowSelectable={isRowSelectable}

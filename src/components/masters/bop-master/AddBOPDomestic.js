@@ -45,6 +45,7 @@ class AddBOPDomestic extends Component {
       BOPID: '',
       isEditFlag: false,
       IsVendor: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       BOPCategory: [],
       isCategoryDrawerOpen: false,
@@ -179,6 +180,8 @@ class AddBOPDomestic extends Component {
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
+
+
 
             this.setState({
               isEditFlag: true,
@@ -669,7 +672,7 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode } = this.state;
 
     return (
       <>
@@ -920,7 +923,7 @@ class AddBOPDomestic extends Component {
                                   validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
                                   // required={true}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -935,6 +938,7 @@ class AddBOPDomestic extends Component {
                                   options={this.renderListing(
                                     "SourceLocation"
                                   )}
+                                  disabled={isViewMode}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   // validate={
                                   //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
@@ -987,7 +991,7 @@ class AddBOPDomestic extends Component {
                               required={false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={false}
+                              disabled={isViewMode}
                             />
                           </Col>
                           <Col md="3">
@@ -999,7 +1003,7 @@ class AddBOPDomestic extends Component {
                               validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={false}
+                              disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1035,6 +1039,7 @@ class AddBOPDomestic extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               validate={[maxLength512]}
+                              disabled={isViewMode}
                               //required={true}
                               component={renderTextAreaField}
                               maxLength="5000"
@@ -1053,6 +1058,7 @@ class AddBOPDomestic extends Component {
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
+                                disabled={isViewMode}
                                 //onSubmit={this.handleSubmit}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
@@ -1109,18 +1115,18 @@ class AddBOPDomestic extends Component {
                                       {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
-
-                                      <img
-                                        alt={""}
-                                        className="float-right"
-                                        onClick={() =>
-                                          this.deleteFile(
-                                            f.FileId,
-                                            f.FileName
-                                          )
-                                        }
-                                        src={imgRedcross}
-                                      ></img>
+                                      {!isViewMode &&
+                                        <img
+                                          alt={""}
+                                          className="float-right"
+                                          onClick={() =>
+                                            this.deleteFile(
+                                              f.FileId,
+                                              f.FileName
+                                            )
+                                          }
+                                          src={imgRedcross}
+                                        ></img>}
                                     </div>
                                   );
                                 })}
@@ -1154,6 +1160,7 @@ class AddBOPDomestic extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
+                              disabled={isViewMode}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}

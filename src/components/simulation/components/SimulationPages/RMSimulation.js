@@ -64,11 +64,6 @@ function RMSimulation(props) {
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
-        if (basicRateCount === list.length && basicScrapCount === list.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
-            return false
-        }
-        setIsDisable(true)
         list && list.map((li) => {
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
@@ -79,6 +74,11 @@ function RMSimulation(props) {
             }
             return null;
         })
+        if (basicRateCount === list.length && basicScrapCount === list.length) {
+            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            return false
+        }
+        setIsDisable(true)
 
         basicRateCount = 0
         basicScrapCount = 0

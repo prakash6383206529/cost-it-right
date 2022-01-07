@@ -856,7 +856,6 @@ input.form-control{
   border: none;
   cursor: pointer;
 }
-
 .Balance {
   width: 32px;
   height: 32px;
@@ -1188,6 +1187,14 @@ input.form-control{
   width: 13px;
   height: 16px;
   background: transparent url("../../assests/images/send-for-approval.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+.pdf-btn{
+  margin-right: 5px;
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/pdf.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   background-size: contain;
 }
@@ -3915,7 +3922,7 @@ body{
     tr{
       th{
         border: none;
-        font-weight: bold;
+        font-weight: 500;
       }
     }
   }
@@ -4218,7 +4225,7 @@ body{
   color: #4DC771;
   line-height: initial;
   min-width: 70px;
-  max-width: 70px !important;
+  // max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -5698,6 +5705,7 @@ body{
       td,.ag-cell {
         .Error,
         .Pushed,
+        .POUpdated,
         .Draft,
         [class^="Pending"],
         [class^="Awaiting"],
@@ -6586,11 +6594,8 @@ left: 17rem;
   padding: 0 28px !important;
 }
 .rmcc-main-headings {
-  position: relative;
-  th {
-    position: sticky;
-    top: 0;
-    padding: 5px 15px !important;
+  th,td {
+    padding: 10px 15px !important;
   }
 }
 .min-height-auto {
@@ -6652,6 +6657,19 @@ left: 17rem;
 .packaging-freight-btn-save {
   padding: 2px 15px !important;
 }
+
+// PDF Img style
+.pdf-header-wrapper{
+  display: flex;
+  grid-gap: 10px;
+  justify-content: center;
+  img {
+    height: 50px;
+    display: block;
+    margin:8px;
+    margin: auto;
+  }
+}
 .ag-pinned-right-header {
   .ag-header-row-column-group {
     border-right:  solid #e5eaf9;
@@ -6671,3 +6689,13 @@ left: 17rem;
   }
 }
 //END Radio hook custom css//
+.pdf-loader {
+  top: -1900;
+}
+.loader-wrapper {
+  height: calc(100vh - 924px);
+  overflow: hidden;
+  @media screen and (max-width: $miniDesktop) {
+    height: calc(100vh - 668px);
+  }
+}

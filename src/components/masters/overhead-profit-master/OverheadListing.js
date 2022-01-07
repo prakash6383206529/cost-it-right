@@ -20,7 +20,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -73,26 +72,20 @@ class OverheadListing extends Component {
             model_type_id: modelType,
         }
         this.props.getOverheadDataList(filterData, (res) => {
-            // if (res && res.status === 200) {
-            //     let Data = res.data.DataList;
-            //     this.setState({ tableData: Data })
-            // } else if (res && res.response && res.response.status === 412) {
-            //     this.setState({ tableData: [] })
-            // } else {
-            //     this.setState({ tableData: [] })
-            // }
+
         })
     }
 
     /**
-    * @method editItemDetails
-    * @description edit material type
+    * @method viewOrEditItemDetails
+    * @description edit or view material type
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
+            isViewMode: isViewMode
         }
         this.props.getDetails(data);
     }
@@ -148,11 +141,12 @@ class OverheadListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
 
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -344,11 +338,9 @@ class OverheadListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
                 let length = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(length)
-
-                this.props.apply(selectedRows)
+                this.props.apply(selectedRows, length)
             }
-            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
+
             this.setState({ selectedRowData: selectedRows })
 
         }
@@ -432,7 +424,7 @@ class OverheadListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                                     }
 
@@ -473,7 +465,7 @@ class OverheadListing extends Component {
                                     frameworkComponents={frameworkComponents}
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
-                                // onFilterModified={onFloatingFilterChanged}
+
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -486,7 +478,7 @@ class OverheadListing extends Component {
                                     <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    <AgGridColumn field="OverheadId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="OverheadId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -539,7 +531,6 @@ export default connect(mapStateToProps, {
     getVendorWithVendorCodeSelectList,
     getVendorFilterByModelTypeSelectList,
     getModelTypeFilterByVendorSelectList,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'OverheadListing',
     enableReinitialize: true,

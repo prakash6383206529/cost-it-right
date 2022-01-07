@@ -23,7 +23,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -96,14 +95,16 @@ class BOPImportListing extends Component {
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(data);
     }
+
 
     /**
     * @method deleteItem
@@ -214,10 +215,11 @@ class BOPImportListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -412,9 +414,8 @@ class BOPImportListing extends Component {
 
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
-                let len = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(len)
-                this.props.apply(selectedRows)
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
             }
             this.setState({ selectedRowData: selectedRows })
         }
@@ -532,7 +533,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={120} floatingFilter={false} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -589,7 +590,6 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

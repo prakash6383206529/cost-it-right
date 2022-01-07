@@ -47,6 +47,7 @@ class AddRMDomestic extends Component {
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       RawMaterialID: '',
 
       RawMaterial: [],
@@ -805,6 +806,7 @@ class AddRMDomestic extends Component {
       remarks: '',
       isShowForm: false,
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       IsVendor: false,
       showPopup: false,
       updatedObj: {}
@@ -1112,7 +1114,7 @@ class AddRMDomestic extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewMode } = this.state
 
     return (
       <>
@@ -1300,6 +1302,8 @@ class AddRMDomestic extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
+                                disabled={isViewMode}
+
                               />
                             </Col>)
                           )}
@@ -1408,11 +1412,12 @@ class AddRMDomestic extends Component {
                                     placeholder={"Enter"}
                                     validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
-                                    disabled={false}
+                                    disabled={isViewMode}
                                     onChange={this.handleSource}
                                     valueDescription={this.state.source}
                                     className=" "
                                     customClassName=" withBorder"
+
                                   />
                                 </Col>
                                 <Col md="4">
@@ -1425,6 +1430,7 @@ class AddRMDomestic extends Component {
                                     options={this.renderListing("SourceLocation")}
                                     handleChangeDescription={this.handleSourceSupplierCity}
                                     valueDescription={this.state.sourceLocation}
+                                    disabled={isViewMode}
                                   />
                                 </Col>
                               </>
@@ -1467,7 +1473,7 @@ class AddRMDomestic extends Component {
                               validate={[]}
                               component={renderText}
                               required={false}
-                              disabled={false}
+                              disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1482,7 +1488,7 @@ class AddRMDomestic extends Component {
                               component={renderText}
                               // onChange={this.handleBasicRate}
                               required={true}
-                              disabled={false}
+                              disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
                               maxLength={'15'}
@@ -1500,6 +1506,7 @@ class AddRMDomestic extends Component {
                                 component={renderText}
                                 required={true}
                                 className=""
+                                disabled={isViewMode}
                                 customClassName=" withBorder"
                                 maxLength="15"
                                 onChange={this.handleScrapRate}
@@ -1516,6 +1523,7 @@ class AddRMDomestic extends Component {
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
+                              disabled={isViewMode}
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
@@ -1529,6 +1537,7 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
+                              disabled={isViewMode}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1547,7 +1556,7 @@ class AddRMDomestic extends Component {
                                   validate={[maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={false}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -1561,7 +1570,7 @@ class AddRMDomestic extends Component {
                                   validate={[required, maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={true}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -1591,13 +1600,14 @@ class AddRMDomestic extends Component {
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 validate={[required]}
+                                disabled={isViewMode}
                                 autoComplete={'off'}
                                 required={true}
                                 changeHandler={(e) => {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={false}
+
 
                               />
                             </div>
@@ -1623,6 +1633,7 @@ class AddRMDomestic extends Component {
                               validate={[maxLength512]}
                               //required={true}
                               component={renderTextAreaField}
+                              disabled={isViewMode}
                               maxLength="512"
                               rows="6"
                             />
@@ -1640,6 +1651,7 @@ class AddRMDomestic extends Component {
                                 PreviewComponent={this.Preview}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
+                                disabled={isViewMode}
                                 maxFiles={3}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
@@ -1686,15 +1698,15 @@ class AddRMDomestic extends Component {
                                         {f.OriginalFileName}
                                       </a>
 
-
-                                      <img
-                                        className="float-right"
-                                        alt={""}
-                                        onClick={() =>
-                                          this.deleteFile(f.FileId, f.FileName)
-                                        }
-                                        src={imgRedcross}
-                                      ></img>
+                                      {!isViewMode &&
+                                        <img
+                                          className="float-right"
+                                          alt={""}
+                                          onClick={() =>
+                                            this.deleteFile(f.FileId, f.FileName)
+                                          }
+                                          src={imgRedcross}
+                                        ></img>}
                                     </div>
                                   );
                                 })}
@@ -1718,7 +1730,7 @@ class AddRMDomestic extends Component {
                                 class="user-btn approval-btn save-btn mr5"
                                 onClick={() => scroll.scrollToTop()}
                                 // onClick={this.sendForMasterApproval}
-                                disabled={this.state.isFinalApprovar}
+                                disabled={this.state.isFinalApprovar || isViewMode}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -1726,6 +1738,7 @@ class AddRMDomestic extends Component {
                               :
                               <button
                                 type="submit"
+                                disabled={isViewMode}
                                 className="user-btn mr5 save-btn"
                               >
                                 <div className={"save-icon"}></div>

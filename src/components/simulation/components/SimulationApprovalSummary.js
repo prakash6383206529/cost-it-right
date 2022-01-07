@@ -95,7 +95,7 @@ function SimulationApprovalSummary(props) {
 
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
-    const [dataForDownload,setDataForDownload] = useState([])
+    const [dataForDownload, setDataForDownload] = useState([])
     const [count, setCount] = useState(0);
 
     const dispatch = useDispatch()
@@ -692,7 +692,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
                         <Errorbox customClass={errorBoxClass()} errorText={status} />
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
@@ -753,6 +753,10 @@ function SimulationApprovalSummary(props) {
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
+                                            </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Company:`}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.DepartmentCode}</span>
                                             </th>
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&

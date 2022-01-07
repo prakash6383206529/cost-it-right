@@ -7,14 +7,16 @@ import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
 import DayTime from '../../common/DayTimeWrapper'
 import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
+import AssemblyWiseImpact from './AssemblyWiseImpact';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact } = props
   const [shown, setshown] = useState(false)
   const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
+  const [showAssemblyWise, setShowAssemblyWise] = useState(false)
   const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
   const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
@@ -118,7 +120,9 @@ function VerifyImpactDrawer(props) {
                 }
               </Row>
 
-              <Row className="pr-0 mx-0">
+              {/* ********** THIS SHOULD STAY COMMENTED IN MINDA ********** */}
+
+              {/* <Row className="pr-0 mx-0">
                 <Col md="12"> <HeaderTitle title={'FG wise Impact:'} /></Col>
               </Row>
 
@@ -133,6 +137,23 @@ function VerifyImpactDrawer(props) {
                     impactType={'FgWise'}
                   />
                 </Col>
+              </Row> */}
+
+              <Row className="mb-3 pr-0 mx-0">
+                <Col md="6"> <HeaderTitle title={'Assembly Wise Impact:'} /></Col>
+                <Col md="6">
+                  <div className={'right-details'}>
+                    <a onClick={() => setShowAssemblyWise(!showAssemblyWise)} className={`${showAssemblyWise ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                  </div>
+                </Col>
+                {showAssemblyWise && <div className="accordian-content w-100 px-3 impacted-min-height">
+                  <AssemblyWiseImpact
+                    dataForAssemblyImpact={dataForAssemblyImpactInVerifyImpact}
+                    impactType={'AssemblySummary'}
+                    isPartImpactAssembly={false}
+                  />
+                </div>
+                }
               </Row>
 
               <Row className="mb-3 pr-0 mx-0">
