@@ -143,7 +143,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             return o.CostingId;
         });
     
-console.log(uniqueArr,"uniqueArr");
+
         const simulationObj = {
             SimulationId: simulationDetail.SimulationId,
             Token: simulationDetail.TokenNo,
