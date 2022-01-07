@@ -145,9 +145,10 @@ class FreightListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
+    const { EditAccessibility, DeleteAccessibility,ViewAccessibility } = this.props;
     return (
       <>
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
         {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>

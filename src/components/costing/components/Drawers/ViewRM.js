@@ -32,7 +32,7 @@ function ViewRM(props) {
   useEffect(() => {
 
     setViewRM(viewRMData)
-    console.log(isAssemblyCosting, "VIEW RM DATA");
+    
   }, [])
 
   const dispatch = useDispatch()

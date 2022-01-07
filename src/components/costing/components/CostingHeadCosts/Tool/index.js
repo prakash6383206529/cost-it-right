@@ -120,7 +120,7 @@ function Tool(props) {
       setValue('ToolMaintenanceCost', event.target.value)
 
       const ToolMaintenanceCost = checkForNull(event.target.value)
-      console.log('ToolMaintenanceCost: ', ToolMaintenanceCost);
+      
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(getValues('Life'))
       const ToolAmortizationCost = ToolCost/Life
@@ -302,9 +302,9 @@ function Tool(props) {
       * @description REJECTION APPLICABILITY CALCULATION
       */
      const setValueOfToolCost = (Text) => {
-       console.log('Text: ', Text);
+       
       if (headerCosts && Text !== '' && valueByAPI === false) {
-        console.log('headerCosts: ', headerCosts);
+        
         const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly): headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
           const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost +ConversionCostForCalculation
 
@@ -312,7 +312,7 @@ function Tool(props) {
           const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
           const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
           const maintanencePercentage = getValues('maintanencePercentage')
-          console.log('maintanencePercentage: ', maintanencePercentage);
+          
 
           switch (Text) {
               case 'RM':

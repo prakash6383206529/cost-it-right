@@ -54,8 +54,6 @@ function OPSImulation(props) {
     })
     useEffect(() => {
         // console.log('gridOptions.columnApi: ', gridOptions);
-
-        console.log(gridApi, 'gridApigridApi');
         // if (gridApi !== null) {
         //     gridApi.redrawRows();
         // }
