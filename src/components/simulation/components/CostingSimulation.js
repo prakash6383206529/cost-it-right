@@ -83,6 +83,7 @@ function CostingSimulation(props) {
     const [amendmentDetails, setAmendmentDetails] = useState({})
     const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
+    const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
 
     const isSurfaceTreatmentOrOperation = ((Number(master) === Number(SURFACETREATMENT)) || (Number(master) === Number(OPERATIONS)));
     const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)));
@@ -96,6 +97,22 @@ function CostingSimulation(props) {
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
     }, [])
+
+    useEffect(() => {
+        let count = 0
+        tableData && tableData.map((item) => {
+
+            if (item.IsAssemblyExist === true) {
+                count++
+            }
+
+        })
+        if (count !== 0) {
+            setAssemblyImpactButtonTrue(true)
+        } else {
+            setAssemblyImpactButtonTrue(false)
+        }
+    }, [tableData])
 
     const reducerOldRMPrice = (array, item) => {
         let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
@@ -910,6 +927,7 @@ function CostingSimulation(props) {
                                 EffectiveDate={simulationDetail.EffectiveDate}
                                 amendmentDetails={amendmentDetails}
                                 dataForAssemblyImpactInVerifyImpact={tableData}
+                                assemblyImpactButtonTrue={assemblyImpactButtonTrue}
                             />}
                     </div>
 
