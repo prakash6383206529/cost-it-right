@@ -36,7 +36,7 @@ class AddIndivisualProduct extends Component {
             DataToCheck: [],
             DropdownChanged: true,
             uploadAttachements: true,
-            isSurfaceTreatment: false,
+            isImpactCalculation: false,
 
         }
     }
@@ -245,7 +245,7 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isSurfaceTreatment, uploadAttachements } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -496,7 +496,6 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
 
                                                 </Row>
-
                                                 <Row>
 
 
