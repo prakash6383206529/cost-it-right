@@ -712,20 +712,19 @@ export function getverifyCombinedProcessSimulationList(token, callback) {
 
 export function getFgWiseImpactData(data, callback) {
     return (dispatch) => {
-        
+
         const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, headers);
         request.then((response) => {
-            console.log('response: ', response);
-            if (response.data.Result ) {
+            if (response.data.Result) {
                 dispatch({
                     type: GET_FG_WISE_IMPACT_DATA,
                     payload: response.data.DataList,
                 })
                 callback(response)
-            }else if(response.status === 204){
+            } else if (response.status === 204) {
                 dispatch({
                     type: GET_FG_WISE_IMPACT_DATA,
-                    payload:[],
+                    payload: [],
                 })
                 callback(response)
             }

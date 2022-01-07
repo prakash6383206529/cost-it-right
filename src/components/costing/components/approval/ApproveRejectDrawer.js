@@ -24,7 +24,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing } = props
+  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -263,9 +263,9 @@ function ApproveRejectDrawer(props) {
               status = res && res?.response?.status
             }
 
-            if(status !== undefined && status === 200){
+            if (status !== undefined && status === 200) {
               setDisableSubmitbutton(false)
-            }else{
+            } else {
               setDisableSubmitbutton(true)
             }
             // if (status !== undefined && (status === 400 || status === 412 || status === 500)) {
@@ -471,6 +471,7 @@ function ApproveRejectDrawer(props) {
       else if (type === 'Approve') {
         //THIS CONDITION IS FOR APPROVE THE SIMULATION REQUEST 
         dispatch(simulationApprovalRequestByApprove(approverObject, res => {
+          let status = res && res?.status
           setIsDisable(false)
           if (res?.data?.Result) {
             if (IsPushDrawer) {
@@ -481,20 +482,20 @@ function ApproveRejectDrawer(props) {
               if (IsFinalLevel) {
                 let pushObj = {}
                 let temp = []
-                let uniqueArr = _.uniqBy(costingList, function(o){
+                let uniqueArr = _.uniqBy(costingList, function (o) {
                   return o.CostingId;
-              });
+                });
 
                 uniqueArr && uniqueArr.map(item => {
                   const vendor = item.VendorName.split('(')[1]
-                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup:simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
                   return null
                 })
                 pushObj.LoggedInUserId = userLoggedIn
                 pushObj.AmmendentDataRequests = temp
                 dispatch(pushAPI(pushObj, () => { }))
                 Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
-                props.closeDrawer('', 'submit')
+                props.closeDrawer('', 'submit', status)
               } else {
                 Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit')
@@ -678,7 +679,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={type==='Sender'?false:true}  // USER WILL NOT BE ABLE TO CHANGE DEPARTMENT BUT CAN CHANGE APPROVER
+                        disabled={type === 'Sender' ? false : true}  // USER WILL NOT BE ABLE TO CHANGE DEPARTMENT BUT CAN CHANGE APPROVER
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -694,7 +695,7 @@ function ApproveRejectDrawer(props) {
                         options={approvalDropDown}
                         mandatory={true}
                         handleChange={() => { }}
-                        errors={errors.approver}                      
+                        errors={errors.approver}
                       />
                     </div>
                     {
@@ -809,7 +810,7 @@ function ApproveRejectDrawer(props) {
                     type="button"
                     className="submit-button  save-btn"
                     onClick={onSubmit}
-                    disabled={disableSubmitButton|| isDisable}
+                    disabled={disableSubmitButton || isDisable}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}

@@ -21,11 +21,11 @@ function AttachmentSec(props) {
     const dropzoneOthers = useRef(null);
     const dropzoneAttachments = useRef(null);
     const { token, type, Attachements, showAttachment } = props
-    const [acc1, setAcc1] = useState(!showAttachment?false:true)
-    const [acc2, setAcc2] = useState(!showAttachment?false:true)
-    const [acc3, setAcc3] = useState(!showAttachment?false:true)
-    const [acc4, setAcc4] = useState(!showAttachment?false:true)
-    const [acc5, setAcc5] = useState(!showAttachment?false:true)
+    const [acc1, setAcc1] = useState(!showAttachment ? false : true)
+    const [acc2, setAcc2] = useState(!showAttachment ? false : true)
+    const [acc3, setAcc3] = useState(!showAttachment ? false : true)
+    const [acc4, setAcc4] = useState(!showAttachment ? false : true)
+    const [acc5, setAcc5] = useState(!showAttachment ? false : true)
 
     const [files, setFiles] = useState([]);
     const [supplierFiles, setSupplierFiles] = useState([]);
@@ -101,11 +101,6 @@ function AttachmentSec(props) {
                 files.push(Data)
                 setFiles(files)
                 setIsOpen(!IsOpen)
-                let Category = Data.AttachementCategory.replaceAll(' ','_')
-                let path = `${Category}\\\\${Data.FileName}`
-                let uploadData = new FormData()
-                uploadData.append('path', path)
-                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -143,11 +138,6 @@ function AttachmentSec(props) {
                 supplierFiles.push(Data)
                 setSupplierFiles(supplierFiles)
                 setIsOpen(!IsOpen)
-                let Category = Data.AttachementCategory.replaceAll(' ','_')
-                let path = `${Category}\\\\${Data.FileName}`
-                let uploadData = new FormData()
-                uploadData.append('path', path)
-                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -185,11 +175,6 @@ function AttachmentSec(props) {
                 invoiceFiles.push(Data)
                 setInvoiceFiles(invoiceFiles)
                 setIsOpen(!IsOpen)
-                let Category = Data.AttachementCategory.replaceAll(' ','_')
-                let path = `${Category}\\\\${Data.FileName}`
-                let uploadData = new FormData()
-                uploadData.append('path', path)
-                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -225,11 +210,6 @@ function AttachmentSec(props) {
                 otherFiles.push(Data)
                 setOtherFiles(otherFiles)
                 setIsOpen(!IsOpen)
-                let Category = Data.AttachementCategory.replaceAll(' ','_')
-                let path = `${Category}\\\\${Data.FileName}`
-                let uploadData = new FormData()
-                uploadData.append('path', path)
-                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -265,11 +245,6 @@ function AttachmentSec(props) {
                 attachmentFiles.push(Data)
                 setAttachmentFiles(attachmentFiles)
                 setIsOpen(!IsOpen)
-                let Category = Data.AttachementCategory.replaceAll(' ','_')
-                let path = `${Category}\\\\${Data.FileName}`
-                let uploadData = new FormData()
-                uploadData.append('path', path)
-                dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
             }))
         }
 
@@ -423,7 +398,7 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">{IMPACT_SHEET}</h6></Col>
                     <Col md="4" className="text-right p-0">
-                      {!showAttachment && <button  className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
+                        {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc1(!acc1) }}>
                             {acc1 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
@@ -510,7 +485,7 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">{SUPPLIER_CONFRIM}</h6></Col>
                     <Col md="4" className="text-right p-0">
-                     {!showAttachment&&   <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
+                        {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc2(!acc2) }}>
                             {acc2 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
@@ -686,13 +661,13 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">Others</h6></Col>
                     <Col md="4" className="text-right p-0">
-                    {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+                        {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
                             {acc4 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
                                 <i className="fa fa-plus"></i>
                             )}
-                        </button> }
+                        </button>}
                     </Col>
                 </div>
                 <div className="d-flex w-100 flex-wrap pt-2">
@@ -773,7 +748,7 @@ function AttachmentSec(props) {
                 <div className="d-flex w-100 flex-wrap">
                     <Col md="8" className="p-0"><h6 className="mb-0">Attachments</h6></Col>
                     <Col md="4" className="text-right p-0">
-                       {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
+                        {!showAttachment && <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
                             {acc5 ? (
                                 <i className="fa fa-minus" ></i>
                             ) : (
