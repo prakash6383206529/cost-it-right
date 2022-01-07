@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
@@ -14,12 +14,10 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ASSEMBLY, BOUGHTOUTPART, COMPONENT_PART, FILE_URL, ZBC, } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
-import { reactLocalStorage } from 'reactjs-localstorage';
 import BOMViewer from './BOMViewer';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { getRandomSixDigit } from '../../../helper/util';
@@ -295,6 +293,8 @@ class AddAssemblyPart extends Component {
     const { fieldsObj } = this.props;
     const { BOMViewerData, isEditFlag } = this.state;
 
+    this.setState({ BOMChanged: false })
+
     if (this.checkIsFormFilled() === false) {
       Toaster.warning("Please fill the mandatory fields.")
       return false;
@@ -491,7 +491,8 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup,BOMChanged } = this.state;
+    console.log('values: ', values);
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
     const { initialConfiguration } = this.props;
 
@@ -529,13 +530,13 @@ class AddAssemblyPart extends Component {
 
     if (isEditFlag) {
 
-
-      if (DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && String(DataToCheck.Description) === String(values.Description) &&
-        String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
-        String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.GroupCode) === String(values.GroupCode) && BOMChanged) {
-        this.cancel()
-        return false;
-      }
+console.log("Coming in edit flag");
+      // if (DropdownChanged && String(DataToCheck.AssemblyPartName) === String(values.AssemblyPartName) && String(DataToCheck.Description) === String(values.Description) &&
+      //   String(DataToCheck.ECNNumber) === String(values.ECNNumber) && String(DataToCheck.RevisionNumber) === String(values.RevisionNumber) &&
+      //   String(DataToCheck.DrawingNumber) === String(values.DrawingNumber) && String(DataToCheck.GroupCode) === String(values.GroupCode) && BOMChanged) {
+      //   this.cancel()
+      //   return false;
+      // }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -559,7 +560,7 @@ class AddAssemblyPart extends Component {
         BOMLevelCount: BOMLevelCount,
         GroupCodeList: productArray
       }
-
+console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditFlag);
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
         if (fieldsObj.ECNNumber === partData.ECNNumber && fieldsObj.RevisionNumber === partData.RevisionNumber) {
           this.confirmBOMDraft(updateData)
@@ -634,6 +635,7 @@ class AddAssemblyPart extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode } = this.state;
+    console.log('this.dropzone?.current?.files: ', this.dropzone?.current?.files);
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -783,11 +785,10 @@ class AddAssemblyPart extends Component {
                               selectionChanged={this.handleProductGroup}
                               validate={
                                 this.state.ProductGroup == null || this.state.ProductGroup.length === 0 ? [] : []}
-                              required={false}
+                             
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
-                              mendatory={false}
                               className="multiselect-with-border"
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               disabled={isViewMode}
@@ -922,7 +923,7 @@ class AddAssemblyPart extends Component {
                                 const fileURL = `${FILE_URL}${withOutTild}`;
                                 return (
                                   <div className={"attachment images"}>
-                                    <a href={fileURL} target="_blank">
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
                                       {f.OriginalFileName}
                                     </a>
 
