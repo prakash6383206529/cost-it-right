@@ -44,9 +44,9 @@ function Icc(props) {
     const onPressInventory = (value) => {
 
         setIsInventoryApplicable(!IsInventoryApplicable)
-        if (value) {
-            callInventoryAPI()
-        }
+     
+            callInventoryAPI(value)
+        
         dispatch(gridDataAdded(true))
     }
 
@@ -55,8 +55,8 @@ function Icc(props) {
      * @method callInventoryAPI
      * @description When we toogle on ICC to call API
     */
-    const callInventoryAPI = () => {
-        if (Object.keys(costData).length > 0) {
+    const callInventoryAPI = (callAPI) => {
+        if (Object.keys(costData).length > 0 && callAPI) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor
