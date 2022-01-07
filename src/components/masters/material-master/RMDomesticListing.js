@@ -27,6 +27,7 @@ import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } f
 
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { ColumnController } from 'ag-grid-community';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -37,10 +38,13 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
-
-
-
+    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, ViewRMAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
+    const [tableData, settableData] = useState([]);
+    const [RawMaterial, setRawMaterial] = useState([]);
+    const [RMGrade, setRMGrade] = useState([]);
+    const [vendorName, setvendorName] = useState([]);
+    const [costingHead, setcostingHead] = useState([]);
+    const [plant, setplant] = useState([]);
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -58,6 +62,8 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
+    
+
 
 
     /**
@@ -142,21 +148,25 @@ function RMDomesticListing(props) {
             }))
         }
     }
-
+   
     /**
     * @method viewOrEditItemDetails
     * @description edit or view material type
     */
-    const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
+    const viewOrEditItemDetails = (Id, rowData = {} , isViewMode) => {
         let data = {
+           
             isEditFlag: true,
-            isViewMode: isViewMode,
+            isViewFlag: isViewMode,
             Id: Id,
             IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
         props.getDetails(data);
     }
+  
+      
 
+    
     /**
     * @method deleteItem
     * @description confirm delete Raw Material details
@@ -211,10 +221,13 @@ function RMDomesticListing(props) {
         } else {
             isEditbale = EditAccessibility
         }
+
         return (
             <>
-                {ViewRMAccessibility && <button className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+            
+              
+{ViewRMAccessibility && <button className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData , false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
@@ -584,11 +597,10 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
+            
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-
-                                {!isSimulation && <AgGridColumn width={150} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
-
+                                
+                                {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
@@ -627,7 +639,8 @@ function RMDomesticListing(props) {
             }
         </div >
     );
-}
+        }
+
 
 
 
