@@ -759,7 +759,8 @@ function CostingSimulation(props) {
                                                     rowSelection={'multiple'}
                                                     // frameworkComponents={frameworkComponents}
                                                     onSelectionChanged={onRowSelect}
-                                                // isRowSelectable={isRowSelectable}
+                                                    // isRowSelectable={isRowSelectable}
+                                                    stopEditingWhenCellsLoseFocus={true}
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
@@ -863,8 +864,8 @@ function CostingSimulation(props) {
                                         <div className={"back-icon"}></div>
                                         {"Go to History"}
                                     </button>
-                                
-                                                                        
+
+
                                     <button className="user-btn mr5 save-btn" onClick={VerifyImpact}>
                                         <div className={"save-icon"}></div>
                                         {"Verify Impact"}
