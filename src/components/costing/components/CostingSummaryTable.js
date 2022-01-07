@@ -371,21 +371,22 @@ const CostingSummaryTable = (props) => {
   const editCostingDetail = (index) => {
     partNumber.isChanged = false
     dispatch(storePartNumber(partNumber))
-    history.push('/costing')
+   
     let tempData = viewCostingData[index]
     const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
       dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
-
+        history.push('/costing')
         showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
       }))
     }
     if (type === VBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
-        setTimeout(() => {
-
+      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {      
+        if(res.data.Result){
+          history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
-        }, 500);
+        }
+      
 
       }))
     }
