@@ -8,6 +8,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import Switch from "react-switch";
+import values from 'redux-form/lib/values';
 
 function Icc(props) {
 
@@ -40,14 +41,22 @@ function Icc(props) {
      * @method onPressInventory
      * @description  USED TO HANDLE INVENTORY CHANGE
      */
-    const onPressInventory = () => {
+    const onPressInventory = (value) => {
+
         setIsInventoryApplicable(!IsInventoryApplicable)
+        if (value) {
+            callInventoryAPI()
+        }
         dispatch(gridDataAdded(true))
     }
 
 
-    useEffect(() => {
-        if (IsInventoryApplicable === true && Object.keys(costData).length >0) {
+    /**
+     * @method callInventoryAPI
+     * @description When we toogle on ICC to call API
+    */
+    const callInventoryAPI = () => {
+        if (Object.keys(costData).length > 0) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor
@@ -77,7 +86,43 @@ function Icc(props) {
                 props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }
-    }, [IsInventoryApplicable])
+    }
+
+
+
+
+    // useEffect(() => {
+    //     if (IsInventoryApplicable === true && Object.keys(costData).length >0) {
+    //         const reqParams = {
+    //             VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+    //             IsVendor: costData.IsVendor
+    //         }
+    //         dispatch(getInventoryDataByHeads(reqParams, res => {
+    //             if (res && res.data && res.data.Result) {
+    //                 let Data = res.data.Data;
+    //                 setValue('InterestRatePercentage', Data.InterestRate)
+    //                 setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
+    //                 setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
+    //                 setInventoryObj(Data)
+    //                 checkInventoryApplicability(Data.ICCApplicability)
+
+    //             } else if (res && res.status === 204) {
+    //                 setValue('InterestRatePercentage', '')
+    //                 setValue('InterestRateCost', '')
+    //                 setValue('NetICCTotal', '')
+    //                 checkInventoryApplicability('')
+    //                 setICCapplicability([])
+    //                 setInventoryObj({})
+    //             }
+
+    //         }))
+    //     } else {
+    //         setICCapplicability([])
+    //         if (!CostingViewMode) {
+    //             props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+    //         }
+    //     }
+    // }, [IsInventoryApplicable])
 
     /**
     * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
@@ -113,7 +158,7 @@ function Icc(props) {
                     break;
 
                 case 'RM + BOP':
-                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP), initialConfiguration.NoOfDecimalForPrice)
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 

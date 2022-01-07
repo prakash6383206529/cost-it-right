@@ -692,8 +692,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
-
+                      <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
 
                         {recordInsertStatusBox &&
                             <div className="error-box-container">

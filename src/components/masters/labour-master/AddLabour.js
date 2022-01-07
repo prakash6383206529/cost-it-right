@@ -28,6 +28,7 @@ class AddLabour extends Component {
     this.state = {
       isEditFlag: false,
       LabourDetailId: '',
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       IsEmployeContractual: true,
       IsVendor: false,
@@ -214,9 +215,7 @@ class AddLabour extends Component {
   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
-      // vendorName: [],
-      // selectedVendorPlants: [],
-      // vendorLocation: [],
+
     })
   }
 
@@ -352,10 +351,7 @@ class AddLabour extends Component {
       return false;
     }
 
-    // if ((machineType.length >= 11) || (labourType.length > 11)) {
-    //   Toaster.warning('Please enter qo')
-    //   return false;
-    // }
+
 
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = gridTable.findIndex((el) =>
@@ -632,7 +628,7 @@ class AddLabour extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, isDisable } = this.state;
+    const { isEditFlag, isOpenMachineType, isDisable, isViewMode } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -679,26 +675,7 @@ class AddLabour extends Component {
                           <div className={"right-title"}>Contractual</div>
                         </label>
                       </Col>
-                      {/* <Col md="4" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={"left-title"}>Zero Based</div>
-                          <Switch
-                            onChange={this.onPressVendor}
-                            checked={this.state.IsVendor}
-                            id="normal-switch"
-                            disabled={true}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#A9A9A9"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={"right-title"}>Vendor Based</div>
-                        </label>
-                      </Col> */}
+
                     </Row>
 
                     <Row>
@@ -717,7 +694,6 @@ class AddLabour extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("VendorNameList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
                                 this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []} required={true}
                               handleChangeDescription={this.handleVendorName}
@@ -736,7 +712,6 @@ class AddLabour extends Component {
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("state")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
                               this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
                             required={true}
@@ -754,7 +729,6 @@ class AddLabour extends Component {
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("plant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
                               this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                             required={true}
@@ -782,12 +756,10 @@ class AddLabour extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("MachineTypeList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
                               required={true}
                               handleChangeDescription={this.handleMachineType}
                               valueDescription={this.state.machineType}
-                              disabled={false}
+                              disabled={isViewMode}
                             />
                           </div>
                           {!isEditFlag && (
@@ -807,11 +779,10 @@ class AddLabour extends Component {
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("labourList")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
                             required={true}
                             handleChangeDescription={this.labourHandler}
                             valueDescription={this.state.labourType}
+                            disabled={isViewMode}
                           />
                         </div>
                       </Col>
@@ -822,19 +793,20 @@ class AddLabour extends Component {
                             name={"LabourRate"}
                             type="text"
                             placeholder={"Enter"}
+                            disabled={isViewMode}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderText}
                             required={true}
-                            disabled={false}
                             className=" "
                             customClassName="withBorder"
+
                           /></div>
                       </Col>
                       <Col md="auto" className="d-flex">
                         <div className="form-group date-filed pr-3">
                           <label>
                             Effective Date
-                            {/* <span className="asterisk-required">*</span> */}
+
                           </label>
                           <div className="inputbox date-section">
                             <DatePicker
@@ -844,14 +816,13 @@ class AddLabour extends Component {
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"
                               autoComplete={"off"}
                               disabledKeyboardNavigation
                               onChangeRaw={(e) => e.preventDefault()}
-                              disabled={false}
+                              disabled={isViewMode}
                             />
                           </div>
                         </div>
@@ -880,6 +851,7 @@ class AddLabour extends Component {
                               type="button"
                               className={"user-btn  pull-left"}
                               onClick={this.gridHandler}
+                              disabled={isViewMode}
                             >
                               <div className={"plus"}></div>ADD
                             </button>
@@ -914,12 +886,14 @@ class AddLabour extends Component {
                                       <button
                                         className="Edit mr-2"
                                         type={"button"}
+                                        disabled={isViewMode}
                                         onClick={() =>
                                           this.editGridItemDetails(index)
                                         }
                                       />
                                       <button
                                         className="Delete"
+                                        disabled={isViewMode}
                                         type={"button"}
                                         onClick={() =>
                                           this.deleteGridItem(index)
@@ -951,6 +925,7 @@ class AddLabour extends Component {
                       <button
                         type="submit"
                         className="submit-button mr5 save-btn"
+                        disabled={isViewMode}
                       >
                         <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}

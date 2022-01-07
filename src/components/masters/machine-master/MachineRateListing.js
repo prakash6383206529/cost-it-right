@@ -95,14 +95,16 @@ class MachineRateListing extends Component {
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(data);
     }
+
 
     /**
     * @method copyItem
@@ -168,10 +170,11 @@ class MachineRateListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -476,7 +479,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!isSimulation && <AgGridColumn field="MachineId" width={200} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

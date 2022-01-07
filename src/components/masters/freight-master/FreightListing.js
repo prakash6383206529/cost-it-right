@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
@@ -53,7 +53,7 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    // this.props.getVendorListByVendorType(true, () => { })
+
     setTimeout(() => {
 
       this.props.getVendorWithVendorCodeSelectList()
@@ -87,14 +87,15 @@ class FreightListing extends Component {
   }
 
   /**
-  * @method editItemDetails
-  * @description edit material type
+  * @method viewOrEditItemDetails
+  * @description edit or view material type
   */
-  editItemDetails = (Id, rowData) => {
+  viewOrEditItemDetails = (Id, rowData, isViewMode) => {
     let data = {
       isEditFlag: true,
       Id: Id,
       IsVendor: rowData.CostingHead,
+      isViewMode: isViewMode
     }
     this.props.getDetails(data);
   }
@@ -145,10 +146,11 @@ class FreightListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -160,7 +162,7 @@ class FreightListing extends Component {
   */
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    // return cellValue ? 'Vendor Based' : 'Zero Based';
+
     return cellValue ? 'Vendor Based' : 'Zero Based';
 
   }
@@ -315,7 +317,7 @@ class FreightListing extends Component {
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
-                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -340,13 +342,11 @@ class FreightListing extends Component {
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
                   domLayout='autoHeight'
-                  // columnDefs={c}
                   rowData={this.props.freightDetail}
                   pagination={true}
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
-                  // loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,
