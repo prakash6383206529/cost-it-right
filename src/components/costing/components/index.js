@@ -38,10 +38,13 @@ function Costing(props) {
   }, [])
 
   const showDetail = (partInfo, costingInfo) => {
+    
     setPartInfo(partInfo)
     setCostingData(costingInfo)
+    if(costingInfo && costingInfo.length>0){
 
-    toggle("1");
+      toggle("1");
+    }
   }
 
   /**

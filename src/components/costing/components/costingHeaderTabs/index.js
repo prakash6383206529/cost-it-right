@@ -29,8 +29,6 @@ function CostingHeaderTabs(props) {
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
     IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData,checkIsDataChange,checkIsOverheadProfitChange,checkIsFreightPackageChange,checkIsToolTabChange } = useSelector(state => state.costing)
-    console.log('checkIsToolTabChange: ', checkIsToolTabChange);
-
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
@@ -46,7 +44,7 @@ function CostingHeaderTabs(props) {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI && checkIsDataChange) {
-   console.log("FROM RMCC");
+   
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -106,7 +104,7 @@ function CostingHeaderTabs(props) {
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
-      console.log("FROM OVERHEAD");
+      
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
@@ -150,7 +148,7 @@ function CostingHeaderTabs(props) {
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true &&checkIsFreightPackageChange) {
-      console.log("FROM Packaging");
+      
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
@@ -173,7 +171,7 @@ function CostingHeaderTabs(props) {
     // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
 
     if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true &&ComponentItemToolData.CostingPartDetails.TotalToolCost >0 && activeTab !== '5' && checkIsToolTabChange) {
-      console.log("FROM TOOL");
+      
       const data = {
         "IsToolCostProcessWise": false,
         "CostingId": costData.CostingId,
@@ -281,7 +279,7 @@ function CostingHeaderTabs(props) {
 
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && ComponentItemDiscountData.IsChanged === true && activeTab !== '6') {
-      console.log("FROM DISCOUNT");
+      
       dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1 }, res => {
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
       }))
