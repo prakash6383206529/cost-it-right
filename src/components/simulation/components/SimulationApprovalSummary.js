@@ -1064,7 +1064,7 @@ function SimulationApprovalSummary(props) {
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
-                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn - small - primary - circle ml - 1`}>{lastRevisionDataAccordian ? (
+                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
                                         <i className="fa fa-minus" ></i>
                                     ) : (
                                         <i className="fa fa-plus"></i>
