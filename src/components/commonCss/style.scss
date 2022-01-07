@@ -2851,7 +2851,7 @@ table{
   color: #3D4465;
 }
 .add-min-height{
-  .btn-secondary,.btn-primary{
+  .btn-secondary,.btn-primary, .user-btn{
     height: 40px;
   }
   .reset-btn{
@@ -4193,7 +4193,7 @@ body{
   color: #4DC771;
   line-height: initial;
   min-width: 70px;
-  max-width: 70px !important;
+  // max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }

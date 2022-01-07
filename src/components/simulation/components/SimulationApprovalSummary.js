@@ -39,7 +39,8 @@ import _ from 'lodash'
 import { SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
-import imgRedcross from '../../../assests/images/red-cross.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
+import imgGreencross from '../../../assests/images/greenCross.png';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
 
@@ -667,7 +668,7 @@ function SimulationApprovalSummary(props) {
         }
         return temp
     }
-
+    
     const rePush = () => {
         let pushObj = {}
         let temp = []
@@ -701,7 +702,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteInsertStatusBox}
-                                    src={imgRedcross}
+                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross }
                                 ></img>
                             </div>
                         }
@@ -713,7 +714,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteAmendmentStatusBox}
-                                    src={imgRedcross}
+                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
 
@@ -1063,7 +1064,7 @@ function SimulationApprovalSummary(props) {
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
-                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn - small - primary - circle ml - 1`}>{lastRevisionDataAccordian ? (
+                                    <button onClick={() => setLastRevisionDataAccordian(!lastRevisionDataAccordian)} className={`btn btn-small-primary-circle ml-1`}>{lastRevisionDataAccordian ? (
                                         <i className="fa fa-minus" ></i>
                                     ) : (
                                         <i className="fa fa-plus"></i>
