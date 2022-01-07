@@ -15,8 +15,6 @@ import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -39,7 +37,8 @@ class AddVendorDrawer extends Component {
             isVisible: false,
             vendor: '',
             DataToCheck: [],
-            DropdownChanged: true
+            DropdownChanged: true,
+            isViewMode: this.props?.isViewMode ? true : false
         }
     }
 
@@ -256,13 +255,14 @@ class AddVendorDrawer extends Component {
     * @description used to get user detail
     */
     getDetail = () => {
-        const { isEditFlag, ID } = this.props;
+        const { isEditFlag, ID, } = this.props;
         if (isEditFlag) {
             this.setState({
                 isLoader: true,
                 isEditFlag: true,
                 VendorId: ID,
-                isVisible: true
+                isVisible: true,
+
             })
             this.props.getSupplierByIdAPI(ID, isEditFlag, (res) => {
                 if (res && res.data && res.data.Data) {
@@ -455,13 +455,12 @@ class AddVendorDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, isVisible } = this.props;
-        const { country, isOpenVendorPlant } = this.state;
+        const { country, isOpenVendorPlant, isViewMode } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
-                // onClose={(e) => this.toggleDrawer(e)}
                 >
-                    {this.state.isLoader &&<LoaderCustom customClass={`${isEditFlag ? 'update-vendor-loader': ''}`} />}
+                    {this.state.isLoader && <LoaderCustom customClass={`${isEditFlag ? 'update-vendor-loader' : ''}`} />}
                     <Container >
                         <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
                             <form
@@ -495,7 +494,7 @@ class AddVendorDrawer extends Component {
                                             component={renderMultiSelectField}
                                             mendatory={true}
                                             className="multiselect-with-border"
-                                            disabled={false}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -535,12 +534,13 @@ class AddVendorDrawer extends Component {
                                             label={`Email Id`}
                                             name={"Email"}
                                             type="email"
-                                            //placeholder={'email@domain.com/co.us'}
+
                                             validate={[email, minLength7, maxLength70]}
                                             component={renderEmailInputField}
                                             required={false}
                                             customClassName={'withBorder '}
                                             className=" "
+                                            isDisabled={isViewMode}
 
                                         />
                                     </Col>
@@ -559,6 +559,7 @@ class AddVendorDrawer extends Component {
                                                     //required={true}
                                                     maxLength={12}
                                                     customClassName={'withBorder'}
+                                                    disabled={isViewMode}
                                                 />
                                             </Col>
                                             <Col md={4} className="pr-0">
@@ -572,6 +573,7 @@ class AddVendorDrawer extends Component {
                                                     //required={true}
                                                     // maxLength={5}
                                                     customClassName={'withBorder'}
+                                                    disabled={isViewMode}
                                                 /></Col>
                                         </Row>
                                     </Col>
@@ -584,9 +586,9 @@ class AddVendorDrawer extends Component {
                                             component={renderText}
                                             isDisabled={false}
                                             validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
-                                            // required={true}
                                             maxLength={12}
                                             customClassName={'withBorder'}
+                                            disabled={isViewMode}
                                         />
                                     </Col>
 
@@ -599,7 +601,6 @@ class AddVendorDrawer extends Component {
                                                 component={searchableSelect}
                                                 placeholder={'Select'}
                                                 options={this.renderListing('country')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.countryHandler}
@@ -618,7 +619,6 @@ class AddVendorDrawer extends Component {
                                                     component={searchableSelect}
                                                     placeholder={'Select'}
                                                     options={this.renderListing('state')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                                     validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
                                                     required={true}
                                                     handleChangeDescription={this.stateHandler}
@@ -636,7 +636,6 @@ class AddVendorDrawer extends Component {
                                                 component={searchableSelect}
                                                 placeholder={'Select'}
                                                 options={this.renderListing('city')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.cityHandler}
@@ -657,6 +656,7 @@ class AddVendorDrawer extends Component {
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                 </Row>
@@ -673,6 +673,7 @@ class AddVendorDrawer extends Component {
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                     <Col md="6">
@@ -687,41 +688,12 @@ class AddVendorDrawer extends Component {
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
+                                            disabled={isViewMode}
                                         />
                                     </Col>
                                 </Row>
 
-                                {/*  <Row className="pl-3"> 
-                                  
-                                    {this.checkVendorSelection() && checkVendorPlantConfigurable() && this.props.isEditFlag &&
-                                        <>
-                                            <Col md="12">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            label="Vendor Plant"
-                                                            name="SelectedPlants"
-                                                            placeholder="--Select Plant--"
-                                                            selection={this.state.selectedVendorPlants}
-                                                            options={this.renderListing('vendorPlants')}
-                                                            selectionChanged={this.handleVendorPlant}
-                                                            optionValue={option => option.Value}
-                                                            optionLabel={option => option.Text}
-                                                            component={renderMultiSelectField}
-                                                            mendatory={false}
 
-                                                            className="multiselect-with-border"
-                                                        />
-                                                    </div>
-                                                    {this.props.isEditFlag &&
-                                                        <div
-                                                            onClick={this.vendorPlantToggler}
-                                                            className={'plus-icon-square mr30 right'}>
-                                                        </div>}
-                                                </div>
-                                            </Col>
-                                        </>}
-                                </Row> */}
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
                                     <div className="col-sm-12 text-right px-3">
                                         <button
@@ -733,7 +705,7 @@ class AddVendorDrawer extends Component {
                                         </button>
                                         <button
                                             type="submit"
-                                            disabled={this.state.isLoader}
+                                            disabled={this.state.isLoader || isViewMode ? true : false}
                                             className="user-btn save-btn">
 
                                             <div className={"save-icon"}></div>

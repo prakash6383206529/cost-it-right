@@ -137,12 +137,12 @@ class InterestRateListing extends Component {
 
 
   /**
-  * @method editItemDetails
-  * @description confirm edit item
+  * @method viewOrEditItemDetails
+  * @description confirm edit oor view item
   */
-  editItemDetails = (Id) => {
+  viewOrEditItemDetails = (Id, isViewMode) => {
     this.setState({
-      data: { isEditFlag: true, ID: Id },
+      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
       toggleForm: true,
     })
   }
@@ -197,10 +197,11 @@ class InterestRateListing extends Component {
     const cellValue = props?.value;
     const rowData = props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.state;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -212,16 +213,7 @@ class InterestRateListing extends Component {
       ModifiedBy: loggedInUserId(),
       IsActive: !cell, //Status of the user.
     }
-    // this.props.activeInactiveVendorStatus(data, res => {
-    //     if (res && res.data && res.data.Result) {
-    //         if (cell == true) {
-    //             Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-    //         } else {
-    //             Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-    //         }
-    //         this.getTableListData(null, null, null, null)
-    //     }
-    // })
+
   }
 
 
@@ -497,7 +489,7 @@ class InterestRateListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -544,7 +536,7 @@ class InterestRateListing extends Component {
                 <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period(Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn width={120} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn width={150} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

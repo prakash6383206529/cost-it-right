@@ -1,16 +1,15 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { checkForDecimalAndNull } from "../../../helper/validation";
 import {
   getPowerDetailDataList, getVendorPowerDetailDataList, getFuelComboData, getPlantListByState,
   getZBCPlantList, getStateSelectList, deletePowerDetail, deleteVendorPowerDetail,
 } from '../actions/Fuel';
 import { getPlantBySupplier } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { searchableSelect } from "../../layout/FormInputs";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -18,7 +17,6 @@ import Toaster from '../../common/Toaster';
 import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PowerMaster } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -26,7 +24,6 @@ import { POWERLISTING_DOWNLOAD_EXCEl, POWERLISTING_VENDOR_DOWNLOAD_EXCEL } from 
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { li } from 'react-dom-factories';
 import { getConfigurationKey } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
@@ -108,14 +105,15 @@ class PowerListing extends Component {
   }
 
   /**
-  * @method editItemDetails
-  * @description edit material type
+  * @method viewOrEditItemDetails
+  * @description edit or view material type
   */
-  editItemDetails = (Id) => {
+  viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
       Id: Id,
       IsVendor: this.state.IsVendor,
+      isViewMode: isViewMode
     }
     this.props.getDetails(data);
   }
@@ -172,10 +170,11 @@ class PowerListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -344,12 +343,7 @@ class PowerListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      // effectiveDateRenderer: this.effectiveDateFormatter,
-      // costingHeadRenderer: this.costingHeadFormatter,
-      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      // freightCostFormatter: this.freightCostFormatter,
-      // shearingCostFormatter: this.shearingCostFormatter,
       costFormatter: this.costFormatter
     };
 
@@ -417,7 +411,7 @@ class PowerListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -472,7 +466,6 @@ class PowerListing extends Component {
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     domLayout='autoHeight'
-                    // columnDefs={c}
                     rowData={this.props.vendorPowerDataList}
                     pagination={true}
                     paginationPageSize={10}
