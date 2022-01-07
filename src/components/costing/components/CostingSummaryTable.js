@@ -61,9 +61,9 @@ const CostingSummaryTable = (props) => {
   const [isWarningFlag, setIsWarningFlag] = useState(false)
   const [rmMBDetail, setrmMBDetail] = useState({})
   const [viewAtttachments, setViewAttachment] = useState([])
-  const [pdfHead, setPdfHead]=useState(false);
-  const [icons, setIcon]=useState(true);
-  const [loader, setLoader]=useState(false);
+  const [pdfHead, setPdfHead] = useState(false);
+  const [icons, setIcon] = useState(true);
+  const [loader, setLoader] = useState(false);
 
 
 
@@ -371,7 +371,7 @@ const CostingSummaryTable = (props) => {
   const editCostingDetail = (index) => {
     partNumber.isChanged = false
     dispatch(storePartNumber(partNumber))
-   
+
     let tempData = viewCostingData[index]
     const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
@@ -381,12 +381,12 @@ const CostingSummaryTable = (props) => {
       }))
     }
     if (type === VBC) {
-      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {      
-        if(res.data.Result){
+      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => {
+        if (res.data.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
         }
-      
+
 
       }))
     }
@@ -651,21 +651,21 @@ const CostingSummaryTable = (props) => {
   //   
   // }, [multipleCostings])
   // 
-// We have used jsPDF to Generate PDF
-const generatorPDF = () => {
-  setLoader(true)
-  var doc =new jsPDF('p', 'mm',[1300, 1300]);
-  setPdfHead(true);
-  setIcon(false)
-  doc.html(document.querySelector("#summaryPdf"),{
-    callback: function(pdf){
-      pdf.save("CostingSummary.pdf");
-      setPdfHead(false);
-      setIcon(true);
-      setLoader(false)
-    }
-  });
-}
+  // We have used jsPDF to Generate PDF
+  const generatorPDF = () => {
+    setLoader(true)
+    var doc = new jsPDF('p', 'mm', [1300, 1300]);
+    setPdfHead(true);
+    setIcon(false)
+    doc.html(document.querySelector("#summaryPdf"), {
+      callback: function (pdf) {
+        pdf.save("CostingSummary.pdf");
+        setPdfHead(false);
+        setIcon(true);
+        setLoader(false)
+      }
+    });
+  }
 
   return (
 
@@ -673,7 +673,7 @@ const generatorPDF = () => {
       {
         stepOne &&
         <Fragment>
-        {(loader &&  <LoaderCustom customClass="pdf-loader" />)}
+          {(loader && <LoaderCustom customClass="pdf-loader" />)}
           <Row>
             {!viewMode && (
               <Col md="4">
@@ -691,7 +691,7 @@ const generatorPDF = () => {
             {
               !simulationMode &&
               <Col md="8" className="text-right">
-              <button Type="button" className="mr-1 mb-1 user-btn pdf-btn" title='pdf' onClick={generatorPDF}> </button>
+                {/* <button Type="button" className="mr-1 mb-1 user-btn pdf-btn" title='pdf' onClick={generatorPDF}> </button> */}
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                     <div className="send-for-approval"></div>
@@ -713,16 +713,16 @@ const generatorPDF = () => {
           </Row>
 
           <Row className={customClass} id="summaryPdf">
-          {pdfHead && 
-          <>
-             <Col md="12" className='pdf-header-wrapper'>
-                <img src={cirHeader} className="pdf-header-img"/>
-              </Col>
-              <Col md="12">
-                <h3 className='left-border'>Costing Summary:</h3>
-              </Col>
+            {pdfHead &&
+              <>
+                <Col md="12" className='pdf-header-wrapper'>
+                  <img src={cirHeader} className="pdf-header-img" />
+                </Col>
+                <Col md="12">
+                  <h3 className='left-border'>Costing Summary:</h3>
+                </Col>
               </>}
-          
+
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
@@ -780,7 +780,7 @@ const generatorPDF = () => {
                                   isApproval ? <span className="checkbox-text">{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                                 }
                               </div>
-                              {(!viewMode && icons ) && (
+                              {(!viewMode && icons) && (
                                 <div class="action w-40 d-inline-block text-right">
                                   {EditAccessibility && (data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                   {AddAccessibility && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
@@ -898,7 +898,7 @@ const generatorPDF = () => {
                             <td>
                               <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (!simulationDrawer && icons )  &&
+                                (!simulationDrawer && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -919,7 +919,7 @@ const generatorPDF = () => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons ) &&
+                                (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -978,7 +978,7 @@ const generatorPDF = () => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons )  &&
+                                (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1077,7 +1077,7 @@ const generatorPDF = () => {
                             <td>
                               <span>{checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons )  &&
+                                (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1119,7 +1119,7 @@ const generatorPDF = () => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons ) &&
+                                (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1185,7 +1185,7 @@ const generatorPDF = () => {
                             <td>
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons)&&
+                                (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1358,7 +1358,7 @@ const generatorPDF = () => {
 
                             <td class="text-center costing-summary">
                               {(!viewMode && !isFinalApproverShow) &&
-                                (data.status === DRAFT && icons)  &&
+                                (data.status === DRAFT && icons) &&
                                 <button
                                   class="user-btn"
                                   disabled={isWarningFlag}
