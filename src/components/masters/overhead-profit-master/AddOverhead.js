@@ -32,6 +32,7 @@ class AddOverhead extends Component {
       costingHead: 'zero',
       isEditFlag: false,
       IsVendor: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       ModelType: [],
       vendorName: [],
@@ -590,14 +591,7 @@ class AddOverhead extends Component {
     this.props.hideForm()
   }
 
-  // options = {
-  //   onUploadProgress: (progressEvent) => {
-  //     const { loaded, total } = progressEvent
-  //     let percent = Math.floor((loaded * 100) / total)
-  //     
-  //   }
-  //   {uploadPercentage > 0 <ProgressBar now={uploadPercentage} active label={`${uploadPercentage}%`}>}
-  // }
+
 
   /**
   * @method onSubmit
@@ -726,7 +720,7 @@ class AddOverhead extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC } = this.state;
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode } = this.state;
 
     return (
       <>
@@ -807,7 +801,6 @@ class AddOverhead extends Component {
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("ModelType")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
                               this.state.ModelType == null ||
                                 this.state.ModelType.length === 0
@@ -819,7 +812,7 @@ class AddOverhead extends Component {
                               this.handleModelTypeChange
                             }
                             valueDescription={this.state.ModelType}
-                          //disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
@@ -904,7 +897,6 @@ class AddOverhead extends Component {
                             options={this.renderListing(
                               "OverheadApplicability"
                             )}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
                               this.state.overheadAppli == null ||
                                 this.state.overheadAppli.length === 0
@@ -916,7 +908,7 @@ class AddOverhead extends Component {
                               this.handleOverheadChange
                             }
                             valueDescription={this.state.overheadAppli}
-                          //disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         {!isHideOverhead && (
@@ -937,8 +929,7 @@ class AddOverhead extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength={15}
-                              // max={100}
-                              disabled={isOverheadPercent ? true : false}
+                              disabled={isOverheadPercent || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -951,11 +942,10 @@ class AddOverhead extends Component {
                               placeholder={!isRM ? "Enter" : ""}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
-                              //onChange={this.handleCalculation}
                               required={!isRM ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isRM ? true : false}
+                              disabled={isRM || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -968,11 +958,10 @@ class AddOverhead extends Component {
                               placeholder={!isCC ? "Enter" : ""}
                               validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
-                              //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isCC ? true : false}
+                              disabled={isCC || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -985,11 +974,10 @@ class AddOverhead extends Component {
                               placeholder={!isBOP ? "Enter" : ""}
                               validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
-                              //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isBOP ? true : false}
+                              disabled={isBOP || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -1006,12 +994,11 @@ class AddOverhead extends Component {
                               autoComplete={'off'}
                               required={true}
                               changeHandler={(e) => {
-                                //e.preventDefault()
                               }}
                               component={renderDatePicker}
                               className="form-control"
                               disabled={isEditFlag ? true : false}
-                            //minDate={moment()}
+
                             />
                           </div>
                         </Col>
@@ -1032,10 +1019,9 @@ class AddOverhead extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
-                            //validate={[maxLength100]}
-                            //required={true}
                             component={renderTextAreaField}
                             maxLength="512"
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -1052,6 +1038,7 @@ class AddOverhead extends Component {
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
+                              disabled={isViewMode}
                               maxSizeBytes={2000000}
                               inputContent={(files, extra) =>
                                 extra.reject ? (
@@ -1096,17 +1083,18 @@ class AddOverhead extends Component {
                                     <a href={fileURL} target="_blank">
                                       {f.OriginalFileName}
                                     </a>
-                                    <img
-                                      alt={""}
-                                      className="float-right"
-                                      onClick={() =>
-                                        this.deleteFile(
-                                          f.FileId,
-                                          f.FileName
-                                        )
-                                      }
-                                      src={imgRedcross}
-                                    ></img>
+                                    {!isViewMode &&
+                                      <img
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() =>
+                                          this.deleteFile(
+                                            f.FileId,
+                                            f.FileName
+                                          )
+                                        }
+                                        src={imgRedcross}
+                                      ></img>}
                                   </div>
                                 );
                               })}
@@ -1128,6 +1116,7 @@ class AddOverhead extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
+                          disabled={isViewMode}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}

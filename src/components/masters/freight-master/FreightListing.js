@@ -79,9 +79,9 @@ class FreightListing extends Component {
         let Data = res.data.DataList;
         this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       } else {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       }
     })
   }
@@ -214,7 +214,7 @@ class FreightListing extends Component {
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
-    temp = TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.IsVendor === true) {
         item.IsVendor = 'Vendor Based'
       } else if (item.IsVendor === false) {

@@ -147,7 +147,7 @@ class BOPMaster extends Component {
             <Col sm="4">
               <h1>{`Insert Master`}</h1>
             </Col>
-            <ScrollToTop pointProp ={"go-top-top"} />
+            <ScrollToTop pointProp={"go-top-top"} />
           </Row>
 
           <Row>
@@ -206,6 +206,7 @@ class BOPMaster extends Component {
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
+                      ViewAccessibility={this.state.ViewAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
                     />
@@ -219,6 +220,7 @@ class BOPMaster extends Component {
                       getDetails={this.getImportDetails}
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
+                      ViewAccessibility={this.state.ViewAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}

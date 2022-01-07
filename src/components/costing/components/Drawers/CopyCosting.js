@@ -59,7 +59,7 @@ function CopyCosting(props) {
   const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
   const [showPopup, setShowPopup] = useState(false)
   const [updatedObj, setUpdatedObj] = useState({})
-  const [msgObj,setMsgObj] = useState({})
+  const [msgObj, setMsgObj] = useState({})
 
   useEffect(() => {
     const ZbcTemp = []
@@ -280,6 +280,8 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
+
+
 
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
@@ -800,7 +802,7 @@ function CopyCosting(props) {
         </Container>
       </Drawer>
       {
-        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`} />
+        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : ` is not available for the selected vendor. Do you still wish to continue ?`}`} />
       }
     </>
   );

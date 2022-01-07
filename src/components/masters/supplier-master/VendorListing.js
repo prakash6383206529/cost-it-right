@@ -74,7 +74,8 @@ class VendorListing extends Component {
             sideBar: { toolPanels: ['columns'] },
             showData: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isViewMode: false
 
         }
     }
@@ -283,13 +284,15 @@ class VendorListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: isViewMode,
         })
     }
+
 
     /**
     * @method deleteItem
@@ -327,10 +330,11 @@ class VendorListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -511,7 +515,7 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -521,7 +525,7 @@ class VendorListing extends Component {
             ID: '',
         }, () => {
             this.filterList()
-            // this.getTableListData(null, null, null)
+
         })
     }
 
@@ -576,10 +580,6 @@ class VendorListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    // resetState() {
-    //     gridOptions.columnApi.resetColumnState();
-    //     gridOptions.api.setFilterModel(null);
-    // }
 
 
     /**
@@ -594,10 +594,10 @@ class VendorListing extends Component {
         const options = {
             clearSearch: true,
             noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
+
             exportCSVBtn: this.createCustomExportCSVButton,
             onExportToCSV: this.handleExportCSVButtonClick,
-            //paginationShowsTotal: true,
+
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -624,7 +624,7 @@ class VendorListing extends Component {
 
         return (
             <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-                {/* {this.props.loading && <Loader />} */}
+
                 <ScrollToTop pointProp="go-to-top" />
                 <form
 
@@ -637,7 +637,7 @@ class VendorListing extends Component {
                         </Col>
 
                     </Row>
-                    <Row className="pt-4 px-15 blue-before">
+                    <Row className="pt-2 align-items-center">
                         {this.state.shown && (
                             <Col md="12" lg="8" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -652,7 +652,7 @@ class VendorListing extends Component {
                                             component={searchableSelect}
                                             placeholder={"Vendor Type"}
                                             options={this.renderListing("vendorType")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+
                                             validate={
                                                 this.state.vendorType == null ||
                                                     this.state.vendorType.length === 0
@@ -673,7 +673,7 @@ class VendorListing extends Component {
                                             component={searchableSelect}
                                             placeholder={"Vendor Name"}
                                             options={this.renderListing("vendorList")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+
                                             validate={
                                                 this.state.vendorName == null ||
                                                     this.state.vendorName.length === 0
@@ -690,7 +690,7 @@ class VendorListing extends Component {
                                     <div className="flex-fill">
                                         <button
                                             type="button"
-                                            //disabled={pristine || submitting}
+
                                             onClick={this.resetFilter}
                                             className="reset mr10"
                                         >
@@ -698,7 +698,7 @@ class VendorListing extends Component {
                                         </button>
                                         <button
                                             type="button"
-                                            //disabled={pristine || submitting}
+
                                             onClick={this.filterList}
                                             className="user-btn mr5"
                                         >
@@ -708,18 +708,14 @@ class VendorListing extends Component {
                                 </div>
                             </Col>
                         )}
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Col md="6">
+                            {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
+                        </Col>
+                        <Col md="6" lg="6">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {/* {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
-                                    )} */}
-                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+
+                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -756,7 +752,7 @@ class VendorListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
@@ -768,30 +764,19 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className="ag-grid-wrapper height-width-wrapper">
-                    <div className="ag-grid-header">
-                        <Row className="pt-5 no-filter-row">
-                        </Row>
-                        {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
-                    </div>
-                    <div
-                        className="ag-theme-material"
-
-                    >
+                <div className="ag-grid-wrapper height-width-wrapper pt-2">
+                    <div className="ag-theme-material">
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
-                            // columnDefs={c}
                             rowData={this.props.supplierDataList}
                             pagination={true}
-                            // onPaginationChanged={ }
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             onFilterModified={this.onFloatingFilterChanged}
                             gridOptions={gridOptions}
                             suppressRowClickSelection={true}
-                            //suppressPaginationPanel={true}
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
@@ -807,7 +792,7 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" headerName="Actions" width={220} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
                             <div className="paging-container d-inline-block float-right">
@@ -847,6 +832,7 @@ class VendorListing extends Component {
                             closeDrawer={this.closeVendorDrawer}
                             isEditFlag={isEditFlag}
                             isRM={false}
+                            isViewMode={this.state.isViewMode}
                             ID={this.state.ID}
                             anchor={"right"}
                         />

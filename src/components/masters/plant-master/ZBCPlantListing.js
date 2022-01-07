@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -46,15 +46,16 @@ class ZBCPlantListing extends Component {
 
             cellData: {},
             cellValue: '',
-            showPopupToggle: false
+            showPopupToggle: false,
+            isViewMode: false
         }
     }
 
     componentDidMount() {
-        // this.getTableListData();
+
         this.props.fetchCountryDataAPI(() => { })
         this.filterList()
-        //this.props.onRef(this)
+
     }
 
     /**
@@ -79,6 +80,17 @@ class ZBCPlantListing extends Component {
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: false,
+        })
+
+    }
+
+    viewOrEditItemDetails = (Id, isViewMode) => {
+        this.setState({
+            isOpenVendor: true,
+            isEditFlag: true,
+            ID: Id,
+            isViewMode: isViewMode
         })
 
     }
@@ -100,7 +112,7 @@ class ZBCPlantListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.filterList()
-                //this.getTableListData();
+
             }
         });
         this.setState({ showPopup: false })
@@ -123,10 +135,11 @@ class ZBCPlantListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -145,11 +158,7 @@ class ZBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        // this.setState({isTogglePopup:true})
-        //     return (
-        //     //     Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
-        //  <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${cell?MESSAGES.PLANT_DEACTIVE_ALERT:MESSAGES.PLANT_ACTIVE_ALERT}`}  />
-        //     )
+
     }
 
     confirmDeactivateItem = (data, cell) => {
@@ -350,7 +359,7 @@ class ZBCPlantListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -464,80 +473,7 @@ class ZBCPlantListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CountryId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Country"}
-                                            options={this.selectType("country")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.countryHandler}
-                                            valueDescription={this.state.country}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"State"}
-                                            options={this.selectType("state")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CityId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"City"}
-                                            options={this.selectType("city")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.cityHandler}
-                                            valueDescription={this.state.city}
-                                        />
-                                    </div>
 
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -611,7 +547,7 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" width={220} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -628,6 +564,7 @@ class ZBCPlantListing extends Component {
                         isOpen={isOpenVendor}
                         closeDrawer={this.closeVendorDrawer}
                         isEditFlag={isEditFlag}
+                        isViewMode={this.state.isViewMode}
                         ID={this.state.ID}
                         anchor={"right"}
                     />
@@ -635,7 +572,7 @@ class ZBCPlantListing extends Component {
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
 
-                    // `${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`
+
                 }
                 {
                     this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
