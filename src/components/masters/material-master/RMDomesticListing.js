@@ -37,7 +37,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
+    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
 
 
 
@@ -144,12 +144,13 @@ function RMDomesticListing(props) {
     }
 
     /**
-    * @method editItemDetails
-    * @description edit material type
+    * @method viewOrEditItemDetails
+    * @description edit or view material type
     */
-    const editItemDetails = (Id, rowData = {}) => {
+    const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
         let data = {
             isEditFlag: true,
+            isViewMode: isViewMode,
             Id: Id,
             IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
@@ -212,7 +213,8 @@ function RMDomesticListing(props) {
         }
         return (
             <>
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
+                {ViewRMAccessibility && <button className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
@@ -585,7 +587,7 @@ function RMDomesticListing(props) {
 
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
 
-                                {!isSimulation && <AgGridColumn width={120} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
+                                {!isSimulation && <AgGridColumn width={150} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
 
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
