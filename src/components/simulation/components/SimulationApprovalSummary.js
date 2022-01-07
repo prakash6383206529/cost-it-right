@@ -39,7 +39,8 @@ import _ from 'lodash'
 import { SimulationUtils } from '../SimulationUtils'
 import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
-import imgRedcross from '../../../assests/images/red-cross.png'
+import imgRedcross from '../../../assests/images/red-cross.png';
+import imgGreencross from '../../../assests/images/greenCross.png';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
 
@@ -655,7 +656,7 @@ function SimulationApprovalSummary(props) {
         }
         return temp
     }
-
+    
     const rePush = () => {
         let pushObj = {}
         let temp = []
@@ -690,7 +691,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteInsertStatusBox}
-                                    src={imgRedcross}
+                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross }
                                 ></img>
                             </div>
                         }
@@ -702,7 +703,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteAmendmentStatusBox}
-                                    src={imgRedcross}
+                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
 
