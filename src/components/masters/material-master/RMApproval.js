@@ -1,13 +1,12 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from "react-router-dom";
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import { EMPTY_DATA } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
@@ -15,6 +14,8 @@ import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
+import { debounce } from 'lodash'
+import Toaster from '../../common/Toaster'
 
 
 
@@ -22,16 +23,15 @@ const gridOptions = {};
 
 function RMApproval(props) {
 
-    const [gridApi, setGridApi] = useState(null);
-    const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
+    const [gridApi, setGridApi] = useState(null);     // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
+    const [gridColumnApi, setGridColumnApi] = useState(null);   // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
+
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const { approvalList } = useSelector((state) => state.material)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
-    const [approvalObj, setApprovalObj] = useState([])
     const [loader, setLoader] = useState(true)
     const dispatch = useDispatch()
 
@@ -43,7 +43,7 @@ function RMApproval(props) {
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
-            var dateAsString = cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
             if (dateAsString == null) return -1;
             var dateParts = dateAsString.split('/');
             var cellDate = new Date(
@@ -90,7 +90,7 @@ function RMApproval(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
+
                 {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
             </>
         )
@@ -101,7 +101,7 @@ function RMApproval(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {/* <img className={`${row.OldPOPrice > row.NetPOPrice ? 'arrow-ico mr-1 arrow-green' : 'mr-1 arrow-ico arrow-red'}`} src={row.OldPOPrice > row.NetPOPrice ? imgArrowDown : imgArrowUP} alt="arro-up" /> */}
+
                 {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
             </>
         )
@@ -148,7 +148,7 @@ function RMApproval(props) {
     */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/yyyy') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -179,7 +179,6 @@ function RMApproval(props) {
     const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
         setShowApprovalSummary(true)
-        // props.closeDashboard()
 
     }
 
@@ -234,14 +233,21 @@ function RMApproval(props) {
         return thisIsFirstColumn;
     }
 
-    const resetState = () => {
+    const resetState = debounce(() => {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
+        setLoader(true)
         getTableData()
-    }
+    }, 500)
 
     const sendForApproval = () => {
-        setApprovalDrawer(true)
+
+        if (selectedRowData.length > 0) {
+            setApprovalDrawer(true)
+        }
+        else {
+            Toaster.warning('Please select draft token to send for approval.')
+        }
     }
 
 
@@ -258,12 +264,6 @@ function RMApproval(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
-        // var allColumnIds = [];
-        // params.columnApi.getAllColumns().forEach(function (column) {
-        //     allColumnIds.push(column.colId);
-        // });
-        // params.columnApi.autoSizeColumns(allColumnIds);
-
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -278,13 +278,11 @@ function RMApproval(props) {
     const frameworkComponents = {
         renderPlant: renderPlant,
         renderVendor: renderVendor,
-        renderVendor: renderVendor,
         priceFormatter: priceFormatter,
         oldpriceFormatter: oldpriceFormatter,
         createdOnFormatter: createdOnFormatter,
         requestedOnFormatter: requestedOnFormatter,
         statusFormatter: statusFormatter,
-        customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         costingHeadRenderer: costingHeadFormatter,
         costFormatter: costFormatter,
@@ -301,7 +299,6 @@ function RMApproval(props) {
     const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === DRAFT : false
 
 
-
     return (
         <div>
             <Row className="pt-4 blue-before">
@@ -309,9 +306,7 @@ function RMApproval(props) {
                 <Col md="6" lg="6" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
                         <div>
-                            {/* <button title="send-for-approval" class="user-btn approval-btn mr5" onClick={sendForApproval}>
-                      <div className="send-for-approval mr-0" ></div>
-                    </button> */}
+
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
@@ -326,7 +321,7 @@ function RMApproval(props) {
                 <Col>
                     {loader && <LoaderCustom />}
                     <div className={`ag-grid-react`}>
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper min-height-auto">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -338,14 +333,12 @@ function RMApproval(props) {
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
-                                    floatingFilter={true}
-                                    // columnDefs={c}
                                     rowData={approvalList}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
+
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
@@ -374,7 +367,7 @@ function RMApproval(props) {
                                     <AgGridColumn width="155" field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
                                     <AgGridColumn width="165" field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                                     <AgGridColumn width="165" field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
-                                    <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved by"></AgGridColumn>
@@ -388,9 +381,9 @@ function RMApproval(props) {
                                         <option value="100">100</option>
                                     </select>
                                 </div>
-                                <div className="text-right w-100 pb-3 warning-section">
-                                  <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
-                                 </div>
+                                <div className="text-right pb-3">
+                                    <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                                </div>
                             </div>
                         </div>
                     </div>

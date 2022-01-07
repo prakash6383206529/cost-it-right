@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
@@ -13,7 +13,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmm
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,FILE_URL } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -29,8 +29,21 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Errorbox } from '../../common/ErrorBox';
+import ReactExport from 'react-export-excel';
 import redcrossImg from '../../../assests/images/red-cross.png'
+import AssemblyWiseImpact from './AssemblyWiseImpact';
+import { Link } from 'react-scroll';
+import ScrollToTop from '../../common/ScrollToTop';
+import { SimulationUtils } from '../SimulationUtils'
+import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
+import ViewAssembly from './ViewAssembly';
+import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
+import _ from 'lodash'
+
 const gridOptions = {};
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -42,6 +55,8 @@ function SimulationApprovalSummary(props) {
     const [token, setToken] = useState('')
     const [showverifyPage, setShowVerifyPage] = useState(false)
 
+    const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
+    const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
     const [showListing, setShowListing] = useState(false)
     const [approveDrawer, setApproveDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
@@ -62,7 +77,6 @@ function SimulationApprovalSummary(props) {
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
     const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
-
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
@@ -76,6 +90,13 @@ function SimulationApprovalSummary(props) {
     const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
+    const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState([]);
+    const [textFilterSearch, setTextFilterSearch] = useState('')
+
+    const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
+    const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
+    const [dataForDownload, setDataForDownload] = useState([])
+    const [count, setCount] = useState(0);
 
     const dispatch = useDispatch()
 
@@ -85,14 +106,15 @@ function SimulationApprovalSummary(props) {
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
-
-
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData.length >= 0 ? false : true)
+    const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
 
     const { setValue, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -111,19 +133,25 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId } = res.data.Data
-            setCostingList(SimulatedCostingList)
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,SenderReasonId,DepartmentId } = res.data.Data
+               
+                let uniqueArr = _.uniqBy(SimulatedCostingList, function(o){
+                    return o.CostingId;
+                });
+
+
+            setCostingList(uniqueArr)
+            setDataForDownload(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setEffectiveDate(res.data.Data.EffectiveDate)
-
 
             setSimulationDetail({
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
-                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId
+                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId,DepartmentId:DepartmentId
             })
             setFiles(Attachements)
             setIsApprovalDone(IsSent)
@@ -134,6 +162,16 @@ function SimulationApprovalSummary(props) {
 
                 setLoader(false)
             }, 500);
+
+            // const valueTemp = {
+            //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
+            //     impactPartNumber: SimulatedCostingList[0].PartNo,
+            //     plantCode: SimulatedCostingList[0].PlantCode,
+            //     vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
+            //     delta: SimulatedCostingList[0].Variance,
+            //     quantity: 1
+            // }
+            setdataForAssemblyImpactForFg(SimulatedCostingList)
         }))
 
         const obj = {
@@ -153,21 +191,24 @@ function SimulationApprovalSummary(props) {
 
 
     useEffect(() => {
-        if (costingList.length > 0 && effectiveDate) {
-            dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                const Data = res.data.Data.ImpactedMasterDataList
-                const masterId = res.data.Data.SimulationTechnologyId;
+        // if (costingList.length > 0 && effectiveDate) {
+        if (effectiveDate && costingList && simulationDetail.SimulationId) {
+            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
+                dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
+                    const Data = res.data.Data.ImpactedMasterDataList
+                    const masterId = res.data.Data.SimulationTechnologyId;
 
-                if (res) {
-                    setImpactedMasterDataListForLastRevisionData(Data)
-                    setShowLastRevisionData(true)
-                    setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
+                    if (res) {
+                        setImpactedMasterDataListForLastRevisionData(Data)
+                        setShowLastRevisionData(true)
+                        setSimulationDetail(prevState => ({ ...prevState, masterId: masterId }))
 
-                }
-            }))
-        }
-        if (simulationDetail.SimulationId) {
-            dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+                    }
+                }))
+                // }
+                // if (simulationDetail.SimulationId) {
+                dispatch(getImpactedMasterData(simulationDetail.SimulationId, () => { }))
+            }
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
@@ -292,7 +333,7 @@ function SimulationApprovalSummary(props) {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
     const DisplayCompareCosting = (el, data) => {
@@ -339,6 +380,25 @@ function SimulationApprovalSummary(props) {
 
     }
 
+
+    const renderColumn = () => {
+
+        return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOAD, dataForDownload.length > 0 ? dataForDownload : [])
+    }
+
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+
+        let temp = []
+        temp = SimulationUtils(TempData)    // common function 
+
+
+        return (<ExcelSheet data={temp} name={'Costing Summary'}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
+    }
+
     const VerifyImpact = () => {
         setIsVerifyImpactDrawer(true)
     }
@@ -378,14 +438,14 @@ function SimulationApprovalSummary(props) {
     const oldRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const oldPOCurrencyFormatter = (props) => {
@@ -423,26 +483,48 @@ function SimulationApprovalSummary(props) {
 
     const varianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) {
-            return checkForDecimalAndNull(row.OldRMPrice - row.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        } else if (String(SimulationTechnologyId) === EXCHNAGERATE) {
-            return checkForDecimalAndNull(row.OldExchangeRate - row.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
-
-        }
+        return checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
     }
 
+    const POVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
+    const viewAssembly = (cell, row, rowIndex) => {
+        const data = row
+        setDataForAssemblyImpact(data)
+        setShowViewAssemblyDrawer(true)
+    }
+
+    const closeAssemblyDrawer = () => {
+        // setAssemblyWiseAcc(false)
+        // if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg).length !== 0 || DataForAssemblyImpactForFg.length > 0) && count === 0) {
+        //     let requestData = []
+        //     DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map(item => {
+        //         requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+        //         return null
+        //     })
+        //     setCount(1)
+        //     dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => { }))
+        //     setCount(0)
+        // }
+        setShowViewAssemblyDrawer(false)
+        // setTimeout(() => {
+        // setAssemblyWiseAcc(true)
+        // }, 350);
+    }
 
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)} />
+                <Link to="campare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
+                <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
             </>
         )
     }
-
-
 
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -492,7 +574,7 @@ function SimulationApprovalSummary(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '-';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
 
@@ -530,15 +612,20 @@ function SimulationApprovalSummary(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+
+        // var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(newPageSize));
+
     };
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e.target.value)
     }
 
-    const resetState = () => {
+    const resetState = (e) => {
+        gridApi.setQuickFilter('');
+        setTextFilterSearch('')
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -568,7 +655,8 @@ function SimulationApprovalSummary(props) {
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
-        newPOCurrencyFormatter: newPOCurrencyFormatter
+        newPOCurrencyFormatter: newPOCurrencyFormatter,
+        POVarianceFormatter: POVarianceFormatter
     };
 
     const errorBoxClass = () => {
@@ -587,7 +675,7 @@ function SimulationApprovalSummary(props) {
                 DeletedBy: loggedInUserId(),
             }
             // dispatch(fileDeleteCosting(deleteData, (res) => {
-            //     toastr.success('File has been deleted successfully.')
+            //     Toaster.success('File has been deleted successfully.')
             //   }))
             let tempArr = files && files.filter(item => item.FileId !== FileId)
             setFiles(tempArr)
@@ -604,9 +692,10 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
                         <Errorbox customClass={errorBoxClass()} errorText={status} />
                         <h2 className="heading-main">Approval Summary</h2>
+                        <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
                             <Col md="8">
                                 <div className="left-border">
@@ -665,6 +754,10 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Company:`}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.DepartmentCode}</span>
+                                            </th>
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
@@ -677,7 +770,7 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.VendorName}</span>
                                             </th>
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`No. Of Costing:`}</span>
+                                                <span className="d-block grey-text">{`No. of Costing:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.NumberOfImpactedCosting}</span>
                                             </th>
                                             <th className="align-top">
@@ -691,7 +784,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
                                             <th className="align-top">
                                                 <span className="d-block grey-text">{`Effective Date:`}</span>
-                                                <span className="d-block">{simulationDetail && moment(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/yyy')}</span>
+                                                <span className="d-block">{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</span>
                                             </th>
                                             {/* <th className="align-top">
                                                 <span className="d-block grey-text">{`Impact for Annum(INR):`}</span>
@@ -708,8 +801,8 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* } */}
 
-                        <Row>
-                            <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
+                        <Row className='reset-btn-container'>
+                            <Col md="6"><div className="left-border ">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
                                     <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setshowImpactedData(!showImpactedData) }}>
@@ -736,124 +829,40 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        {/* <Row >
-                            <Col md="12">
+                        {/* <Row className='mt-2'>
+                            <Col md="10">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
-                        </Row> */}
-
-                        {/* <Row className="mb-3">
-                            <Col md="12">
-                                <div className="table-responsive">
-                                    <table className="table cr-brdr-main accordian-table-with-arrow">
-                                        <thead>
-                                            <tr>
-                                                <th><span>Part Number</span></th>
-                                                <th><span>Rev Number/ECN Number</span></th>
-                                                <th><span>Part Name</span></th>
-                                                <th><span>Old Cost/Pc</span></th>
-                                                <th><span>New Cost/pc</span></th>
-                                                <th><span>Impact/Pc</span></th>
-                                                <th><span>Volume</span></th>
-                                                <th><span>Impact/Month</span></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr className="accordian-with-arrow">
-                                                <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
-                                                <td><span>1</span></td>
-                                                <td><span>This is A model</span></td>
-                                                <td><span>0</span></td>
-                                                <td><span>0</span></td>
-                                                <td><span>24(INR)</span></td>
-                                                <td><span>2000</span></td>
-                                                <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                            </tr>
-                                            {acc1 &&
-                                                <>
-                                                    <tr className="accordian-content">
-                                                        <td><span>Part 1</span></td>
-                                                        <td><span>1</span></td>
-                                                        <td><span>Part number</span></td>
-                                                        <td><span>24(INR)</span></td>
-                                                        <td><span>26(INR)</span></td>
-                                                        <td><span>2(INR)</span></td>
-                                                        <td><span>1000</span></td>
-                                                        <td><span>2000 (INR)</span></td>
-                                                    </tr>
-                                                    <tr className="accordian-content">
-                                                        <td><span>Part 2</span></td>
-                                                        <td><span>1</span></td>
-                                                        <td><span>Part number</span></td>
-                                                        <td><span>24(INR)</span></td>
-                                                        <td><span>26(INR)</span></td>
-                                                        <td><span>2(INR)</span></td>
-                                                        <td><span>1000</span></td>
-                                                        <td><span>2000 (INR)</span></td>
-                                                    </tr>
-                                                    <tr className="accordian-content">
-                                                        <td><span>Part 3</span></td>
-                                                        <td><span>1</span></td>
-                                                        <td><span>Part number</span></td>
-                                                        <td><span>24(INR)</span></td>
-                                                        <td><span>26(INR)</span></td>
-                                                        <td><span>2(INR)</span></td>
-                                                        <td><span>1000</span></td>
-                                                        <td><span>2000 (INR)</span></td>
-                                                    </tr>
-                                                </>
-                                            }
-                                        </tbody>
-
-                                        <tbody>
-                                            <tr className="accordian-with-arrow">
-                                                <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
-                                                <td><span>1</span></td>
-                                                <td><span>This is A model</span></td>
-                                                <td><span>0</span></td>
-                                                <td><span>0</span></td>
-                                                <td><span>24(INR)</span></td>
-                                                <td><span>2000</span></td>
-                                                <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                            </tr>
-                                            {acc2 &&
-                                                <>
-                                                    <tr className="accordian-content">
-                                                        <td><span>Part 1</span></td>
-                                                        <td><span>1</span></td>
-                                                        <td><span>Part number</span></td>
-                                                        <td><span>24(INR)</span></td>
-                                                        <td><span>26(INR)</span></td>
-                                                        <td><span>2(INR)</span></td>
-                                                        <td><span>1000</span></td>
-                                                        <td><span>2000 (INR)</span></td>
-                                                    </tr>
-                                                    <tr className="accordian-content">
-                                                        <td><span>Part 2</span></td>
-                                                        <td><span>1</span></td>
-                                                        <td><span>Part number</span></td>
-                                                        <td><span>24(INR)</span></td>
-                                                        <td><span>26(INR)</span></td>
-                                                        <td><span>2(INR)</span></td>
-                                                        <td><span>1000</span></td>
-                                                        <td><span>2000 (INR)</span></td>
-                                                    </tr>
-                                                </>
-                                            }
-                                        </tbody>
-                                    </table>
+                            <Col md="2" className="text-right">
+                                <div className="right-border">
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setFgWiseDataAcc(!fgWiseDataAcc) }}>
+                                        {fgWiseDataAcc ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}
+                                    </button>
                                 </div>
                             </Col>
-                        </Row> */}
+                        </Row>
+                        {fgWiseDataAcc &&
+                            <Fgwiseimactdata
+                                DisplayCompareCosting={DisplayCompareCosting}
+                                SimulationId={simulationDetail.SimulationId}
+                                headerName={headerName}
+                                impactType={'FgWise'}
+                            />
+                        } */}
+
                         {/* FG wise Impact section end */}
 
-                        <Row>
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'Summary:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCostingSummary(!costingSummary) }}>
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" value={textFilterSearch} onClick={() => { setCostingSummary(!costingSummary) }}>
                                         {costingSummary ? (
                                             <i className="fa fa-minus" ></i>
                                         ) : (
@@ -867,22 +876,24 @@ function SimulationApprovalSummary(props) {
                         {costingSummary &&
                             <>
                                 <div className={`ag-grid-react`}>
+                                    { }
                                     <Row className="pb-2">
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                                        <div className="ag-grid-header">
-                                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                    <div className="ag-grid-wrapper height-width-wrapper">
+                                                        <div className="ag-grid-header d-flex">
+
+                                                            <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                            <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
+                                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                                {renderColumn()}
+                                                            </ExcelFile>
                                                         </div>
-                                                        
-                                                        <div
-                                                            className="ag-theme-material"
-                                                            style={{ height: '100%', width: '100%' }}
-                                                        >
+                                                        <div className="ag-theme-material">
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
@@ -915,32 +926,39 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>
                                                                 <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>
 
-                                                                {
-                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                 {
-                                                                    (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
+                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
+                                                                {
+                                                                    (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
+                                                                    <>
 
+                                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
-                                                                <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
@@ -962,10 +980,33 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </>
                         }
-
-                        <Row className="mt-3">
+                        <Row className='mt-2'>
                             <Col md="10">
-                                <div className="left-border">{'Compare Costing:'}</div>
+                                <div className="left-border">{'Assembly wise Impact:'}</div>
+                            </Col>
+                            <Col md="2" className="text-right">
+                                <div className="right-border">
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
+                                        {assemblyWiseAcc ? (
+                                            <i className="fa fa-minus" ></i>
+                                        ) : (
+                                            <i className="fa fa-plus"></i>
+                                        )}
+                                    </button>
+                                </div>
+                            </Col>
+                        </Row>
+                        <div>
+                            {assemblyWiseAcc && <AssemblyWiseImpactSummary
+                                dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                                vendorIdState={costingList[0]?.VendorId}
+                                impactType={'AssemblySummary'}
+                                isPartImpactAssembly={false}
+                            />}
+                        </div>
+                        <Row className="mt-2">
+                            <Col md="10">
+                                <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
@@ -976,14 +1017,14 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
 
-                        <Row className="mb-4">
+                        <Row>
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-2'>
                             <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
-                            <Col md="12" className="px-4">
+                            {false && <Col md="12" className="px-4">
                                 <label>Upload Attachment (upload up to 2 files)</label>
                                 {files && files.length > 2 ? (
                                     <div class="alert alert-danger" role="alert">
@@ -1026,7 +1067,7 @@ function SimulationApprovalSummary(props) {
                                         disabled={true}
                                     />
                                 )}
-                            </Col>
+                            </Col>}
                             <div className="w-100">
                                 <div className={"attachment-wrapper mt-0 mb-3 px-4"}>
                                     {files &&
@@ -1038,26 +1079,20 @@ function SimulationApprovalSummary(props) {
                                                     <a href={fileURL} target="_blank">
                                                         {f.OriginalFileName}
                                                     </a>
-                                                    <img
+                                                    {false && <img
                                                         alt={""}
                                                         className="float-right"
                                                         onClick={() => false ? deleteFile(f.FileId, f.FileName) : ""}
                                                         src={redcrossImg}
                                                     ></img>
+                                                    }
                                                 </div>
                                             );
                                         })}
                                 </div>
                             </div>
                         </Row>
-                        {/* Costing Summary page here */}
-                        {/* page starts */}
-
-
-
-
-
-                        <Row className="mb-4">
+                        <Row className="mb-4 reset-btn-container">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
@@ -1076,6 +1111,18 @@ function SimulationApprovalSummary(props) {
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} />}
 
                                 </div>
+                            }
+                            {showViewAssemblyDrawer &&
+                                <ViewAssembly
+                                    isOpen={showViewAssemblyDrawer}
+                                    closeDrawer={closeAssemblyDrawer}
+                                    // approvalData={approvalData}
+                                    anchor={'bottom'}
+                                    dataForAssemblyImpact={dataForAssemblyImpact}
+                                    vendorIdState={costingList[0]?.VendorId}
+                                    isPartImpactAssembly={true}
+                                    impactType={'AssemblySummary'}
+                                />
                             }
                             {/* {lastRevisionDataAccordian &&
                                 <div className="accordian-content w-100">

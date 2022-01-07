@@ -6,10 +6,10 @@ import { Col, Row, Table } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import WarningMessagge from '../../../../common/WarningMessage'
 
 let counter = 0;
@@ -45,6 +45,11 @@ function OperationCostExcludedOverhead(props) {
         props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       } else {
         props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      }
+
+      
+      if(JSON.stringify(gridData) !== JSON.stringify(OldGridData)){
+        dispatch(isDataChange(true))
       }
     }
 
@@ -159,7 +164,7 @@ function OperationCostExcludedOverhead(props) {
       tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
       setTimeout(() => {
         setValue(`${OperationGridFields}[${index}]Quantity`, 0)
       }, 200)
@@ -186,7 +191,7 @@ function OperationCostExcludedOverhead(props) {
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
         setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
       }, 200)
@@ -222,7 +227,7 @@ function OperationCostExcludedOverhead(props) {
         <div>
           <Row className="align-items-center">
             <Col md="8">
-              <div className="left-border d-flex align-items-center">
+              <div className="left-border">
                 {'Other Operation Cost:'}
                 <WarningMessagge dClass="ml-2" message="Following operation cost excluded from the conversion cost calculations" />
               </div>
@@ -232,7 +237,7 @@ function OperationCostExcludedOverhead(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OTHER OPERATION</button>}
+                <div className={'plus'}></div>OTHER OPER</button>}
             </Col>
           </Row>
           <Row>

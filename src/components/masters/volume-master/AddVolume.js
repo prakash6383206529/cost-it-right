@@ -8,7 +8,7 @@ import { searchableSelect } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
@@ -325,12 +325,12 @@ class AddVolume extends Component {
     const cellValue = props
     if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
       if (cellValue.length > 8) {
-        toastr.warning("Value should not be more than 8")
+        Toaster.warning("Value should not be more than 8")
         return false
       }
       return true
     } else if (!/^\+?(0|[0-9]\d*)$/.test(cellValue)) {
-      toastr.warning('Please enter a valid positive numbers.')
+      Toaster.warning('Please enter a valid positive numbers.')
       return false
     }
   }
@@ -497,7 +497,7 @@ class AddVolume extends Component {
     // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
     const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
     if (filteredArray.length === 12) {
-      toastr.warning("Please fill atleast one entry")
+      Toaster.warning("Please fill atleast one entry")
       return false
     }
 
@@ -560,7 +560,7 @@ class AddVolume extends Component {
       this.props.reset()
       this.props.updateVolume(updateData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
+          Toaster.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
           this.cancel()
         }
       })
@@ -594,7 +594,7 @@ class AddVolume extends Component {
       this.props.reset()
       this.props.createVolume(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.VOLUME_ADD_SUCCESS)
+          Toaster.success(MESSAGES.VOLUME_ADD_SUCCESS)
           this.cancel()
         }
       })
@@ -855,22 +855,6 @@ class AddVolume extends Component {
                                   <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
                                 </AgGridReact>
                               </div>
-                              {/* <BootstrapTable
-                            data={this.state.tableData}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            cellEdit={cellEditProp}
-                            className="add-volume-table"
-                          >
-                            <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
-                            <TableHeaderColumn dataField="BudgetedQuantity" editable={true} dataFormat={this.budgetFormatter}>Budgeted Quantity </TableHeaderColumn>
-                            <TableHeaderColumn dataField="ApprovedQuantity" editable={true} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
-                            <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
-                            <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
-                          </BootstrapTable> */}
-                              {/* </Col> */}
                             </div>
                           </Col>
                         </Row>

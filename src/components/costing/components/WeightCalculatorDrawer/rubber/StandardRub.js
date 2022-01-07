@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG } from '../../../../../config/constants'
 
@@ -81,7 +81,7 @@ function StandardRub(props) {
         dispatch(saveRawMaterialCalciData(obj, res => {
             if (res.data.Result) {
                 obj.WeightCalculationId = res.data.Identity
-                toastr.success("Calculation saved successfully")
+                Toaster.success("Calculation saved successfully")
                 props.toggleDrawer('', obj, obj)
             }
         }))
@@ -106,7 +106,7 @@ function StandardRub(props) {
                                 </Col>
                                 <Col md="12">
                                     <Row className={'mt15'}>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Shot Weight`}
                                                 name={'shotWeight'}
@@ -131,7 +131,7 @@ function StandardRub(props) {
                                                 disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`No. Of Cavity`}
                                                 name={'noOfCavity'}
@@ -156,7 +156,7 @@ function StandardRub(props) {
                                                 disabled={props.isEditFlag ? false : true}
                                             />
                                         </Col>
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Finish Weight`}
                                                 name={'finishWeight'}
@@ -182,7 +182,7 @@ function StandardRub(props) {
                                             />
                                         </Col>
 
-                                        <Col md="2" className="m-height-44-label-inside">
+                                        <Col md="3">
                                             <TextFieldHookForm
                                                 label={`Gross Weight`}
                                                 name={'grossWeight'}

@@ -9,6 +9,7 @@ import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfa
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
+import { Link } from 'react-scroll';
 
 function TabSurfaceTreatment(props) {
 
@@ -125,8 +126,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}) => {
-
-    let arr = formatData(Params, Data, SurfaceTabData)
+       let arr = formatData(Params, Data, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -135,6 +135,9 @@ function TabSurfaceTreatment(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (Params, Data, aar) => {
+    
+    
+    
     let tempArr = [];
     try {
       tempArr = aar && aar.map(i => {
@@ -164,6 +167,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TransportationCost = checkForNull(Data.TransportationCost);
           i.CostingPartDetails.SurfaceTreatmentDetails = Data.SurfaceTreatmentDetails;
           i.CostingPartDetails.TransportationDetails = Data.TransportationDetails;
+          
           i.IsOpen = !Data.IsOpen;
 
         } else {
@@ -256,6 +260,29 @@ function TabSurfaceTreatment(props) {
     return tempArr;
   }
 
+  const totalSurfaceTreatmentCost = (arr,type)=>{
+    const total = arr && arr.reduce((accummlator, item) => {
+      if(type === 'surface'){
+        return accummlator + checkForNull(item.CostingPartDetails.SurfaceTreatmentCost)
+      }else{
+        return accummlator + checkForNull(item.CostingPartDetails.TransportationCost)
+      }
+    }, 0)
+    return total
+  }
+
+  const assemblyTotalSurfaceTransportCost = (arr) =>{
+    let tempArr = []
+    tempArr = arr && arr.map((i) => {   
+     i.CostingPartDetails.SurfaceTreatmentCost = totalSurfaceTreatmentCost(i.CostingChildPartDetails,'surface')
+     i.CostingPartDetails.TransportationCost = totalSurfaceTreatmentCost(i.CostingChildPartDetails,'transport')
+     i.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(i.CostingPartDetails.SurfaceTreatmentCost) + checkForNull(i.CostingPartDetails.TransportationCost)
+
+      return i
+    })
+    return tempArr
+  }
+
   /**
   * @method setSurfaceCost
   * @description SET SURFACE TREATMENT COST
@@ -263,6 +290,7 @@ function TabSurfaceTreatment(props) {
   const setSurfaceCost = (surfaceGrid, params) => {
 
     let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData)
+    // let arr1 = assemblyTotalSurfaceTransportCost(arr)
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -271,6 +299,7 @@ function TabSurfaceTreatment(props) {
   * @description DISPATCHED SURFACE COST
   */
   const dispatchSurfaceCost = (surfaceGrid, params, arr) => {
+    
     let tempArr = [];
     try {
 
@@ -350,6 +379,7 @@ function TabSurfaceTreatment(props) {
   const setTransportationCost = (transportationObj, params) => {
 
     let arr = dispatchTransportationCost(transportationObj, params, SurfaceTabData)
+    // let arr1 = assemblyTotalSurfaceTransportCost(arr)
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -603,7 +633,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Transportation Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Extra Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
                         </tr>

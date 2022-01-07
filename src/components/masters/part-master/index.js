@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
+import { TabContent, TabPane, Nav, NavItem, NavLink, Row, Col } from "reactstrap";
 import classnames from 'classnames';
 import AddAssemblyPart from './AddAssemblyPart';
 import AddIndivisualPart from './AddIndivisualPart';
@@ -8,12 +8,9 @@ import AssemblyPartListing from './AssemblyPartListing';
 import IndivisualPartListing from './IndivisualPartListing';
 import { MASTERS, PART } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
-import { getConfigurationKey } from '../../../helper/auth'
+import ScrollToTop from '../../common/ScrollToTop';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -32,7 +29,7 @@ class PartMaster extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
-
+            openDrawer: false,
         }
     }
 
@@ -116,6 +113,8 @@ class PartMaster extends Component {
         this.setState({ getDetails: data, isProductForm: true, isAddBOMForm: false, })
     }
 
+
+
     /**
     * @method render
     * @description Renders the component
@@ -147,11 +146,17 @@ class PartMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
+                    <ScrollToTop pointProp="go-to-top" />
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
-                            <h1>Part Master</h1>
+                            <div className="d-flex justify-content-between">
+                                <h1>Part Master</h1>
+                              
+                            </div>
+
+
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
@@ -164,11 +169,12 @@ class PartMaster extends Component {
                                     </NavLink>
                                 </NavItem>
                                 {/* {getConfigurationKey().IsVendorPlantConfigurable && <NavItem> */}
-                                {initialConfiguration?.IsProductMasterConfigurable && <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                        Manage Products
-                                </NavLink>
-                                </NavItem>
+                                {initialConfiguration?.IsProductMasterConfigurable &&
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                            Manage Products
+                                        </NavLink>
+                                    </NavItem>
                                 }
                             </Nav>
                             <TabContent activeTab={this.state.activeTab}>
@@ -182,6 +188,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '2' &&
@@ -194,6 +201,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '3' &&
@@ -206,9 +214,12 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                             </TabContent>
+
+
                         </div>
                     </div >
                 </div>
@@ -230,7 +241,6 @@ function mapStateToProps({ auth }) {
 
 export default connect(mapStateToProps,
     {
-        getLeftMenu
     }
 )(PartMaster);
 

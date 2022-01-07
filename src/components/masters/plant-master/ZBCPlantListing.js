@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import { focusOnError, } from "../../layout/FormInputs";
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { ZBCPLANT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -40,14 +41,21 @@ class ZBCPlantListing extends Component {
             city: [],
             country: [],
             state: [],
+            showPopup: false,
+            deletedId: '',
+
+            cellData: {},
+            cellValue: '',
+            showPopupToggle: false,
+            isViewMode: false
         }
     }
 
     componentDidMount() {
-        // this.getTableListData();
+
         this.props.fetchCountryDataAPI(() => { })
         this.filterList()
-        //this.props.onRef(this)
+
     }
 
     /**
@@ -72,6 +80,17 @@ class ZBCPlantListing extends Component {
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: false,
+        })
+
+    }
+
+    viewOrEditItemDetails = (Id, isViewMode) => {
+        this.setState({
+            isOpenVendor: true,
+            isEditFlag: true,
+            ID: Id,
+            isViewMode: isViewMode
         })
 
     }
@@ -81,14 +100,7 @@ class ZBCPlantListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -98,13 +110,23 @@ class ZBCPlantListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deletePlantAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
+                Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.filterList()
-                //this.getTableListData();
+
             }
         });
+        this.setState({ showPopup: false })
     }
-
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+        this.setState({ showPopupToggle: false })
+    }
+    onPopupConfirmToggle = () => {
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
+    }
     /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -113,10 +135,11 @@ class ZBCPlantListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -127,6 +150,7 @@ class ZBCPlantListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
+        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeactivateItem(data, cell)
@@ -135,23 +159,21 @@ class ZBCPlantListing extends Component {
             component: () => <ConfirmComponent />,
         };
 
-        return (
-            toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
-        )
     }
 
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell == true) {
-                    toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
                 } else {
-                    toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 }
                 // this.getTableListData()
                 this.filterList()
             }
         })
+        this.setState({ showPopupToggle: false })
     }
 
     /**
@@ -337,7 +359,7 @@ class ZBCPlantListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -373,13 +395,8 @@ class ZBCPlantListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, this.props.plantDataList)
+        let tempArr = this.props.plantDataList && this.props.plantDataList
+        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -423,7 +440,7 @@ class ZBCPlantListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor, } = this.state;
+        const { isEditFlag, isOpenVendor, isDeletePopoup, isTogglePopup } = this.state;
         const options = {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
@@ -448,7 +465,6 @@ class ZBCPlantListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
             statusButtonFormatter: this.statusButtonFormatter
         };
 
@@ -457,80 +473,7 @@ class ZBCPlantListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown && (
-                            <Col md="8" className="filter-block">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills">
-                                        <h5>{`Filter By:`}</h5>
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CountryId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"Country"}
-                                            options={this.selectType("country")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.countryHandler}
-                                            valueDescription={this.state.country}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="StateId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"State"}
-                                            options={this.selectType("state")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.stateHandler}
-                                            valueDescription={this.state.state}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="CityId"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={"City"}
-                                            options={this.selectType("city")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            //validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                            //required={true}
-                                            handleChangeDescription={this.cityHandler}
-                                            valueDescription={this.state.city}
-                                        />
-                                    </div>
 
-                                    <div className="flex-fill">
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {"Reset"}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            //disabled={pristine || submitting}
-                                            onClick={this.filterList}
-                                            className="user-btn mr5"
-                                        >
-                                            {"Apply"}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
                         <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -572,13 +515,12 @@ class ZBCPlantListing extends Component {
                 </form>
 
 
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div
                         className="ag-theme-material"
-                        style={{ height: '100%', width: '100%' }}
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
@@ -605,7 +547,7 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action" width={220} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -622,10 +564,19 @@ class ZBCPlantListing extends Component {
                         isOpen={isOpenVendor}
                         closeDrawer={this.closeVendorDrawer}
                         isEditFlag={isEditFlag}
+                        isViewMode={this.state.isViewMode}
                         ID={this.state.ID}
                         anchor={"right"}
                     />
                 )}
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
+
+
+                }
+                {
+                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
+                }
             </div>
         );
     }

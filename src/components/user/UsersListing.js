@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser, getLeftMenu, } from '../../actions/auth/AuthActions';
+import { getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser, } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
 import { focusOnError, searchableSelect } from "../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import { USER } from '../../config/constants';
@@ -21,6 +21,8 @@ import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import { toastr } from 'react-redux-toastr';
 
 const gridOptions = {};
 
@@ -49,6 +51,11 @@ class UsersListing extends Component {
 			gridApi: null,
 			gridColumnApi: null,
 			rowData: null,
+			showPopup: false,
+			showPopup2: false,
+			deletedId: '',
+			cell: [],
+			row: []
 		}
 	}
 
@@ -184,17 +191,56 @@ class UsersListing extends Component {
 		this.closeUserDetails()
 		this.props.getUserDetail(data)
 	}
+	onPopupConfirm = () => {
 
+
+		let data = {
+			Id: this.state.row.UserId,
+			ModifiedBy: loggedInUserId(),
+			IsActive: !this.state.cell, //Status of the Reason.
+		}
+		this.props.activeInactiveUser(data, (res) => {
+			if (res && res.data && res.data.Result) {
+				if (this.state.cell == true) {
+					Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
+				} else {
+					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
+				}
+				this.getUsersListData(null, null);
+			}
+		})
+
+
+		this.setState({ showPopup: false })
+		this.setState({ showPopup2: false })
+
+
+	}
+	onPopupConfirm2 = () => {
+		this.deleteItem(this.state.deletedId);
+
+	}
+	closePopUp = () => {
+		this.setState({ showPopup: false })
+		this.setState({ showPopup2: false })
+	}
 	/**
 	* @method deleteItem
 	* @description confirm delete part
 	*/
 	deleteItem = (Id) => {
+
+		this.setState({ showPopup2: true, deletedId: Id })
 		const toastrConfirmOptions = {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
+				this.setState({ showPopup: false })
+				this.setState({ showPopup2: false })
 			},
-			onCancel: () => { }
+			onCancel: () => {
+				this.setState({ showPopup: false })
+				this.setState({ showPopup2: false })
+			}
 		};
 		return toastr.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
 	}
@@ -206,7 +252,7 @@ class UsersListing extends Component {
 	confirmDeleteItem = (UserId) => {
 		this.props.deleteUser(UserId, (res) => {
 			if (res.data.Result === true) {
-				toastr.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
+				Toaster.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
 				this.getUsersListData(null, null);
 			}
 		});
@@ -234,8 +280,8 @@ class UsersListing extends Component {
 	* @method hyphenFormatter
 	*/
 	hyphenFormatter = (props) => {
-		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-		return cellValue != null ? cellValue : '-';
+		const cellValue = props?.value;
+		return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
 	}
 
 	departmentFormatter = (props) => {
@@ -253,17 +299,19 @@ class UsersListing extends Component {
 			ModifiedBy: loggedInUserId(),
 			IsActive: !cell, //Status of the user.
 		}
+		this.setState({ showPopup: true, row: row, cell: cell })
 		const toastrConfirmOptions = {
+
 			onOk: () => {
 				this.confirmDeactivateItem(data, cell);
 			},
 			onCancel: () => { },
 			component: () => <ConfirmComponent />,
 		};
-		return toastr.confirm(
-			`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`,
-			toastrConfirmOptions
-		);
+		// return toastr.confirm(
+		// 	`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`,
+		// 	toastrConfirmOptions
+		// );
 	}
 
 	/**
@@ -274,9 +322,9 @@ class UsersListing extends Component {
 		this.props.activeInactiveUser(data, res => {
 			if (res && res.data && res.data.Result) {
 				// if (cell == true) {
-				// 	toastr.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
+				// 	Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
 				// } else {
-				// 	toastr.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
+				// 	Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
 				// }
 				this.getUsersListData(null, null);
 			}
@@ -330,7 +378,13 @@ class UsersListing extends Component {
 	* @method linkableFormatter
 	* @description Renders Name link
 	*/
-	linkableFormatter = (cell, row, enumObject, rowIndex) => {
+
+
+
+	linkableFormatter = (props) => {
+
+		const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 		return (
 			<>
 				<div
@@ -340,6 +394,18 @@ class UsersListing extends Component {
 			</>
 		)
 	}
+
+
+	// linkableFormatter = (cell, row, enumObject, rowIndex) => {
+	// 	return (
+	// 		<>
+	// 			<div
+	// 				onClick={() => this.viewDetails(row.UserId)}
+	// 				className={'link'}
+	// 			>{cell}</div>
+	// 		</>
+	// 	)
+	// }
 
 	viewDetails = (UserId) => {
 		$('html, body').animate({ scrollTop: 0 }, 'slow');
@@ -474,6 +540,7 @@ class UsersListing extends Component {
 			statusButtonFormatter: this.statusButtonFormatter,
 			hyphenFormatter: this.hyphenFormatter,
 			departmentFormatter: this.departmentFormatter,
+			linkableFormatter: this.linkableFormatter
 		};
 
 		return (
@@ -570,9 +637,7 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-
-
-					<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+					<div className="ag-grid-wrapper height-width-wrapper">
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>
@@ -599,15 +664,16 @@ class UsersListing extends Component {
 								frameworkComponents={frameworkComponents}
 							>
 								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-								<AgGridColumn field="FullName" headerName="Name"></AgGridColumn>
+								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
 								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
 									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
 								) : null}
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								{getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
-								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>}
+								{/* {getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
+								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
+									<AgGridColumn field="DepartmentName" headerName="Company"></AgGridColumn>
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="UserId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -633,8 +699,16 @@ class UsersListing extends Component {
 							IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
 						/>
 					)}
+
 				</>
+				{
+					this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${this.state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />
+				}
+				{/* {
+                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`${MESSAGES.USER_DELETE_ALERT}`}  />
+                } */}
 			</div>
+
 		);
 	}
 }
@@ -664,7 +738,6 @@ export default connect(mapStateToProps, {
 	getAllDepartmentAPI,
 	getAllRoleAPI,
 	activeInactiveUser,
-	getLeftMenu,
 })(reduxForm({
 	form: 'UsersListing',
 	onSubmitFail: errors => {

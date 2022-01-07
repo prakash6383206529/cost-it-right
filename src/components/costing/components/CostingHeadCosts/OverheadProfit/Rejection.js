@@ -2,21 +2,22 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
-import { netHeadCostContext, } from '../../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
+import { isOverheadProfitDataChange } from '../../../actions/Costing';
 
 
 
 function Rejection(props) {
 
-    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingRejectionDetail } = props
+    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
+    const costData = useContext(costingInfoContext);
 
 
-    // const { CostingRejectionDetail } = props.data.CostingPartDetails;
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { RMCCutOffObj } = useSelector(state => state.costing)
@@ -59,7 +60,7 @@ function Rejection(props) {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
-                "RejectionCost": applicability ? getValues('RejectionCost') : '',
+                "RejectionCost": applicability ? checkForDecimalAndNull(getValues('RejectionCost'), initialConfiguration.NoOfDecimalForPrice) : '',
                 "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
                 "IsSurfaceTreatmentApplicable": true,
             }
@@ -97,30 +98,32 @@ function Rejection(props) {
     const checkRejectionApplicability = (Text) => {
         if (headerCosts && Text !== '') {
             const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
-            const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+
+            const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + ConversionCostForCalculation
 
 
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
-            const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
+            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
             const RejectionPercentage = getValues('RejectionPercentage')
 
             switch (Text) {
                 case 'RM':
-                    setValue('RejectionCost', headerCosts.NetRawMaterialsCost)
+                    setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: headerCosts.NetRawMaterialsCost,
+                        RejectionCost: checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice),
                         RejectionTotalCost: checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
                     })
                     break;
 
                 case 'BOP':
-                    setValue('RejectionCost', headerCosts.NetBoughtOutPartCost)
+                    setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('RejectionTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
@@ -133,15 +136,15 @@ function Rejection(props) {
                     break;
 
                 case 'CC':
-                    setValue('RejectionCost', headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal)
-                    setValue('RejectionTotalCost', checkForDecimalAndNull(((headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionCost', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RejectionTotalCost', checkForDecimalAndNull(((ConversionCostForCalculation) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setRejectionObj({
                         ...rejectionObj,
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal,
-                        RejectionTotalCost: checkForDecimalAndNull(((headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionCost: ConversionCostForCalculation,
+                        RejectionTotalCost: checkForDecimalAndNull(((ConversionCostForCalculation) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
                     })
                     break;
 
@@ -214,6 +217,8 @@ function Rejection(props) {
                     break;
             }
         }
+
+        dispatch(isOverheadProfitDataChange(true))
     }
 
 
@@ -227,6 +232,7 @@ function Rejection(props) {
             setApplicability(newValue)
             checkRejectionApplicability(newValue.label)
             setIsChangedApplicability(!IsChangedApplicability)
+            clearErrors()
         } else {
             setApplicability([])
             checkRejectionApplicability('')
@@ -298,7 +304,7 @@ function Rejection(props) {
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
-                            errors={errors.RejectionPercentage}
+                            // errors={errors.RejectionPercentage}   //MANUAL CSS TO BE APPLIED FOR ERROR VALIDATION MESSAGE
                             disabled={CostingViewMode ? true : false}
                         />}
                 </Col>

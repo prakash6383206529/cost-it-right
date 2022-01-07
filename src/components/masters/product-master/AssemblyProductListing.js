@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import BOMViewerProduct from './BOMViewerProduct';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -45,6 +46,8 @@ class AssemblyProductListing extends Component {
             visualAdId: '',
             BOMId: '',
             isBulkUpload: false,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -93,14 +96,7 @@ class AssemblyProductListing extends Component {
     * @description CONFIRM DELETE PART
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        return toastr.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -110,19 +106,26 @@ class AssemblyProductListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteAssemblyPart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_BOM_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({ showPopup: false })
     }
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
 
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     renderEffectiveDate = () => {
@@ -187,15 +190,8 @@ class AssemblyProductListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let data;
-        if (cellValue === '' || cellValue === null) {
-            data = '-'
-        }
-        else {
-            data = cellValue
-        }
-        return data;
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -207,9 +203,9 @@ class AssemblyProductListing extends Component {
         // this.props.activeInactiveStatus(data, res => {
         //     if (res && res.data && res.data.Result) {
         //         if (cell == true) {
-        //             toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+        //             Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
         //         } else {
-        //             toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+        //             Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
         //         }
         //         this.getTableListData()
         //     }
@@ -304,7 +300,7 @@ class AssemblyProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -317,7 +313,7 @@ class AssemblyProductListing extends Component {
                 return false
             }
             if (item.EffectiveDate.includes('T')) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
 
@@ -432,51 +428,16 @@ class AssemblyProductListing extends Component {
                         </div>
                     </Col>
                 </Row>
-
-                {/* <BootstrapTable
-                    data={this.props.partsListing}
-                    striped={false}
-                    bordered={false}
-                    hover={false}
-                    options={options}
-                    search
-                    exportCSV={DownloadAccessibility}
-                    csvFileName={`${AssemblyPart}.csv`}
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMNumber" width={'100'} >BOM NO.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" width={'100'} >Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                {/* <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} export={false} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
-                    <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable> */}
-
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
                     <div
                         className="ag-theme-material"
-<<<<<<< HEAD
-                        style={{ height: '100%', width: '100%' }}
-=======
 
->>>>>>> a11380b7f (pagination task done on report + vendor + individualpart listing)
                     >
                         <AgGridReact
                             defaultColDef={defaultColDef}
-                            floatingFilter={true}
                             domLayout='autoHeight'
                             // columnDefs={c}
                             rowData={this.props.partsListing}
@@ -502,11 +463,7 @@ class AssemblyProductListing extends Component {
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-<<<<<<< HEAD
-                            <AgGridColumn field="PartId" width={120} headerName="Action" floatingFilter={false} type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
-=======
                             <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
->>>>>>> a11380b7f (pagination task done on report + vendor + individualpart listing)
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -517,7 +474,9 @@ class AssemblyProductListing extends Component {
                         </div>
                     </div>
                 </div>
-
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`} />
+                }
                 {isOpenVisualDrawer && <BOMViewerProduct
                     isOpen={isOpenVisualDrawer}
                     closeDrawer={this.closeVisualDrawer}

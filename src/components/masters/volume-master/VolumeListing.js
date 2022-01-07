@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { focusOnError, searchableSelect } from '../../layout/FormInputs'
 import { required } from '../../../helper/validation'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
@@ -16,9 +16,6 @@ import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
-import { reactLocalStorage } from 'reactjs-localstorage'
-import { loggedInUserId } from '../../../helper/auth'
-import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -26,6 +23,8 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import ScrollToTop from '../../common/ScrollToTop'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -132,7 +131,9 @@ class VolumeListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      showPopup: false,
+      deletedId: ''
 
     }
   }
@@ -221,14 +222,7 @@ class VolumeListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteItem(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    }
-    return toastr.confirm(MESSAGES.VOLUME_DELETE_ALERT, toastrConfirmOptions)
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
   /**
@@ -238,12 +232,18 @@ class VolumeListing extends Component {
   confirmDeleteItem = (ID) => {
     this.props.deleteVolume(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_VOLUME_SUCCESS)
+        Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS)
         this.getTableListData(null, null, null, null, null, null)
       }
     })
+    this.setState({ showPopup: false })
   }
-
+  onPopupConfirm = () => {
+    this.confirmDeleteItem(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
 * @method buttonFormatter
 * @description Renders buttons
@@ -270,6 +270,14 @@ class VolumeListing extends Component {
   costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue ? 'Vendor Based' : 'Zero Based'
+  }
+
+  /**
+  * @method hyphenFormatter
+  */
+  hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
   onExportToCSV = (row) => {
@@ -358,18 +366,13 @@ class VolumeListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
+    let tempArr = this.props.volumeDataList && this.props.volumeDataList
     return this.returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, this.props.volumeDataList)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.IsVendor === true) {
         item.IsVendor = 'Vendor Based'
       } else if (item.IsVendor === false) {
@@ -378,14 +381,12 @@ class VolumeListing extends Component {
         item.VendorName = ' '
       } else if (item.Plant === '-') {
         item.Plant = ' '
-      } else {
-        return false
       }
       return item
     })
     return (
 
-      <ExcelSheet data={TempData} name={VolumeMaster}>
+      <ExcelSheet data={temp} name={VolumeMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -441,7 +442,8 @@ class VolumeListing extends Component {
       costingHeadRenderer: this.costingHeadFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      indexFormatter: this.indexFormatter
+      hyphenFormatter: this.hyphenFormatter,
+
     };
 
     if (showVolumeForm) {
@@ -457,8 +459,8 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
-        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-
+        <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+          <ScrollToTop pointProp="go-to-top" />
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -536,13 +538,12 @@ class VolumeListing extends Component {
           </form>
 
 
-          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+          <div className="ag-grid-wrapper height-width-wrapper">
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div
               className="ag-theme-material"
-              style={{ height: '100%', width: '100%' }}
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
@@ -566,10 +567,10 @@ class VolumeListing extends Component {
                 <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                 <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
-                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
                 <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                 <AgGridColumn field="ApprovedQuantity" headerName="Approved Quantity"></AgGridColumn>
                 <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -607,6 +608,9 @@ class VolumeListing extends Component {
               anchor={'right'}
             />
           )}
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.VOLUME_DELETE_ALERT}`} />
+          }
         </div>
       </>
     )
@@ -647,7 +651,6 @@ export default connect(mapStateToProps, {
   getVolumeDataList,
   deleteVolume,
   getFinancialYearSelectList,
-  getLeftMenu,
   getVendorWithVendorCodeSelectList
 })(
   reduxForm({

@@ -16,7 +16,7 @@ import {
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 
 const headers = config
 
@@ -37,7 +37,7 @@ export function createCategoryTypeAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_CATEGORY_TYPE_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {
@@ -142,7 +142,7 @@ export function createCategoryAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_CATEGORY_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
                 callback(response);
             }

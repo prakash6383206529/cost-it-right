@@ -149,8 +149,8 @@ class ViewUserDetails extends Component {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
     const { isTechnologyOpen } = this.state;
 
-    const address = registerUserData ? `${registerUserData.AddressLine1 ? registerUserData.AddressLine1 : "NA"}, ${registerUserData.AddressLine2 ? registerUserData.AddressLine2 : "NA"}, 
-    ${registerUserData.CityName ? registerUserData.CityName : "NA"},  ${registerUserData.ZipCode ? registerUserData.ZipCode : "NA"}` : '';
+    const address = registerUserData ? `${registerUserData.AddressLine1 ? registerUserData.AddressLine1 : "-"}, ${registerUserData.AddressLine2 ? registerUserData.AddressLine2 : "-"}, 
+    ${registerUserData.CityName ? registerUserData.CityName : "-"},  ${registerUserData.ZipCode ? registerUserData.ZipCode : "-"}` : '';
 
     return (
       <>
@@ -212,25 +212,19 @@ class ViewUserDetails extends Component {
                     <div className={'left-details'}>User Name</div>
                     <div className={'right-details'}>{registerUserData ? registerUserData.UserName : ''}</div>
                   </Col>}
-                  <Col md={'12'}>
-                    <div className={'left-details'}>Password</div>
-                    <div className={'right-details'}>
-                      <a
-                        href="javascript:void(0)"
-                        onClick={() => this.props.editItemDetails(UserId, true)}
-                      >Change Password</a></div>
-                  </Col>
+
+                  {(UserId !== loggedInUserId()) &&
+                    < Col md={'12'}>
+                      <div className={'left-details'}>Password</div>
+                      <div className={'right-details'}>
+                        <a
+                          href="javascript:void(0)"
+                          onClick={() => this.props.editItemDetails(UserId, true)}
+                        >Change Password</a></div>
+                    </Col>
+                  }
                 </Row>
-                <Row className="pt-3">
-                  <Col md="12">
-                    <div className={'left-details'}>
-                      <HeaderTitle
-                        title={'Address:'}
-                        customClass={'Header-address'} />
-                    </div>
-                    <div className={'right-details'}>{address}</div>
-                  </Col>
-                </Row>
+
                 <Row className="pt-3 drawer-table-sm">
                   <Col md="12">
                     <div className={'left-details'}>
@@ -238,8 +232,8 @@ class ViewUserDetails extends Component {
                         title={'Role & Company:'}
                         customClass={'role-department-details'} />
                     </div>
-                    <div className={'right-details'}>
-                      {`${registerUserData ? registerUserData.RoleName : ''} (${registerUserData ? registerUserData.DepartmentName : ''})`}
+                    <div className={'right-details pt-2'}>
+                      {`${registerUserData ? registerUserData.RoleName : ''} (${registerUserData && registerUserData.DepartmentName !==null ? registerUserData.DepartmentName : ' - '})`}
                       {/* <div
                         onClick={this.permissionToggle}
                         className={`${isPermissionOpen ? 'minus-icon' : 'plus-icon'} pull-right`}>

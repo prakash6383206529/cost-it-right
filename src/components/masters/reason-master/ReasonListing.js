@@ -4,7 +4,7 @@ import { reduxForm } from "redux-form";
 import { Col, } from 'reactstrap';
 import $ from "jquery";
 import { focusOnError, } from "../../layout/FormInputs";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getAllReasonAPI, deleteReasonAPI, activeInactiveReasonStatus, } from '../actions/ReasonMaster';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -14,7 +14,6 @@ import AddReason from './AddReason';
 import { ADDITIONAL_MASTERS, OperationMaster, REASON, Reasonmaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import Row from 'reactstrap/lib/Row';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -23,6 +22,8 @@ import { REASON_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,7 +50,9 @@ class ReasonListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       isLoader: true,
-      renderState: true
+      renderState: true,
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -132,13 +135,7 @@ class ReasonListing extends Component {
    * @description confirm delete Item.
    */
   deleteItem = (Id) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteItem(Id)
-      },
-      onCancel: () => { },
-    }
-    return toastr.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions)
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
   /**
@@ -148,12 +145,19 @@ class ReasonListing extends Component {
   confirmDeleteItem = (ID) => {
     this.props.deleteReasonAPI(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
+        Toaster.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
         this.getTableListData()
       }
     })
+    this.setState({ showPopup: false })
   }
+  onPopupConfirm = () => {
+    this.confirmDeleteItem(this.state.deletedId);
 
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -205,9 +209,9 @@ class ReasonListing extends Component {
     this.props.activeInactiveReasonStatus(data, (res) => {
       if (res && res.data && res.data.Result) {
         if (cell == true) {
-          toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
         } else {
-          toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
         }
         this.getTableListData()
       }
@@ -269,17 +273,13 @@ class ReasonListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, this.props.reasonDataList)
+    let tempArr = this.props.reasonDataList && this.props.reasonDataList
+    return this.returnExcelColumn(REASON_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.ECNNumber === null) {
         item.ECNNumber = ' '
       } else if (item.RevisionNumber === null) {
@@ -288,14 +288,12 @@ class ReasonListing extends Component {
         item.DrawingNumber = ' '
       } else if (item.Technology === '-') {
         item.Technology = ' '
-      } else {
-        return false
       }
       return item
     })
     return (
 
-      <ExcelSheet data={TempData} name={Reasonmaster}>
+      <ExcelSheet data={temp} name={Reasonmaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -349,8 +347,8 @@ class ReasonListing extends Component {
       <>
 
         {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+          <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>
@@ -395,59 +393,12 @@ class ReasonListing extends Component {
               </div>
             </Col>
           </Row>
-          {/* <BootstrapTable
-            data={this.props.reasonDataList}
-            striped={false}
-            hover={false}
-            bordered={false}
-            options={options}
-            search
-            exportCSV={DownloadAccessibility}
-            csvFileName={`${Reasonmaster}.csv`}
-            //ignoreSinglePage
-            ref={'table'}
-            trClassName={'userlisting-row'}
-            tableHeaderClass="my-custom-header"
-            pagination
-          > */}
-          {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-          {/* <TableHeaderColumn
-              dataField="Reason"
-              dataAlign="left"
-              dataSort={true}
-            >
-              Reason
-          </TableHeaderColumn>
-            <TableHeaderColumn
-              width={100}
-              dataField="IsActive"
-              export={false}
-              dataAlign="center"
-              dataFormat={this.statusButtonFormatter}
-            >
-              Status
-          </TableHeaderColumn>
-            <TableHeaderColumn
-              width={80}
-              className="action"
-              dataField="ReasonId"
-              export={false}
-              searchable={false}
-              dataAlign="right"
-              isKey={true}
-              dataFormat={this.buttonFormatter}
-            >
-              Actions
-            </TableHeaderColumn>
-          </BootstrapTable> */}
-
-          <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+          <div className="ag-grid-wrapper height-width-wrapper">
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
             <div
               className="ag-theme-material"
-              style={{ height: '100%', width: '100%' }}
             >
               <AgGridReact
                 defaultColDef={defaultColDef}
@@ -480,7 +431,9 @@ class ReasonListing extends Component {
             </div>
           </div>
 
-
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.REASON_DELETE_ALERT}`} />
+          }
         </div>
         {isOpenDrawer && (
           <AddReason
@@ -518,7 +471,6 @@ export default connect(mapStateToProps, {
   getAllReasonAPI,
   deleteReasonAPI,
   activeInactiveReasonStatus,
-  getLeftMenu,
 })(
   reduxForm({
     form: 'ReasonListing',

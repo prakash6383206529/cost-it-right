@@ -14,27 +14,26 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
 import { ViewCostingContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 
 function CostingHeaderTabs(props) {
-
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, ActualCostingDataList } = useSelector(state => state.costing)
-
+    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData,checkIsDataChange,checkIsOverheadProfitChange,checkIsFreightPackageChange,checkIsToolTabChange } = useSelector(state => state.costing)
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
-  const [effectiveDate, setEffectiveDate] = useState(moment(costingData.EffectiveDate)._isValid ? moment(costingData.EffectiveDate)._d : '');
+  const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
+  
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -45,8 +44,8 @@ function CostingHeaderTabs(props) {
   useEffect(() => {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
-    if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
-
+    if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI && checkIsDataChange) {
+   
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -56,7 +55,7 @@ function CostingHeaderTabs(props) {
         "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
         "NetOtherOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal : 0,
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": netPOPrice,
+        "TotalCost": costData.IsAssemblyPart? ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost :netPOPrice,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
 
@@ -81,18 +80,32 @@ function CostingHeaderTabs(props) {
         "PlantCode": costData.PlantCode,
         "Version": ComponentItemData.Version,
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+        "NetRMCost": CostingDataList[0].NetRMCost,
+        // "NetBOPCost": CostingDataList[0].NetBOPCost,
+        // "NetConversionCost": CostingDataList[0].NetConversionCost,
+        "NetTotalRMBOPCC": CostingDataList[0].NetTotalRMBOPCC,
+        // "ToolCost": CostingDataList[0].ToolCost,
+        // "TotalCost": CostingDataList[0].TotalCost,
+        // "NetDiscountsCost": CostingDataList[0].NetDiscountsCost,
+        // "NetOtherCost": CostingDataList[0].NetOtherCost,
+        // "NetSurfaceTreatmentCost": CostingDataList[0].NetSurfaceTreatmentCost,
+        // "NetOverheadAndProfitCost": CostingDataList[0].NetOverheadAndProfitCost,
+        // "NetPackagingAndFreight": CostingDataList[0].NetPackagingAndFreight,
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        callAssemblyAPi(1)
         dispatch(CloseOpenAccordion())
         dispatch(setComponentItemData({}, () => { }))
         setIsCalledAPI(false)
         InjectDiscountAPICall()
+        dispatch(isDataChange(false))
       }))
     }
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
+    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
+      
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
@@ -116,34 +129,50 @@ function CostingHeaderTabs(props) {
             checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
         },
       }
-      dispatch(saveComponentOverheadProfitTab(reqData, res => {
-        dispatch(setComponentOverheadItemData({}, () => { }))
-        InjectDiscountAPICall()
-      }))
+      if(ComponentItemOverheadData.IsAssemblyPart){
+        dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
+          callAssemblyAPi(3)
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }))
+      }else{
+
+        dispatch(saveComponentOverheadProfitTab(reqData, res => {
+          callAssemblyAPi(3)
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }))
+      }
+
+
     }
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4') {
+    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true &&checkIsFreightPackageChange) {
+      
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
         "PartNumber": costData.PartNumber,
         "NetPOPrice": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
         "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails,
-        "EffectiveDate": CostingEffectiveDate,
-        "TotalCost": netPOPrice,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
+        callAssemblyAPi(4)
         dispatch(setComponentPackageFreightItemData({}, () => { }))
         InjectDiscountAPICall()
       }))
     }
 
     // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true && activeTab !== '5') {
+
+    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true &&ComponentItemToolData.CostingPartDetails.TotalToolCost >0 && activeTab !== '5' && checkIsToolTabChange) {
+      
       const data = {
         "IsToolCostProcessWise": false,
         "CostingId": costData.CostingId,
@@ -156,18 +185,102 @@ function CostingHeaderTabs(props) {
         "TotalCost": netPOPrice,
       }
       dispatch(saveToolTab(data, res => {
+        callAssemblyAPi(5)
         dispatch(setComponentToolItemData({}, () => { }))
+        dispatch(isToolDataChange(false))
         InjectDiscountAPICall()
       }))
     }
 
+
     // USED FOR SAVE OTHER DISCOUNT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    InjectDiscountAPICall()
+   // if(checkIsDataChange || ComponentItemToolData.IsChanged === true  || ComponentItemPackageFreightData.IsChanged === true|| ComponentItemToolData.IsChanged === true| (Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') )
+    // InjectDiscountAPICall()
+    if(checkIsDataChange === false){
+      dispatch(CloseOpenAccordion())
+      dispatch(isDataChange(false))
+    }
 
   }, [activeTab])
 
+
+
+  const callAssemblyAPi = (tabId) => {
+    if (costData.IsAssemblyPart && IsCalledAPI && !CostingViewMode) {
+      let assemblyWorkingRow = []
+      const tabData = RMCCTabData && RMCCTabData[0]
+      const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+      const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
+      const discountAndOtherTabData = DiscountCostData
+      tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
+        if(item.PartType === 'Sub Assembly'){
+          let subAssemblyObj = {
+            "CostingId": item.CostingId,
+            "CostingNumber": "", // Need to find out how to get it.
+            "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+            "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
+            "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
+            "SurfaceTreatmentCostPerAssembly": 0,
+            "TransportationCostPerAssembly": 0,
+            "TotalSurfaceTreatmentCostPerAssembly": 0,
+            "TotalCostINR": netPOPrice
+          }
+          assemblyWorkingRow.push(subAssemblyObj)
+        }
+        return assemblyWorkingRow
+      })
+      let assemblyRequestedData = {
+
+        "TopRow": {
+          "CostingId": tabData && tabData.CostingId,
+          "CostingNumber": tabData && tabData.CostingNumber,
+          "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "TotalBoughtOutPartCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "TotalConversionCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerPC": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "TotalCalculatedRMBOPCCCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "NetRMCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+          "NetBOPCostAssembly": tabData && tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+          "NetConversionCostPerAssembly": tabData && tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+          "NetRMBOPCCCost": tabData && tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+          "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
+          "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+          "TotalOperationCostComponent": tabData.CostingPartDetails.TotalOperationCostComponent,
+          "SurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+          "TransportationCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.TransportationCost,
+          "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetSurfaceTreatmentCost": surfaceTabData && surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+          "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
+          "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+          "NetToolCost": ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
+          "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
+          "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
+          "TotalCostINR": netPOPrice,
+          "TabId": tabId
+        },
+        "WorkingRows": assemblyWorkingRow,
+        "BOPHandlingCharges": {
+          "AssemblyCostingId": tabData && tabData.CostingId,
+          "IsApplyBOPHandlingCharges": true,
+          "BOPHandlingPercentage": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingPercentage,
+          "BOPHandlingCharges": getAssemBOPCharge && getAssemBOPCharge.BOPHandlingCharges
+        },
+        "LoggedInUserId": loggedInUserId()
+
+      }
+      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+    }
+  }
+
+
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && ComponentItemDiscountData.IsChanged === true && activeTab !== '6') {
+      
       dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1 }, res => {
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
       }))
@@ -195,11 +308,11 @@ function CostingHeaderTabs(props) {
    */
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
-    dispatch(setCostingEffectiveDate(moment(date).local().format('YYYY-MM-DD')))
+    dispatch(setCostingEffectiveDate(DayTime(date).format('YYYY-MM-DD')))
   }
 
   useEffect(() => {
-    dispatch(setCostingEffectiveDate(moment(effectiveDate).local().format('YYYY-MM-DD')))
+    dispatch(setCostingEffectiveDate(DayTime(effectiveDate).format('YYYY-MM-DD')))
   }, [effectiveDate])
 
   /**
@@ -225,7 +338,8 @@ function CostingHeaderTabs(props) {
               <div className="inputbox date-section">
                 <DatePicker
                   name="EffectiveDate"
-                  selected={effectiveDate}
+                  //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                  selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                   onChange={handleEffectiveDateChange}
                   showMonthDropdown
                   showYearDropdown

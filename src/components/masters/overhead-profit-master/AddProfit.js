@@ -8,29 +8,31 @@ import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } fro
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import { createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit, } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import { FILE_URL,ZBC } from '../../../config/constants';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-import imgRedcross from '../../../assests/images/red-cross.png'
-
+import attachClose from '../../../assests/images/red-cross.png'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
   constructor(props) {
     super(props);
     this.child = React.createRef();
+    // ********* INITIALIZE REF FOR DROPZONE ********
+    this.dropzone = React.createRef();
     this.state = {
       ProfitID: '',
       costingHead: 'zero',
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       ModelType: [],
       vendorName: [],
@@ -53,7 +55,10 @@ class AddProfit extends Component {
       effectiveDate: '',
       DropdownChanged: true,
       DataToChange: [],
-      plant: []
+      uploadAttachements: true,
+      showPopup: false,
+      updatedObj: {}
+
     }
   }
 
@@ -122,7 +127,7 @@ class AddProfit extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
-          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
 
@@ -153,11 +158,21 @@ class AddProfit extends Component {
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
             })
+            // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+            let files = Data.Attachements && Data.Attachements.map((item) => {
+              item.meta = {}
+              item.meta.id = item.FileId
+              item.meta.status = 'done'
+              return item
+            })
+            if (this.dropzone.current !== null) {
+              this.dropzone.current.files = files
+            }
           }, 500)
         }
       })
@@ -325,7 +340,7 @@ class AddProfit extends Component {
 
   handlePercent = (e) => {
     if (e.target.value > 100) {
-      toastr.warning('Profit Percent can not be greater than 100.')
+      Toaster.warning('Profit Percent can not be greater than 100.')
     }
   }
 
@@ -468,7 +483,15 @@ class AddProfit extends Component {
     }
 
     if (status === 'rejected_file_type') {
-      toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      this.dropzone.current.files.pop()
+      Toaster.warning("File size greater than 2 mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      this.dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
     }
   }
 
@@ -494,7 +517,7 @@ class AddProfit extends Component {
         DeletedBy: loggedInUserId(),
       }
       this.props.fileDeleteProfit(deleteData, (res) => {
-        toastr.success('File has been deleted successfully.')
+        Toaster.success('File has been deleted successfully.')
         let tempArr = this.state.files.filter(item => item.FileId !== FileId)
         this.setState({ files: tempArr })
       })
@@ -502,6 +525,10 @@ class AddProfit extends Component {
     if (FileId == null) {
       let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
       this.setState({ files: tempArr })
+    }
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (this.dropzone?.current !== null) {
+      this.dropzone.current.files.pop()
     }
   }
 
@@ -538,30 +565,30 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant,uploadAttachements } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
 
 
 
-      if (values.ProfitBOPPercentage == '') {
+      if (values.ProfitBOPPercentage === '') {
         values.ProfitBOPPercentage = null
       }
-      if (values.ProfitMachiningCCPercentage == '') {
+      if (values.ProfitMachiningCCPercentage === '') {
         values.ProfitMachiningCCPercentage = null
       }
-      if (values.ProfitPercentage == '') {
+      if (values.ProfitPercentage === '') {
         values.ProfitPercentage = null
       }
-      if (values.ProfitRMPercentage == '') {
+      if (values.ProfitRMPercentage === '') {
         values.ProfitRMPercentage = null
       }
 
       if (
-        DropdownChanged && DataToChange.ProfitBOPPercentage == values.ProfitBOPPercentage && DataToChange.ProfitMachiningCCPercentage == values.ProfitMachiningCCPercentage
-        && DataToChange.ProfitPercentage == values.ProfitPercentage && DataToChange.ProfitRMPercentage == values.ProfitRMPercentage
-        && DataToChange.Remark == values.Remark) {
+        DropdownChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
+        && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
+        && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
         this.cancel()
         return false
@@ -593,25 +620,12 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         IsForcefulUpdated: true,
         PlantId: plant.value
       }
       if (isEditFlag) {
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateProfit(requestData, (res) => {
-              if (res.data.Result) {
-                toastr.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-                this.cancel()
-              }
-            })
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />
-        }
-        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        this.setState({ showPopup: true, updatedObj: requestData })
       }
 
 
@@ -635,20 +649,31 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         PlantId: plant.value
       }
 
       this.props.reset()
       this.props.createProfit(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.PROFIT_ADDED_SUCCESS);
+          Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
           this.cancel()
         }
       });
     }
   }
-
+  onPopupConfirm = () => {
+    this.props.reset()
+    this.props.updateProfit(this.state.updatedObj, (res) => {
+      if (res.data.Result) {
+        Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
+        this.cancel()
+      }
+    });
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -662,7 +687,7 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC } = this.state;
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode } = this.state;
 
     return (
       <>
@@ -755,7 +780,7 @@ class AddProfit extends Component {
                               this.handleModelTypeChange
                             }
                             valueDescription={this.state.ModelType}
-                          //disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
@@ -852,7 +877,7 @@ class AddProfit extends Component {
                               this.handleOverheadChange
                             }
                             valueDescription={this.state.overheadAppli}
-                          //disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         {!isHideOverhead && (
@@ -873,7 +898,7 @@ class AddProfit extends Component {
                               className=""
                               customClassName=" withBorder"
                               max={100}
-                              disabled={isOverheadPercent ? true : false}
+                              disabled={isOverheadPercent || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -886,11 +911,10 @@ class AddProfit extends Component {
                               placeholder={!isRM ? "Enter" : ""}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
-                              //onChange={this.handleCalculation}
                               required={!isRM ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isRM ? true : false}
+                              disabled={isRM || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -907,7 +931,7 @@ class AddProfit extends Component {
                               required={!isCC ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isCC ? true : false}
+                              disabled={isCC || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -924,7 +948,7 @@ class AddProfit extends Component {
                               required={!isBOP ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isBOP ? true : false}
+                              disabled={isBOP || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -940,12 +964,12 @@ class AddProfit extends Component {
                               autoComplete={'off'}
                               required={true}
                               changeHandler={(e) => {
-                                //e.preventDefault()
+
                               }}
                               component={renderDatePicker}
                               className="form-control"
                               disabled={isEditFlag ? true : false}
-                            //minDate={moment()}
+
                             />
                           </div>
                         </Col>
@@ -970,20 +994,21 @@ class AddProfit extends Component {
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="512"
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
                           <label>Upload Files (upload up to 3 files)</label>
-                          {this.state.files.length >= 3 ? (
-                            <div class="alert alert-danger" role="alert">
-                              Maximum file upload limit has been reached.
-                            </div>
-                          ) : (
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit has been reached.
+                          </div>
+                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
+                              ref={this.dropzone}
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              //onSubmit={this.handleSubmit}
+                              disabled={isViewMode}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -1015,7 +1040,7 @@ class AddProfit extends Component {
                               }}
                               classNames="draper-drop"
                             />
-                          )}
+                          </div>
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>
@@ -1038,7 +1063,7 @@ class AddProfit extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img
+                                    {!isViewMode && <img
                                       alt={""}
                                       className="float-right"
                                       onClick={() =>
@@ -1047,8 +1072,8 @@ class AddProfit extends Component {
                                           f.FileName
                                         )
                                       }
-                                      src={imgRedcross}
-                                    ></img>
+                                      src={attachClose}
+                                    ></img>}
                                   </div>
                                 );
                               })}
@@ -1069,6 +1094,7 @@ class AddProfit extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
+                          disabled={isViewMode}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
@@ -1080,6 +1106,9 @@ class AddProfit extends Component {
               </div>
             </div>
           </div>
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          }
         </div>
       </>
     );

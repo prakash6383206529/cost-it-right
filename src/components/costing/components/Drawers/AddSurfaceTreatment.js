@@ -6,7 +6,7 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -137,7 +137,7 @@ function AddSurfaceTreatment(props) {
   */
   const addRow = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')
@@ -243,29 +243,7 @@ function AddSurfaceTreatment(props) {
 
               <Row className="mx-0 mb-3">
                 <Col>
-                  {/* <BootstrapTable
-                  data={tableData}
-                  striped={false}
-                  bordered={false}
-                  hover={false}
-                  options={options}
-                  selectRow={selectRowProp}
-                  search
-                  multiColumnSearch={true}
-                  //exportCSV
-                  //ignoreSinglePage
-                  //ref={'table'}
-                  pagination>
-                  <TableHeaderColumn dataField="OperationId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="OperationName"  >{'Operation Name'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="OperationCode" >{'Operation Code'}</TableHeaderColumn>
-                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="Technology" >{'Technology'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Rate" searchable={false} >{'Rate'}</TableHeaderColumn>
-                  {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'LabourRate'}</TableHeaderColumn>}
-                 
-                </BootstrapTable> */}
-                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>

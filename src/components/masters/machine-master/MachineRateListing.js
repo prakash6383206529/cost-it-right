@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, } from "redux-form";
+import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { searchableSelect } from "../../layout/FormInputs";
 import { EMPTY_DATA } from '../../../config/constants';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
@@ -12,18 +11,20 @@ import { getMachineDataList, deleteMachine, copyMachine, } from '../actions/Mach
 import { getTechnologySelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObjs, MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { MachineRate } from '../../../config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,7 +47,9 @@ class MachineRateListing extends Component {
             machineType: [],
 
             isBulkUpload: false,
-            isLoader: false
+            isLoader: false,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -74,173 +77,27 @@ class MachineRateListing extends Component {
         }
         this.props.getMachineDataList(filterData, (res) => {
             this.setState({ isLoader: false })
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
-            } else {
-                this.setState({ tableData: [] })
-            }
+
         })
     }
 
-    /**
-    * @method renderListing
-    * @description Used to show type of listing
-    */
-    renderListing = (label) => {
-        const { technologySelectList, filterSelectList } = this.props;
-        const temp = [];
-
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'plant') {
-            filterSelectList && filterSelectList.plants && filterSelectList.plants.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'technology') {
-            technologySelectList && technologySelectList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'VendorNameList') {
-            filterSelectList && filterSelectList.vendor && filterSelectList.vendor.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'ProcessNameList') {
-            filterSelectList && filterSelectList.processList && filterSelectList.processList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'MachineTypeList') {
-            filterSelectList && filterSelectList.machineTypes && filterSelectList.machineTypes.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-    }
 
     /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
-
-    /**
-    * @method handlePlant
-    * @description  PLANT FILTER
-    */
-    handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ plant: newValue }, () => {
-                const { plant } = this.state;
-                this.props.getMachineTypeSelectListByPlant(plant.value, () => { })
-            });
-        } else {
-            this.setState({ plant: [], });
-        }
-    }
-
-    /**
-    * @method handleTechnology
-    * @description called
-    */
-    handleTechnology = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ technology: newValue, }, () => {
-                const { technology } = this.state;
-                this.props.getVendorSelectListByTechnology(technology.value, () => { })
-                this.props.getMachineTypeSelectListByTechnology(technology.value, () => { })
-            });
-        } else {
-            this.setState({ technology: [], })
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description called
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue, }, () => {
-                const { vendorName } = this.state;
-                this.props.getMachineTypeSelectListByVendor(vendorName.value, () => { })
-            });
-        } else {
-            this.setState({ vendorName: [], })
-        }
-    };
-
-    /**
-    * @method handleProcessName
-    * @description called
-    */
-    handleProcessName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ processName: newValue });
-        } else {
-            this.setState({ processName: [] })
-        }
-    };
-
-    /**
-    * @method handleMachineType
-    * @description called
-    */
-    handleMachineType = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ machineType: newValue }, () => {
-                const { machineType } = this.state;
-                this.props.getProcessSelectListByMachineType(machineType.value, () => { })
-            });
-        } else {
-            this.setState({ machineType: [], })
-        }
-    };
 
     /**
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(data);
     }
+
 
     /**
     * @method copyItem
@@ -249,7 +106,7 @@ class MachineRateListing extends Component {
     copyItem = (Id) => {
         this.props.copyMachine(Id, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.COPY_MACHINE_SUCCESS);
+                Toaster.success(MESSAGES.COPY_MACHINE_SUCCESS);
                 this.getDataList()
             }
         });
@@ -260,6 +117,7 @@ class MachineRateListing extends Component {
     * @description confirm delete Raw Material details
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDelete(Id);
@@ -267,7 +125,7 @@ class MachineRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
+
     }
 
     /**
@@ -277,12 +135,17 @@ class MachineRateListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMachine(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_MACHINE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
                 this.getDataList()
             }
         });
     }
-
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -300,10 +163,11 @@ class MachineRateListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -320,11 +184,11 @@ class MachineRateListing extends Component {
     }
 
     /**
-    * @method hyphenFormatter
-    */
+     * @method hyphenFormatter
+     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? cellValue : '-';
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     /**
@@ -360,14 +224,17 @@ class MachineRateListing extends Component {
   */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
     renderPlantFormatter = (props) => {
         const row = props?.data;
-        return row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
+
+        const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
+        return value
     }
+
 
 
     bulkToggle = () => {
@@ -380,47 +247,6 @@ class MachineRateListing extends Component {
         })
     }
 
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { costingHead, plant, technology, vendorName, processName, machineType } = this.state;
-        this.setState({ isLoader: true })
-
-        const costingId = costingHead ? costingHead.value : '';
-        const technologyId = this.props.isSimulation ? this.props.technology : technology ? technology.value : 0;
-        const vendorId = vendorName ? vendorName.value : '';
-        const machineTypeId = machineType ? machineType.value : 0;
-        const processId = processName ? processName.value : '';
-        const plantId = plant ? plant.value : '';
-
-        this.getDataList(costingId, technologyId, vendorId, machineTypeId, processId, plantId)
-    }
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({
-            costingHead: [],
-            plant: [],
-            technology: [],
-            vendorName: [],
-            processName: [],
-            machineType: [],
-            isLoader: true
-        }, () => {
-            this.props.getTechnologySelectList(() => { })
-            this.props.getInitialPlantSelectList(() => { })
-            this.props.getInitialVendorWithVendorCodeSelectList(() => { })
-            this.props.getInitialMachineTypeSelectList(() => { })
-            this.props.getInitialProcessesSelectList(() => { })
-            this.getDataList()
-        })
-
-    }
 
     displayForm = () => {
         this.props.displayForm()
@@ -448,17 +274,15 @@ class MachineRateListing extends Component {
                 item.MachineTypeName = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
-            } else {
-                return false
             }
             if (item.EffectiveDate !== null) {
-                item.EffectiveDate = moment(item.EffectiveDate).format('DD/MM/YYYY')
+                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
 
             return item
         })
 
-        return (<ExcelSheet data={TempData} name={`${MachineRate}`}>
+        return (<ExcelSheet data={temp} name={`${MachineRate}`}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);
@@ -476,11 +300,15 @@ class MachineRateListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, this.props.machineDatalist)
+        if (this.props.isSimulation === true) {
+            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+            }))
+        } else {
+            tempArr = this.props.machineDatalist && this.props.machineDatalist
+        }
+        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
     };
 
     onFilterTextBoxChanged(e) {
@@ -497,13 +325,28 @@ class MachineRateListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, isSimulation } = this.props;
         const { isBulkUpload, isLoader } = this.state;
 
+        const isFirstColumn = (params) => {
+            if (isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
         };
 
         const frameworkComponents = {
@@ -515,118 +358,22 @@ class MachineRateListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             renderPlantFormatter: this.renderPlantFormatter
         };
+        const onRowSelect = () => {
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (isSimulation) {
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
+            }
+
+        }
+
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                        {this.state.shown && (
-                            <Col md="12" lg="11" className="filter-block machine-rate-filter">
-                                <div className="d-inline-flex justify-content-start align-items-top w100">
-                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="costingHead"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Costing Head'}
-                                            isClearable={false}
-                                            options={this.renderListing('costingHead')}
-                                            handleChangeDescription={this.handleHeadChange}
-                                            valueDescription={this.state.costingHead}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="plant"
-                                            type="text"
-                                            label={''}
-                                            component={searchableSelect}
-                                            placeholder={'Plant'}
-                                            isClearable={false}
-                                            options={this.renderListing('plant')}
-                                            handleChangeDescription={this.handlePlant}
-                                            valueDescription={this.state.plant}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="technology"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Technology'}
-                                            isClearable={false}
-                                            options={this.renderListing('technology')}
-                                            handleChangeDescription={this.handleTechnology}
-                                            valueDescription={this.state.technology}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="VendorName"
-                                            type="text"
-                                            label={''}
-                                            component={searchableSelect}
-                                            placeholder={'Vendor'}
-                                            isClearable={false}
-                                            options={this.renderListing('VendorNameList')}
-                                            handleChangeDescription={this.handleVendorName}
-                                            valueDescription={this.state.vendorName}
-                                            disabled={false}
-                                            className="fullinput-icon"
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="MachineType"
-                                            type="text"
-                                            label=''
-                                            component={searchableSelect}
-                                            placeholder={'Machine'}
-                                            isClearable={false}
-                                            options={this.renderListing('MachineTypeList')}
-                                            handleChangeDescription={this.handleMachineType}
-                                            valueDescription={this.state.machineType}
-                                            disabled={false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill">
-                                        <Field
-                                            name="ProcessName"
-                                            type="text"
-                                            label=""
-                                            component={searchableSelect}
-                                            placeholder={'Process'}
-                                            isClearable={false}
-                                            options={this.renderListing('ProcessNameList')}
-                                            handleChangeDescription={this.handleProcessName}
-                                            valueDescription={this.state.processName}
-                                            disabled={false}
-                                        />
-                                    </div>
-                                    <div className="flex-fill w-180">
-                                        <button
-                                            type="button"
-                                            onClick={this.resetFilter}
-                                            className="reset mr10"
-                                        >
-                                            {'Reset'}
-                                        </button>
 
-                                        <button
-                                            type="button"
-                                            onClick={this.filterList}
-                                            className="user-btn"
-                                        >
-                                            {'Apply'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </Col>
-                        )}
+
                         <Col md="6" lg="6" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -673,8 +420,6 @@ class MachineRateListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
@@ -690,19 +435,17 @@ class MachineRateListing extends Component {
                     <Col>
                         {isLoader && <LoaderCustom />}
 
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div
                                 className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
                             >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
-                                    domLayout='autoHeight'
                                     floatingFilter={true}
-                                    // columnDefs={c}
+                                    domLayout='autoHeight'
                                     rowData={this.props.machineDatalist}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -715,18 +458,21 @@ class MachineRateListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                                    <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-                                    <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter' filter={true} floatingFilter={true}></AgGridColumn>
-                                    <AgGridColumn field="MachineNumber" headerName="Machine Number"></AgGridColumn>
-                                    <AgGridColumn field="MachineTypeName" headerName="Machine Type"></AgGridColumn>
+                                    {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
+                                    <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="Plants" headerName="Plant" cellRenderer='renderPlantFormatter'></AgGridColumn>
+                                    <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    {!isSimulation && <AgGridColumn field="MachineId" width={200} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -750,6 +496,9 @@ class MachineRateListing extends Component {
                     messageLabel={'Machine'}
                     anchor={'right'}
                 />}
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
+                }
             </div >
         );
     }
@@ -766,6 +515,7 @@ function mapStateToProps(state) {
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
     const { machineDatalist } = machine
+
     const { auth } = state;
     const { initialConfiguration } = auth;
 

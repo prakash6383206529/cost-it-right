@@ -10,8 +10,6 @@ import { getManageBOPSOBDataList, getInitialFilterData, getBOPCategorySelectList
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
@@ -120,11 +118,12 @@ class SOBListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+  buttonFormatter = (params) => {
     const { EditAccessibility, } = this.props;
+    const cellValue = params?.valueFormatted ? params.valueFormatted : params?.value;
     return (
       <>
-        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
       </>
     )
   }
@@ -281,10 +280,9 @@ class SOBListing extends Component {
   * @method hyphenFormatter
   */
   hyphenFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? cellValue : '-';
+    const cellValue = props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
-
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     params.api.paginationGoToPage(0);
@@ -297,29 +295,23 @@ class SOBListing extends Component {
 
   onBtExport = () => {
     let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
+    tempArr = this.props.bopSobList && this.props.bopSobList
     return this.returnExcelColumn(BOP_SOBLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } if (item.Plants === '-') {
         item.Plants = ' '
-      } else {
-        return false
       }
       return item
     })
     return (
 
-      <ExcelSheet data={TempData} name={Sob}>
+      <ExcelSheet data={temp} name={Sob}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -465,31 +457,7 @@ class SOBListing extends Component {
         </form>
         <Row>
           <Col>
-            {/* <BootstrapTable
-              data={this.props.bopSobList}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${Sob}.csv`}
-              search
-              ref={'table'}
-              pagination>
-              <TableHeaderColumn width={100} dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopNo()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopName()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
-              <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-              <TableHeaderColumn width={90} dataField="NoOfVendors" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderNoOfVendor()}</TableHeaderColumn>
-              <TableHeaderColumn width={90} dataField="Plant" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataFormat={this.costRender} dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn width={100} dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn width={140} dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{this.renderweightnet()}</TableHeaderColumn>
-              <TableHeaderColumn dataAlign="right" width={80} dataField="BoughtOutPartNumber" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
-
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>

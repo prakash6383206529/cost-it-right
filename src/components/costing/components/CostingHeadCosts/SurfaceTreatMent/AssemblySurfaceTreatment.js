@@ -82,8 +82,11 @@ function AssemblySurfaceTreatment(props) {
       item={el}
       children={el.CostingChildPartDetails}
       toggleAssembly={props.toggleAssembly}
+      setPartDetails={props.setPartDetails}
       setSurfaceCost={props.setSurfaceCost}
       setTransportationCost={props.setTransportationCost}
+      setAssemblySurfaceCost={props.setAssemblySurfaceCost}
+      setAssemblyTransportationCost={props.setAssemblyTransportationCost}
     />
   })
 
@@ -94,9 +97,10 @@ function AssemblySurfaceTreatment(props) {
   return (
     <>
       <tr>
-        <div className="accordian-row" style={{ display: 'contents' }} onClick={() => {
-          // toggle(item.BOMLevel, item.PartNumber, true)
-        }}>
+        <div className="accordian-row" style={{ display: 'contents' }} 
+        // onClick={() => {          toggle(item.BOMLevel, item.PartNumber, true)        }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
+        >
+
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
               {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
@@ -108,7 +112,7 @@ function AssemblySurfaceTreatment(props) {
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>
             {item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-            {
+            {/* {
               item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
@@ -117,7 +121,7 @@ function AssemblySurfaceTreatment(props) {
                     {`Child Parts Surface Treatment Cost:- ${item.CostingPartDetails.NetSurfaceTreatmentCost - (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly + item.CostingPartDetails.TotalTransportationCostPerAssembly)}`}
                   </span>
                 </div> : ''
-            }
+            } */}
           </td>
         </div>
         <td>
@@ -139,10 +143,10 @@ function AssemblySurfaceTreatment(props) {
               //onClick={DrawerToggle}
               onClick={() => {
                 toggle(item.BOMLevel, item.PartNumber, false)
-                //DrawerToggle()
+                // DrawerToggle()
               }}
             >
-              <div className={'plus'}></div>Add Surface Treatment</button>)
+              <div className={'plus'}></div>Surface T.</button>)
           }
         </td>
       </tr>

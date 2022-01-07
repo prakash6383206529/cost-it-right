@@ -9,7 +9,7 @@ import { getVerifyExchangeSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { EXCHNAGERATE, ZBC } from '../../../config/constants';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
@@ -60,7 +60,7 @@ function OtherVerifySimulation(props) {
                 if (res.data.Result) {
                     const data = res.data.Data
                     if (data.SimulationExchangeRateImpactedCostings.length === 0) {
-                        toastr.warning('No approved costing exist for this exchange rate.')
+                        Toaster.warning('No approved costing exist for this exchange rate.')
                         setHideRunButton(true)
                         return false
                     }
@@ -134,9 +134,10 @@ function OtherVerifySimulation(props) {
 
     const runSimulation = () => {
         if (selectedRowData.length === 0) {
-            toastr.warning('Please select atleast one costing.')
+            Toaster.warning('Please select atleast one costing.')
             return false
         }
+
 
         let obj = {};
         obj.SimulationId = simulationId
@@ -262,7 +263,6 @@ function OtherVerifySimulation(props) {
 
                                         >
                                             <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
@@ -315,7 +315,7 @@ function OtherVerifySimulation(props) {
 
                         </Col>
                     </Row>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
                                 <div className={"cancel-icon"}></div>

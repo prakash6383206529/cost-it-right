@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import $ from 'jquery';
@@ -21,8 +21,6 @@ import AddVendorDrawer from './AddVendorDrawer';
 import { checkPermission } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -30,6 +28,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -72,7 +72,10 @@ class VendorListing extends Component {
             rowData: null,
             warningMessage: false,
             sideBar: { toolPanels: ['columns'] },
-            showData: false
+            showData: false,
+            showPopup: false,
+            deletedId: '',
+            isViewMode: false
 
         }
     }
@@ -281,27 +284,22 @@ class VendorListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: isViewMode,
         })
     }
+
 
     /**
     * @method deleteItem
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        return toastr.confirm(`Are you sure you want to delete this Vendor?`, toastrConfirmOptions);
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -311,13 +309,19 @@ class VendorListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteSupplierAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
                 this.filterList()
                 //this.getTableListData(null, null, null)
             }
         });
+        this.setState({ showPopup: false })
     }
-
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -326,10 +330,11 @@ class VendorListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -339,8 +344,8 @@ class VendorListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != 'NA' ? cellValue : '-';
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
     handleChange = (cell, row) => {
@@ -352,9 +357,9 @@ class VendorListing extends Component {
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
                 if (cell == true) {
-                    toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
                 } else {
-                    toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
+                    Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 }
                 //this.getTableListData(null, null, null)
                 this.filterList()
@@ -510,7 +515,7 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -520,7 +525,7 @@ class VendorListing extends Component {
             ID: '',
         }, () => {
             this.filterList()
-            // this.getTableListData(null, null, null)
+
         })
     }
 
@@ -547,32 +552,25 @@ class VendorListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, this.props.supplierDataList)
+        let tempArr = this.props.supplierDataList && this.props.supplierDataList
+        return this.returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
-            if (item.Country == 'NA') {
+        temp = TempData && TempData.map((item) => {
+            if (String(item.Country) === 'NA') {
                 item.Country = ' '
-            } else if (item.State == 'NA') {
+            } else if (String(item.State) === 'NA') {
                 item.State = ' '
-            } else if (item.City == 'NA') {
+            } else if (String(item.City) === 'NA') {
                 item.City = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={VendorMaster}>
+            <ExcelSheet data={temp} name={VendorMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -582,10 +580,6 @@ class VendorListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
-    // resetState() {
-    //     gridOptions.columnApi.resetColumnState();
-    //     gridOptions.api.setFilterModel(null);
-    // }
 
 
     /**
@@ -600,10 +594,10 @@ class VendorListing extends Component {
         const options = {
             clearSearch: true,
             noDataText: (this.props.supplierDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            //exportCSVText: 'Download Excel',
+
             exportCSVBtn: this.createCustomExportCSVButton,
             onExportToCSV: this.handleExportCSVButtonClick,
-            //paginationShowsTotal: true,
+
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -629,9 +623,9 @@ class VendorListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+            <div className={`ag-grid-react container-fluid blue-before-inside part-manage-component ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
 
+                <ScrollToTop pointProp="go-to-top" />
                 <form
 
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -643,7 +637,7 @@ class VendorListing extends Component {
                         </Col>
 
                     </Row>
-                    <Row className="pt-4 px-15 blue-before">
+                    <Row className="pt-2 align-items-center">
                         {this.state.shown && (
                             <Col md="12" lg="8" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -658,7 +652,7 @@ class VendorListing extends Component {
                                             component={searchableSelect}
                                             placeholder={"Vendor Type"}
                                             options={this.renderListing("vendorType")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+
                                             validate={
                                                 this.state.vendorType == null ||
                                                     this.state.vendorType.length === 0
@@ -679,7 +673,7 @@ class VendorListing extends Component {
                                             component={searchableSelect}
                                             placeholder={"Vendor Name"}
                                             options={this.renderListing("vendorList")}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+
                                             validate={
                                                 this.state.vendorName == null ||
                                                     this.state.vendorName.length === 0
@@ -696,7 +690,7 @@ class VendorListing extends Component {
                                     <div className="flex-fill">
                                         <button
                                             type="button"
-                                            //disabled={pristine || submitting}
+
                                             onClick={this.resetFilter}
                                             className="reset mr10"
                                         >
@@ -704,7 +698,7 @@ class VendorListing extends Component {
                                         </button>
                                         <button
                                             type="button"
-                                            //disabled={pristine || submitting}
+
                                             onClick={this.filterList}
                                             className="user-btn mr5"
                                         >
@@ -714,18 +708,14 @@ class VendorListing extends Component {
                                 </div>
                             </Col>
                         )}
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Col md="6">
+                            {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
+                        </Col>
+                        <Col md="6" lg="6">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {/* {this.state.shown ? (
-                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="cancel-icon-white"></div></button>
-                                    ) : (
-                                        <button title="Filter" type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <div className="filter mr-0"></div>
-                                        </button>
-                                    )} */}
-                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+
+                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -762,7 +752,7 @@ class VendorListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
@@ -774,36 +764,26 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                    <div className="ag-grid-header">
-                        <Row className="pt-5 no-filter-row">
-                        </Row>
-                        {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
-                    </div>
-                    <div
-                        className="ag-theme-material"
-
-                    >
+                <div className="ag-grid-wrapper height-width-wrapper pt-2">
+                    <div className="ag-theme-material">
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
-                            // columnDefs={c}
                             rowData={this.props.supplierDataList}
                             pagination={true}
-                            // onPaginationChanged={ }
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             onFilterModified={this.onFloatingFilterChanged}
                             gridOptions={gridOptions}
                             suppressRowClickSelection={true}
-                            //suppressPaginationPanel={true}
                             loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
                             }}
                             frameworkComponents={frameworkComponents}
+                            enablePivot={true}
                         >
                             <AgGridColumn field="VendorType" headerName="Vendor Type"></AgGridColumn>
                             <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
@@ -812,7 +792,7 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" headerName="Actions" width={220} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
                             <div className="paging-container d-inline-block float-right">
@@ -852,10 +832,14 @@ class VendorListing extends Component {
                             closeDrawer={this.closeVendorDrawer}
                             isEditFlag={isEditFlag}
                             isRM={false}
+                            isViewMode={this.state.isViewMode}
                             ID={this.state.ID}
                             anchor={"right"}
                         />
                     )
+                }
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
                 }
             </div >
         );
@@ -889,7 +873,6 @@ export default connect(mapStateToProps, {
     getVendorTypesSelectList,
     fetchCountryDataAPI,
     getVendorsByVendorTypeID,
-    getLeftMenu,
     getAllVendorSelectList,
     getVendorTypeByVendorSelectList
 })(reduxForm({

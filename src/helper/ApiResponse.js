@@ -1,4 +1,5 @@
-import { userDetails } from "./auth"
+import { userDetails } from "./auth";
+import _ from 'lodash';
 
 export function formatLoginResult(res) {
     if (res) {
@@ -129,6 +130,19 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             })
             temp.push({ CostingId: item.CostingId, CostingNumber: item.CostingNumber, IsChecked: checked, LineNumber: item.LineNumber, SANumber: item.SANumber })
         })
+        
+        // let uniqueArr = [];
+        // temp.filter(function(item){
+        //     var i = uniqueArr.findIndex(x => (x.CostingId === item.CostingId));
+        //     if(i <= -1){
+        //       uniqueArr.push(item);
+        //      }
+        //     return null;
+        // });
+        let uniqueArr = _.uniqBy(temp, function(o){
+            return o.CostingId;
+        });
+    
 
         const simulationObj = {
             SimulationId: simulationDetail.SimulationId,
@@ -138,7 +152,7 @@ export function formatRMSimulationObject(simulationDetail, selectedRowData, cost
             Remark: "",
             LoggedInUserId: userDetails().LoggedInUserId,
             IsPartialSaved: selectedRowData.length === costingArr.length ? false : true,
-            SelectedCostings: temp,
+            SelectedCostings: uniqueArr,
         };
         return simulationObj;
     }

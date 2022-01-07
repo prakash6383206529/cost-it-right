@@ -10,9 +10,7 @@ import { getVendorListByVendorType, } from '../actions/Material';
 import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
-import moment from 'moment';
+import Toaster from '../../common/Toaster';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -24,6 +22,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -43,7 +42,9 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
-      isLoader: true
+      isLoader: true,
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -78,9 +79,9 @@ class FreightListing extends Component {
         let Data = res.data.DataList;
         this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       } else {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       }
     })
   }
@@ -103,15 +104,7 @@ class FreightListing extends Component {
   * @description confirm delete Raw Material details
   */
   deleteItem = (Id) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDelete(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-
-    };
-    return toastr.confirm(`${MESSAGES.FREIGHT_DELETE_ALERT}`, toastrConfirmOptions);
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
   /**
@@ -121,12 +114,18 @@ class FreightListing extends Component {
   confirmDelete = (ID) => {
     this.props.deleteFright(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
+        Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
         this.getDataList()
       }
     });
+    this.setState({ showPopup: false })
   }
-
+  onPopupConfirm = () => {
+    this.confirmDelete(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
 
 
 
@@ -146,9 +145,10 @@ class FreightListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
+    const { EditAccessibility, DeleteAccessibility,ViewAccessibility } = this.props;
     return (
       <>
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
         {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
@@ -195,11 +195,11 @@ class FreightListing extends Component {
   }
 
   /**
-* @method hyphenFormatter
-*/
+  * @method hyphenFormatter
+  */
   hyphenFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? cellValue : '-';
+    const cellValue = props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
   /**
@@ -215,7 +215,7 @@ class FreightListing extends Component {
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
-    temp = TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.IsVendor === true) {
         item.IsVendor = 'Vendor Based'
       } else if (item.IsVendor === false) {
@@ -246,11 +246,7 @@ class FreightListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
+    let tempArr = this.props.freightDetail && this.props.freightDetail
     return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -371,13 +367,12 @@ class FreightListing extends Component {
             <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
             <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>  */}
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div
                 className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
@@ -415,6 +410,9 @@ class FreightListing extends Component {
             </div>
           </Col>
         </Row>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FREIGHT_DELETE_ALERT}`} />
+        }
       </div >
     );
   }

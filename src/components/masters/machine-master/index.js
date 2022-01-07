@@ -6,18 +6,18 @@ import MachineRateListing from './MachineRateListing';
 import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
-import MachineInsights from './MachineInsights';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import MachineApproval from './MachineApproval';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class MachineMaster extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: '2',
+            activeTab: '1',
             isMachineRateForm: false,
             isAddMoreDetails: false,
             isProcessForm: false,
@@ -181,43 +181,41 @@ class MachineMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-top-top'>
                     <Row>
                         <Col sm="4">
                             <h1>{`Machine Master`}</h1>
                         </Col>
                     </Row>
-
+                    <ScrollToTop pointProp={"go-top-top"} />
                     <Row>
                         <Col>
                             <div>
                                 <Nav tabs className="subtabs mt-0">
-                                    {/* <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                            Insights
-                                        </NavLink>
-                                    </NavItem> */}
+
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                             Machine Rate
                                         </NavLink>
                                     </NavItem>
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
+                                    {/* <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                            Approval Status
+                                        </NavLink>
+                                    </NavItem> */}
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
 
+
+
                                     {this.state.activeTab == 1 &&
                                         <TabPane tabId="1">
-                                            <MachineInsights />
-                                        </TabPane>}
-
-                                    {this.state.activeTab == 2 &&
-                                        <TabPane tabId="2">
                                             <MachineRateListing
                                                 displayForm={this.displayForm}
                                                 getDetails={this.getDetails}
@@ -226,12 +224,22 @@ class MachineMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                ViewAccessibility={this.state.ViewAccessibility}
                                             />
                                         </TabPane>}
 
+                                    {this.state.activeTab == 2 &&
+                                        <TabPane tabId="2">
+                                            <ProcessListing
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
+                                                DownloadAccessibility={this.state.DownloadAccessibility}
+                                            />
+                                        </TabPane>}
                                     {this.state.activeTab == 3 &&
                                         <TabPane tabId="3">
-                                            <ProcessListing
+                                            <MachineApproval
                                                 AddAccessibility={this.state.AddAccessibility}
                                                 EditAccessibility={this.state.EditAccessibility}
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
@@ -261,6 +269,6 @@ function mapStateToProps({ auth }) {
 
 
 export default connect(mapStateToProps,
-    { getLeftMenu, }
+    {}
 )(MachineMaster);
 

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -13,7 +13,6 @@ import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { applySuperScript } from '../../../helper/validation';
 import ReactExport from 'react-export-excel';
@@ -21,6 +20,8 @@ import { UOM_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,7 +47,9 @@ class UOMMaster extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      showPopup: false,
+      deletedId: ''
 
     }
   }
@@ -136,26 +139,26 @@ class UOMMaster extends Component {
   * @description confirm delete UOM
   */
   deleteItem = (Id) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDeleteUOM(Id)
-      },
-      onCancel: () => { }
-    };
-    return toastr.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
+    this.setState({ showPopup: true, deletedId: Id })
   }
-
+  onPopupConfirm = () => {
+    this.confirmDeleteUOM(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
-  * @method confirmDeleteUOM
-  * @description confirm delete unit of measurement
-  */
+   * @method confirmDeleteUOM
+   * @description confirm delete unit of measurement
+   */
   confirmDeleteUOM = (Id) => {
     this.props.deleteUnitOfMeasurementAPI(Id, (res) => {
       if (res.data.Result) {
-        toastr.success(MESSAGES.DELETE_UOM_SUCCESS);
+        Toaster.success(MESSAGES.DELETE_UOM_SUCCESS);
         this.getUOMDataList()
       }
     });
+    this.setState({ showPopup: false })
   }
 
   renderPaginationShowsTotal(start, to, total) {
@@ -233,9 +236,9 @@ class UOMMaster extends Component {
     this.props.activeInactiveUOM(data, res => {
       if (res && res.data && res.data.Result) {
         if (cell === true) {
-          toastr.success(MESSAGES.UOM_INACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.UOM_INACTIVE_SUCCESSFULLY)
         } else {
-          toastr.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
+          Toaster.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
         }
         this.getUOMDataList()
       }
@@ -255,13 +258,8 @@ class UOMMaster extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, this.state.dataList)
+    let tempArr = this.state.dataList && this.state.dataList
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
@@ -339,13 +337,13 @@ class UOMMaster extends Component {
       totalValueRenderer: this.buttonFormatter,
       // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      hyphenFormatter: this.hyphenFormatter,
     };
 
     return (
       <>
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           {/* {this.props.loading && <Loader />} */}
+          <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}>
               <h1 className="mb-0">{`Unit of Measurement Master`}</h1>
@@ -389,13 +387,12 @@ class UOMMaster extends Component {
             <Col>
 
 
-              <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+              <div className="ag-grid-wrapper height-width-wrapper">
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
                 <div
                   className="ag-theme-material"
-                  style={{ height: '100%', width: '100%' }}
                 >
                   <AgGridReact
                     defaultColDef={defaultColDef}
@@ -441,6 +438,9 @@ class UOMMaster extends Component {
               anchor={"right"}
             />
           )}
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete UOM?`} />
+          }
         </div>
       </>
     );
@@ -463,7 +463,6 @@ export default connect(
   getUnitOfMeasurementAPI,
   deleteUnitOfMeasurementAPI,
   activeInactiveUOM,
-  getLeftMenu,
 }
 )(UOMMaster);
 

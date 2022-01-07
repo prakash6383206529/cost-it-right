@@ -10,9 +10,10 @@ import { getCostingSummaryByplantIdPartNo, saveCopyCosting, checkDataForCopyCost
 import { VBC, ZBC } from '../../../../config/constants';
 import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
 import DatePicker from "react-datepicker";
-import moment from 'moment';
-import { toastr } from 'react-redux-toastr';
+import DayTime from '../../../common/DayTimeWrapper'
+import Toaster from '../../../common/Toaster';
 import ConfirmComponent from '../../../../helper/ConfirmComponent';
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -56,6 +57,9 @@ function CopyCosting(props) {
   const [isFromVbc, setIsFromVbc] = useState(type === VBC ? true : false)
   const [isToVbc, setIsToVbc] = useState(type === VBC ? true : false)
   const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
+  const [showPopup, setShowPopup] = useState(false)
+  const [updatedObj, setUpdatedObj] = useState({})
+  const [msgObj, setMsgObj] = useState({})
 
   useEffect(() => {
     const ZbcTemp = []
@@ -101,7 +105,7 @@ function CopyCosting(props) {
       getDestinationPlant({ vendorId: copyCostingData.VendorId })
     }
     const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
-    setMinDate(date[0].EffectiveDate)
+    setMinDate(date[0]?.EffectiveDate ?? "")
   }, [])
 
 
@@ -277,6 +281,8 @@ function CopyCosting(props) {
    */
   const submitForm = (value) => {
 
+
+
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
     const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
 
@@ -306,11 +312,11 @@ function CopyCosting(props) {
     }
     //COPY FROM VBC
     if (isFromVbc) {
-      const costNo = value.fromVbccostingId.label.split('-')
+      const costNo = value.fromVbccostingId.label.split(' ')
       const plantCode = value.fromVendorPlant && value.fromVendorPlant.label.split('(')
       const vendorCode = value.fromVendorName && value.fromVendorName.label.split('(')
       obj.CostingId = value.fromVbccostingId.value
-      obj.CostingNumber = `${costNo[0]}-${costNo[1]}`
+      obj.CostingNumber = `${costNo[0]}`
       obj.FromVendorId = value.fromVendorName.value
       obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1].split(')')[0]
       obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
@@ -347,45 +353,49 @@ function CopyCosting(props) {
     obj.ToDestinationPlantId = value.toDestinationPlant && value.toDestinationPlant.value
     obj.ToDestinationPlantName = value.toDestinationPlant && value.toDestinationPlant.label
     obj.ToDestinationPlantCode = destination && destination[1].split(')')[0]
-    obj.EffectiveDate = moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+    obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
       const Data = res.data.Data
+
       if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
+
         dispatch(
           saveCopyCosting(obj, (res) => {
 
             if ((res.status = 200)) {
-              toastr.success("Copy costing done sucessfully!")
+              Toaster.success("Copy costing done sucessfully!")
               const { CostingId, CostingType } = res.data.Data
               props.closeDrawer('', CostingId, CostingType)
             }
           }),
         ) // for saving data
       } else {
-        const toastrConfirmOptions = {
-          onOk: () => {
-            dispatch(
-              saveCopyCosting(obj, (res) => {
-
-                if ((res.status = 200)) {
-                  toastr.success("Copy costing done sucessfully!")
-                  const { CostingId, CostingType } = res.data.Data
-                  props.closeDrawer('', CostingId, CostingType)
-                }
-              }),
-            ) // for saving data
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />
-        }
-        // console.log(`${!Data.IsRMExist && Data.MessageForRM}`, `${!Data.IsOperationExist && Data.MessageForOperation}`, `${!Data.IsProcessExist && Data.MessageForProcess}`, `${!Data.IsOtherOperationExist && Data.MessageForOtherOperation}`, "DATA");
-        return toastr.confirm(`${!Data.IsRMExist ? 'Raw Material,' : ''}${!Data.IsBOPExist ? 'Insert,' : ''}${!Data.IsOperationExist ? 'Operation,' : ''}${!Data.IsProcessExist ? 'Process,' : ''}${!Data.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`, toastrConfirmOptions)
+        setShowPopup(true)
+        setMsgObj(Data)
+        setUpdatedObj(obj)
       }
     }))
 
+  }
 
+  const onPopupConfirm = () => {
+    dispatch(
+      saveCopyCosting(updatedObj, (res) => {
+
+        if ((res.status = 200)) {
+          Toaster.success("Copy costing done sucessfully!")
+          const { CostingId, CostingType } = res.data.Data
+          props.closeDrawer('', CostingId, CostingType)
+
+        }
+      }),
+    ) // for saving data
+    setShowPopup(false)
+  }
+  const closePopUp = () => {
+    setShowPopup(false)
   }
   /**
    * @method toggleDrawer
@@ -406,6 +416,7 @@ function CopyCosting(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
+        className={`${showPopup ? 'main-modal-container' : ''}`}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
@@ -531,7 +542,7 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
-                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
@@ -626,7 +637,9 @@ function CopyCosting(props) {
                     <div className="inputbox date-section">
                       <DatePicker
                         name="EffectiveDate"
-                        selected={effectiveDate}
+                        //selected={effectiveDate}
+                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                         onChange={handleEffectiveDateChange}
                         showMonthDropdown
                         showYearDropdown
@@ -700,7 +713,7 @@ function CopyCosting(props) {
                       />
                     </div>
                   )}
-                  { getConfigurationKey().IsDestinationPlantConfigure && (
+                  {getConfigurationKey().IsDestinationPlantConfigure && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={"Destination Plant"}
@@ -724,7 +737,9 @@ function CopyCosting(props) {
                     <div className="inputbox date-section">
                       <DatePicker
                         name="EffectiveDate"
-                        selected={effectiveDate}
+                        //selected={effectiveDate}
+                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                         onChange={handleEffectiveDateChange}
                         showMonthDropdown
                         showYearDropdown
@@ -783,8 +798,12 @@ function CopyCosting(props) {
               </Row>
             </form>
           </div>
+
         </Container>
       </Drawer>
+      {
+        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : ` is not available for the selected vendor. Do you still wish to continue ?`}`} />
+      }
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { langs } from "../../config/localization";
-import { toastr } from "react-redux-toastr";
+import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, alphabetsOnlyForName, number } from "../../helper/validation";
@@ -97,7 +97,7 @@ class LevelTechnology extends Component {
         }
         this.props.setApprovalLevelForTechnology(formData, (res) => {
             if (res.data.Result) {
-                toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
+                Toaster.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
             }
             this.props.reset();
             this.setState({

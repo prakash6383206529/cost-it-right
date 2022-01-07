@@ -6,11 +6,12 @@ import AddBOP from '../../Drawers/AddBOP';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
+import _ from 'lodash'
 
 let counter = 0;
 function BOPCost(props) {
@@ -33,6 +34,7 @@ function BOPCost(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
+  const [oldGridData,setOldGridData] = useState(data)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -47,25 +49,28 @@ function BOPCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
+        props.setBOPCost(gridData, Params,item)
+        if(JSON.stringify(gridData) !== JSON.stringify(oldGridData)){
+          dispatch(isDataChange(true))
+        }
       }
     }, 100)
     selectedIds(gridData)
   }, [gridData]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      const Params = {
-        index: props.index,
-        BOMLevel: props.item.BOMLevel,
-        PartNumber: props.item.PartNumber,
-      }
-      if (!CostingViewMode) {
-        props.setBOPCost(gridData, Params)
-      }
-    }, 100)
-    selectedIds(gridData)
-  }, [props.data]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const Params = {
+  //       index: props.index,
+  //       BOMLevel: props.item.BOMLevel,
+  //       PartNumber: props.item.PartNumber,
+  //     }
+  //     if (!CostingViewMode) {
+  //       props.setBOPCost(gridData, Params)
+  //     }
+  //   }, 100)
+  //   selectedIds(gridData)
+  // }, [props.data]);
 
   /**
   * @method DrawerToggle
@@ -81,6 +86,7 @@ function BOPCost(props) {
   * @description HIDE RM DRAWER
   */
   const closeDrawer = (e = '', rowData = {}) => {
+    
     if (Object.keys(rowData).length > 0) {
 
       let rowArray = rowData && rowData.map(el => {
@@ -92,6 +98,7 @@ function BOPCost(props) {
           LandedCostINR: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
           Quantity: 1,
           NetBoughtOutPartCost: el.Currency === '-' ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
+          BoughtOutPartUOM:el.UOM
         }
       })
 
@@ -142,6 +149,19 @@ function BOPCost(props) {
   }
 
   const SaveItem = (index) => {
+    let bopGridData = gridData[index]
+    if(bopGridData.BoughtOutPartUOM === 'Number'){
+      
+      let isValid =Number.isInteger(bopGridData.Quantity);
+      if(!isValid){
+        Toaster.warning('Please enter numeric value')
+        setTimeout(() => {
+          setValue(`${bopGridFields}.${index}.Quantity`, '')
+        }, 200)
+        return false
+      }
+    }
+
     setEditIndex('')
   }
 
@@ -169,7 +189,7 @@ function BOPCost(props) {
       setTimeout(() => {
         setValue(`${bopGridFields}.${index}.Quantity`, 0)
       }, 200)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -219,7 +239,7 @@ function BOPCost(props) {
     } else {
       setValue('BOPHandlingCharges', 0)
       setValue('BOPHandlingPercentage', 0)
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -287,7 +307,7 @@ function BOPCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD INSERT</button>}
+                <div className={'plus'}></div>INSERT</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -300,6 +320,7 @@ function BOPCost(props) {
                     <tr>
                       <th>{`Insert Part No.`}</th>
                       <th>{`Insert Part Name`}</th>
+                      <th>{`UOM`}</th>
                       <th style={{ width: "220px" }} >{`Insert Cost (INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net Insert Cost`}</th>
@@ -315,9 +336,38 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
+                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
+                                  item.BoughtOutPartUOM === 'Number'?
+                                  <>
+                                  <NumberFieldHookForm
+                                  label=""
+                                  name={`${bopGridFields}.${index}.Quantity`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[1-9]\d*$/,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.Quantity}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleQuantityChange(e, index)
+                                  }}
+                                  errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
+                                  disabled={CostingViewMode ? true : false}
+                                />
+                                  </>
+                                  :
                                   <NumberFieldHookForm
                                     label=""
                                     name={`${bopGridFields}.${index}.Quantity`}
@@ -354,6 +404,7 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
+                              <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>

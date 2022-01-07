@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import { focusOnError } from "../../layout/FormInputs";
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -18,18 +17,16 @@ import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -58,6 +55,9 @@ class OperationListing extends Component {
             DeleteAccessibility: false,
             BulkUploadAccessibility: false,
             DownloadAccessibility: false,
+            selectedRowData: [],
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -124,6 +124,9 @@ class OperationListing extends Component {
                 this.setState({
                     tableData: Data,
                 })
+                // if (this.props.isSimulation) {
+                //     this.props.apply(Data)
+                // }
             } else {
 
             }
@@ -174,12 +177,7 @@ class OperationListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    // editItemDetails = (Id) => {
-    //     this.setState({
-    //         data: { isEditFlag: true, ID: Id },
-    //         toggleForm: true,
-    //     })
-    // }
+
 
     editItemDetails = (Id, rowData) => {
         let data = {
@@ -195,14 +193,7 @@ class OperationListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        return toastr.confirm(MESSAGES.OPERATION_DELETE_ALERT, toastrConfirmOptions);
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -212,10 +203,17 @@ class OperationListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteOperationAPI(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_OPERATION_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.getTableListData(null, null, null, null)
             }
         });
+        this.setState({ showPopup: false })
+    }
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
     }
     /**
     * @method buttonFormatter
@@ -225,10 +223,11 @@ class OperationListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility,ViewAccessibility } = this.state;
 
         return (
             <>
+                    {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -241,16 +240,7 @@ class OperationListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        // this.props.activeInactiveVendorStatus(data, res => {
-        //     if (res && res.data && res.data.Result) {
-        //         if (cell == true) {
-        //             toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-        //         } else {
-        //             toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-        //         }
-        //         this.getTableListData(null, null, null, null)
-        //     }
-        // })
+
     }
 
     /**
@@ -357,7 +347,13 @@ class OperationListing extends Component {
         )
     }
 
-
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
 
     /**
     * @method costingHeadFormatter
@@ -374,16 +370,15 @@ class OperationListing extends Component {
  */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
 
 
     renderPlantFormatter = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let data = rowData.CostingHead === "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
 
-        let data = rowData.CostingHead == "Vendor Based" ? rowData.DestinationPlant : rowData.Plants
-
-        return data;
+        return (data !== ' ' ? data : '-');
 
     }
 
@@ -403,7 +398,7 @@ class OperationListing extends Component {
     }
 
     formToggle = () => {
-        // this.setState({ toggleForm: true })
+
         this.props.formToggle()
     }
 
@@ -446,18 +441,13 @@ class OperationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, this.props.operationList)
+        let tempArr = this.props.operationList && this.props.operationList
+        return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.Specification === null) {
                 item.Specification = ' '
             } else if (item.CostingHead === true) {
@@ -473,7 +463,7 @@ class OperationListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={OperationMaster}>
+            <ExcelSheet data={temp} name={OperationMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -504,6 +494,21 @@ class OperationListing extends Component {
                 />
             )
         }
+        const onRowSelect = () => {
+            const {isSimulation} = this.props
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (isSimulation) {
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
+            }
+
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const onFloatingFilterChanged = (p) => {
+            this.state.gridApi.deselectAll()
+        }
 
 
         const defaultColDef = {
@@ -521,7 +526,7 @@ class OperationListing extends Component {
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
-            plantFilter: this.plantFilter
+            hyphenFormatter: this.hyphenFormatter
         };
 
         return (
@@ -529,12 +534,7 @@ class OperationListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
-                        {
-                            // !this.props.isSimulation &&
-                            // <Row>
-                            //     <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
-                            // </Row>
-                        }
+
                         <Row className="pt-4 filter-row-large blue-before">
 
                             <Col md="6" lg="6" className="search-user-block mb-3">
@@ -583,7 +583,6 @@ class OperationListing extends Component {
 
                                             </>
 
-                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                         }
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -596,23 +595,19 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className="ag-grid-wrapper height-width-wrapper">
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div
                             className="ag-theme-material"
-                            style={{ height: '100%', width: '100%' }}
                         >
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                // columnDefs={c}
                                 rowData={this.props.operationList}
                                 pagination={true}
-
-                                // <AgGridColumn field="country" filter={true} floatingFilter={true} />
 
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
@@ -629,13 +624,13 @@ class OperationListing extends Component {
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
-                                <AgGridColumn field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plants" floatingFilter={true} cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
-                                <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
+                                <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plants" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
-                                <AgGridColumn field="Rate" headerName="Rate"></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                {!this.props.isSimulation&& <AgGridColumn field="OperationId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -657,7 +652,10 @@ class OperationListing extends Component {
                         anchor={'right'}
                     />}
                 </div>
-            </div >
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.OPERATION_DELETE_ALERT}`} />
+                }
+            </div>
         );
     }
 }
@@ -691,7 +689,6 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
-    getLeftMenu,
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

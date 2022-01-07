@@ -6,11 +6,11 @@ import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 import {
   getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
-  setComponentDiscountOtherItemData
+  setComponentDiscountOtherItemData, 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 
@@ -22,11 +22,13 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, ComponentItemData, CloseOpenAccordion, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, ComponentItemData, CloseOpenAccordion, CostingEffectiveDate, RMCCTabData, CostingDataList, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, getAssemBOPCharge,checkIsDataChange } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+
+
 
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
@@ -40,7 +42,8 @@ function PartCompoment(props) {
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
-            props.setPartDetails(BOMLevel, PartNumber, Data)
+            props.setPartDetails(BOMLevel, PartNumber, Data, item)
+            // dispatch(isDataChange(false))
           }
         }))
       }
@@ -57,60 +60,137 @@ function PartCompoment(props) {
     }
   }, [CloseOpenAccordion])
 
-  useEffect(() => {
-    // OBJECT FOR SENDING OBJECT TO API
-    if (!CostingViewMode && IsOpen === false && Count > 0 && Object.keys(ComponentItemData).length > 0) {
-      let requestData = {
-        "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
-        "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
-        "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
-        "NetOperationCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
-        "NetProcessCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
-        "NetOtherOperationCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal : 0,
-        "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
-        "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-        "TotalCost": netPOPrice,
-        "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
-          checkForNull(item.CostingPartDetails.ProfitCost) +
-          checkForNull(item.CostingPartDetails.RejectionCost) +
-          checkForNull(item.CostingPartDetails.ICCCost) +
-          checkForNull(item.CostingPartDetails.PaymentTermCost),
-        "LoggedInUserId": loggedInUserId(),
-        "EffectiveDate": CostingEffectiveDate,
 
-        "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-        "CostingId": item.CostingId,
-        "PartId": item.PartId,                              //ROOT ID
-        "CostingNumber": costData.CostingNumber,            //ROOT    
-        "PartNumber": item.PartNumber,                      //ROOT
 
-        "AssemblyCostingId": item.BOMLevel === LEVEL1 ? costData.CostingId : item.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-        "AssemblyCostingNumber": item.BOMLevel === LEVEL1 ? costData.CostingNumber : item.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-        "AssemblyPartId": item.BOMLevel === LEVEL1 ? item.PartId : item.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-        "AssemblyPartNumber": item.BOMLevel === LEVEL1 ? item.PartNumber : item.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+/*************************************************************ACCORDIAN SAVE COMMENTED FOR NOW (MAY BE REMOVE IT LATER)*******************************************************************************/
+  // useEffect(() => {
+  //   // OBJECT FOR SENDING OBJECT TO API
+  //  if (!CostingViewMode  && Count > 0 && Object.keys(ComponentItemData).length > 0 && checkIsDataChange === true) {
+  //     const tabData = RMCCTabData[0]
+  //     const surfaceTabData = SurfaceTabData[0]
+  //     const overHeadAndProfitTabData = OverheadProfitTabData[0]
+  //     const discountAndOtherTabData = DiscountCostData
 
-        "PlantId": costData.PlantId,
-        "VendorId": costData.VendorId,
-        "VendorCode": costData.VendorCode,
-        "VendorPlantId": costData.VendorPlantId,
-        "TechnologyId": item.TechnologyId,
-        "Technology": item.Technology,
-        "TypeOfCosting": costData.VendorType,
-        "PlantCode": costData.PlantCode,
-        "Version": item.Version,
-        "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
-        CostingPartDetails: item.CostingPartDetails,
-      }
-      dispatch(saveComponentCostingRMCCTab(requestData, res => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
-          dispatch(setComponentItemData({}, () => { }))
-          InjectDiscountAPICall()
-        }
-      }))
-    }
+  //     let requestData = {
+  //       "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
+  //       "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
+  //       "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
+  //       "NetOperationCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
+  //       "NetProcessCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
+  //       "NetOtherOperationCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.OtherOperationCostTotal : 0,
+  //       "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
+  //       "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+  //       "TotalCost": costData.IsAssemblyPart? item.CostingPartDetails.TotalCalculatedRMBOPCCCost :netPOPrice,   //NEED TO ADD SURFACE TREATMENT COST OF CHILD LATER
+  //       "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
+  //         checkForNull(item.CostingPartDetails.ProfitCost) +
+  //         checkForNull(item.CostingPartDetails.RejectionCost) +
+  //         checkForNull(item.CostingPartDetails.ICCCost) +
+  //         checkForNull(item.CostingPartDetails.PaymentTermCost),
+  //       "LoggedInUserId": loggedInUserId(),
+  //       "EffectiveDate": CostingEffectiveDate,
 
-  }, [IsOpen])
+  //       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+  //       "CostingId": item.CostingId,
+  //       "PartId": item.PartId,                              //ROOT ID
+  //       "CostingNumber": costData.CostingNumber,            //ROOT    
+  //       "PartNumber": item.PartNumber,                      //ROOT
+
+  //       "AssemblyCostingId": item.BOMLevel === LEVEL1 ? costData.CostingId : item.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+  //       "AssemblyCostingNumber": item.BOMLevel === LEVEL1 ? costData.CostingNumber : item.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+  //       "AssemblyPartId": item.BOMLevel === LEVEL1 ? item.PartId : item.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+  //       "AssemblyPartNumber": item.BOMLevel === LEVEL1 ? item.PartNumber : item.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+
+  //       "PlantId": costData.PlantId,
+  //       "VendorId": costData.VendorId,
+  //       "VendorCode": costData.VendorCode,
+  //       "VendorPlantId": costData.VendorPlantId,
+  //       "TechnologyId": item.TechnologyId,
+  //       "Technology": item.Technology,
+  //       "TypeOfCosting": costData.VendorType,
+  //       "PlantCode": costData.PlantCode,
+  //       "Version": item.Version,
+  //       "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
+  //       CostingPartDetails: item.CostingPartDetails,
+
+  //     }
+  //     let assemblyWorkingRow = []
+  //     tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
+  //       if(item.PartType === 'Sub Assembly'){
+  //         let subAssemblyObj = {
+  //           "CostingId": item.CostingId,
+  //           "CostingNumber": "", // Need to find out how to get it.
+  //           "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+  //           "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+  //           "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+  //           "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+  //           "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+  //           "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
+  //           "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+  //           "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
+  //           "SurfaceTreatmentCostPerAssembly": 0,
+  //           "TransportationCostPerAssembly": 0,
+  //           "TotalSurfaceTreatmentCostPerAssembly": 0,
+  //           "TotalCostINR": netPOPrice
+  //         }
+  //         assemblyWorkingRow.push(subAssemblyObj)
+  //         return assemblyWorkingRow
+  //       }
+  //     })
+  //     let assemblyRequestedData = {
+
+  //       "TopRow": {
+  //         "CostingId": tabData.CostingId,
+  //         "CostingNumber": tabData.CostingNumber,
+  //         "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+  //         "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+  //         "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+  //         "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+  //         "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+  //         "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+  //         "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+  //         "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+  //         "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+  //         "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
+  //         "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+  //         "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
+  //         "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+  //         "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+  //         "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+  //         "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+  //         "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
+  //         "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+  //         "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
+  //         "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
+  //         "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
+  //         "TotalCostINR": netPOPrice,
+  //         "TabId": 1
+  //       },
+  //       "WorkingRows": assemblyWorkingRow,
+  //       "BOPHandlingCharges": {
+  //         "AssemblyCostingId": tabData.CostingId,
+  //         "IsApplyBOPHandlingCharges": true,
+  //         "BOPHandlingPercentage": getAssemBOPCharge.BOPHandlingPercentage,
+  //         "BOPHandlingCharges": getAssemBOPCharge.BOPHandlingCharges
+  //       },
+  //       "LoggedInUserId": loggedInUserId()
+
+  //     }
+  //     dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+
+  //     dispatch(saveComponentCostingRMCCTab(requestData, res => {
+  //       if (res.data.Result) {
+  //         Toaster.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+  //         dispatch(setComponentItemData({}, () => { }))
+  //         InjectDiscountAPICall()
+  //         dispatch(isDataChange(false))
+  //       }
+  //     }))
+  //   }
+  //   else{
+  //     dispatch(isDataChange(false))
+  //   }
+
+  // }, [IsOpen])
 
   const InjectDiscountAPICall = () => {
     dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
@@ -124,7 +204,9 @@ function PartCompoment(props) {
    */
   return (
     <>
-      <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+  
+      <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)} id={`${item && item.PartNumber}`}>
+        
         <td>
           <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
@@ -136,9 +218,11 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        {costData.IsAssemblyPart && <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(item.CostingPartDetails.TotalConversionCost)) * item.CostingPartDetails.Quantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
+
         <td className="text-right"><div className={`${item.IsLocked ? 'lock_icon' : ''}`}>{''}</div></td>
+
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">

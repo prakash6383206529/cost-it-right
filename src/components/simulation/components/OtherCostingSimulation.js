@@ -12,7 +12,7 @@ import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, EXCHNAGERATE, ZBC } from '../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
+import { SimulationUtils } from '../SimulationUtils'
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -105,6 +106,7 @@ function OtherCostingSimulation(props) {
                 setSelectedCostingIds(item.CostingId)
             }
             if (Number(master) === Number(EXCHNAGERATE)) {
+                item.POVariance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
                 item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
             }
 
@@ -199,11 +201,11 @@ function OtherCostingSimulation(props) {
 
         if (temp.length > 1) {
             setSelectedRowData([])
-            toastr.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
+            Toaster.warning(`Costings ${temp.map(item => item)} is already sent for approval through another token number.`)
             gridApi.deselectAll()
             return false
         } else if (temp.length === 1) {
-            toastr.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
+            Toaster.warning(`This costing is under approval with token number ${selectedRows[0].LockedBySimulationToken ? selectedRows[0].LockedBySimulationToken : '-'} at ${selectedRows[0].LockedBySimulationProcessStep ? selectedRows[0].LockedBySimulationProcessStep : "-"} with ${selectedRows[0].LockedBySimulationStuckInWhichUser ? selectedRows[0].LockedBySimulationStuckInWhichUser : '-'} .`)
             gridApi.deselectAll()
             return false
         } else {
@@ -399,15 +401,19 @@ function OtherCostingSimulation(props) {
     }, [isView])
 
     const returnExcelColumn = (data = [], TempData) => {
+
         let temp = []
-        temp = TempData.map((item) => {
-            if (item.CostingHead === true) {
-                item.CostingHead = 'Vendor Based'
-            } else if (item.CostingHead === false) {
-                item.CostingHead = 'Zero Based'
-            }
-            return item
-        })
+        temp = SimulationUtils(TempData)
+
+        // temp = TempData.map((item) => {
+        //     if (item.CostingHead === true) {
+        //         item.CostingHead = 'Vendor Based'
+        //     } else if (item.CostingHead === false) {
+        //         item.CostingHead = 'Zero Based'
+        //     }
+        //     return item
+        // })
+
 
         return (<ExcelSheet data={temp} name={'Costing'}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -538,7 +544,6 @@ function OtherCostingSimulation(props) {
                                                 className="ag-theme-material"
                                             >
                                                 <AgGridReact
-                                                    style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
                                                     domLayout='autoHeight'
@@ -581,6 +586,7 @@ function OtherCostingSimulation(props) {
                                                         <>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='POVarianceFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
@@ -602,7 +608,7 @@ function OtherCostingSimulation(props) {
                                     </Col>
                                 </Row>
                             </div>
-                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
                                     <button

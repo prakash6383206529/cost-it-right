@@ -1,9 +1,86 @@
-import React, { useState } from 'react'
 import { Row, Col } from 'reactstrap'
+import React, { useState, useEffect, Fragment } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+// import { getFgWiseImpactData } from '../actions/Simulation'
+import { checkForDecimalAndNull } from '../../../helper'
+import NoContentFound from '../../common/NoContentFound'
+import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
+import LoaderCustom from '../../common/LoaderCustom'
+import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
+
+
 
 export function Fgwiseimactdata(props) {
-    const [acc1, setAcc1] = useState(false)
-    const [acc2, setAcc2] = useState(false)
+    const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
+    const [showTableData, setshowTableData] = useState(false)
+    const { SimulationId, headerName, dataForAssemblyImpact, vendorIdState, impactType } = props
+    const [loader, setLoader] = useState(false)
+    const [count, setCount] = useState(0)
+
+    const impactData = useSelector((state) => state.simulation.impactData)
+    const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        setLoader(true)
+        // if (SimulationId) {
+
+        switch (impactType) {
+            // ********** FOR THESE 2 CASES THE CODE BELOW THEM WILL BE EXECUTED **********
+            case 'AssemblySummary':
+            case 'Assembly':
+                if (dataForAssemblyImpact !== undefined && Object.keys(dataForAssemblyImpact).length !== 0 && count === 0) {
+                    const requestData = {
+                        costingHead: dataForAssemblyImpact?.CostingHead,
+                        impactPartNumber: dataForAssemblyImpact?.impactPartNumber,
+                        plantCode: dataForAssemblyImpact?.plantCode,
+                        vendorId: dataForAssemblyImpact?.vendorId,
+                        delta: dataForAssemblyImpact?.delta,
+                        quantity: 1,
+                    }
+                    setCount(1)
+                    dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
+
+                        if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
+                            setshowTableData(true)
+                        }
+                        else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
+                            setshowTableData(false)
+                        }
+                    }))
+
+                }
+                break;
+            case 'FgWise':
+                // dispatch(getFgWiseImpactData(SimulationId, (res) => {
+
+                //     if (res && res.data && res.data.Result) {
+                //         setshowTableData(true)
+                //     }
+                //     else if (res?.response?.status !== "200") {
+                //         setshowTableData(false)
+                //     }
+                // }))
+                // }
+                break;
+            default:
+                break;
+        }
+        setLoader(false)
+
+
+
+    }, [dataForAssemblyImpact])
+
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+
+    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId) => {
+
+        props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, 0)
+
+    }
 
     return (
         <>
@@ -11,107 +88,136 @@ export function Fgwiseimactdata(props) {
 
             <Row className="mb-3">
                 <Col md="12">
-                    <div className="table-responsive">
+                    {/* {impactType} */}
+                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
                         <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
+                                {loader && <LoaderCustom />}
+
                                 <tr>
-                                    <th><span>Part Number</span></th>
-                                    <th><span>Rev Number/ECN Number</span></th>
-                                    <th><span>Part Name</span></th>
-                                    <th><span>Old Cost/Pc</span></th>
-                                    <th><span>New Cost/pc</span></th>
-                                    <th><span>Quantity</span></th>
-                                    <th><span>Impact/Pc</span></th>
-                                    <th><span>Volume</span></th>
-                                    <th><span>Impact/Month</span></th>
+                                    {(impactType === 'Assembly' || impactType === 'AssemblySummary') ?
+                                        (<th className="text-center"><span>{headerName[9]}</span></th>)
+                                        : <th><span></span></th>
+                                    }
+                                    <th className="text-center"><span>{headerName[0]}</span></th>
+                                    {headerName[1] !== '' && <th><span>{headerName[1]}</span></th>}
+                                    {headerName[2] !== '' && <th><span>{headerName[2]}</span></th>}
+                                    {headerName[3] !== '' && <th><span>{headerName[3]}</span></th>}
+                                    {impactType === 'Assembly' ? '' : <th><span>{headerName[4]}</span></th>}
+                                    {headerName[5] !== '' && <th><span>{headerName[5]}</span></th>}
+                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span></th>}
+                                    {headerName[7] !== '' && <th><span>{headerName[7]}</span></th>}
+                                    {headerName[8] !== '' && <th className="second-last-child"><span>{headerName[8]}</span></th>}
+
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr className="accordian-with-arrow">
-                                    <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(!acc1)}></div>Model 1</span></td>
-                                    <td><span>1</span></td>
-                                    <td><span>This is A model</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>24(INR)</span></td>
-                                    <td><span>2000</span></td>
-                                    <td><span>48000(INR) <a onClick={() => setAcc1(!acc1)} className={`${acc1 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                </tr>
-                                {acc1 &&
-                                    <>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 1</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 2</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 3</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                    </>
-                                }
-                            </tbody>
+                            {/* {showTableData && impactData && impactData.map((item, index) => { */}
+                            {true && simulationAssemblyList && simulationAssemblyList.map((item, index) => {
+                                switch (impactType) {
+                                    case 'Assembly':
+                                        return (
+                                            <>
+                                                <tbody className="with-border-table">
+                                                    <tr >
+                                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                                        <td><span>{item.RevisionNumber}</span></td>
+                                                        <td><span>{item.PartName}</span></td>
+                                                        <td><span>{item.Level}</span></td>
+                                                        <td><span>{item.OldPrice}</span></td>
+                                                        {/* <td><span>{item.NewPrice}</span></td> */}
+                                                        <td><span>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
 
-                            <tbody>
-                                <tr className="accordian-with-arrow">
-                                    <td className="arrow-accordian"><span><div onClick={() => setAcc2(!acc2)} class="Close"></div>Model 2</span></td>
-                                    <td><span>1</span></td>
-                                    <td><span>This is A model</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>0</span></td>
-                                    <td><span>24(INR)</span></td>
-                                    <td><span>2000</span></td>
-                                    <td><span>48000(INR) <a onClick={() => setAcc2(!acc2)} className={`${acc2 ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></span></td>
-                                </tr>
-                                {acc2 &&
-                                    <>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 1</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                        <tr className="accordian-content">
-                                            <td><span>Part 2</span></td>
-                                            <td><span>1</span></td>
-                                            <td><span>Part number</span></td>
-                                            <td><span>24(INR)</span></td>
-                                            <td><span>26(INR)</span></td>
-                                            <td><span>2(INR)</span></td>
-                                            <td><span>1000</span></td>
-                                            <td><span>2000 (INR)</span></td>
-                                        </tr>
-                                    </>
+                                                        <td><span>{item.Variance == null ? "" : item.Variance}</span></td>
+                                                        {/* <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                        <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                        <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
+
+                                                    </tr>
+                                                </tbody>
+                                            </>)
+                                        break;
+                                    case 'AssemblySummary':
+                                        return (
+                                            <>
+                                                {/* 'Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance', '', '', '', 'Assembly Number'   */}
+                                                <tbody className="with-border-table">
+                                                    <tr >
+                                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                                        <td><span>{item.RevisionNumber}</span></td>
+                                                        <td><span>{item.PartName}</span></td>
+                                                        <td><span>{item.OldPrice}</span></td>
+                                                        <td><span>{item.NewPrice}</span></td>
+                                                        <td><span>{item.Level}</span></td>
+                                                        <td><span>{item.Variance == null ? "" : item.Variance}</span></td>
+
+                                                        {/* <td><span>{item.Variance == null ? "" : item.Variance}</span></td> */}
+                                                        {/* <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                            <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                            <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
+
+                                                    </tr>
+                                                </tbody>
+                                            </>)
+                                        break;
+                                    case 'FgWise':
+
+                                        // ***********  THIS IS FOR RE | IN FUTURE MAY COME IN BASE  ***********
+                                        // return (
+                                        //     <>
+                                        //         <tbody>{item.BOMNumber}
+                                        //             <tr className="accordian-with-arrow">
+                                        //                 <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item. ? item. : "-"}</span></td>
+                                        //                 <td><span>{item.BOMNumber}</span></td>
+                                        //                 <td><span>{item.}</span></td>
+                                        //                 <td><span>{item.}</span></td>
+                                        //                 <td><span>{item.}</span></td>
+                                        //                 <td><span>{item.}</span></td>
+                                        //                 <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+
+                                        //                 <td><span>{item. == null ? "" : item.}</span></td>
+                                        //                 <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                        //                 <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                        //                 <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td>
+
+                                        //             </tr>
+
+
+                                        //             {acc1.currentIndex === index && acc1.isClicked && []?.childPartsList.map((item, index) => {
+
+                                        //                 return (
+                                        //                     <tr className="accordian-content">
+                                        //                         <td><span>{item.childField[0]}</span></td>
+                                        //                         <td className="text-center"><span>{item.childField[1]}</span></td>
+                                        //                         <td><span>{item.childField[2]}</span></td>
+                                        //                         <td><span>{checkForDecimalAndNull(item.childField[3], initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                        //                         <td><span>{checkForDecimalAndNull(item.childField[4], initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                        //                         <td><span>{item.childField[5]}</span></td>
+                                        //                         <td><span>{checkForDecimalAndNull(item.childField[6], initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+
+                                        //                         <td><span>{childField[7]}</span></td>
+                                        //                         <td><span>{childField[8]}</span></td>
+                                        //                         <td><span>{childField[9]}</span></td>
+                                        //                         <td><span> <button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></span></td>
+
+                                        //                     </tr>)
+                                        //             })}
+                                        //         </tbody>
+                                        //     </>)
+                                        break;
+                                    default:
+                                        break;
                                 }
-                            </tbody>
+
+                            })
+                            }
+
                         </table>
+                        {!loader && !showTableData &&
+
+                            <Col md="12">
+                                <NoContentFound title={EMPTY_DATA} />
+                            </Col>
+                        }
                     </div>
                 </Col>
             </Row>

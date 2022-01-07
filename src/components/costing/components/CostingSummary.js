@@ -4,10 +4,8 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
-import { toastr } from 'react-redux-toastr'
-import moment from 'moment'
-import {
-  getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
+import DayTime from '../../common/DayTimeWrapper'
+import {   getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
@@ -16,7 +14,8 @@ import { formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
-import TooltipCustom from '../../common/Tooltip';
+import TooltipCustom from '../../common/Tooltip'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CostingSummary(props) {
 
@@ -45,10 +44,11 @@ function CostingSummary(props) {
   const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology,)
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
+  const [titleObj, setTitleObj] = useState({})
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
-    if (Object.keys(costingData).length > 0) {
+    if (Object.keys(costingData).length > 0 && reactLocalStorage.get('location') === '/costing-summary') {
       dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data
@@ -64,15 +64,17 @@ function CostingSummary(props) {
 
 
   useEffect(() => {
-    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-    dispatch(getAllPartSelectList(() => { }))
-    dispatch(getPartInfo('', () => { }))
-    dispatch(getPartSelectListByTechnology('', () => { }))
+    
+    if (reactLocalStorage.get('location') === '/costing-summary'){
+        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+        dispatch(getPartInfo('', () => { }))
+        dispatch(getPartSelectListByTechnology('', () => { }))
+      }  
   }, [])
 
   /*************USED FOR SETTING DEFAULT VALUE IN SUMMARY AFTER SELECTING COSTING FROM DETAIL*****************/
   useEffect(() => {
-    if (Object.keys(costingData).length > 0) {
+    if (Object.keys(costingData).length > 0 && reactLocalStorage.get('location') === '/costing-summary') {
       setTimeout(() => {
         setValue('Technology', costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
         setTechnology(costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
@@ -90,7 +92,7 @@ function CostingSummary(props) {
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', Data.Price)
           setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-          setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId
           newValue.technologyName = costingData.TechnologyName
@@ -201,8 +203,9 @@ function CostingSummary(props) {
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
+                  setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
                   setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
-                  setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                  setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value
                   newValue.technologyName = technology.label
@@ -397,8 +400,8 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                        
-                      {/* <TooltipCustom tooltipText="Please enter first digit to see part numbers"/> */}
+
+                        {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
                           name={"Part"}
@@ -420,6 +423,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
+                          title ={titleObj.partNameTitle}
                           label="Assembly Name/Part Name"
                           name={'PartName'}
                           Controller={Controller}
@@ -438,6 +442,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
+                          title={titleObj.descriptionTitle}
                           label="Assembly/Part Description"
                           name={'Description'}
                           Controller={Controller}
@@ -528,7 +533,8 @@ function CostingSummary(props) {
                           <div className="inputbox date-section">
                             <DatePicker
                               name="EffectiveDate"
-                              selected={effectiveDate}
+                              //selected={effectiveDate ? new Date(effectiveDate) : ''}
+                              selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
@@ -592,4 +598,4 @@ function CostingSummary(props) {
   )
 }
 
-export default CostingSummary
+export default React.memo(CostingSummary)

@@ -3,16 +3,15 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ComponentPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -21,7 +20,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
-import { apiErrors } from '../../../helper/util'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,9 +35,7 @@ const gridOptions = {
     paginationPageSize: 10
 };
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+
 
 class IndivisualPartListing extends Component {
     constructor(props) {
@@ -56,7 +53,9 @@ class IndivisualPartListing extends Component {
             warningMessage: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
-            loader: true
+            loader: true,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -104,7 +103,6 @@ class IndivisualPartListing extends Component {
 
             const nextNo = data.state.currentRowIndex + 10;
 
-            //     //gridApi.paginationGoToNextPage();
             data.ApiActionCreator(nextNo, 100, this.state.floatingFilterData, true)
             data.setState({ currentRowIndex: nextNo })
         }
@@ -182,7 +180,6 @@ class IndivisualPartListing extends Component {
         this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
 
 
-        //this.props.checkStatusCodeAPI(412, () => { })
     }
 
 
@@ -218,10 +215,11 @@ class IndivisualPartListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         let requestData = {
             isEditFlag: true,
             Id: Id,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(requestData)
     }
@@ -231,14 +229,7 @@ class IndivisualPartListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id);
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />,
-        };
-        return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -248,12 +239,19 @@ class IndivisualPartListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deletePart(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.PART_DELETE_SUCCESS);
+                Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 this.getTableListData();
             }
         });
+        this.setState({ showPopup: false })
     }
 
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -262,28 +260,22 @@ class IndivisualPartListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
 
     /**
-    * @method hyphenFormatter
-    */
+     * @method hyphenFormatter
+     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '') {
-            value = '-'
-        }
-        else {
-            value = cellValue
-        }
-        return value;
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -294,11 +286,7 @@ class IndivisualPartListing extends Component {
         }
         this.props.activeInactivePartStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                // if (cell === true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-                // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-                // }
+
                 this.getTableListData()
             }
         })
@@ -314,7 +302,7 @@ class IndivisualPartListing extends Component {
             return (
                 <>
                     <label htmlFor="normal-switch" className="normal-switch">
-                        {/* <span>Switch with default style</span> */}
+
                         <Switch
                             onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
                             checked={cell}
@@ -364,7 +352,7 @@ class IndivisualPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -412,7 +400,7 @@ class IndivisualPartListing extends Component {
         // dont remove this
 
         //if resolution greater than 1920 table listing fit to 100%
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit()
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         //if resolution greater than 1920 table listing fit to 100%
     };
 
@@ -422,18 +410,14 @@ class IndivisualPartListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
+        let tempArr = this.props.newPartsListing && this.props.newPartsListing
 
-        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, this.props.newPartsListing)
+        return this.returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -442,30 +426,19 @@ class IndivisualPartListing extends Component {
                 item.DrawingNumber = ' '
             } else if (item.Technology === '-') {
                 item.Technology = ' '
-            } else {
-                return false
             }
 
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={temp} name={ComponentPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
 
-    // resetState() {
-    //     gridOptions.columnApi.resetColumnState();
-    //     gridOptions.api.setFilterModel(null);
-    // }
 
-    // resetState() {
-    //     gridOptions.columnApi.resetColumnState();
-    //     this.onSearchExit(null)
-
-    // }
 
     /**
     * @method render
@@ -485,10 +458,6 @@ class IndivisualPartListing extends Component {
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            exportCSVBtn: this.createCustomExportCSVButton,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -516,13 +485,15 @@ class IndivisualPartListing extends Component {
                     {/* {this.props.loading && <Loader />} */}
 
                     <Row className="pt-3 no-filter-row">
-                        <Col md="8" className="filter-block">
-
+                        <Col md="8">
+                        <div className="warning-message mt-1">
+                                {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
+                            </div>
                         </Col>
                         <Col md="6" className="search-user-block pr-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -556,7 +527,6 @@ class IndivisualPartListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
@@ -572,46 +542,37 @@ class IndivisualPartListing extends Component {
 
 
 
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                        <div className="ag-grid-header">
-                            <Row className="pt-5 no-filter-row">
-                            </Row>
-                            <div className="warning-message">
-                                {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on tick button to filter all data'} />}
-                            </div>
-
+                    <div className="ag-grid-wrapper height-width-wrapper">
+                        <div className="ag-grid-header mt-4 pt-1">
+                           
                         </div>
-                        <div
-                            className="ag-theme-material"
-
-                        >
+                        <div className="ag-theme-material">
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                // columnDefs={c}
                                 rowData={this.props.newPartsListing}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
-                                //onPaginationChanged={this.onPageChange}
                                 gridOptions={gridOptions}
                                 onFilterModified={this.onFloatingFilterChanged}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
+                                    imagClass: 'imagClass'
+
                                 }}
                                 frameworkComponents={frameworkComponents}
-                            //    suppressPaginationPanel={true}
                             >
-                                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                                 <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                                <AgGridColumn field="PartId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
                                 <div className="paging-container d-inline-block float-right">
@@ -640,6 +601,9 @@ class IndivisualPartListing extends Component {
                         messageLabel={'Part'}
                         anchor={'right'}
                     />}
+                    {
+                        this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
+                    }
                 </div >
             </>
         );

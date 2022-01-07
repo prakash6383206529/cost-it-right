@@ -8,18 +8,19 @@ import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
-import moment from 'moment'
+import DayTime from '../../../common/DayTimeWrapper'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../common/Toaster'
 import imgArrowDown from "../../../../assests/images/arrow-down.svg";
 import imgArrowUP from "../../../../assests/images/arrow-up.svg";
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../../common/LoaderCustom'
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router'
+import WarningMessage from '../../../common/WarningMessage'
 
 const gridOptions = {};
 
@@ -176,7 +177,7 @@ function ApprovalListing(props) {
   const createdOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
   }
 
   const priceFormatter = (props) => {
@@ -204,7 +205,7 @@ function ApprovalListing(props) {
   const requestedOnFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
   }
 
   const statusFormatter = (props) => {
@@ -258,7 +259,7 @@ function ApprovalListing(props) {
 
   const sendForApproval = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select atleast one approval to send for approval.')
+      Toaster.warning('Please select atleast one approval to send for approval.')
       return false
     }
     let count = 0
@@ -286,10 +287,10 @@ function ApprovalListing(props) {
       }
     })
     if (technologyCount > 0) {
-      return toastr.warning("Technology should be same for sending multiple costing for approval")
+      return Toaster.warning("Technology should be same for sending multiple costing for approval")
     }
     if (count > 0) {
-      return toastr.warning("Reason should be same for sending multiple costing for approval")
+      return Toaster.warning("Reason should be same for sending multiple costing for approval")
     } else {
       setReasonId(selectedRowData[0].ReasonId)
     }
@@ -490,7 +491,7 @@ function ApprovalListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-react`}>
-                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                <div className="ag-grid-wrapper height-width-wrapper min-height-auto">
                   <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                   </div>
@@ -513,6 +514,7 @@ function ApprovalListing(props) {
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
                         title: EMPTY_DATA,
+                        imagClass: "imagClass"
                       }}
                       frameworkComponents={frameworkComponents}
                       suppressRowClickSelection={true}
@@ -545,6 +547,9 @@ function ApprovalListing(props) {
                         <option value="50">50</option>
                         <option value="100">100</option>
                       </select>
+                    </div>
+                    <div className="text-right pb-3">
+                      <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                     </div>
                   </div>
                 </div>

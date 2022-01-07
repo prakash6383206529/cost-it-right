@@ -1,5 +1,7 @@
-import { toastr } from 'react-redux-toastr'
-import Moment from 'moment'
+import React from 'react';
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import DayTime from '../components/common/DayTimeWrapper';
 import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
@@ -8,7 +10,8 @@ import {
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, ELECTRICAL_PROPRIETARY, MECHANICAL_PROPRIETARY, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATION, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
-import { func } from 'joi'
+
+
 
 /**
  * @method  apiErrors
@@ -20,11 +23,11 @@ export const apiErrors = (res) => {
 
 
   if (response?.data?.error?.message?.value) {
-    toastr.error(response.data.error.message.value)
+    toast.warning(response.data.error.message.value)
   } else if (response) {
     response && handleHTTPStatus(response)
   } else {
-    toastr.error('Something went wrong please try again.')
+    toast.error('Something went wrong please try again.')
   }
 }
 
@@ -36,75 +39,76 @@ export const apiErrors = (res) => {
 const handleHTTPStatus = (response) => {
   switch (response.status) {
     case 202:
-      return toastr.error('No Data Available.')
+      return toast.error('No Data Available.')
     case 203:
-      return toastr.error('Data is inconsistent. Please refresh your session by re-login')
+      return toast.error('Data is inconsistent. Please refresh your session by re-login')
     case 204:
-      return toastr.error('Intentionally blank for now.')
+      return toast.error('Intentionally blank for now.')
     case 205:
-      return toastr.error('Please clear your cache for data to reflect')
+      return toast.error('Please clear your cache for data to reflect')
     case 206:
-      return toastr.error('The data might not have been updated properly. Please try again to ensure')
+      return toast.error('The data might not have been updated properly. Please try again to ensure')
     case 300:
     case 301:
     case 302:
     case 303:
 
-      return toastr.error('Something is not right. Please contact your IT Team.')
+      return toast.error('Something is not right. Please contact your IT Team.')
     case 400:
-      return toastr.error('Bad Request. Please contact your IT Team.')
+      return toast.error('Bad Request. Please contact your IT Team.')
     case 401:
       reactLocalStorage.setObject("isUserLoggedIn", false);
       reactLocalStorage.setObject("userDetail", {});
       reactLocalStorage.set('ModuleId', '');
       window.location.assign('/login');
-      return toastr.error('Authentication error. Please contact your IT Team.')
+      return toast.error('Authentication error. Please contact your IT Team.')
     case 403:
-      return toastr.error('You are not allowed to access this resource. Please contact your IT Team.',)
+      return toast.error('You are not allowed to access this resource. Please contact your IT Team.',)
     case 404:
-      return toastr.error('Not found')
+      return toast.error('Not found')
     case 405:
-      return toastr.error('You are not allowed to access this resource. Please contact your IT Team',)
+      return toast.error('You are not allowed to access this resource. Please contact your IT Team',)
     case 406:
 
       const errMsg406 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg406)
+      return toast.error(errMsg406)
     case 409:
     case 411:
     case 414:
     case 416:
     case 427:
-      return toastr.error('Something is not right. Please contact your IT Team')
+      return toast.error('Something is not right. Please contact your IT Team')
     case 407:
-      return toastr.error('Proxy Authentication Error. Please contact your IT Team')
+      return toast.error('Proxy Authentication Error. Please contact your IT Team')
     case 408:
-      return toastr.error('Your request has timed out. Please try again after some time.')
+      return toast.error('Your request has timed out. Please try again after some time.')
     case 410:
-      return toastr.error('The resource you requested no longer exists.')
+      return toast.error('The resource you requested no longer exists.')
     case 412:
       const errMsg = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg)
+      return toast.error(errMsg)
     case 413:
-      return toastr.error("Server can't process such long request. Please contact your IT Team")
+      return toast.error("Server can't process such long request. Please contact your IT Team")
     case 415:
-      return toastr.error('This request is not supported by the server. Please contact your IT Team')
+      return toast.error('This request is not supported by the server. Please contact your IT Team')
     case 417:
 
       const errMsg417 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
-      return toastr.error(errMsg417)
+      return toast.error(errMsg417)
     case 500:
-      return toastr.error('Internal server error. Please contact your IT Team')
+      return toast.error('Internal server error. Please contact your IT Team')
+
     case 501:
-      return toastr.error('Something is not right. Please contact your IT Team')
+      return toast.error('Something is not right. Please contact your IT Team')
     case 502:
-      return toastr.error('Server is unavailable or unreachable. Please contact your IT Team')
+      return toast.error('Server is unavailable or unreachable. Please contact your IT Team')
     case 503:
-      return toastr.error('Server is unavailable due to load or maintenance. Please contact your IT Team')
+      return toast.error('Server is unavailable due to load or maintenance. Please contact your IT Team')
     case 504:
-      return toastr.error('Server is unavailable due to timeout. Please contact your IT Team')
+      return toast.error('Server is unavailable due to timeout. Please contact your IT Team')
     default:
 
-      return toastr.error('Something is not right. Please contact your IT Team')
+      return toast.error('Something is not right. Please contact your IT Team')
 
   }
 }
@@ -149,7 +153,7 @@ export function formatDate(date) {
  * @param res
  */
 export function convertISOToUtcDate(date) {
-  return Moment.utc(date).format('MM/DD/YYYY')
+  return DayTime(date).format('MM/DD/YYYY')
 }
 
 /**
@@ -158,7 +162,7 @@ export function convertISOToUtcDate(date) {
  * @param res
  */
 export function convertISOToUtcForTime(date) {
-  return Moment.utc(date).format('hh:mm A')
+  return DayTime(date).format('hh:mm A')
 }
 
 /**
@@ -175,7 +179,7 @@ export function stripHtml(text) {
  * @desc CONVERT INTO DATE TIME
  */
 export function convertDate(date) {
-  return Moment(date).format('DD-MMM-YYYY hh:mm A')
+  return DayTime(date).format('DD-MMM-YYYY hh:mm A')
 }
 
 /**
@@ -183,14 +187,14 @@ export function convertDate(date) {
  * @desc DISPLAY DATE TIME FORMATE
  */
 export function displayDateTimeFormate(date) {
-  const currentDate = Moment()
-  const dateObj = Moment(date)
-  if (Moment(Moment(date).format('YYYY-MM-DD'), 'YYYY-MM-DD', true).isValid()) {
+  const currentDate = DayTime()
+  const dateObj = DayTime(date)
+  if (DayTime(DayTime(date).format('YYYY-MM-DD'), 'YYYY-MM-DD', true).isValid()) {
     // check day difference is not less or grater then zero
     if (checkNumberOfDayDiff(date, currentDate) === 0) {
       const remainingTimeInMinutes = currentDate.diff(dateObj, 'minutes')
       if (remainingTimeInMinutes > 720) {
-        return `Today ${Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
+        return `Today ${DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
           'MM/DD/YYYY hh:mm A',
         )}`
       } else if (remainingTimeInMinutes >= 60 && remainingTimeInMinutes < 720) {
@@ -201,15 +205,15 @@ export function displayDateTimeFormate(date) {
       } else if (remainingTimeInMinutes === 0) {
         return 'few seconds ago'
       } else {
-        return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
+        return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
       }
     } else if (
       checkNumberOfDayDiff(date, currentDate) >= 1 &&
       checkNumberOfDayDiff(date, currentDate) <= 7
     ) {
-      return Moment(date).format('ddd hh:mm A')
+      return DayTime(date).format('ddd hh:mm A')
     } else {
-      return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
+      return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
         'MM/DD/YYYY hh:mm A',
       )
     }
@@ -260,7 +264,7 @@ export const displayValue = (value) => {
 function onLogout() {
   reactLocalStorage.setObject('isUserLoggedIn', false)
   reactLocalStorage.setObject('userDetail', {})
-  toastr.success(MESSAGES.LOGOUT_SUCCESS)
+  toast.success(MESSAGES.LOGOUT_SUCCESS)
   setTimeout(() => {
     window.location.assign('/login')
   }, 100)
@@ -308,20 +312,20 @@ export const displayTitle = (text) => {
 }
 
 export function displayPublishOnDate(date) {
-  const currentDate = Moment().format('YYYY-MM-DD')
+  const currentDate = DayTime().format('YYYY-MM-DD')
   // convert date to validate and check with current date
-  const checkValidDate = Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
+  const checkValidDate = DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format(
     'YYYY-MM-DD',
   )
   // convert date is valid or not
-  if (Moment(Moment(checkValidDate).format('YYYY-MM-DD'), 'YYYY-MM-DD', true,).isValid()) {
+  if (DayTime(DayTime(checkValidDate).format('YYYY-MM-DD'), 'YYYY-MM-DD', true,).isValid()) {
     // check day difference is not less or grater then zero
     if (checkNumberOfDayDiff(checkValidDate, currentDate) === 0) {
-      return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
+      return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
     } else if (checkNumberOfDayDiff(checkValidDate, currentDate) === -1) {
       return 'Yesterday'
     } else {
-      return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('MM/DD/YYYY')
+      return DayTime(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('MM/DD/YYYY')
     }
   } else {
     return 'N/A'
@@ -560,8 +564,12 @@ export function formViewData(costingSummary) {
   obj.pCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetProcessCost ? dataFromAPI.CostingPartDetails.NetProcessCost : 0
   obj.oCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOperationCost ? dataFromAPI.CostingPartDetails.NetOperationCost : 0
   obj.sTreatment = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
+ obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost:0
   obj.tCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetTransportationCost ? dataFromAPI.CostingPartDetails.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
+  obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
+  
+ 
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
@@ -585,11 +593,13 @@ export function formViewData(costingSummary) {
     paymentValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
   }
   obj.nOverheadProfit = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOverheadAndProfitCost ? dataFromAPI.CostingPartDetails.NetOverheadAndProfitCost : 0
+  
   obj.packagingCost = dataFromAPI.CostingPartDetails
     && dataFromAPI.CostingPartDetails.NetPackagingCost !== null ? dataFromAPI.CostingPartDetails.NetPackagingCost
     : 0
   obj.freight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightCost !== null ? dataFromAPI.CostingPartDetails.NetFreightCost : 0
   obj.nPackagingAndFreight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightPackagingCost ? dataFromAPI.CostingPartDetails.NetFreightPackagingCost : 0
+  
 
   obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails.BOPHandlingCharges : 0
   obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails.BOPHandlingPercentage : 0
@@ -598,7 +608,15 @@ export function formViewData(costingSummary) {
   obj.toolPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost : 0
   obj.amortizationQty = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].Life !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].Life : 0
 
+  obj.toolApplicability =  { applicability: 'Applicability', value: 'Value', }
+  obj.toolApplicabilityValue= {
+    toolTitle:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCostType : 0,
+    toolValue:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
+  }
+  obj.toolAmortizationCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingToolCostResponse.length>0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolAmortizationCost : 0
+
   obj.totalToolCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetToolCost !== null ? dataFromAPI.CostingPartDetails.NetToolCost : 0
+  
   obj.totalCost = dataFromAPI.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : '-'
   obj.otherDiscount = { discount: 'Discount %', value: 'Value', }
   obj.otherDiscountValue = {
@@ -614,7 +632,7 @@ export function formViewData(costingSummary) {
   }
   obj.nPOPrice = dataFromAPI.NetPOPrice && dataFromAPI.NetPOPrice !== null ? dataFromAPI.NetPOPrice : 0
   obj.effectiveDate = dataFromAPI.EffectiveDate ? dataFromAPI.EffectiveDate : ''
-  // // // obj.attachment = "Attachment";
+ 
   obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : []
   obj.approvalButton = ''
   // //RM
@@ -623,7 +641,7 @@ export function formViewData(costingSummary) {
   obj.netBOPCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingBoughtOutPartCost : []
   // //COnversion Cost
   obj.netConversionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingConversionCost : '-'
-  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.TransportationDetails : ''
+  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.ChildPartTransportationDetails ??[] : []
   obj.surfaceTreatmentDetails = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingOverheadDetail : '-'
@@ -631,11 +649,16 @@ export function formViewData(costingSummary) {
   // // Rejection
   obj.netRejectionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingRejectionDetail : '-'
 
+  //payment terms and ICC
+  obj.netPaymentIccCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingInterestRateDetail : '-'
+
   // //Net Packaging and Freight
   obj.netPackagingCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingPackagingDetail : []
   obj.netFreightCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingFreightDetail : []
   // //Tool Cost
   obj.netToolCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingToolCostResponse : []
+  obj.totalTabSum =checkForNull(obj.nTotalRMBOPCC )+ checkForNull(obj.nsTreamnt) +   checkForNull(obj.nOverheadProfit) +checkForNull(obj.nPackagingAndFreight) +   checkForNull(obj.totalToolCost) 
+  
   // //For Drawer Edit
   obj.partId = dataFromAPI.PartNumber ? dataFromAPI.PartNumber : '-'
   obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
@@ -662,7 +685,8 @@ export function formViewData(costingSummary) {
   obj.masterBatchRMPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchRMPrice ? dataFromAPI.CostingPartDetails.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.MasterBatchPercentage ? dataFromAPI.CostingPartDetails.MasterBatchPercentage : 0
   obj.isApplyMasterBatch = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.IsApplyMasterBatch ? dataFromAPI.CostingPartDetails.IsApplyMasterBatch : 0
-
+  obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
+  obj.childPartBOPHandlingCharges = dataFromAPI.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI.CostingPartDetails.ChildPartBOPHandlingCharges:[]
 
 
   // temp = [...temp, obj]
@@ -781,10 +805,7 @@ export function CheckApprovalApplicableMaster(number) {
   return isApproval
 }
 
-export function isMultipleRMAllow(technology) {
-  const allowedMultipleRM = [MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, MACHINING, FORGING, PLASTIC];
-  return allowedMultipleRM.includes(technology);
-}
+
 
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {

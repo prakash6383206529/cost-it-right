@@ -1,17 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { toastr } from "react-redux-toastr";
-import { Link, Redirect, } from "react-router-dom";
+import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu,
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
   getTopAndLeftMenuData, ApprovalDashboard,
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
-import ConfirmComponent from "../../helper/ConfirmComponent"
 import masterImage from '../../assests/images/list.svg'
 import masterActive from '../../assests/images/masters-active.svg'
 import additionalMaster from '../../assests/images/list-add.png'
@@ -29,11 +27,10 @@ import activeUser from '../../assests/images/user-active.svg'
 import activeAudit from '../../assests/images/audit-active.svg'
 import Logo from '../../assests/images/logo/company-logo.png'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
-import userPic from '../../assests/images/user-pic.png'
-import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
-
+import PopupMsgWrapper from "../common/PopupMsgWrapper";
+import { VERSION } from '../../config/constants';
 
 class SideBar extends Component {
   constructor(props) {
@@ -46,6 +43,8 @@ class SideBar extends Component {
       isLoader: false,
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
+      showPopup: false,
+      updatedObj: {}
     };
   }
 
@@ -116,18 +115,18 @@ class SideBar extends Component {
       AccessToken: userData.Token,
       UserId: userData.LoggedInUserId,
     };
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.props.logoutUserAPI(requestData, () => this.props.logUserOut());
-        //this.props.logUserOut();
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />
-    };
+    this.setState({ showPopup: true, updatedObj: requestData })
 
-    return toastr.confirm(`Are you sure do you want to logout?`, toastrConfirmOptions);
   };
 
+  onPopupConfirm = (e) => {
+    const { updatedObj } = this.state
+    e.preventDefault()
+    this.props.logoutUserAPI(updatedObj, () => this.props.logUserOut());
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
   /**
    * @method user toggle
    */
@@ -184,13 +183,6 @@ class SideBar extends Component {
    */
   setLeftMenu = (ModuleId) => {
     reactLocalStorage.set("ModuleId", ModuleId);
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      const { location } = this.props;
-      this.setState({ isLeftMenuRendered: true });
-      // if (location && location.state) {
-      //   this.setState({ activeURL: location.pathname })
-      // }
-    });
   };
 
 
@@ -700,6 +692,9 @@ class SideBar extends Component {
               </button>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
+                  <li className="nav-item d-xl-inline-block version">
+                    {VERSION}
+                  </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
@@ -710,11 +705,11 @@ class SideBar extends Component {
                           <DropdownToggle caret>
                             {isLoggedIn ? (
                               <>
-                                  {/* <img
+                                {/* <img
                                   className="img-xs rounded-circle"
                                   alt={""}
                                   src={UserImg}
-                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */} 
+                                 /> */}    {/* commented this code by Banti as I get instruction by TR sir 07-10-2021 */}
                                 {userData.Name}
                               </>
                             ) : (
@@ -744,7 +739,7 @@ class SideBar extends Component {
                   </li>
                   {isLoggedIn ? (
                     <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
+                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}>
                         <img
                           className=""
                           src={logoutImg}
@@ -773,10 +768,10 @@ class SideBar extends Component {
             </div>
           )}
 
-
-
-
         </div>
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
+        }
       </nav>
     )
   }
@@ -802,7 +797,6 @@ export default connect(mapStateToProps, {
   logoutUserAPI,
   getMenuByUser,
   getModuleSelectList,
-  getLeftMenu,
   getPermissionByUser,
   getModuleIdByPathName,
   getMenu,

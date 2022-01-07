@@ -6,14 +6,16 @@ import { EMPTY_DATA, MATERIAL, TYPE, DATE } from '../../../config/constants';
 import { convertISOToUtcDate } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
-import { toastr } from 'react-redux-toastr';
-
+import Toaster from '../../common/Toaster';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 class MaterialTypeDetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
             isOpen: false,
             isEditFlag: false,
+            showPopup2:false,
+			deletedId:'',
         }
     }
 
@@ -45,13 +47,7 @@ class MaterialTypeDetail extends Component {
     * @description confirm delete Material type
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { }
-        };
-        return toastr.confirm(`${MESSAGES.MATERIAL_TYPE_DELETE_ALERT}`, toastrConfirmOptions);
+        this.setState({showPopup:true, deletedId:Id })
     }
 
     /**
@@ -61,7 +57,7 @@ class MaterialTypeDetail extends Component {
     confirmDelete = (MaterialTypeId) => {
         this.props.deleteMaterialTypeAPI(MaterialTypeId, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_MATERIAL_TYPE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_MATERIAL_TYPE_SUCCESS);
                 const filterData = {
                     PageSize: 0,
                     LastIndex: 0,
@@ -73,7 +69,12 @@ class MaterialTypeDetail extends Component {
             }
         });
     }
-
+    onPopupConfirm =() => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp= () =>{
+        this.setState({showPopup:false})
+      }
     /**
     * @method render
     * @description Renders the component
@@ -114,6 +115,9 @@ class MaterialTypeDetail extends Component {
                         </Table>
                     </Col>
                 </Row>
+                {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MATERIAL_TYPE_DELETE_ALERT}`}  />
+         }
             </div>
         );
     }

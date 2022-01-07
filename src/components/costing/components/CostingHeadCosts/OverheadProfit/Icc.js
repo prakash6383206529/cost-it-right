@@ -2,12 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, } from '../../../../../helper';
-import { getInventoryDataByHeads, gridDataAdded, } from '../../../actions/Costing';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
+import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import Switch from "react-switch";
+import values from 'redux-form/lib/values';
 
 function Icc(props) {
 
@@ -40,14 +41,22 @@ function Icc(props) {
      * @method onPressInventory
      * @description  USED TO HANDLE INVENTORY CHANGE
      */
-    const onPressInventory = () => {
+    const onPressInventory = (value) => {
+
         setIsInventoryApplicable(!IsInventoryApplicable)
+       
+            callInventoryAPI(value)
+    
         dispatch(gridDataAdded(true))
     }
 
 
-    useEffect(() => {
-        if (IsInventoryApplicable === true) {
+    /**
+     * @method callInventoryAPI
+     * @description When we toogle on ICC to call API
+    */
+    const callInventoryAPI = (callAPI) => {
+        if (Object.keys(costData).length > 0 && callAPI) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor,
@@ -78,7 +87,43 @@ function Icc(props) {
                 props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }
-    }, [IsInventoryApplicable])
+    }
+
+
+
+
+    // useEffect(() => {
+    //     if (IsInventoryApplicable === true && Object.keys(costData).length >0) {
+    //         const reqParams = {
+    //             VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+    //             IsVendor: costData.IsVendor
+    //         }
+    //         dispatch(getInventoryDataByHeads(reqParams, res => {
+    //             if (res && res.data && res.data.Result) {
+    //                 let Data = res.data.Data;
+    //                 setValue('InterestRatePercentage', Data.InterestRate)
+    //                 setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
+    //                 setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
+    //                 setInventoryObj(Data)
+    //                 checkInventoryApplicability(Data.ICCApplicability)
+
+    //             } else if (res && res.status === 204) {
+    //                 setValue('InterestRatePercentage', '')
+    //                 setValue('InterestRateCost', '')
+    //                 setValue('NetICCTotal', '')
+    //                 checkInventoryApplicability('')
+    //                 setICCapplicability([])
+    //                 setInventoryObj({})
+    //             }
+
+    //         }))
+    //     } else {
+    //         setICCapplicability([])
+    //         if (!CostingViewMode) {
+    //             props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+    //         }
+    //     }
+    // }, [IsInventoryApplicable])
 
     /**
     * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
@@ -95,30 +140,31 @@ function Icc(props) {
       */
     const checkInventoryApplicability = (Text) => {
         if (headerCosts !== undefined && Text !== '') {
+            const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
 
-            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+            const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal;
+            const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
             switch (Text) {
                 case 'RM':
-                    setValue('InterestRateCost', headerCosts.NetRawMaterialsCost)
+                    setValue('InterestRateCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'RM + CC':
-                    setValue('InterestRateCost', RMCC)
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'RM + BOP':
-                    setValue('InterestRateCost', RMBOP)
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'RM + CC + BOP':
-                    setValue('InterestRateCost', (RMBOPCC)) //NEED TO ASK HERE ALSO
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
@@ -128,18 +174,20 @@ function Icc(props) {
                     break;
 
                 case 'Annual ICC (%)':
-                    setValue('InterestRateCost', RMBOPCC) // NEED TO ASK HERE ALSO
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) // NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 case 'Net Cost':
-                    setValue('InterestRateCost', RMBOPCC) //NEED TO ASK HERE ALSO
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     break;
 
                 default:
                     break;
             }
+
+            dispatch(isOverheadProfitDataChange(true))
         }
     }
 

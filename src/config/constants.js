@@ -465,6 +465,8 @@ export const API = {
   getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
+  getNCCCExistingCosting: `${BASE_URL}/costing/get-ncc-exist-costings-list`,
+  createNCCCosting: `${BASE_URL}/costing/create-ncc-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
@@ -528,12 +530,14 @@ export const API = {
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-view-costing`,
+
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
   checkDataForCopyCosting: `${BASE_URL}/costing/check-data-for-copy-costing`,
+  saveAssemblyPartRowCostingCalculation: `${BASE_URL}/costing/save-assembly-part-row-costing-calculation`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -868,6 +872,18 @@ export const API = {
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
+  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment`,
+  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-impacted-simulation-costings`,
+  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-surface-treatment-costing`,
+  draftMachineRateSimulation: `${BASE_URL}/simulation/draft-simulation-machine-rate`,
+  runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-machine-rate-costing`,
+  draftBoughtOutpartSimulation: `${BASE_URL}/simulation/draft-simulation-bought-out-part`,
+  runSimulationOnSelectedBoughtOutPartCosting: `${BASE_URL}/simulation/run-simulation-on-bought-out-part-costing`,
+  getverifyMachineRateSimulationList: `${BASE_URL}/simulation/get-all-machine-rate-impacted-simulation-costings`,
+  getverifyBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-boutght-out-part-impacted-simulation-costings`,
+  getSimulatedAssemblyWiseImpactDate: `${BASE_URL}/simulation/get-simulated-assembly-wise-impact-data-by-costingId`,
+  getVerifyOverheadProfitSimulationList: `${BASE_URL}/simulation/get-all-overhead-profit-impacted-simulation-costings`,
+  runSimulationOnSelectedOverheadProfitCosting: `${BASE_URL}/simulation/run-simulation-on-overhead-profit-costing`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1217,6 +1233,15 @@ export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 export const BOP_DRAWER_LIST = 'BOP_DRAWER_LIST'
 export const SET_PLASTIC_ARR = 'SET_PLASTIC_ARR'
+export const SET_ASSEM_BOP_CHARGE = 'SET_ASSEM_BOP_CHARGE'
+export const CHECK_IS_DATA_CHANGE = 'CHECK_IS_DATA_CHANGE'
+export const CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE = 'CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE'
+export const CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE = 'CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE'
+export const CHECK_IS_TOOL_DATA_CHANGE = 'CHECK_IS_TOOL_DATA_CHANGE'
+export const CHECK_IS_DISCOUNT_DATA_CHANGE = 'CHECK_IS_DISCOUNT_DATA_CHANGE'
+
+
+
 
 //WEIGHT CALCULATION COSTING
 
@@ -1431,6 +1456,12 @@ export const GET_AMMENDENT_STATUS_COSTING = 'GET_AMMENDENT_STATUS_COSTING'
 
 
 export const SET_ATTACHMENT_FILE_DATA = 'SET_ATTACHMENT_FILE_DATA'
+export const GET_VERIFY_MACHINERATE_SIMULATION_LIST = 'GET_VERIFY_MACHINERATE_SIMULATION_LIST'
+export const GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST = 'GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST'
+export const GET_ASSEMBLY_SIMULATION_LIST = 'GET_ASSEMBLY_SIMULATION_LIST'
+export const GET_ASSEMBLY_SIMULATION_LIST_SUMMARY = 'GET_ASSEMBLY_SIMULATION_LIST_SUMMARY'
+export const SET_DATA_TEMP = 'SET_DATA_TEMP'
+export const GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST = 'GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1453,6 +1484,7 @@ export const CREATED_BY_ASSEMBLY = 'CreatedByAssembly'
 export const APPROVED_BY_SIMULATION = 'ApprovedBySimulation'
 export const PUSHED = 'Pushed'
 export const ERROR = 'Error'
+export const POUPDATED = 'POUpdated'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1550,6 +1582,7 @@ export const WDM = 'WDM'
 
 export const ZBC = 'ZBC'
 export const VBC = 'VBC'
+export const NCC = 'NCC'
 
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLY = 'Assembly'
@@ -1721,3 +1754,6 @@ export const EMPTY_DATA = 'No Record Found';
 export const LEVEL0 = 'L0';
 export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
+
+//VERSION 
+export const VERSION = "V1.1.70.3";

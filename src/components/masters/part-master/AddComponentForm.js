@@ -11,11 +11,15 @@ import TooltipCustom from '../../common/Tooltip';
 class AddComponentForm extends Component {
   constructor(props) {
     super(props);
+    this.myRef = React.createRef();
     this.state = {
       part: [],
       parentPart: [],
       isAddMore: false,
       selectedParts: [],
+      updateAsyncDropdown: false,
+      isPartNoNotSelected: false,
+
     }
   }
 
@@ -38,6 +42,10 @@ class AddComponentForm extends Component {
     this.setState({ selectedParts: tempArr })
   }
 
+  componentWillUnmount() {
+    this.props.getDrawerComponentPartData('', res => { })
+  }
+
   checkRadio = (radioType) => {
     this.setState({ childType: radioType })
   }
@@ -48,7 +56,7 @@ class AddComponentForm extends Component {
   */
   handlePartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ part: newValue }, () => {
+      this.setState({ part: newValue, isPartNoNotSelected: false }, () => {
         const { part } = this.state;
         this.props.getDrawerComponentPartData(part.value, res => { })
       });
@@ -64,7 +72,7 @@ class AddComponentForm extends Component {
   */
   handleParentPartChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ parentPart: newValue });
+      this.setState({ parentPart: newValue, });
     } else {
       this.setState({ parentPart: [], });
     }
@@ -76,12 +84,22 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-    const { selectedParts } = this.state;
+    //const { selectedParts } = this.state;
+
+
+    const { BOMViewerData } = this.props;
+    let tempArr = [];
+    BOMViewerData && BOMViewerData.map(el => {
+      if (el.PartType === COMPONENT_PART) {
+        tempArr.push(el.PartId)
+      }
+      return null;
+    })
 
     const temp = [];
     if (label === 'part') {
       componentPartSelectList && componentPartSelectList.map(item => {
-        if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -109,6 +127,12 @@ class AddComponentForm extends Component {
     const { part, isAddMore } = this.state;
     const { DrawerPartData } = this.props;
 
+    if (part.length <= 0) {
+      this.setState({ isPartNoNotSelected: true })      // IF PART NO IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY
+      return false
+    }
+    this.setState({ isPartNoNotSelected: false })
+
     let childData = {
       PartNumber: part ? part : [],
       Position: { "x": 600, "y": 50 },
@@ -124,14 +148,28 @@ class AddComponentForm extends Component {
       Input: Math.floor(100000 + Math.random() * 900000),
     }
     this.props.getDrawerComponentPartData('', res => { })
+    this.setState({
+      part: []
+
+    })
+
+    this.props.change('PartNumber', [{ label: '', value: '' }])
+
+    this.myRef.current.select.state.value = []
     if (isAddMore) {
-      this.setState({
-        part: []
-      })
+
       this.props.setChildParts(childData)
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
+
     } else {
+
       this.props.toggleDrawer('', childData)
     }
+
+    setTimeout(() => {
+      this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })      // UPDATING RANDOM STATE AFTER 1 SECOND FOR REFRESHING THE ASYNC SELECT DROPDOWN AFTER CLICKING ON  ADD MORE BUTTON
+    }, 1000);
+
   }
 
   handleKeyDown = function (e) {
@@ -164,6 +202,8 @@ class AddComponentForm extends Component {
     const promiseOptions = inputValue =>
       new Promise(resolve => {
         resolve(filterList(inputValue));
+
+
       });
     return (
       <>
@@ -173,12 +213,14 @@ class AddComponentForm extends Component {
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
         >
-          <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
+
           <Row>
 
             <Col md="6">
               <label>{"Part No."}<span className="asterisk-required">*</span></label>
-              <AsyncSelect cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
+              <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
+              {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
               {/* <Field
                 name="PartNumber"
                 type="text"
@@ -353,6 +395,7 @@ function mapStateToProps({ part }) {
       GroupCode: DrawerPartData.GroupCode,
       BOMNumber: DrawerPartData.BOMNumber,
     }
+
   }
 
   return { componentPartSelectList, DrawerPartData, initialValues, }

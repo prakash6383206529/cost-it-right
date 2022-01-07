@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Row, Col, } from 'reactstrap';
-import moment from 'moment';
+import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
-import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -16,21 +15,18 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import OtherVerifySimulation from '../OtherVerifySimulation';
+import debounce from 'lodash'
 
 const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
-    const [showSimulation, setShowSimulation] = useState(false)
+    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [rowData, setRowData] = useState(null);
-    const [update, setUpdate] = useState(true)
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -42,10 +38,7 @@ function ERSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-
-    const { filteredRMData } = useSelector(state => state.material)
 
     const cancelVerifyPage = () => {
 
@@ -55,7 +48,7 @@ function ERSimulation(props) {
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
     }
 
     const newERFormatter = (props) => {
@@ -110,12 +103,12 @@ function ERSimulation(props) {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
-                toastr.warning("Value should not be more than 8")
+                Toaster.warning("Value should not be more than 8")
                 return false
             }
             return true
         } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            toastr.warning('Please enter a valid positive numbers.')
+            Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
@@ -181,9 +174,17 @@ function ERSimulation(props) {
         var selectedRows = gridApi.getSelectedRows();
         setSelectedRowData(selectedRows)
     }
-
-    const verifySimulation = () => {
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+    }
+    const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+
+        if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one costing.')
+            return false
+        }
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
@@ -208,7 +209,7 @@ function ERSimulation(props) {
             }
         }))
         // setShowVerifyPage(true)
-    }
+    })
 
 
     return (
@@ -223,10 +224,13 @@ function ERSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-                                    <div className="ag-grid-header">
+                                <div className="ag-grid-wrapper height-width-wrapper">
+                                    <div className="ag-grid-header d-flex">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                          <div className="refresh mr-0"></div></button>
                                     </div>
+                                   
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
                                             floatingFilter={true}

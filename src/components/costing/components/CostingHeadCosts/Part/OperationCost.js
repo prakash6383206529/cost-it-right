@@ -6,10 +6,10 @@ import { Col, Row, Table } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 
 let counter = 0;
 function OperationCost(props) {
@@ -38,12 +38,17 @@ function OperationCost(props) {
       index: 0,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
+      PartType:props.item.PartType
     }
     if (!CostingViewMode) {
       if (props.IsAssemblyCalculation) {
         props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       } else {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      }
+
+      if(JSON.stringify(gridData) !== JSON.stringify(OldGridData)){
+        dispatch(isDataChange(true))
       }
     }
 
@@ -158,7 +163,7 @@ function OperationCost(props) {
       tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.Quantity`, 0)
       }, 200)
@@ -185,7 +190,7 @@ function OperationCost(props) {
       tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-      //toastr.warning('Please enter valid number.')
+      //Toaster.warning('Please enter valid number.')
       setTimeout(() => {
         setValue(`${OperationGridFields}.${index}.LabourQuantity`, 0)
       }, 200)
@@ -230,7 +235,7 @@ function OperationCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OPERATION</button>}
+                <div className={'plus'}></div>OPER</button>}
             </Col>
           </Row>
           <Row>

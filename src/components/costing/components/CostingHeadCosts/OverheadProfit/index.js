@@ -4,9 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
-import Switch from "react-switch";
+import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
+import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -14,6 +13,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
+import { Link } from 'react-scroll'
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -44,7 +44,7 @@ function OverheadProfit(props) {
     RepaymentPeriodCost: PaymentTermDetail !== null ? PaymentTermDetail.NetCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+  const { register, handleSubmit, control, clearErrors, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -307,7 +307,7 @@ function OverheadProfit(props) {
       case 'RM + BOP':
         const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
         setValue('OverheadPercentage', OverheadPercentage)
-        setValue('OverheadCombinedCost', RMBOP)
+        setValue('OverheadCombinedCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((RMBOP * calculatePercentage(OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice))
         break;
 
@@ -339,7 +339,7 @@ function OverheadProfit(props) {
       const { OverheadRMPercentage } = overheadObj;
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
       setValue('OverheadRMPercentage', OverheadRMPercentage)
-      setValue('OverheadRMCost', IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost)
+      setValue('OverheadRMCost', IsCutOffApplicable ? checkForDecimalAndNull(CutOffRMC, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
       setValue('OverheadRMTotalCost', checkForDecimalAndNull(((IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) * calculatePercentage(OverheadRMPercentage)), initialConfiguration.NoOfDecimalForPrice))
     }
   }
@@ -353,7 +353,7 @@ function OverheadProfit(props) {
     if (headerCosts !== undefined && overheadObj && overheadObj.IsOverheadBOPApplicable) {
       const { OverheadBOPPercentage } = overheadObj;
       setValue('OverheadBOPPercentage', OverheadBOPPercentage)
-      setValue('OverheadBOPCost', headerCosts.NetBoughtOutPartCost)
+      setValue('OverheadBOPCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
       setValue('OverheadBOPTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(OverheadBOPPercentage)), initialConfiguration.NoOfDecimalForPrice))
     }
   }
@@ -461,7 +461,7 @@ function OverheadProfit(props) {
         const { ProfitRMPercentage } = profitObj;
         const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
         setValue('ProfitRMPercentage', ProfitRMPercentage)
-        setValue('ProfitRMCost', IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost)
+        setValue('ProfitRMCost', checkForDecimalAndNull(IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost), initialConfiguration.NoOfDecimalForPrice)
         setValue('ProfitRMTotalCost', checkForDecimalAndNull(((IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) * calculatePercentage(ProfitRMPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
     }
@@ -476,7 +476,7 @@ function OverheadProfit(props) {
       if (headerCosts !== undefined && profitObj && profitObj.IsProfitBOPApplicable) {
         const { ProfitBOPPercentage } = profitObj;
         setValue('ProfitBOPPercentage', ProfitBOPPercentage)
-        setValue('ProfitBOPCost', headerCosts.NetBoughtOutPartCost)
+        setValue('ProfitBOPCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('ProfitBOPTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(ProfitBOPPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
     }
@@ -527,7 +527,9 @@ function OverheadProfit(props) {
     * @description  USED TO HANDLE MODEL TYPE CHANGE
     */
   const handleModelTypeChange = (newValue, IsDropdownClicked) => {
-    if (IsDropdownClicked && !CostingViewMode) {
+    if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
+
+
       setOverheadObj({})
       setProfitObj({})
       setOverheadValues({}, true)
@@ -538,6 +540,7 @@ function OverheadProfit(props) {
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+          Plantid: costData.DestinationPlantId ? costData.DestinationPlantId : EMPTY_GUID,
           IsVendor: costData.IsVendor,
           EffectiveDate: CostingEffectiveDate,
         }
@@ -585,7 +588,7 @@ function OverheadProfit(props) {
 
         setValue('OverheadFixedPercentage', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
         setValue('OverheadFixedCost', '-')
-        setValue('OverheadFixedTotalCost', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
+        setValue('OverheadFixedTotalCost', dataObj.IsOverheadFixedApplicable ? checkForDecimalAndNull(dataObj.OverheadFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : '')
         setOverheadObj({
           ...overheadObj,
           OverheadFixedPercentage: getValues('OverheadFixedPercentage'),
@@ -598,25 +601,25 @@ function OverheadProfit(props) {
         const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
         const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + (headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) : RMBOPCC; //NEED TO ASK FOR YHIS PART
         setValue('OverheadPercentage', dataObj.IsOverheadCombined ? dataObj.OverheadPercentage : '')
-        setValue('OverheadCombinedCost', headerCosts && CutOffRMBOPCCTotal)
+        setValue('OverheadCombinedCost', headerCosts && checkForDecimalAndNull(CutOffRMBOPCCTotal, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(dataObj.OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
 
       if (dataObj.IsOverheadRMApplicable) {
         setValue('OverheadRMPercentage', dataObj.IsOverheadRMApplicable ? dataObj.OverheadRMPercentage : '')
-        setValue('OverheadRMCost', headerCosts && IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost)
+        setValue('OverheadRMCost', headerCosts && IsCutOffApplicable ? checkForDecimalAndNull(CutOffRMC, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadRMTotalCost', checkForDecimalAndNull(((IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) * calculatePercentage(dataObj.OverheadRMPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
 
       if (dataObj.IsOverheadBOPApplicable) {
         setValue('OverheadBOPPercentage', dataObj.IsOverheadBOPApplicable ? dataObj.OverheadBOPPercentage : '')
-        setValue('OverheadBOPCost', headerCosts && headerCosts.NetBoughtOutPartCost)
+        setValue('OverheadBOPCost', checkForDecimalAndNull(headerCosts && headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadBOPTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(dataObj.OverheadBOPPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
 
       if (dataObj.IsOverheadCCApplicable) {
         setValue('OverheadCCPercentage', dataObj.IsOverheadCCApplicable ? dataObj.OverheadCCPercentage : '')
-        setValue('OverheadCCCost', headerCosts && (headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal))
+        setValue('OverheadCCCost', headerCosts && checkForDecimalAndNull(headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadCCTotalCost', checkForDecimalAndNull(((headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal) * calculatePercentage(dataObj.OverheadCCPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
 
@@ -636,7 +639,7 @@ function OverheadProfit(props) {
       if (dataObj.IsProfitFixedApplicable && IsAPIResponse === false) {
         setValue('ProfitFixedPercentage', dataObj.IsProfitFixedApplicable ? dataObj.ProfitFixedPercentage : '')
         setValue('ProfitFixedCost', '-')
-        setValue('ProfitFixedTotalCost', dataObj.IsProfitFixedApplicable ? dataObj.ProfitFixedPercentage : '')
+        setValue('ProfitFixedTotalCost', dataObj.IsProfitFixedApplicable ? checkForDecimalAndNull(dataObj.ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : '')
       }
 
       if (dataObj.IsProfitCombined && IsAPIResponse === false) {
@@ -647,13 +650,13 @@ function OverheadProfit(props) {
 
       if (dataObj.IsProfitRMApplicable) {
         setValue('ProfitRMPercentage', dataObj.IsProfitRMApplicable ? dataObj.ProfitRMPercentage : '')
-        setValue('ProfitRMCost', headerCosts && IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost)
+        setValue('ProfitRMCost', checkForDecimalAndNull(headerCosts && IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('ProfitRMTotalCost', checkForDecimalAndNull(((IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) * calculatePercentage(dataObj.ProfitRMPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
 
       if (dataObj.IsProfitBOPApplicable) {
         setValue('ProfitBOPPercentage', dataObj.IsProfitBOPApplicable ? dataObj.ProfitBOPPercentage : '')
-        setValue('ProfitBOPCost', headerCosts && headerCosts.NetBoughtOutPartCost)
+        setValue('ProfitBOPCost', headerCosts && checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('ProfitBOPTotalCost', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(dataObj.ProfitBOPPercentage)), initialConfiguration.NoOfDecimalForPrice))
       }
 
@@ -676,15 +679,16 @@ function OverheadProfit(props) {
 
 
       const { IsCutOffApplicable, CutOffRMC } = RMCCutOffObj;
-      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal : RMBOPCC;
-      const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0].NetSurfaceTreatmentCost);
-      const NetConversionCost = headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+      const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
+      const RMBOPCC = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
+      const CutOffRMBOPCCTotal = IsCutOffApplicable && headerCosts ? CutOffRMC + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation : RMBOPCC;
+      const NetSurfaceTreatmentCost = SurfaceTreatmentCost && SurfaceTreatmentCost.NetSurfaceTreatmentCost !== undefined ? checkForNull(SurfaceTreatmentCost?.NetSurfaceTreatmentCost) : checkForNull(CostingDataList[0]?.NetSurfaceTreatmentCost);
+      const NetConversionCost = ConversionCostForCalculation
       // START HERE ADD CC IN OVERHEAD
       if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
         const { OverheadCCPercentage } = overheadObj;
-        setValue('OverheadCCCost', checkForNull(headerCosts !== undefined ? NetConversionCost : 0) + checkForNull(NetSurfaceTreatmentCost))
+        setValue('OverheadCCCost', checkForDecimalAndNull(headerCosts !== undefined ? NetConversionCost : 0, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('OverheadCCTotalCost', checkForDecimalAndNull((checkForNull((headerCosts !== undefined ? NetConversionCost : 0)) * calculatePercentage(OverheadCCPercentage)), initialConfiguration.NoOfDecimalForPrice))
         setIsSurfaceTreatmentAdded(true)
         setOverheadObj({
@@ -696,7 +700,7 @@ function OverheadProfit(props) {
       } else if (!IsIncludedSurfaceInOverheadProfit && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
         const { OverheadCCPercentage } = overheadObj;
-        setValue('OverheadCCCost', headerCosts !== undefined ? checkForNull(NetConversionCost) : 0)
+        setValue('OverheadCCCost', headerCosts !== undefined ? checkForDecimalAndNull(NetConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0)
         setValue('OverheadCCTotalCost', checkForDecimalAndNull((headerCosts !== undefined ? NetConversionCost : 0) * calculatePercentage(OverheadCCPercentage), initialConfiguration.NoOfDecimalForPrice))
         setIsSurfaceTreatmentAdded(false)
         setOverheadObj({
@@ -742,7 +746,7 @@ function OverheadProfit(props) {
         switch (OverheadApplicability) {
           case 'RM + CC + BOP':
             setValue('OverheadPercentage', OverheadPercentage)
-            setValue('OverheadCombinedCost', CutOffRMBOPCCTotal + NetSurfaceTreatmentCost)
+            setValue('OverheadCombinedCost', checkForDecimalAndNull(CutOffRMBOPCCTotal + NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal + NetSurfaceTreatmentCost) * calculatePercentage(OverheadPercentage), initialConfiguration.NoOfDecimalForPrice))
             setIsSurfaceTreatmentAdded(true)
             setOverheadObj({
@@ -786,7 +790,7 @@ function OverheadProfit(props) {
         switch (OverheadApplicability) {
           case 'RM + CC + BOP':
             setValue('OverheadPercentage', OverheadPercentage)
-            setValue('OverheadCombinedCost', CutOffRMBOPCCTotal)
+            setValue('OverheadCombinedCost', checkForDecimalAndNull(CutOffRMBOPCCTotal, initialConfiguration.NoOfDecimalForPrice))
             setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((CutOffRMBOPCCTotal * calculatePercentage(OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice))
             setIsSurfaceTreatmentAdded(false)
             setOverheadObj({
@@ -812,7 +816,7 @@ function OverheadProfit(props) {
           case 'BOP + CC':
             const BOPCC = headerCosts.NetBoughtOutPartCost + NetConversionCost;
             setValue('OverheadPercentage', OverheadPercentage)
-            setValue('OverheadCombinedCost', BOPCC)
+            setValue('OverheadCombinedCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
             setValue('OverheadCombinedTotalCost', checkForDecimalAndNull((BOPCC * calculatePercentage(OverheadPercentage)), initialConfiguration.NoOfDecimalForPrice))
             setIsSurfaceTreatmentAdded(false)
             setOverheadObj({
@@ -893,7 +897,7 @@ function OverheadProfit(props) {
           case 'RM + CC':
             const RMCC = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + NetConversionCost;
             setValue('ProfitPercentage', ProfitPercentage)
-            setValue('ProfitCombinedCost', RMCC)
+            setValue('ProfitCombinedCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
             setValue('ProfitCombinedTotalCost', checkForDecimalAndNull((RMCC * calculatePercentage(ProfitPercentage)), initialConfiguration.NoOfDecimalForPrice))
             setIsSurfaceTreatmentAdded(false)
             setProfitObj({
@@ -921,6 +925,7 @@ function OverheadProfit(props) {
         }
         // END HERE ADD CC IN PROFIT COMBINED
       }
+      dispatch(isOverheadProfitDataChange(true))
     }
   }
 
@@ -940,7 +945,7 @@ function OverheadProfit(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
+          <form noValidate className="form">
             <Row>
               <Col md="12">
                 <div className="left-border">
@@ -963,7 +968,7 @@ function OverheadProfit(props) {
                   defaultValue={modelType.length !== 0 ? modelType : ''}
                   options={renderListing('ModelType')}
                   mandatory={false}
-                  disabled={CostingViewMode || CheckIsCostingDateSelected(CostingEffectiveDate) ? true : false}
+                  disabled={CostingViewMode ? true : false}
                   handleChange={(ModelTypeValues) => {
                     handleModelTypeChange(ModelTypeValues, true)
                   }}
@@ -1065,7 +1070,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadFixedCost !== null ? overheadObj.OverheadFixedCost : ''}
+                          defaultValue={overheadObj.OverheadFixedCost !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedCost}
@@ -1081,7 +1086,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadFixedTotalCost !== null ? overheadObj.OverheadFixedTotalCost : ''}
+                          defaultValue={overheadObj.OverheadFixedTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadFixedTotalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedTotalCost}
@@ -1147,7 +1152,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCombinedTotalCost !== null ? overheadObj.OverheadCombinedTotalCost : ''}
+                          defaultValue={overheadObj.OverheadCombinedTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCombinedTotalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCombinedTotalCost}
@@ -1212,7 +1217,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadRMTotalCost !== null ? overheadObj.OverheadRMTotalCost : ''}
+                          defaultValue={overheadObj.OverheadRMTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadRMTotalCost}
@@ -1272,7 +1277,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadBOPTotalCost !== null ? overheadObj.OverheadBOPTotalCost : ''}
+                          defaultValue={overheadObj.OverheadBOPTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadBOPTotalCost}
@@ -1331,7 +1336,7 @@ function OverheadProfit(props) {
                           register={register}
                           mandatory={false}
                           handleChange={() => { }}
-                          defaultValue={overheadObj.OverheadCCTotalCost !== null ? overheadObj.OverheadCCTotalCost : ''}
+                          defaultValue={overheadObj.OverheadCCTotalCost !== null ? checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadCCTotalCost}
@@ -1707,6 +1712,7 @@ function OverheadProfit(props) {
               getValues={getValues}
               errors={errors}
               useWatch={useWatch}
+              clearErrors={clearErrors}
               CostingRejectionDetail={CostingRejectionDetail}
               data={data}
               setRejectionDetail={props.setRejectionDetail}
@@ -1737,19 +1743,21 @@ function OverheadProfit(props) {
               getValues={getValues}
               errors={errors}
               useWatch={useWatch}
+              CostingInterestRateDetail={CostingInterestRateDetail}
               PaymentTermDetail={PaymentTermDetail}
               data={data}
               setPaymentTermsDetail={props.setPaymentTermsDetail}
             />
 
-            <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
-              <div className="col-sm-12 text-right bluefooter-butn">
-                {!CostingViewMode && <button
+            <Row className=" no-gutters justify-content-between btn-stciky-container overhead-profit-save-btn">
+              <div className="col-sm-12 text-right bluefooter-butn ">
+                {!CostingViewMode && <Link to="assembly-costing-header" spy={true} smooth={true} offset={-330} delay={200}> <button
                   type={'submit'}
+                  onClick={handleSubmit(onSubmit)}
                   className="submit-button mr5 save-btn">
                   <div className={"save-icon"}></div>
                   {'Save'}
-                </button>}
+                </button> </Link>}
               </div>
             </Row>
           </form>

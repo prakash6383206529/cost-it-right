@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded } from '../../../actions/Costing';
+import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
+import { checkForDecimalAndNull } from '../../../../../helper';
 
 function FreightCost(props) {
 
@@ -16,12 +17,16 @@ function FreightCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+      dispatch(isPackageAndFreightDataChange(true))
+    }
   }, [gridData]);
 
   /**
@@ -92,7 +97,7 @@ function FreightCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD FREIGHT</button>}
+                <div className={'plus'}></div>FREIGHT</button>}
             </Col>
           </Row>
           <Row>
@@ -129,7 +134,7 @@ function FreightCost(props) {
                             <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Criteria : '-')}</td>
                             <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Rate : '-')}</td>
                             <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
-                            <td>{item.FreightCost}</td>
+                            <td>{checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}

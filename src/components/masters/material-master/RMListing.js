@@ -7,7 +7,7 @@ import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
@@ -18,6 +18,7 @@ import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import LoaderCustom from '../../common/LoaderCustom';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -37,7 +38,8 @@ class RMListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -95,14 +97,7 @@ class RMListing extends Component {
     * @description confirm delete Raw Material
     */
     deleteItem = (Id) => {
-        const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => { },
-            component: () => <ConfirmComponent />
-        };
-        return toastr.confirm(`${MESSAGES.MATERIAL1_DELETE_ALERT}`, toastrConfirmOptions);
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -112,14 +107,20 @@ class RMListing extends Component {
     confirmDelete = (ID) => {
         this.props.deleteMaterialTypeAPI(ID, (res) => {
             if (res.status === 417 && res.data.Result === false) {
-                toastr.warning(res.data.Message)
+                Toaster.warning(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
                 this.getListData();
             }
         });
+        this.setState({ showPopup: false })
     }
-
+    onPopupConfirm = () => {
+        this.confirmDelete(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
    * @method openModel
    * @description  used to open filter form 
@@ -179,6 +180,14 @@ class RMListing extends Component {
         )
     };
 
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
     renderDensity = (cell, row, enumObject, rowIndex) => {
 
         // return applySuperScripts('Density(g/cm^3)')
@@ -203,29 +212,23 @@ class RMListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, this.props.rawMaterialTypeDataList)
+        let tempArr = this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList
+        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        TempData && TempData.map((item) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } if (item.RMGrade === '-') {
                 item.RMGrade = ' '
-            } else {
-                return false
             }
             return item
         })
-
         return (
-            <ExcelSheet data={TempData} name={RmMaterial}>
+
+            <ExcelSheet data={temp} name={RmMaterial}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -266,8 +269,8 @@ class RMListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound
+            customNoRowsOverlay: NoContentFound,
+            hyphenFormatter: this.hyphenFormatter
         };
 
 
@@ -317,30 +320,7 @@ class RMListing extends Component {
 
                 <Row>
                     <Col>
-                        {/*
-                        <BootstrapTable
-                            data={this.props.rawMaterialTypeDataList}
-                            striped={false}
-                            bordered={false}
-                            hover={false}
-                            options={options}
-                            search
-                            exportCSV={DownloadAccessibility}
-                            csvFileName={`${RmMaterial}.csv`}
-                            //ignoreSinglePage
-                            ref={'table'}
-                            className={'RM-table'}
-                            pagination>
-                            
-                            <TableHeaderColumn dataField="RawMaterial" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}>{this.renderDensity()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>{'Raw Material'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMGrade" dataAlign="center" dataSort={true}>{'Grade'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialId" searchable={false} dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-                        </BootstrapTable> */}
-
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper">
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -357,8 +337,7 @@ class RMListing extends Component {
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
-                                    gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    gridOptions={gridOptions}                                  
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
@@ -369,8 +348,8 @@ class RMListing extends Component {
                                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                                     <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
                                     <AgGridColumn field="Density"></AgGridColumn>
-                                    <AgGridColumn field="RMName"></AgGridColumn>
-                                    <AgGridColumn field="RMGrade"></AgGridColumn>
+                                    <AgGridColumn field="RMName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="RMGrade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -396,6 +375,9 @@ class RMListing extends Component {
                         isOpen={this.state.isOpenAssociation}
                         closeDrawer={this.closeAssociationDrawer}
                         anchor={'right'} />
+                }
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`} />
                 }
             </div>
         );

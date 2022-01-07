@@ -13,18 +13,19 @@ import {
 } from '../actions/Process';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster'
 import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import { ProcessMaster } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,6 +47,8 @@ class ProcessListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      showPopup: false,
+      deletedId: ''
     }
   }
 
@@ -114,34 +117,6 @@ class ProcessListing extends Component {
   */
   editItemDetails = (Id) => {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: true, Id: Id, })
-  }
-
-  /**
-  * @method deleteItem
-  * @description CONFIRM DELETE ITEM
-  */
-  deleteItem = (Id) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDelete(Id);
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    };
-    return toastr.confirm(`${MESSAGES.PROCESS_DELETE_ALERT}`, toastrConfirmOptions);
-  }
-
-  /**
-  * @method confirmDelete
-  * @description DELETE PROCESS
-  */
-  confirmDelete = (ID) => {
-    this.props.deleteProcess(ID, (res) => {
-      if (res.data.Result === true) {
-        toastr.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
-        this.getDataList()
-      }
-    });
   }
 
   /**
@@ -239,17 +214,7 @@ class ProcessListing extends Component {
    * @description CONFIRM DELETE ITEM
    */
   deleteItem = (Id) => {
-    const toastrConfirmOptions = {
-      onOk: () => {
-        this.confirmDelete(Id)
-      },
-      onCancel: () => { },
-      component: () => <ConfirmComponent />,
-    }
-    return toastr.confirm(
-      `${MESSAGES.PROCESS_DELETE_ALERT}`,
-      toastrConfirmOptions,
-    )
+    this.setState({ showPopup: true, deletedId: Id })
   }
 
   /**
@@ -259,12 +224,18 @@ class ProcessListing extends Component {
   confirmDelete = (ID) => {
     this.props.deleteProcess(ID, (res) => {
       if (res.data.Result === true) {
-        toastr.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
+        Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
         this.getDataList()
       }
     })
+    this.setState({ showPopup: false })
   }
-
+  onPopupConfirm = () => {
+    this.confirmDelete(this.state.deletedId);
+  }
+  closePopUp = () => {
+    this.setState({ showPopup: false })
+  }
 
   /**
 * @method buttonFormatter
@@ -299,7 +270,7 @@ class ProcessListing extends Component {
 */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
   /**
    * @method indexFormatter
@@ -419,18 +390,7 @@ class ProcessListing extends Component {
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    temp = TempData.map((item) => {
-      if (item.IsVendor === true) {
-        item.IsVendor = 'Vendor Based'
-      } else if (item.IsVendor === false) {
-        item.IsVendor = 'Zero Based'
-      } else if (item.VendorName === '-') {
-        item.VendorName = ' '
-      } else {
-        return false
-      }
-      return item
-    })
+    temp = TempData
 
     return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
       {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
@@ -450,11 +410,7 @@ class ProcessListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
+    let tempArr = this.props.processList && this.props.processList
     return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -500,7 +456,6 @@ class ProcessListing extends Component {
       costingHeadRenderer: this.costingHeadFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      hyphenFormatter: this.hyphenFormatter
     };
 
     return (
@@ -607,34 +562,12 @@ class ProcessListing extends Component {
         </form>
         <Row>
           <Col>
-            {/* <BootstrapTable
-              data={this.props.processList}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              exportCSV={DownloadAccessibility}
-              csvFileName={`${ProcessMaster}.csv`}
-              //ignoreSinglePage
-              ref={'table'}
-              pagination
-            >
-              <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable> */}
-
-            <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+            <div className="ag-grid-wrapper height-width-wrapper">
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
               <div
                 className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
               >
                 <AgGridReact
                   defaultColDef={defaultColDef}
@@ -679,6 +612,9 @@ class ProcessListing extends Component {
             anchor={'right'}
           />
         )}
+        {
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROCESS_DELETE_ALERT}`} />
+        }
       </div>
     )
   }

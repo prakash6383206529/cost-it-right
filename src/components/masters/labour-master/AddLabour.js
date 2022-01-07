@@ -7,7 +7,7 @@ import { renderText, searchableSelect } from '../../layout/FormInputs'
 import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId, userDetails } from '../../../helper/auth'
@@ -16,7 +16,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
-import moment from 'moment'
+import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 
 const selector = formValueSelector('AddLabour')
@@ -28,6 +28,7 @@ class AddLabour extends Component {
     this.state = {
       isEditFlag: false,
       LabourDetailId: '',
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       IsEmployeContractual: true,
       IsVendor: false,
@@ -97,7 +98,7 @@ class AddLabour extends Component {
                   MachineType: item.MachineType,
                   LabourTypeId: item.LabourTypeId,
                   LabourType: item.LabourType,
-                  EffectiveDate: moment(item.EffectiveDate)._isValid ? moment(item.EffectiveDate)._d : '',
+                  EffectiveDate: DayTime(item.EffectiveDate).isValid() ? DayTime(item.EffectiveDate) : '',
                   LabourRate: item.LabourRate,
                 }
               })
@@ -214,9 +215,7 @@ class AddLabour extends Component {
   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
-      // vendorName: [],
-      // selectedVendorPlants: [],
-      // vendorLocation: [],
+
     })
   }
 
@@ -326,21 +325,21 @@ class AddLabour extends Component {
     const { fieldsObj, error } = this.props
 
     if (vendorName.length == 0 || selectedPlants.length == 0 || StateName == 0) {
-      toastr.warning('First fill upper detail')
+      Toaster.warning('First fill upper detail')
       return false
     }
 
     if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
-      toastr.warning('Fields should not be empty')
+      Toaster.warning('Fields should not be empty')
       return false
     }
     if (Number(fieldsObj) === 0 || Number(fieldsObj) === '') {
-      toastr.warning('Please enter value.')
+      Toaster.warning('Please enter value.')
       return false;
     }
 
     if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
-      toastr.warning('Please enter valid value.')
+      Toaster.warning('Please enter valid value.')
       return false;
     }
     if (maxLength10(fieldsObj)) {
@@ -348,14 +347,11 @@ class AddLabour extends Component {
     }
 
     if (decimalLengthsix(Number(fieldsObj))) {
-      toastr.warning('Decimal value should not be more than 6')
+      Toaster.warning('Decimal value should not be more than 6')
       return false;
     }
 
-    // if ((machineType.length >= 11) || (labourType.length > 11)) {
-    //   toastr.warning('Please enter qo')
-    //   return false;
-    // }
+
 
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = gridTable.findIndex((el) =>
@@ -363,7 +359,7 @@ class AddLabour extends Component {
       el.LabourTypeId === labourType.value,
     )
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false
     }
 
@@ -377,7 +373,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     })
 
@@ -423,7 +419,7 @@ class AddLabour extends Component {
         el.LabourTypeId === labourType.value,
     )
     if (isExist !== -1) {
-      toastr.warning('Already added, Please check the values.')
+      Toaster.warning('Already added, Please check the values.')
       return false
     }
 
@@ -435,7 +431,7 @@ class AddLabour extends Component {
       MachineType: machineType.label,
       LabourTypeId: labourType.value,
       LabourType: labourType.label,
-      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm'),
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm'),
       LabourRate: LabourRate,
     }
 
@@ -553,7 +549,7 @@ class AddLabour extends Component {
     const userDetail = userDetails()
 
     if (gridTable && gridTable.length === 0) {
-      toastr.warning('Labour Rate entry required.')
+      Toaster.warning('Labour Rate entry required.')
       return false
     }
 
@@ -582,7 +578,7 @@ class AddLabour extends Component {
       this.props.reset()
       this.props.updateLabour(updateData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
+          Toaster.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
           this.cancel()
         }
       })
@@ -605,7 +601,7 @@ class AddLabour extends Component {
       this.props.reset()
       this.props.createLabour(formData, (res) => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS)
+          Toaster.success(MESSAGES.LABOUR_ADDED_SUCCESS)
           this.cancel()
         }
       })
@@ -624,7 +620,7 @@ class AddLabour extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, isDisable } = this.state;
+    const { isEditFlag, isOpenMachineType, isDisable, isViewMode } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -671,26 +667,7 @@ class AddLabour extends Component {
                           <div className={"right-title"}>Contractual</div>
                         </label>
                       </Col>
-                      {/* <Col md="4" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={"left-title"}>Zero Based</div>
-                          <Switch
-                            onChange={this.onPressVendor}
-                            checked={this.state.IsVendor}
-                            id="normal-switch"
-                            disabled={true}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#A9A9A9"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={"right-title"}>Vendor Based</div>
-                        </label>
-                      </Col> */}
+
                     </Row>
 
                     <Row>
@@ -709,7 +686,6 @@ class AddLabour extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("VendorNameList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
                                 this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []} required={true}
                               handleChangeDescription={this.handleVendorName}
@@ -728,7 +704,6 @@ class AddLabour extends Component {
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("state")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
                               this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
                             required={true}
@@ -746,7 +721,6 @@ class AddLabour extends Component {
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("plant")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
                               this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                             required={true}
@@ -774,12 +748,10 @@ class AddLabour extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("MachineTypeList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
                               required={true}
                               handleChangeDescription={this.handleMachineType}
                               valueDescription={this.state.machineType}
-                              disabled={false}
+                              disabled={isViewMode}
                             />
                           </div>
                           {!isEditFlag && (
@@ -799,11 +771,10 @@ class AddLabour extends Component {
                             component={searchableSelect}
                             placeholder={"Select"}
                             options={this.renderListing("labourList")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
                             required={true}
                             handleChangeDescription={this.labourHandler}
                             valueDescription={this.state.labourType}
+                            disabled={isViewMode}
                           />
                         </div>
                       </Col>
@@ -814,19 +785,20 @@ class AddLabour extends Component {
                             name={"LabourRate"}
                             type="text"
                             placeholder={"Enter"}
+                            disabled={isViewMode}
                             validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderText}
                             required={true}
-                            disabled={false}
                             className=" "
                             customClassName="withBorder"
+
                           /></div>
                       </Col>
                       <Col md="auto" className="d-flex">
                         <div className="form-group date-filed pr-3">
                           <label>
                             Effective Date
-                            {/* <span className="asterisk-required">*</span> */}
+
                           </label>
                           <div className="inputbox date-section">
                             <DatePicker
@@ -836,14 +808,13 @@ class AddLabour extends Component {
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"
                               autoComplete={"off"}
                               disabledKeyboardNavigation
                               onChangeRaw={(e) => e.preventDefault()}
-                              disabled={false}
+                              disabled={isViewMode}
                             />
                           </div>
                         </div>
@@ -872,6 +843,7 @@ class AddLabour extends Component {
                               type="button"
                               className={"user-btn  pull-left"}
                               onClick={this.gridHandler}
+                              disabled={isViewMode}
                             >
                               <div className={"plus"}></div>ADD
                             </button>
@@ -898,7 +870,7 @@ class AddLabour extends Component {
                                     <td>{item.LabourType}</td>
                                     <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                     <td>
-                                      {item.EffectiveDate ? moment(item.EffectiveDate).format(
+                                      {item.EffectiveDate ? DayTime(item.EffectiveDate).format(
                                         "DD/MM/YYYY"
                                       ) : '-'}
                                     </td>
@@ -906,12 +878,14 @@ class AddLabour extends Component {
                                       <button
                                         className="Edit mr-2"
                                         type={"button"}
+                                        disabled={isViewMode}
                                         onClick={() =>
                                           this.editGridItemDetails(index)
                                         }
                                       />
                                       <button
                                         className="Delete"
+                                        disabled={isViewMode}
                                         type={"button"}
                                         onClick={() =>
                                           this.deleteGridItem(index)
@@ -943,6 +917,7 @@ class AddLabour extends Component {
                       <button
                         type="submit"
                         className="submit-button mr5 save-btn"
+                        disabled={isViewMode}
                       >
                         <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}

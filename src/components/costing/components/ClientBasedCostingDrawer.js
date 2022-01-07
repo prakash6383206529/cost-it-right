@@ -5,12 +5,13 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { renderText, renderTextAreaField, searchableSelect } from '../../layout/FormInputs';
 import {fileUploadCosting, fileDeleteCosting} from '../actions/Costing';
-import { toastr } from 'react-redux-toastr';
 import { loggedInUserId, } from '../../../helper';
 import { FILE_URL } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import { ViewCostingContext } from './CostingDetails';
+import redCross from "../../../assests/images/red-cross.png"
+import Toaster from '../../common/Toaster';
 
 export function Clientbasedcostingdrawer(props) {
     const toggleDrawer = () => {
@@ -53,7 +54,7 @@ export function Clientbasedcostingdrawer(props) {
         }
 
         if (status === 'rejected_file_type') {
-        toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+        Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         }
     }
 
@@ -64,7 +65,7 @@ export function Clientbasedcostingdrawer(props) {
             DeletedBy: loggedInUserId(),
         }
         dispatch(fileDeleteCosting(deleteData, (res) => {
-            toastr.success('File has been deleted successfully.')
+            Toaster.success('File has been deleted successfully.')
             let tempArr = files && files.filter(item => item.FileId !== FileId)
             setFiles(tempArr)
             setIsOpen(!IsOpen)
@@ -538,7 +539,7 @@ export function Clientbasedcostingdrawer(props) {
 
                             <Row className="px-3">
                                 <Col md="12">
-                                    <h5 className="left-border">Attachment <span class="font-weight-normal">( upload up to 3 files )</span></h5> 
+                                    <h5 className="left-border">Attachments <span class="font-weight-normal">( upload up to 3 files )</span></h5> 
                                 </Col>
                                 <Col md="6" className="height152-label">
                                     {files && files.length >= 4 ? (

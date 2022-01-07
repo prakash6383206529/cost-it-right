@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createBOPCategory } from '../actions/BoughtOutParts';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
@@ -52,7 +52,7 @@ class AddBOPCategory extends Component {
             }
             this.props.createBOPCategory(formData, (res) => {
                 if (res.data.Result) {
-                    toastr.success(MESSAGES.BOP_CATEGORY_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.BOP_CATEGORY_ADD_SUCCESS);
                     this.toggleDrawer('', formData)
                 }
             });

@@ -14,7 +14,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster';
 
 const headers = config;
 
@@ -57,7 +57,7 @@ export function getOneUnitOfMeasurementAPI(uomId, isEditFlag, callback) {
                         });
                         callback(response);
                     } else {
-                        toastr.error(MESSAGES.SOME_ERROR);
+                        Toaster.error(MESSAGES.SOME_ERROR);
                     }
                     callback(response);
                 }).catch((error) => {
@@ -93,7 +93,7 @@ export function createUnitOfMeasurementAPI(data, callback) {
             } else {
                 dispatch({ type: CREATE_PART_FAILURE });
                 if (response.data.Message) {
-                    toastr.error(response.data.Message);
+                    Toaster.error(response.data.Message);
                 }
             }
         }).catch((error) => {

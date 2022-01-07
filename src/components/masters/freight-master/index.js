@@ -10,7 +10,7 @@ import { ADDITIONAL_MASTERS, FREIGHT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class FreightMaster extends Component {
     constructor(props) {
@@ -138,8 +138,9 @@ class FreightMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
                     {/* {this.props.loading && <Loader/>} */}
+                    <ScrollToTop pointProp= "go-to-top"/>
                     <Row>
                         <Col sm="4">
                             {/* <h1>{`Freight & Packaging Master`}</h1> */}
@@ -206,9 +207,5 @@ function mapStateToProps({ boughtOutparts, auth }) {
 }
 
 
-export default connect(mapStateToProps,
-    {
-        getLeftMenu
-    }
-)(FreightMaster);
+export default connect(mapStateToProps, {})(FreightMaster);
 

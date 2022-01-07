@@ -29,7 +29,6 @@
 
 body {
   color: #000;
-  // overflow: hidden;
   background-color: #EDF0F5;
 }
 
@@ -700,12 +699,6 @@ button.add-btn {
 .privilege-form.login-form {
   width: 1100px;
 }
-
-// .multiselect-checkboxs {
-//   font-family: sans-serif;
-//   text-align: center;
-// }
-
 .multiselect-checkboxs .css-2b097c-container {
   width: 100%;
 }
@@ -805,7 +798,6 @@ button.add-btn {
 // form-filled colors font size end
 
 .form-control {
-  // height: calc(2.85rem + 2px);
   padding: 12px !important;
   border-radius: 4px !important;
 }
@@ -864,7 +856,6 @@ input.form-control{
   border: none;
   cursor: pointer;
 }
-
 .Balance {
   width: 32px;
   height: 32px;
@@ -898,6 +889,16 @@ input.form-control{
   background: transparent url("../../assests/images/Group-8858.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
+}
+.hirarchy-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/hirarchy-btn.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  background-color: #cef2fb;
+  border-radius: 4px;
+  margin-left: 5px !important;
 }
 
 .Download {
@@ -952,7 +953,8 @@ input.form-control{
 .Add-file,
 .SaveIcon,
 .CancelIcon,
-.CalculatorIcon {
+.CalculatorIcon,
+.hirarchy-btn {
   margin: 0 auto;
   color: #3d4465;
   font-size: 14px;
@@ -1027,7 +1029,6 @@ input.form-control{
 .header-title h5 {
   line-height: 30px;
   text-align: left;
-  //font: Medium 18px/22px Roboto;
   letter-spacing: 0px;
   color: #3d4465;
   opacity: 1;
@@ -1050,7 +1051,6 @@ input.form-control{
   opacity: 1;
   float: left;
   position: $positio-relative;
-  // top: 3px;
   margin-right: 5px;
 }
 
@@ -1082,6 +1082,18 @@ input.form-control{
   width: 22px;
   height: 22px;
   background: transparent url("../../assests/images/Group 10491.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
+.swap {
+  width: 22px;
+  height: 22px;
+  background: transparent url("../../assests/images/swap-logo.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+}
+.go-to-top {
+  width: 22px;
+  height: 22px;
+  background: transparent url("../../assests/images/go-to-top.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
 }
 .minus-icon {
@@ -1178,6 +1190,14 @@ input.form-control{
   opacity: 1;
   background-size: contain;
 }
+.pdf-btn{
+  margin-right: 5px;
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/pdf.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
 
 .compare-arrows{
   margin-right: 5px;
@@ -1236,7 +1256,6 @@ input.form-control{
 .Module-Name {
   text-align: left;
   font-size: 16px;
-  //font: Regular 16px/19px Roboto;
   letter-spacing: 0px;
   color: #8a91ac;
   opacity: 1;
@@ -1393,8 +1412,6 @@ input.form-control{
 .blue-box{
   padding:0 30px 30px;
   background-color: #EDF0F5;
-  // height: 100vh;
-  // margin-top: 139px;
 }
 label for[normal-switch]{
   text-align: center;
@@ -1485,7 +1502,6 @@ label for[normal-switch]{
         bottom: 10px;
         content: "";
         background-color: #F8FCFF;
-        // background-color: #d7e4ef;
         z-index: 0;
       }
     }
@@ -1686,7 +1702,6 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
-
 .react-bs-table-container.client-table {
   position: relative;
 }
@@ -1723,6 +1738,10 @@ button.user-btn.pull-right {
  .cr-subtabs-head{background-color: #E0E9F5;}
  .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: 16px;padding: 10px 15px;border-top:2px solid transparent}
  .content-page .cr-subtabs-head.nav-tabs .nav-link.active,.content-page .cr-subtabs-head.nav-tabs .nav-link:hover{border-top: #d62c8c 2px solid;border-radius: 0;border-bottom: 0;background-color: #fff; }
+//  START Forging costing calculator
+.cr-subtabs-head.forging-tabs.nav-tabs .nav-link {border: none; border-top: #d62c8c 2px solid;}
+.cr-subtabs-head.forging-tabs.nav-tabs .nav-link:hover {border: none; border-top: #d62c8c 2px solid;}
+//  END Forging costing calculator
  .cr-prt-link{cursor: pointer;}
  .cr-costlabel{padding-top: 9px;padding-bottom: 7px;}
  .cr-innerwrap-td{background-color:#F1F4F7;}
@@ -1828,10 +1847,27 @@ $roboto: "Roboto", sans-serif;
   thead{
     .main-row{
       th{
-        width: 33%;
-        min-width: 410px;
+        width: 23%;
+        min-width: 384px;
         vertical-align: middle;
         font-weight: 500;
+        &:first-child {
+          width: 15%;
+          min-width: 238px;
+        }
+        .checkbox-text {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          background-color: #fff;
+          padding:9px 5px;
+          min-width: 186px;
+          &:hover {
+            overflow: visible;
+            min-width: fit-content;
+            z-index: 1;
+          }
+        }
       }
     }
   }
@@ -2707,9 +2743,6 @@ input:disabled{
     color: #f8a000;
   }
 }
-// .grant-user-grid{
-//   min-height: calc(100vh - 524px);
-// }
 .shadow-lgg{
   .form{
     .sf-btn-footer{
@@ -2815,7 +2848,7 @@ table{
   color: #3D4465;
 }
 .add-min-height{
-  .btn-secondary,.btn-primary,.user-btn{
+  .btn-secondary,.btn-primary{
     height: 40px;
   }
   .reset-btn{
@@ -2879,6 +2912,7 @@ button:disabled{pointer-events: none;}
   .costing-table-next{
     tbody{
       td{
+        word-break: break-all;
         .mb-15{
           margin-bottom: 0px;
         }
@@ -2957,7 +2991,6 @@ button:disabled{pointer-events: none;}
 }
 .no-filter-row{
   height: 0.25rem;
-  // margin: 0px !important;
   .search-user-block{
     bottom: -31px;
   }
@@ -3211,17 +3244,16 @@ opacity: 0.5;
   display: inline-block;
   .tooltiptext {
     visibility: hidden;
-    min-width: 300px;
+    min-width: 250px;
     background-color: #D0D8E5;
     color: #3d4465;
-    text-align: center;
+    text-align: right;
     border-radius: 6px;
-    padding: 5px 10px;
-    /* Position the tooltip */
+    padding: 5px 15px 5px 5px;
     position: absolute;
     z-index: 1;
     bottom: 100%;
-    left: -140px;
+    left: -115px;
     margin-left: -4px;
     font-size: 14px;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
@@ -3286,36 +3318,7 @@ opacity: 0.5;
     color: #fff !important;
   }
 }
-.costing-table-next{
-  &.costing-table-zbc{
-    thead{
-      tr{width: 100%;
-        th{
-          &:first-child{width: 30%;}
-          &:nth-child(2){width: 145px;min-width: 145px;}
-          &:nth-child(3){width: 21%;}
-          &:nth-child(4){width: 15%;}
-          &:nth-child(5){width: 10%;}
-        }
-      }
-    }
-  }
 
-  &.costing-table-vbc{
-    thead{
-      tr{width: 100%;
-        th{
-          &:first-child{width: 15%;}
-          &:nth-child(2){width: 15%;}
-          &:nth-child(3){width: 145px;min-width: 145px;}
-          &:nth-child(4){width: 21%;}
-          &:nth-child(5){width: 15%;}
-          &:nth-child(6){width: 10%;}
-        }
-      }
-    }
-  }
-}
 .dark-blue{color: #3D4465;}
 .height152-label{
   .dzu-dropzone{
@@ -3475,9 +3478,6 @@ opacity: 0.5;
     }
   }
 }
-// .cr-prt-nm1.cr-prt-link1.L1{
-//   margin-left: 0px;
-// }
 
 body {
   .btn-lg{
@@ -3601,11 +3601,17 @@ body {
   .form-control[disabled]{
     max-width: 280px;
     width: 280px;
+    @media screen and (max-width:$miniDesktop) {
+      width: 260px;
+    }
   }
   .form-group.inputbox.withBorder{
     input.form-control{
       max-width: 280px;
       width: 280px;
+      @media screen and (max-width:$miniDesktop) {
+        width: 260px;
+      }
     }
     label{
       display: none;
@@ -3916,7 +3922,7 @@ body{
     tr{
       th{
         border: none;
-        font-weight: bold;
+        font-weight: 500;
       }
     }
   }
@@ -4049,24 +4055,6 @@ body{
     }
   }
 }
-
-// @supports (-ms-ime-align:auto) {
-//   .drawer-wrapper{
-//     input[type="radio"]{
-//       appearance: none;
-//       width: 14px;
-//       height: 14px;
-//       border: 1px solid #767676;
-//       border-radius: 20px;
-//       cursor: pointer;
-//     }
-//     input[type="radio"]:checked {
-//       background-color: #256bd1;
-//       border: 1px solid #fff;
-//       box-shadow: 0 0 0 1px #256bd1;
-//     }
-//   }
-// }
 // radio-box standard radio buttons end
 .view-conversion-cost-drawer{
   .drawer-1500px{
@@ -4237,7 +4225,7 @@ body{
   color: #4DC771;
   line-height: initial;
   min-width: 70px;
-  max-width: 70px !important;
+  // max-width: 70px !important;
   padding: 9px 12px !important;
   height: auto;
 }
@@ -4286,6 +4274,10 @@ body{
   min-height: inherit;
   .empty-table-paecholder{
     min-height: calc(100vh - 350px);
+    @media screen and (max-width:$miniDesktop) {
+      min-height: calc(100vh - 300px);
+      
+    }
   }
   .filter-row-large{
     z-index: 11;
@@ -4562,12 +4554,6 @@ body{
 .nodata-found-container {
   margin-top: 120px !important;
 }
-// .operation-nodata {
-//   margin-top: 60px !important;
-//   img {
-//     margin-top: 10px;
-//   }
-// }
 // responsive media query start
 @media(max-width:1600px){
 
@@ -4713,7 +4699,6 @@ body{
   .impacted-min-height {
     .add-min-height {
       min-height: auto;
-      // height: calc(100vh - 260px);
     }
   }
     .exchange-rate {
@@ -4727,7 +4712,6 @@ body{
   .impacted-min-height {
     .add-min-height {
   min-height: calc(100vh - 380px);
-  // height: calc(100vh - 380px);
   }
 }
 .exchange-rate {
@@ -4836,7 +4820,6 @@ body{
   .impacted-min-height {
     .add-min-height {
       min-height: auto;
-      // height: calc(100vh - 260px);
     }
   }
   .tooltip-inner{
@@ -5159,7 +5142,7 @@ body{
         }
       .content-page{
         width: calc(100% - (205px * 80 / 100));
-        padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
+        padding: 21px 0 15px 0;
 
         .tab-pane{
           .filter-block {
@@ -5333,6 +5316,11 @@ body{
         background-size: contain;
       }
       .plus{
+        width: calc(13px * 80 /100);
+        height: calc(13px * 80 /100);
+        background-size: contain;
+      }
+      .swap{
         width: calc(13px * 80 /100);
         height: calc(13px * 80 /100);
         background-size: contain;
@@ -5717,13 +5705,15 @@ body{
       td,.ag-cell {
         .Error,
         .Pushed,
+        .POUpdated,
         .Draft,
         [class^="Pending"],
         [class^="Awaiting"],
         .Approved,
         .ApprovedBySimulation,
         .Rejected,
-        .History {
+        .History,
+        .ApprovedByAssembly {
           min-width: calc(90px * 80 / 100);
           height: calc(30px * 80 / 100);
           font-size: calc(14px * 80 / 100);
@@ -5877,11 +5867,7 @@ body{
         }      
       }
     }
-  // // // input range slider 'Net Landed Range (INR)' css 
-  // .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}
-  // .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span:after{top: -4px;}
-  // // // input range slider 'Net Landed Range (INR)' css  end
-  
+
   //fire-fox css
   @-moz-document url-prefix() {
     body{
@@ -6058,8 +6044,6 @@ body{
       thead{
         tr{
           th{
-            // &:first-child{width: 15%;}
-            // &:nth-child(2){width: 15%;}
             &:nth-child(3){width: auto;min-width: 115px;}
             &:nth-child(4){width: 18%;}
             &:nth-child(5){min-width: 175px !important;width: 14%;}
@@ -6136,13 +6120,6 @@ body{
   }
 }
 // dashboard css end
-// toastr css start
-.redux-toastr {
-  .top-left, .top-right, .top-center, .bottom-left, .bottom-right, .bottom-center{
-    width: 380px;
-  }
-}
-// toastr css end
 
 .view-conversion-cost-drawer{
   .drawer-1500px{
@@ -6188,9 +6165,6 @@ body{
   }
   .workflow-row .col-lg-3:nth-child(2) .card-border:after{display:none;}
 }
-
-
-
 // responsive media query end
 
 .lock_icon {
@@ -6249,15 +6223,6 @@ body{
 }
 .d-none {
   display: none !important;
-}
-.costing-details-page {
-  .costing-header-table {
-    table {
-      @media screen and (max-width:$miniDesktop) {
-        min-width: 1920px;
-      }
-    }
-  }
 }
 .user-costing-tab {
   .col-md-12 {
@@ -6367,4 +6332,370 @@ body{
 position:absolute;
 bottom: 1rem;
 left: 17rem;
+}
+.approve-reject-drawer-loader {
+  min-height: 75rem;
+}
+.warning-text-container {
+  .warning-text {
+    left: 1rem;
+    top: 1rem;
+  }
+}
+// <------START popup CSS-------->
+.popup-container {
+  height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+}
+.main-modal-container {
+  z-index: 1040 !important;
+}
+.view-conversion-cost-drawer {
+  @media screen and (max-width:$miniDesktop) {
+    max-width: 1140px;
+  }
+}
+.report-listing-page {
+  .blue-before {
+    z-index: 5;
+  }
+}
+.costing-table-container {
+  table {
+    .vendor {min-width: 140px;}
+    .destination-plant {min-width: 165px;}
+    .costing-version { min-width: 200px;}
+    .share-of-business {min-width: 110px;}
+    .costing-status {min-width: 230px;}
+    .costing-price {min-width: 115px;}
+    .costing-action {min-width: 240px;}
+  }
+  @media screen and (max-width:$miniDesktop) {
+   td, th {
+      padding: 0.71rem 5px !important;
+      &:first-child {
+        padding-left: 10px !important;
+      }
+   }
+  }
+
+}
+
+  .update-vendor-loader {
+    min-height: calc(100vh + 11rem);
+  }
+.view-conversion-header.cr-subtabs-head {
+  
+  flex: 0 0 9.78%;
+    max-width: 9.78%;
+    display: block;
+    .nav-item {
+      .nav-link {
+        border-top: none;
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        border-left: 2px solid transparent;
+        border-bottom: 0;
+        text-align: center;
+        @media  screen and (max-width: $miniDesktop) {
+          font-size: 14px !important;
+        }
+        &:hover {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
+        } 
+        &.active {
+          border-top: none;
+          border-left: #d62c8c 2px solid;
+          border-bottom: 0;
+        }
+      }
+    }
+}
+.view-conversion-container.col-md-11 {
+    flex: 0 0 90.22%;
+    max-width: 90.22%;
+  .left-border {
+    padding: 8px;
+  }
+}
+
+// FG-Wise table css Start
+.fgwise-table {
+  .cr-brdr-main {
+    width: 100% !important;
+  }
+  border: 1px solid #3333;
+  table {
+   th {
+     border: 1px solid #3333 !important;
+     border-top: none !important;
+     &:last-child {
+       border-left: none !important;
+       border-right: none !important;
+     }
+     &.second-last-child {
+      border-right: none !important;
+     }
+   }
+  }
+}
+// FG-Wise table css End
+
+.min-width-btn {
+  min-width: 143px;
+}
+.bs-tooltip-auto {
+  z-index: 1300;
+}
+.child-component-tooltip {
+  bottom: 23px;
+}
+
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
+}
+.with-border-table {
+  border: none;
+  td {
+    border: 1px solid #C2CBE8 ;
+  }
+
+}
+.hide-border {
+  border: none;
+  table {
+    margin-bottom: 0;
+    border: 1px solid #3333 !important;
+    th {
+      border-bottom: none !important;
+    }
+    td {
+      border: 1px solid #3333;
+    }
+  }
+}
+.add-min-width {
+    width: 100%;
+    th {
+      width: 25%; 
+   }
+}
+.verify-simulation-overlay {
+  padding-top: 105px;
+}
+.mb-width {
+  label {
+    width: fit-content;
+  }
+  min-width: 14.725rem;
+}
+
+// <--------START costing tooltip css -------->
+.costing-tooltip {
+  right: -16px;
+  top: 12px;
+}
+.rm-table-body {
+  .text-help {
+    position:absolute;
+    margin: -2px 0;
+    white-space: nowrap;
+  }
+}
+// <--------END costing tooltip css -------->
+@media screen and (max-width:$miniDesktop) {
+  .app-wrapper {
+    .user-page {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+  .cr-bg-tbl {
+       span {
+         font-size: 14px;
+       }
+  }
+  // <--------------START Part number showing on hover in costing sticky header --------->
+  .cr-part-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    position:absolute;
+    border-top: none !important;
+    max-width: 120px;
+    padding-left: 5px !important;
+    &:hover {
+      span {
+        background-color:  #E7F2FC;
+      }
+      text-overflow: none;
+      max-width: 100%;
+    }
+  }
+   // <--------------END Part number showing on hover in costing sticky header --------->
+
+  .rm-name-head {
+    min-width: 125px;
+  }
+}
+
+@media screen and (max-width:$middleDesktop) {
+  .costing-summary-table {
+    thead{
+      .main-row{
+        th{
+          min-width: 340px;
+          font-size: 14px;
+          width: 27%;
+          &:first-child{
+            width: 19%;
+            min-width: 180px;
+          }
+          
+        }
+      }
+    }
+    tr {
+      td {
+        .bg-grey {
+          font-size: 14px;
+          small {
+            font-size: 13px;
+          }
+        }
+         span {
+          font-size: 14px;
+        }
+      }
+      &.background-light-blue {
+        th {
+          font-size: 14px;
+        }
+      }
+    }
+    .custom-check {
+      font-size: 14px;
+    }
+  }
+}
+
+.align-table {
+  transform: translateY(-13px);
+}
+.btn-stciky-container {
+  position: sticky;
+  bottom: 0;
+  padding: 0 28px !important;
+}
+.rmcc-main-headings {
+  th,td {
+    padding: 10px 15px !important;
+  }
+}
+.min-height-auto {
+  min-height: auto !important;
+}
+.forging-cal-table {
+  border: 1px solid #C2CBE8;
+  th {
+    padding: 0.71rem 0.45rem !important;
+    &:last-child {
+      min-width: 100px;
+    }
+  }
+  td {
+    font-size: 15px;
+  }
+}
+.alert-danger, .attachment.images {
+  font-size: 15px;   //maximum file upload font
+}
+//START Navbar version css
+.version {
+  color: #256bd1;
+  margin-right: 15px;
+}
+//END Navbar version css
+//START login page version css
+.login-version {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: #4a4a4af7;
+  font-size: 14px;
+}
+//END login page version css
+.loader_container.simulation-history-loader {
+  background-color: rgba(255, 255, 255, 0.97);
+}
+.reset-btn-container .user-btn {
+ height: auto;
+}
+.width33 {width: 33.33%;}
+.fs1.font-weight-500.py-3 {font-size: 16px;}
+
+.sticky-btn-footer {
+  position: sticky !important;
+  bottom: 0;
+  .bluefooter-butn {
+    padding: 2px 12px !important;
+  }
+}
+.overhead-profit-save-btn {
+  margin: 0 -15px;
+  padding: 0 !important;
+  .bluefooter-butn {
+    padding: 2px 15px !important;
+  }
+}
+.packaging-freight-btn-save {
+  padding: 2px 15px !important;
+}
+
+// PDF Img style
+.pdf-header-wrapper{
+  display: flex;
+  grid-gap: 10px;
+  justify-content: center;
+  img {
+    height: 50px;
+    display: block;
+    margin:8px;
+    margin: auto;
+  }
+}
+.ag-pinned-right-header {
+  .ag-header-row-column-group {
+    border-right:  solid #e5eaf9;
+  }
+}
+.ag-header-group-cell.ag-focus-managed.ag-header-group-cell-no-group:first-child {
+  border-left: 1px solid #e5eaf9;
+}
+
+//START Radio hook custom css//
+.label-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  input {
+    margin-bottom: 2px;
+  }
+}
+//END Radio hook custom css//
+.pdf-loader {
+  top: -1900;
+}
+.loader-wrapper {
+  height: calc(100vh - 924px);
+  overflow: hidden;
+  @media screen and (max-width: $miniDesktop) {
+    height: calc(100vh - 668px);
+  }
 }

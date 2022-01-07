@@ -4,7 +4,7 @@ import { reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { getJsDateFromExcel } from "../../helper/validation";
 import { BOMUploadPart } from '../masters/actions/Part';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
@@ -63,7 +63,7 @@ class BOMUpload extends Component {
 
     //pass the fileObj as parameter
     if (fileType !== '.xls' && fileType !== '.xlsx') {
-      toastr.warning('File type should be .xls or .xlsx')
+      Toaster.warning('File type should be .xls or .xlsx')
     } else {
 
       let data = new FormData()
@@ -117,7 +117,7 @@ class BOMUpload extends Component {
   responseHandler = (res) => {
     const { messageLabel, } = this.props;
     if (res && res.data.Result === true) {
-      toastr.success(`BOM uploaded successfully.`)
+      Toaster.success(`BOM uploaded successfully.`)
     }
     this.toggleDrawer('')
   }
@@ -129,7 +129,7 @@ class BOMUpload extends Component {
   onSubmit = (values) => {
     const { fileData, } = this.state;
     if (fileData.length === 0) {
-      toastr.warning('Please select a file to upload.')
+      Toaster.warning('Please select a file to upload.')
       return false
     }
 

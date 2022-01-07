@@ -12,7 +12,7 @@ import {
 } from '../../../../../helper'
 import { getUOMListByUnitType, getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../../../common/Toaster'
 import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -487,7 +487,7 @@ function Pipe(props) {
 
       if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
-        toastr.success("Calculation saved successfully")
+        Toaster.success("Calculation saved successfully")
         props.toggleDrawer('', data, obj)
       }
     }))
@@ -501,7 +501,7 @@ function Pipe(props) {
     //
     grossWeight = setValueAccToUOM(grossWeight, value.label)
     let finishWeight = setValueAccToUOM(dataToSend?.FinishWeight ? dataToSend.FinishWeight : FinishWeight, value.label)
-    console.log('finishWeight: ', (finishWeight).toFixed(6));
+ 
 
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 

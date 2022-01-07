@@ -7,7 +7,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { required } from '../../../helper';
 import { getRowMaterialDataAPI, getRawMaterialNameChild, getMaterialTypeDataAPI, createAssociation, getRMGradeSelectListByRawMaterial, getMaterialTypeSelectList, getUnassociatedRawMaterail } from '../actions/Material';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
 
@@ -114,7 +114,7 @@ class Association extends Component {
         this.props.reset()
         this.props.createAssociation(formData, (res) => {
             if (res.data.Result) {
-                toastr.success(MESSAGES.ASSOCIATED_ADDED_SUCCESS);
+                Toaster.success(MESSAGES.ASSOCIATED_ADDED_SUCCESS);
                 this.toggleDrawer('')
             }
         });

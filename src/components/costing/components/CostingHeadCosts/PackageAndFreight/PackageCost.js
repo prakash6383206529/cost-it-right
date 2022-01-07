@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
-import { checkForNull } from '../../../../../helper';
+import Toaster from '../../../../common/Toaster';
+import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded } from '../../../actions/Costing';
+import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
 
 function PackageCost(props) {
 
@@ -21,9 +21,13 @@ function PackageCost(props) {
   const dispatch = useDispatch()
 
   const CostingViewMode = useContext(ViewCostingContext);
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   useEffect(() => {
     props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+      dispatch(isPackageAndFreightDataChange(true))
+    }
   }, [gridData]);
 
   /**
@@ -81,7 +85,7 @@ function PackageCost(props) {
       setGridData(tempArr)
 
     } else {
-      toastr.warning('Please enter valid number.')
+      Toaster.warning('Please enter valid number.')
     }
   }
 
@@ -104,7 +108,7 @@ function PackageCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD PACKAGING</button>}
+                <div className={'plus'}></div>PACKAGING</button>}
             </Col>
           </Row>
           <Row>
@@ -128,7 +132,7 @@ function PackageCost(props) {
                           <tr key={index}>
                             <td>{item.PackagingDescription}</td>
                             <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
-                            <td>{item.PackagingCost}</td>
+                            <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             <td style={{ textAlign: "right" }}>
                               {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}

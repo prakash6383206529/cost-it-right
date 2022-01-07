@@ -7,19 +7,19 @@ import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
 import BOPApproval from './BOPApproval';
-import InsightsBop from './InsightsBop';
+
 import { BOP, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import SOBListing from './SOBListing';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class BOPMaster extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: '2',
+      activeTab: '1',
       isBOPDomesticForm: false,
       isBOPImportForm: false,
       data: {},
@@ -141,20 +141,31 @@ class BOPMaster extends Component {
 
     return (
       <>
-        <div className="container-fluid">
+        <div className="container-fluid" id="go-top-top">
           {/* {this.props.loading && <Loader/>} */}
           <Row>
             <Col sm="4">
               <h1>{`Insert Master`}</h1>
             </Col>
+            <ScrollToTop pointProp={"go-top-top"} />
           </Row>
 
           <Row>
             <Col>
               <Nav tabs className="subtabs mt-0">
-                {/* <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === "1", })} onClick={() => { this.toggle("1");}}>Insights</NavLink>
-                </NavItem> */}
+                <NavItem>
+                  <NavLink
+                    className={classnames({
+                      active: this.state.activeTab === "1",
+                    })}
+                    onClick={() => {
+                      this.toggle("1");
+                    }}
+                  >
+                    Manage Insert (Domestic)
+                  </NavLink>
+                </NavItem>
+
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -164,25 +175,12 @@ class BOPMaster extends Component {
                       this.toggle("2");
                     }}
                   >
-                    Manage Inserts (Domestic)
+                    Manage Insert (Import)
                   </NavLink>
                 </NavItem>
 
                 <NavItem>
-                  <NavLink
-                    className={classnames({
-                      active: this.state.activeTab === "3",
-                    })}
-                    onClick={() => {
-                      this.toggle("3");
-                    }}
-                  >
-                    Manage Inserts (Import)
-                  </NavLink>
-                </NavItem>
-
-                <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                  <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                     Manage SOB
                   </NavLink>
                 </NavItem>
@@ -190,7 +188,7 @@ class BOPMaster extends Component {
 
 
                 {/* <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                  <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                     Approval Status
                   </NavLink>
                 </NavItem> */}
@@ -198,33 +196,31 @@ class BOPMaster extends Component {
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
+
+
                 {this.state.activeTab == 1 && (
                   <TabPane tabId="1">
-                    <InsightsBop />
-                  </TabPane>
-                )}
-
-                {this.state.activeTab == 2 && (
-                  <TabPane tabId="2">
                     <BOPDomesticListing
                       displayForm={this.displayDomesticForm}
                       getDetails={this.getDetails}
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
+                      ViewAccessibility={this.state.ViewAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
                     />
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 3 && (
-                  <TabPane tabId="3">
+                {this.state.activeTab == 2 && (
+                  <TabPane tabId="2">
                     <BOPImportListing
                       displayForm={this.displayImportForm}
                       getDetails={this.getImportDetails}
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
+                      ViewAccessibility={this.state.ViewAccessibility}
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
@@ -232,8 +228,8 @@ class BOPMaster extends Component {
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 4 &&
-                  <TabPane tabId="4">
+                {this.state.activeTab == 3 &&
+                  <TabPane tabId="3">
                     <SOBListing
                       displayForm={this.displayImportForm}
                       getDetails={this.getImportDetails}
@@ -247,8 +243,8 @@ class BOPMaster extends Component {
 
 
 
-                {this.state.activeTab == 5 &&
-                  <TabPane tabId="5">
+                {this.state.activeTab == 4 &&
+                  <TabPane tabId="4">
                     <BOPApproval
                       AddAccessibility={this.state.AddAccessibility}
                       EditAccessibility={this.state.EditAccessibility}
@@ -278,9 +274,5 @@ function mapStateToProps({ boughtOutparts, auth }) {
 }
 
 
-export default connect(mapStateToProps,
-  {
-    getLeftMenu,
-  }
-)(BOPMaster);
+export default connect(mapStateToProps, {})(BOPMaster);
 

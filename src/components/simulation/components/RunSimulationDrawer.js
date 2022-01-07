@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting } from '../actions/Simulation';
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting,runSimulationOnSelectedOverheadProfitCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
-import moment from 'moment';
-// import { EXCHNAGERATE } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper'
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { getConfigurationKey } from '../../../helper';
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
+import WarningMessage from '../../common/WarningMessage';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, simulationTechnologyId, vendorId, tokenNo } = props
-   
+
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
@@ -42,10 +42,12 @@ function RunSimulationDrawer(props) {
     const [disableDiscountAndOtherCost, setDisableDiscountAndOtherCost] = useState(false)
     const [disableAdditionalDiscount, setDisableAdditionalDiscount] = useState(false)
     const [disableAdditionalOtherCost, setDisableAdditionalOtherCost] = useState(false)
-    const [toggleSwitchLabel, setToggleSwitchLabel] = useState(false)
+    const [toggleSwitchAdditionalOtherCOst, setToggleSwitchAdditionalOtherCOst] = useState(false)
+    const [toggleSwitchAdditionalDiscount, setToggleSwitchAdditionalDiscount] = useState(false)
 
 
     const [linkingTokenNumber, setLinkingTokenNumber] = useState('')
+    const [runSimulationDisable, setRunSimulationDisable] = useState(false)
 
 
 
@@ -108,7 +110,7 @@ function RunSimulationDrawer(props) {
         }
 
 
-        if (elementObj.Text === "Additional Discount %") {
+        if (elementObj.Text === "Additional Discount") {
             setinputAdditionalDiscount(!inputAdditionalDiscount)
 
             setDisableDiscountAndOtherCost(!disableDiscountAndOtherCost)
@@ -157,10 +159,22 @@ function RunSimulationDrawer(props) {
 
     const IsAvailable = (id) => { }
 
+    const checkForResponse = (res) => {
+        if ('response' in res) {
+            if (res && res?.response?.data?.Result === false) {
+                setRunSimulationDisable(false)
+            }
+        }
+        if (res?.data?.Result) {
+            Toaster.success('Simulation process has been run successfully.')
+            runSimulationCosting()
+        }
+    }
+
     const SimulationRun = debounce(handleSubmit(() => {
+        setRunSimulationDisable(true)
+
         let obj = {}
-
-
 
         const Overhead = selectedData.includes("Overhead")
         const Profit = selectedData.includes("Profit")
@@ -168,7 +182,7 @@ function RunSimulationDrawer(props) {
         const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
         const PaymentTerms = selectedData.includes("Payment Terms")
         const Inventory = selectedData.includes("Inventory")
-        const AdditionalDiscount = selectedData.includes("Additional Discount %")
+        const AdditionalDiscount = selectedData.includes("Additional Discount")
         const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
 
         let temp = []
@@ -180,50 +194,96 @@ function RunSimulationDrawer(props) {
         obj.IsDiscountAndOtherCost = DiscountOtherCost
         obj.IsAdditionalDiscount = AdditionalDiscount
         obj.IsAdditionalOtherCost = AdditionalOtherCost
-        obj.AdditionalOtherValue = getValues("OtherCost")
-        obj.AdditionalDiscountPercentage = getValues("Discount")
-        obj.IsAdditionalOtherCostPercentage = toggleSwitchLabel
+        obj.AdditionalOtherValue = toggleSwitchAdditionalOtherCOst ? getValues("OtherCostPercent") : getValues("OtherCost")                  // if toggleSwitchAdditionalOtherCOst==true then we will fetch percent value else (fixed value)
+        obj.AdditionalDiscountPercentage = toggleSwitchAdditionalDiscount === true ? getValues("DiscountPercent") : getValues("Discount")        // if toggleSwitchAdditionalDiscount==true then we will fetch discount percent value else fixed value
+        obj.IsAdditionalOtherCostPercentage = toggleSwitchAdditionalOtherCOst
+        obj.IsAdditionalDiscountPercentage = toggleSwitchAdditionalDiscount
 
         // obj.IsProvisional = provisionalCheck
         // obj.LinkingTokenNumber = linkingTokenNumber != '' ? linkingTokenNumber : tokenNo
         temp.push(obj)
         switch (Number(masterId)) {
             case Number(EXCHNAGERATE):
-                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 break;
-           
+
             case Number(RMDOMESTIC):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 break;
             case Number(RMIMPORT):
-                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).local().format('YYYY/MM/DD HH:mm'), SimulationApplicability: temp }, (res) => {
-                    if (res.data.Result) {
-                        toastr.success('Simulation process has been run successfully.')
-                        runSimulationCosting()
-                    }
+                dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
                 }))
                 break;
+            case Number(SURFACETREATMENT):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
+                }))
+                runSimulationCosting()
+                break;
+            case Number(OPERATIONS):
+                dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
+                }))
+                break;
+            case Number(MACHINERATE):
+                dispatch(runSimulationOnSelectedMachineRateCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
+                }))
+                runSimulationCosting()
+                break;
+            case Number(BOPDOMESTIC):
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
+                }))
+                runSimulationCosting()
+                break;
+            case Number(BOPIMPORT):
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
+                }))
+                runSimulationCosting()
+                break;
+            // case Number(BOPIMPORT):
+            //     dispatch(runSimulationOnSelectedOverheadProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+            //         checkForResponse(res)
+            //     }))
+            //     runSimulationCosting()
+            //     break;
             default:
                 break;
         }
-        // runSimulationCosting()                       ///remove this
+
+
+
+
+        // if (masterId === Number(EXCHNAGERATE)) {
+        //     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: moment(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+        //         if (res.data.Result) {
+        //             Toaster.success('Simulation process has been run successfully.')
+        //             runSimulationCosting()
+        //         }
+        //     }))
+        // } else {
+        //     //THIS IS TO CHANGE AFTER IT IS DONE FROM KAMAL SIR'S SIDE
+        //     dispatch(runSimulationOnSelectedCosting({ ...objs, EffectiveDate: moment(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+        //         if (res.data.Result) {
+        //             Toaster.success('Simulation process has been run successfully.')
+        //             runSimulationCosting()
+        //         }
+        //     }))
+        // }
     }), 500)
 
     const onSubmit = () => {
         // 
         // dispatch(runSimulationOnSelectedCosting(objs, (res) => {
         //     if (res.data.Result) {
-        //         toastr.success('Simulation process has been run successfully.')
+        //         Toaster.success('Simulation process has been run successfully.')
         //         runSimulationCosting()
         //     }
         // }))
@@ -234,10 +294,14 @@ function RunSimulationDrawer(props) {
         setSelectedDate(date)
     }
     const onChange = () => {
-        setToggleSwitchLabel(!toggleSwitchLabel)
+        setToggleSwitchAdditionalOtherCOst(!toggleSwitchAdditionalOtherCOst)
 
     }
 
+    const onChangeAdditionalDiscount = () => {
+        setToggleSwitchAdditionalDiscount(!toggleSwitchAdditionalDiscount)
+
+    }
     return (
         <>
             {/* <runSimulationDrawerDataContext.Provider value={runSimulationDrawerData}>
@@ -274,13 +338,13 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="ml-0 pt-3">
                                         <Col md="12" className="mb-3">
-                                         
+
                                             {
                                                 masterId !== EXCHNAGERATE && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                     if (el.Value === '0') return false;
                                                     return (
                                                         <Col md="12" className="mb-3 p-0">
-                                                            <div class={`custom-check1 d-inline-block ${el.Text === "Additional Discount %" ? "drawer-side-input" : ''} ${el.Text === "Additional Other Cost" ? 'drawer-side-input-other' : ''}`}>
+                                                            <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                                 <label
                                                                     className="custom-checkbox mb-0"
                                                                     onChange={() => handleApplicabilityChange(el)}
@@ -290,7 +354,7 @@ function RunSimulationDrawer(props) {
                                                                     <input
                                                                         type="checkbox"
                                                                         value={"All"}
-                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount %" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
+                                                                        disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) ? true : false}
                                                                         checked={IsAvailable(el.Value)}
                                                                     />
 
@@ -307,7 +371,7 @@ function RunSimulationDrawer(props) {
                                                                             <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
                                                                                 <Switch
                                                                                     onChange={onChange}
-                                                                                    checked={toggleSwitchLabel}
+                                                                                    checked={toggleSwitchAdditionalOtherCOst}
                                                                                     id="normal-switch"
                                                                                     disabled={false}
                                                                                     background="#4DC771"
@@ -322,21 +386,56 @@ function RunSimulationDrawer(props) {
                                                                                 <span className="ml-2">Percentage</span>
                                                                             </label>
                                                                             {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
-                                                                            <TextFieldHookForm
-                                                                                label=""
-                                                                                name={"OtherCost"}
-                                                                                Controller={Controller}
-                                                                                rules={{ required: true }}
-                                                                                control={control}
-                                                                                register={register}
-                                                                                mandatory={true}
-                                                                                handleChange={() => { }}
-                                                                                defaultValue={""}
-                                                                                className=""
-                                                                                customClassName={"withBorder"}
-                                                                                errors={errors.OtherCost}
-                                                                                disabled={false}
-                                                                            />
+
+                                                                            {toggleSwitchAdditionalOtherCOst &&           // input field to fetch percent value
+                                                                                <TextFieldHookForm
+                                                                                    label=""
+                                                                                    name={"OtherCostPercent"}
+                                                                                    Controller={Controller}
+                                                                                    rules={{
+                                                                                        required: true,
+                                                                                        pattern: {
+                                                                                            value: /^\d*\.?\d*$/,
+                                                                                            message: 'Invalid Number.'
+                                                                                        },
+
+                                                                                        max: {
+                                                                                            value: 100,
+                                                                                            message: "Should not be greater than 100"
+                                                                                        }
+                                                                                    }}
+                                                                                    control={control}
+                                                                                    register={register}
+                                                                                    mandatory={true}
+                                                                                    handleChange={() => { }}
+                                                                                    defaultValue={""}
+                                                                                    className=""
+                                                                                    customClassName={"withBorder"}
+                                                                                    errors={errors.OtherCostPercent}
+                                                                                    disabled={false}
+                                                                                />
+                                                                            }
+
+                                                                            {!toggleSwitchAdditionalOtherCOst &&   //// input field to fetch fixed value
+                                                                                <TextFieldHookForm
+                                                                                    label=""
+                                                                                    name={"OtherCost"}
+                                                                                    Controller={Controller}
+                                                                                    rules={
+                                                                                        { required: true }
+
+                                                                                    }
+                                                                                    control={control}
+                                                                                    register={register}
+                                                                                    mandatory={true}
+                                                                                    handleChange={() => { }}
+                                                                                    defaultValue={""}
+                                                                                    className=""
+                                                                                    customClassName={"withBorder"}
+                                                                                    errors={errors.OtherCost}
+                                                                                    disabled={false}
+                                                                                />
+                                                                            }
                                                                         </div>
                                                                     </Fragment>
 
@@ -344,35 +443,97 @@ function RunSimulationDrawer(props) {
                                                                 }
 
 
-                                                                {(el.Text === "Additional Discount %") && inputAdditionalDiscount ?
-                                                                    <TextFieldHookForm
-                                                                        label=""
-                                                                        name={"Discount"}
-                                                                        Controller={Controller}
-                                                                        control={control}
-                                                                        register={register}
-                                                                        mandatory={true}
-                                                                        rules={{
-                                                                            required: true,
-                                                                            pattern: {
-                                                                                value: /^\d*\.?\d*$/,
-                                                                                message: 'Invalid Number.'
-                                                                            },
+                                                                {(el.Text === "Additional Discount") && inputAdditionalDiscount ?
 
-                                                                            max: {
-                                                                                value: 100,
-                                                                                message: "Should not be greater than 100"
-                                                                            },
-                                                                        }}
-                                                                        handleChange={() => { }}
-                                                                        defaultValue={""}
-                                                                        className=""
-                                                                        customClassName={"withBorder"}
-                                                                        errors={errors.Discount}
-                                                                        disabled={false}
-                                                                    /> : " "
+                                                                    <Fragment>
+                                                                        <div className="toggle-button-per-and-fix">
+                                                                            <label className="normal-switch d-flex align-items-center pb-4 pt-3 w-fit"> <span className="mr-2">Fixed</span>
+                                                                                <Switch
+                                                                                    onChange={onChangeAdditionalDiscount}
+                                                                                    checked={toggleSwitchAdditionalDiscount}
+                                                                                    id="normal-switch"
+                                                                                    disabled={false}
+                                                                                    background="#4DC771"
+                                                                                    onColor="#4DC771"
+                                                                                    onHandleColor="#ffffff"
+                                                                                    offColor="#4DC771"
+                                                                                    uncheckedIcon={true}
+                                                                                    checkedIcon={true}
+                                                                                    height={20}
+                                                                                    width={46}
+                                                                                />
+                                                                                <span className="ml-2">Percentage</span>
+                                                                            </label>
+                                                                            {/* <div> {toggleSwitchLabel ? 'Percentage' : 'Fixed'}</div> */}
+
+
+                                                                            {toggleSwitchAdditionalDiscount === true &&  // input field to fetch percent value
+                                                                                <>
+
+                                                                                    <TextFieldHookForm
+                                                                                        label=""
+                                                                                        name={"DiscountPercent"}
+                                                                                        Controller={Controller}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
+                                                                                        rules={{
+                                                                                            required: true,
+                                                                                            pattern: {
+                                                                                                value: /^\d*\.?\d*$/,
+                                                                                                message: 'Invalid Number.'
+                                                                                            },
+
+                                                                                            max: {
+                                                                                                value: 100,
+                                                                                                message: "Should not be greater than 100"
+                                                                                            }
+                                                                                        }}
+                                                                                        handleChange={() => { }}
+                                                                                        defaultValue={""}
+                                                                                        className=""
+                                                                                        customClassName={"withBorder"}
+                                                                                        errors={errors.DiscountPercent}
+                                                                                        disabled={false}
+                                                                                    />
+                                                                                </>
+                                                                            }
+
+
+
+                                                                            {toggleSwitchAdditionalDiscount === false &&    // input field to fetch fixed value
+                                                                                <>
+
+                                                                                    <TextFieldHookForm
+                                                                                        label=""
+                                                                                        name={"Discount"}
+                                                                                        Controller={Controller}
+                                                                                        control={control}
+                                                                                        register={register}
+                                                                                        mandatory={true}
+                                                                                        rules={{
+                                                                                            required: true,
+                                                                                            pattern: {
+                                                                                                value: /^\d*\.?\d*$/,
+                                                                                                message: 'Invalid Number.'
+                                                                                            },
+
+                                                                                        }}
+                                                                                        handleChange={() => { }}
+                                                                                        defaultValue={""}
+                                                                                        className=""
+                                                                                        customClassName={"withBorder"}
+                                                                                        errors={errors.Discount}
+                                                                                        disabled={false}
+                                                                                    />
+                                                                                </>
+                                                                            }
+                                                                        </div>
+                                                                    </Fragment>
+
+                                                                    : " "
+
                                                                 }
-
 
 
                                                             </div>
@@ -462,6 +623,11 @@ function RunSimulationDrawer(props) {
                                                         errors={errors.EffectiveDate}
                                                     />
                                                 </Col>
+                                                <Col md="12" className="mt-4 warning-text-container">
+                                                    <div className="warning-text">
+                                                        <WarningMessage dClass="mr-3" message={"Unselected checkbox won't be applied in future"} />
+                                                    </div>
+                                                </Col>
                                             </Row>
 
                                         </Col>
@@ -470,10 +636,11 @@ function RunSimulationDrawer(props) {
 
 
 
+
                                     <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
                                         <div className="col-md-12 ">
                                             <div className="text-right px-2">
-                                            <button type="button" className="user-btn mr5 save-btn" onClick={SimulationRun}>
+                                                <button type="button" className="user-btn mr5 save-btn" onClick={SimulationRun} disabled={runSimulationDisable}>
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}
                                                     {"RUN SIMULATION"}

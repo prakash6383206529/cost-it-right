@@ -4,9 +4,11 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { storePartNumber } from '../actions/Costing';
+import {  storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
+
+
 
 function Costing(props) {
 
@@ -36,9 +38,13 @@ function Costing(props) {
   }, [])
 
   const showDetail = (partInfo, costingInfo) => {
+    
     setPartInfo(partInfo)
     setCostingData(costingInfo)
-    toggle("1");
+    if(costingInfo && costingInfo.length>0){
+
+      toggle("1");
+    }
   }
 
   /**

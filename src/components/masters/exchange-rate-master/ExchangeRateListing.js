@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -12,10 +12,8 @@ import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, get
 import AddExchangeRate from './AddExchangeRate';
 import { ADDITIONAL_MASTERS, ExchangeMaster, EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
-import { getLeftMenu, } from '../../../actions/auth/AuthActions';
-import moment from 'moment';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import DayTime from '../../common/DayTimeWrapper'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { EXCHANGERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -23,6 +21,8 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
+import { filterParams } from '../../common/DateFilter'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -50,6 +50,8 @@ class ExchangeRateListing extends Component {
             gridColumnApi: null,
             rowData: null,
             isLoader: true,
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -136,6 +138,7 @@ class ExchangeRateListing extends Component {
     * @description confirm delete Item.
     */
     deleteItem = (Id) => {
+        this.setState({ showPopup: true, deletedId: Id })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeleteItem(Id)
@@ -143,8 +146,9 @@ class ExchangeRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
+        // return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
     }
+
 
     /**
     * @method confirmDeleteItem
@@ -153,11 +157,20 @@ class ExchangeRateListing extends Component {
     confirmDeleteItem = (ID) => {
         this.props.deleteExchangeRate(ID, (res) => {
             if (res.data.Result === true) {
-                toastr.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
+                Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
                 this.getTableListData()
             }
         });
+        this.setState({ showPopup: false })
     }
+
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
+    }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
+
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
         return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
@@ -172,11 +185,16 @@ class ExchangeRateListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
-
-
+    /**
+    * @method hyphenFormatter
+    */
+    hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
 
     /**
     * @method buttonFormatter
@@ -187,9 +205,10 @@ class ExchangeRateListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility,ViewAccessibility } = this.state;
         return (
             <>
+               {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
                 {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -242,32 +261,25 @@ class ExchangeRateListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, this.props.exchangeRateDataList)
+        let tempArr = this.props.exchangeRateDataList && this.props.exchangeRateDataList
+        return this.returnExcelColumn(EXCHANGERATE_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.BankRate === null) {
                 item.BankRate = ' '
             } else if (item.BankCommissionPercentage === null) {
                 item.BankCommissionPercentage = ' '
             } else if (item.CustomRate === null) {
                 item.CustomRate = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={ExchangeMaster}>
+            <ExcelSheet data={temp} name={ExchangeMaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -285,7 +297,8 @@ class ExchangeRateListing extends Component {
         totalValueRenderer: this.buttonFormatter,
         effectiveDateRenderer: this.effectiveDateFormatter,
         customLoadingOverlay: LoaderCustom,
-        customNoRowsOverlay: NoContentFound
+        customNoRowsOverlay: NoContentFound,
+        hyphenFormatter: this.hyphenFormatter
     };
 
     /**
@@ -330,8 +343,9 @@ class ExchangeRateListing extends Component {
         return (
             <>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
-                <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                     <div className="container-fluid">
+                        <ScrollToTop pointProp="go-to-top" />
                         {/* {this.props.loading && <Loader />} */}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             {!this.props.isSimulation &&
@@ -378,11 +392,11 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className="ag-grid-wrapper height-width-wrapper" >
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
-                            <div className="ag-theme-material" style={{ height: '100%', width: '100%' }}>
+                            <div className="ag-theme-material">
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
@@ -402,11 +416,11 @@ class ExchangeRateListing extends Component {
                                 >
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={155}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' minWidth={160}></AgGridColumn>
-                                    <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' minWidth={160}></AgGridColumn>
+                                    <AgGridColumn field="BankRate" headerName="Bank Rate(INR)" minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="CustomRate" headerName="Custom Rate(INR)" minWidth={160} cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
+                                    <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
@@ -420,6 +434,9 @@ class ExchangeRateListing extends Component {
                         </div>
                     </div>
                 </div>
+                {
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+                }
             </ >
         );
     }
@@ -446,7 +463,6 @@ export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
     getCurrencySelectList,
-    getLeftMenu,
     getExchangeRateData
 })(reduxForm({
     form: 'ExchangeRateListing',

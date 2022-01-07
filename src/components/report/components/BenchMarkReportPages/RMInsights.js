@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Col, Row } from 'reactstrap';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
+import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
+import { getCostingTechnologySelectList } from '../../../costing/actions/Costing'
 import { useDispatch, useSelector } from 'react-redux';
-import { getGradeSelectList, getRawMaterialFilterSelectList } from '../actions/Material';
+import { getGradeSelectList, getRawMaterialFilterSelectList } from '../../../masters/actions/Material'
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
-import LoaderCustom from '../../common/LoaderCustom';
+import LoaderCustom from '../../../common/LoaderCustom'
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
-import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../config/constants';
-import { Costmovementgraph } from '../../dashboard/CostMovementGraph';
-import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../dashboard/ChartsDashboard';
-import { getProcessesSelectList } from '../actions/MachineMaster';
+import NoContentFound from '../../../common/NoContentFound'
+import { EMPTY_DATA } from '../../../../config/constants'
+import { Costmovementgraph } from '../../../dashboard/CostMovementGraph'
+import { graphColor1, graphColor2, graphColor3, graphColor4, graphColor6, options5 } from '../../../dashboard/ChartsDashboard'
 
 function Insights(props) {
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
@@ -24,7 +23,8 @@ function Insights(props) {
     const [showListing, setShowListing] = useState(false);
 
     const [techSelected, setTechSelected] = useState(false);
-    const [processSelected, setProcessSelected] = useState(false);
+    const [materialSelected, setMaterialSelected] = useState(false);
+    const [gradeSelected, setGradeSelected] = useState(false);
 
     const [dynamicGrpahData, setDynamicGrpahData] = useState()
     const [averageGrpahData, setAverageGrpahData] = useState()
@@ -38,11 +38,14 @@ function Insights(props) {
 
     useEffect(() => {
         dispatch(getCostingTechnologySelectList(() => { }))
-        dispatch(getProcessesSelectList(() => { }))
+        dispatch(getGradeSelectList(() => { }))
+        dispatch(getRawMaterialFilterSelectList(() => { }))
     }, []);
 
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
-    const processSelectList = useSelector(state => state.machine.processSelectList)
+    const gradeSelectList = useSelector(state => state.material.gradeSelectList)
+    const filterRMSelectList = useSelector(state => state.material.filterRMSelectList.RawMaterials)
+    // console.log(filterRMSelectList,'this is material')
 
 
     const handleTechnologyChange = (value) => {
@@ -55,18 +58,28 @@ function Insights(props) {
         }
     }
 
+    const handleMaterialChange = (value) => {
+        // setTechnology(value)
+        if (value && value !== '') {
+            setMaterialSelected(true)
+        }
+        else {
+            setMaterialSelected(false)
+        }
+    }
+
     const handleGradeChange = (value) => {
         // setTechnology(value)
         if (value && value !== '') {
-            setProcessSelected(true)
+            setGradeSelected(true)
         }
         else {
-            setProcessSelected(false)
+            setGradeSelected(false)
         }
     }
 
     const submitDropdown = () => {
-        if (techSelected && processSelected) {
+        if (techSelected && materialSelected && gradeSelected) {
             setShowListing(true)
             setDynamicGrpahData(rowData[0].graphData);
             setAverageGrpahData(rowData[0].averageData);
@@ -127,8 +140,16 @@ function Insights(props) {
                 })
                 return temp
             }
-            if (label === 'Process') {
-                processSelectList && processSelectList.map(item => {
+            if (label === 'material') {
+                filterRMSelectList && filterRMSelectList.map(item => {
+                    if (item.Value === '0') return false;
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null;
+                });
+                return temp;
+            }
+            if (label === 'grade') {
+                gradeSelectList && gradeSelectList.map(item => {
                     if (item.Value === '0') return false;
                     temp.push({ label: item.Text, value: item.Value })
                     return null;
@@ -217,7 +238,7 @@ function Insights(props) {
                         <Col md="12" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                 <div className="flex-fills label">Technology:</div>
-                                <div className="hide-label flex-fills pl-0">
+                                <div className="hide-label flex-fills pl-0 w-auto">
                                     <SearchableSelectHookForm
                                         label={''}
                                         name={'Technology'}
@@ -237,18 +258,39 @@ function Insights(props) {
                             </div>{/* d-inline-flex */}
 
                             <div className="d-inline-flex justify-content-start align-items-center mr-3">
-                                <div className="flex-fills label">Process Name:</div>
-                                <div className="hide-label flex-fills pl-0">
+                                <div className="flex-fills label">Raw Material:</div>
+                                <div className="hide-label flex-fills pl-0 w-auto">
                                     <SearchableSelectHookForm
                                         label={''}
-                                        name={'Process'}
-                                        placeholder={'Process'}
+                                        name={'Raw Material'}
+                                        placeholder={'Raw Material'}
                                         Controller={Controller}
                                         control={control}
                                         rules={{ required: false }}
                                         register={register}
                                         // defaultValue={technology.length !== 0 ? technology : ''}
-                                        options={renderListing('Process')}
+                                        options={renderListing('material')}
+                                        mandatory={false}
+                                        handleChange={handleMaterialChange}
+                                        errors={errors.Masters}
+                                        customClassName="mb-0"
+                                    />
+                                </div>
+                            </div>{/* d-inline-flex */}
+
+                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                <div className="flex-fills label">Grade:</div>
+                                <div className="hide-label flex-fills pl-0 w-auto">
+                                    <SearchableSelectHookForm
+                                        label={''}
+                                        name={'Grade'}
+                                        placeholder={'Grade'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        register={register}
+                                        // defaultValue={technology.length !== 0 ? technology : ''}
+                                        options={renderListing('grade')}
                                         mandatory={false}
                                         handleChange={handleGradeChange}
                                         errors={errors.Masters}
@@ -270,7 +312,6 @@ function Insights(props) {
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 domLayout='autoHeight'
-                                                floatingFilter={true}
                                                 rowData={rowData}
                                                 rowSelection={'single'}
                                                 onSelectionChanged={onSelectionChanged}

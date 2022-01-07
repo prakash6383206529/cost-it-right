@@ -1,18 +1,18 @@
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { saveComponentCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
+import { saveAssemblyPartRowCostingCalculation, saveComponentCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
-import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function SurfaceTreatment(props) {
-
   const { surfaceData, transportationData, item } = props;
 
   const { handleSubmit } = useForm({
@@ -23,10 +23,10 @@ function SurfaceTreatment(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate } = useSelector(state => state.costing)
-
+  const { ComponentItemDiscountData, CostingEffectiveDate,RMCCTabData,SurfaceTabData,OverheadProfitTabData,PackageAndFreightTabData,DiscountCostData } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   /**
   * @method toggleDrawer
@@ -56,7 +56,11 @@ function SurfaceTreatment(props) {
   const saveData = () => {
 
     if (props.IsAssemblyCalculation) {
-
+      const tabData = RMCCTabData[0]
+      const surfaceTabData= SurfaceTabData[0]
+      const overHeadAndProfitTabData=OverheadProfitTabData[0]
+      const discountAndOtherTabData =DiscountCostData[0]
+      
       let requestData = {
         "CostingId": item.CostingId,
         "PartId": item.PartId,
@@ -74,19 +78,80 @@ function SurfaceTreatment(props) {
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
           "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
           "TransportationCost": item.CostingPartDetails.TransportationCost,
-          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly,
-          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TotalTransportationCostPerAssembly,
+          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TransportationCost,
           "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
       }
-      dispatch(saveComponentCostingSurfaceTab(requestData, res => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-          InjectDiscountAPICall()
+      let assemblyWorkingRow=[]
+      surfaceTabData && surfaceTabData.CostingChildPartDetails && surfaceTabData.CostingChildPartDetails.map((item)=>{
+        if(item.PartType === 'Sub Assembly'){
+          let subAssemblyObj = {
+            "CostingId": item.CostingId,
+            "CostingNumber": "", // Need to find out how to get it.
+            "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
+            "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
+            "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
+            "SurfaceTreatmentCostPerAssembly": 0,
+            "TransportationCostPerAssembly": 0,
+            "TotalSurfaceTreatmentCostPerAssembly": 0,
+            "TotalCostINR": netPOPrice
+          }
+          assemblyWorkingRow.push(subAssemblyObj)
+          return assemblyWorkingRow
         }
-        props.closeDrawer('')
-      }))
+      })
+      let assemblyRequestedData = {
+        
+          "TopRow": {
+            "CostingId":tabData.CostingId,
+            "CostingNumber": tabData.CostingNumber,
+            "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "TotalBoughtOutPartCostWithQuantity": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity +tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity+ tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+            "NetBOPCostAssembly": tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+            "NetConversionCostPerAssembly":tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
+            "NetRMBOPCCCost":tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+            "TotalOperationCostPerAssembly": tabData.CostingPartDetails?.TotalOperationCostPerAssembly,
+            "TotalOperationCostSubAssembly":checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
+            "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
+            "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
+            "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
+            "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
+            "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ?( checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost)+ checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)):0,
+            "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
+            "NetToolCost": discountAndOtherTabData?.CostingPartDetails?.TotalToolCost,
+            "NetOtherCost": discountAndOtherTabData?.CostingPartDetails?.NetOtherCost,
+            "NetDiscounts":discountAndOtherTabData?.CostingPartDetails?.NetDiscountsCost,
+            "TotalCostINR": netPOPrice,
+            "TabId": 2
+          },
+           "WorkingRows": assemblyWorkingRow,
+          "LoggedInUserId": loggedInUserId()
+        
+      }
+      
+      if(!CostingViewMode){
+
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+        dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+            InjectDiscountAPICall()
+          }
+          props.closeDrawer('')
+        }))
+      }
 
     } else {
 
@@ -111,7 +176,7 @@ function SurfaceTreatment(props) {
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+          Toaster.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
           InjectDiscountAPICall()
         }
         props.closeDrawer('')
@@ -165,13 +230,13 @@ function SurfaceTreatment(props) {
                               <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalTransportationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col> */}
                               <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                             </>
                             :
                             <>
                               <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
-                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Extra Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                               <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</Col>
                             </>
                         }
@@ -210,17 +275,16 @@ function SurfaceTreatment(props) {
                 <div className="col-sm-12 text-right">
                   <button
                     type={'button'}
-                    className="submit-button mr5 save-btn"
+                    className="reset mr5 cancel-btn"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                  <button
+                    type={'button'}
+                    className="submit-button mr15 save-btn"
                     onClick={saveData} >
                     <div className={'save-icon'}></div>
                     {'SAVE'}
-                  </button>
-
-                  <button
-                    type={'button'}
-                    className="reset mr15 cancel-btn"
-                    onClick={cancel} >
-                    <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                 </div>
               </Row>

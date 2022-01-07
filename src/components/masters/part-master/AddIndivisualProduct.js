@@ -3,36 +3,41 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
-import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import moment from 'moment';
+import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import imgRedcross from "../../../assests/images/red-cross.png";
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
         super(props);
         this.child = React.createRef();
+        // ********* INITIALIZE REF FOR DROPZONE ********
+        this.dropzone = React.createRef();
         this.state = {
             isEditFlag: false,
             isLoader: false,
             PartId: '',
+            isViewMode: this.props?.data?.isViewMode ? true : false,
 
             selectedPlants: [],
             effectiveDate: '',
 
             files: [],
             DataToCheck: [],
-            DropdownChanged: true
+            DropdownChanged: true,
+            uploadAttachements: true,
+            isSurfaceTreatment: false,
+
         }
     }
 
@@ -45,6 +50,11 @@ class AddIndivisualProduct extends Component {
         this.getDetails()
     }
 
+
+    ProductGroupCodeUpdate = (e) => {
+        this.setState({ DropdownChanged: false })
+
+    }
     /**
     * @method getDetails
     * @description 
@@ -62,14 +72,26 @@ class AddIndivisualProduct extends Component {
 
                     const Data = res.data.Data;
                     this.setState({ DataToCheck: Data })
-                    this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+
+                    this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
-                            effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+                            effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
                         }, () => this.setState({ isLoader: false }))
+                        // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
+                        let files = Data.Attachements && Data.Attachements.map((item) => {
+                            item.meta = {}
+                            item.meta.id = item.FileId
+                            item.meta.status = 'done'
+                            return item
+                        })
+                        if (this.dropzone.current !== null) {
+                            this.dropzone.current.files = files
+                        }
                     }, 500)
                 }
             })
@@ -94,7 +116,7 @@ class AddIndivisualProduct extends Component {
     * @description Handle Effective Date
     */
     handleEffectiveDateChange = (date) => {
-        this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+        this.setState({ effectiveDate: DayTime(date).isValid() ? DayTime(date) : '', });
         this.setState({ DropdownChanged: false })
     };
 
@@ -109,6 +131,7 @@ class AddIndivisualProduct extends Component {
             plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -144,7 +167,15 @@ class AddIndivisualProduct extends Component {
         }
 
         if (status === 'rejected_file_type') {
-            toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
+            Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+        } else if (status === 'error_file_size') {
+            this.dropzone.current.files.pop()
+            Toaster.warning("File size greater than 2 mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            this.dropzone.current.files.pop()
+            Toaster.warning("Something went wrong")
         }
     }
 
@@ -170,7 +201,7 @@ class AddIndivisualProduct extends Component {
                 DeletedBy: loggedInUserId(),
             }
             this.props.fileDeletePart(deleteData, (res) => {
-                toastr.success('File has been deleted successfully.')
+                Toaster.success('File has been deleted successfully.')
                 let tempArr = this.state.files.filter(item => item.FileId !== FileId)
                 this.setState({ files: tempArr })
             })
@@ -179,10 +210,14 @@ class AddIndivisualProduct extends Component {
             let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
             this.setState({ files: tempArr })
         }
+
+        // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+        if (this.dropzone?.current !== null) {
+            this.dropzone.current.files.pop()
+        }
     }
 
     Preview = ({ meta }) => {
-        const { name, percent, status } = meta
         return (
             <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
                 {/* {Math.round(percent)}% */}
@@ -210,14 +245,14 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isSurfaceTreatment, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         if (isEditFlag) {
 
 
-            if (DropdownChanged) {
+            if (DropdownChanged && uploadAttachements) {
                 this.cancel()
                 return false;
             }
@@ -235,7 +270,7 @@ class AddIndivisualProduct extends Component {
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
                 Remark: values.Remark,
-                EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+                EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 // Plants: [],
                 Attachements: updatedFiles,
                 IsForcefulUpdated: true
@@ -245,18 +280,11 @@ class AddIndivisualProduct extends Component {
                 this.props.reset()
                 this.props.updateProduct(updateData, (res) => {
                     if (res.data.Result) {
-                        toastr.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
+                        Toaster.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
                         this.cancel()
                     }
                 });
-                // const toastrConfirmOptions = {
-                //     onOk: () => {
 
-                //     },
-                //     onCancel: () => { },
-                //     component: () => <ConfirmComponent />,
-                // }
-                // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
             }
 
 
@@ -270,7 +298,7 @@ class AddIndivisualProduct extends Component {
                 ProductName: values.ProductName,
                 Description: values.Description,
                 ECNNumber: values.ECNNumber,
-                EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+                EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 RevisionNumber: values.RevisionNumber,
                 DrawingNumber: values.DrawingNumber,
                 ProductGroupCode: values.ProductGroupCode,
@@ -281,7 +309,7 @@ class AddIndivisualProduct extends Component {
             this.props.reset()
             this.props.createProduct(formData, (res) => {
                 if (res.data.Result === true) {
-                    toastr.success(MESSAGES.PRODUCT_ADD_SUCCESS);
+                    Toaster.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()
                 }
             });
@@ -300,7 +328,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration } = this.props;
-        const { isEditFlag, } = this.state;
+        const { isEditFlag, isViewMode } = this.state;
         return (
             <>
                 {this.state.isLoader && <LoaderCustom />}
@@ -357,23 +385,7 @@ class AddIndivisualProduct extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
-                                                    {/* {initialConfiguration &&
-                            initialConfiguration.IsBOMNumberDisplay && (
-                              <Col md="3">
-                                <Field
-                                  label={`BOM No.`}
-                                  name={"BOMNumber"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
-                                  component={renderText}
-                                  required={true}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </Col>
-                            )} */}
+
                                                     <Col md="3">
                                                         <Field
                                                             label={`Description`}
@@ -399,10 +411,13 @@ class AddIndivisualProduct extends Component {
                                                                     placeholder={""}
                                                                     validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
                                                                     component={renderText}
+                                                                    onChange={
+                                                                        this.ProductGroupCodeUpdate
+                                                                    }
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={isViewMode}
                                                                 />
                                                             </Col>
                                                         )}
@@ -455,27 +470,9 @@ class AddIndivisualProduct extends Component {
 
                                                     <Col md="3">
                                                         <div className="form-group">
-                                                            {/* <label>
-                                Effective Date
-                                    <span className="asterisk-required">*</span>
-                              </label> */}
+
                                                             <div className="inputbox date-section">
-                                                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
+
                                                                 <Field
                                                                     label="Effective Date"
                                                                     name="EffectiveDate"
@@ -486,12 +483,12 @@ class AddIndivisualProduct extends Component {
                                                                     autoComplete={'off'}
                                                                     required={true}
                                                                     changeHandler={(e) => {
-                                                                        //e.preventDefault()
+
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={isEditFlag ? true : false}
-                                                                //minDate={moment()}
+                                                                    disabled={isViewMode}
+
                                                                 />
 
                                                             </div>
@@ -501,27 +498,7 @@ class AddIndivisualProduct extends Component {
                                                 </Row>
 
                                                 <Row>
-                                                    {/* <Col md="3">
-                            <Field
-                              label="Plant"
-                              name="Plant"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPlants == null ||
-                                  this.state.selectedPlants.length === 0
-                                  ? []
-                                  : this.state.selectedPlants
-                              }
-                              options={this.renderListing("plant")}
-                              selectionChanged={this.handlePlant}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              //mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={isEditFlag ? true : false}
-                            />
-                          </Col> */}
+
 
 
                                                 </Row>
@@ -550,13 +527,12 @@ class AddIndivisualProduct extends Component {
                                                         <label>
                                                             Upload Files (upload up to 3 files)
                                                         </label>
-                                                        {this.state.files &&
-                                                            this.state.files.length >= 3 ? (
-                                                            <div class="alert alert-danger" role="alert">
-                                                                Maximum file upload limit has been reached.
-                                                            </div>
-                                                        ) : (
+                                                        <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                                                            Maximum file upload limit has been reached.
+                                                        </div>
+                                                        <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                                                             <Dropzone
+                                                                ref={this.dropzone}
                                                                 getUploadParams={this.getUploadParams}
                                                                 onChangeStatus={this.handleChangeStatus}
                                                                 PreviewComponent={this.Preview}
@@ -565,6 +541,7 @@ class AddIndivisualProduct extends Component {
                                                                 initialFiles={this.state.initialFiles}
                                                                 maxFiles={3}
                                                                 maxSizeBytes={2000000}
+                                                                disabled={isViewMode}
                                                                 inputContent={(files, extra) =>
                                                                     extra.reject ? (
                                                                         "Image, audio and video files only"
@@ -591,9 +568,9 @@ class AddIndivisualProduct extends Component {
                                                                         extra.reject ? { color: "red" } : {},
                                                                 }}
                                                                 classNames="draper-drop"
-                                                                disabled={isEditFlag ? true : false}
+
                                                             />
-                                                        )}
+                                                        </div>
                                                     </Col>
                                                     <Col md="3">
                                                         <div className={"attachment-wrapper"}>
@@ -609,24 +586,19 @@ class AddIndivisualProduct extends Component {
                                                                             <a href={fileURL} target="_blank">
                                                                                 {f.OriginalFileName}
                                                                             </a>
-                                                                            {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                                                            {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
 
-                                                                            <img
-                                                                                alt={""}
-                                                                                className="float-right"
-                                                                                onClick={() =>
-                                                                                    this.deleteFile(
-                                                                                        f.FileId,
-                                                                                        f.FileName
-                                                                                    )
-                                                                                }
-                                                                                src={imgRedcross}
-                                                                            ></img>
+                                                                            {!isViewMode &&
+                                                                                <img
+                                                                                    alt={""}
+                                                                                    className="float-right"
+                                                                                    onClick={() =>
+                                                                                        this.deleteFile(
+                                                                                            f.FileId,
+                                                                                            f.FileName
+                                                                                        )
+                                                                                    }
+                                                                                    src={imgRedcross}
+                                                                                ></img>}
                                                                         </div>
                                                                     );
                                                                 })}
@@ -648,6 +620,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type="submit"
                                                         className="user-btn mr5 save-btn"
+                                                        disabled={isViewMode}
                                                     >
                                                         <div className={"save-icon"}></div>
                                                         {isEditFlag ? "Update" : "Save"}

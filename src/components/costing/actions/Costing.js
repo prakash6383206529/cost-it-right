@@ -15,10 +15,16 @@ import {
   GET_COSTING_SPECIFIC_TECHNOLOGY,
   EMPTY_GUID,
   SET_PLASTIC_ARR,
+  SET_ASSEM_BOP_CHARGE,
+  CHECK_IS_DATA_CHANGE,
+  CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
+  CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
+  CHECK_IS_TOOL_DATA_CHANGE,
+  CHECK_IS_DISCOUNT_DATA_CHANGE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
-import { toastr } from 'react-redux-toastr'
+import Toaster from '../../common/Toaster'
 
 let headers = config
 
@@ -270,6 +276,7 @@ export function getZBCCostingByCostingId(CostingId, callback) {
       })
       const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
       request.then((response) => {
+        
         if (response.data.Result) {
           dispatch({
             type: GET_COSTING_DATA_BY_COSTINGID,
@@ -308,7 +315,6 @@ export function getZBCCostingByCostingId(CostingId, callback) {
  * @description SET COSTING DATA LIST
  */
 export function setCostingDataList(flag, CostingDataList, callback) {
-  // console.log('flag: ', flag, CostingDataList);
   return (dispatch) => {
     dispatch({
       type: SET_COSTING_DATALIST_BY_COSTINGID,
@@ -460,6 +466,9 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
+
+
+
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -1081,9 +1090,11 @@ export function getInventoryDataByHeads(data, callback) {
  * @description GET PAYMENT TERM DETAIL BY COSTING HEADS
  */
 export function getPaymentTermsDataByHeads(data, callback) {
+  
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}/${data.Plantid}`, headers,)
+
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -1390,6 +1401,7 @@ export function fileUploadCosting(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
+      callback(error)
     })
   }
 }
@@ -1486,7 +1498,7 @@ export function getZBCCostingSelectListByPart(PartId, SupplierId, UserId, callba
         })
         callback(response)
       } else {
-        toastr.error(MESSAGES.SOME_ERROR)
+        Toaster.error(MESSAGES.SOME_ERROR)
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE })
@@ -1505,7 +1517,7 @@ export function createPartWithSupplier(data, callback) {
     request
       .then((response) => {
         if (response.data.Result) {
-          toastr.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS)
+          Toaster.success(MESSAGES.ADD_PART_WITH_SUPPLIER_SUCCESS)
         }
         callback(response)
       })
@@ -1567,7 +1579,7 @@ export function getCostSummaryOtherOperation(supplierId, callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1682,7 +1694,7 @@ export function fetchFreightHeadsAPI(callback) {
           })
           callback(response)
         } else {
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1754,7 +1766,7 @@ export function getCostingFreight(data, callback) {
           callback(response)
         } else if (response.data == '') {
           dispatch({ type: API_FAILURE })
-          toastr.warning('No content available for selected freight.')
+          Toaster.warning('No content available for selected freight.')
         }
       })
       .catch((error) => {
@@ -1819,7 +1831,7 @@ export function getSingleCostingDetails(costingId, callback) {
         } else {
 
 
-          toastr.error(MESSAGES.SOME_ERROR)
+          Toaster.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
@@ -1920,7 +1932,8 @@ export const setCostingApprovalData = (data) => (dispatch) => {
 export function getCostingByVendorAndVendorPlant(partNo, VendorId, VendorPlantId, destinationPlantId, callback) {
   return (dispatch) => {
     if (partNo !== '' && VendorId !== '' && VendorPlantId !== '') {
-      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}/${destinationPlantId}`, headers,)
+      const query = `${partNo}/${VendorId}/${VendorPlantId === '-' ? EMPTY_GUID : VendorPlantId}/${destinationPlantId === '-' ? EMPTY_GUID : destinationPlantId}`
+      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${query}`, headers,)
       request.then((response) => {
         callback(response)
         if (response.data.Result || response.status === 204) {
@@ -2125,6 +2138,7 @@ export function gridDataAdded(IsCostingDateDisabled) {
  * @description SET OVERHEAD PROFIT TAB DATA  
  */
 export function setRMCutOff(cutOffObj) {
+
   return (dispatch) => {
     dispatch({
       type: SET_CUTOFF_RMC,
@@ -2181,3 +2195,140 @@ export function checkDataForCopyCosting(data, callback) {
     })
   }
 }
+
+/*
+* @method saveAssemblyPartRowCostingCalculation
+* @description SAVE ASSEMBLY COSTING RM+CC TAB
+*/
+export function saveAssemblyPartRowCostingCalculation(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveAssemblyPartRowCostingCalculation, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+export function saveAssemblyBOPHandlingCharge(data, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_ASSEM_BOP_CHARGE,
+      payload: data
+    })
+  }
+}
+
+/**
+ * @method getVBCExistingCosting
+ * @description get VBC Costing Select List By Part
+ */
+export function getNCCExistingCosting(PartId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getNCCCExistingCosting}/${PartId}`, headers)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      //apiErrors(error);
+    })
+  }
+}
+
+
+/**
+ * @method createZBCCosting
+ * @description CREATE ZBC COSTING
+ */
+export function createNCCCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createNCCCosting, data, headers)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isOverheadProfitDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isPackageAndFreightDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+
+
+
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isToolDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_TOOL_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+
+
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isDiscountDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_DISCOUNT_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+
+
+

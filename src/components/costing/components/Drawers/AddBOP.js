@@ -9,7 +9,7 @@ import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { toastr } from 'react-redux-toastr';
+import Toaster from '../../../common/Toaster';
 import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
@@ -145,7 +145,7 @@ function AddBOP(props) {
   */
   const addRow = () => {
     if (selectedRowData.length === 0) {
-      toastr.warning('Please select row.')
+      Toaster.warning('Please select row.')
       return false;
     }
     toggleDrawer('')
@@ -358,31 +358,7 @@ function AddBOP(props) {
               </form >
               <Row className="mx-0">
                 <Col className="hidepage-size">
-                  {/* <BootstrapTable
-                  data={tableData}
-                  striped={false}
-                  bordered={false}
-                  hover={false}
-                  options={options}
-                  selectRow={selectRowProp}
-                  search
-                  multiColumnSearch={true}
-                  //exportCSV
-                  //ignoreSinglePage
-                  //ref={'table'}
-                  pagination>
-                  <TableHeaderColumn dataField="BoughtOutPartId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{'BOP Type'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BoughtOutPartNumber" >{'BOP Part No.'}</TableHeaderColumn>
-                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="BoughtOutPartName" >{'BOP Part Name'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BoughtOutPartCategory" >{'BOP Category'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Specification" searchable={false} >{'Specification'}</TableHeaderColumn>
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Vendor" >Vendor</TableHeaderColumn>}
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" dataFormat={currencyFormatter} searchable={false} >Currency</TableHeaderColumn>
-                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCostConversion" dataFormat={netLandedFormat} searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" dataFormat={netLandedConversionFormat} searchable={false} >{renderNetLandedConversionRate()}</TableHeaderColumn>
-                </BootstrapTable> */}
-                  <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                  <div className="ag-grid-wrapper height-width-wrapper">
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -408,6 +384,7 @@ function AddBOP(props) {
                         noRowsOverlayComponent={'customNoRowsOverlay'}
                         noRowsOverlayComponentParams={{
                           title: EMPTY_DATA,
+                          imagClass: 'imagClass'
                         }}
                         suppressRowClickSelection={true}
                         rowSelection={'multiple'}
@@ -423,6 +400,7 @@ function AddBOP(props) {
                         <AgGridColumn field="Specification" cellRenderer={'specificationFormat'}></AgGridColumn>
                         {costData && costData.VendorType === ZBC && <AgGridColumn field="Vendor"></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field='UOM' ></AgGridColumn>
                         <AgGridColumn field="NetLandedCost" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostConversion" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
