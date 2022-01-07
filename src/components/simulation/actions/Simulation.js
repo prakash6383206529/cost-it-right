@@ -761,7 +761,7 @@ export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraf
             type: GET_ASSEMBLY_SIMULATION_LIST,
             payload: [],
         })
-        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?strRequest=${JSON.stringify(requestData)}`, headers);
+        const request = axios.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, headers);
         request.then((response) => {
             if (response.data.Result) {
                 if (isAssemblyInDraft === true) {
