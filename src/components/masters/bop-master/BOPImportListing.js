@@ -443,12 +443,14 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                    <AgGridColumn field="Currency"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" hide={getConfigurationKey().IsDestinationPlantConfigure !== false} cellRenderer={'hyphenFormatter'} headerName="Plant"></AgGridColumn>
                                     <AgGridColumn field="DestinationPlant" hide={getConfigurationKey().IsDestinationPlantConfigure !== true} cellRenderer={'plantFormatter'} headerName="Plant"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
-                                    <AgGridColumn field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
