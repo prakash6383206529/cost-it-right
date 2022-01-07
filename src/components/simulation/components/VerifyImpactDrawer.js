@@ -120,7 +120,9 @@ function VerifyImpactDrawer(props) {
                 }
               </Row>
 
-              <Row className="pr-0 mx-0">
+              {/* ********** THIS SHOULD STAY COMMENTED IN MINDA ********** */}
+
+              {/* <Row className="pr-0 mx-0">
                 <Col md="12"> <HeaderTitle title={'FG wise Impact:'} /></Col>
               </Row>
 
@@ -135,7 +137,7 @@ function VerifyImpactDrawer(props) {
                     impactType={'FgWise'}
                   />
                 </Col>
-              </Row>
+              </Row> */}
 
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Assembly Wise Impact:'} /></Col>
