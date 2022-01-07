@@ -139,7 +139,7 @@ function AddNCCDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"Add Vendor or Plant:"}</h3>
+                  <h3>{"Add Vendor/Plant"}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
