@@ -63,9 +63,9 @@ function PaymentTerms(props) {
      */
     const onPressPaymentTerms = (value) => {
         setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
-        if(value){
-            callPaymentTermAPI()
-        }
+
+            callPaymentTermAPI(value)
+       
         dispatch(gridDataAdded(true))
     }
 
@@ -74,8 +74,8 @@ function PaymentTerms(props) {
      * @description ON TOGGLE OF PAYEMNT TERMS API CALL
     */
 
-    const callPaymentTermAPI = ()=>{
-        if ( Object.keys(costData).length >0) {
+    const callPaymentTermAPI = (isCallAPI)=>{
+        if ( Object.keys(costData).length >0 && isCallAPI) {
 
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
