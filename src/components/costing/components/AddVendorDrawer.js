@@ -8,6 +8,7 @@ import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectLi
 import { getVBCDetailByVendorId, } from '../actions/Costing';
 import { checkVendorPlantConfigurable, getConfigurationKey, getVendorCode, } from '../../../helper';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function AddVendorDrawer(props) {
 
@@ -18,6 +19,8 @@ function AddVendorDrawer(props) {
   const [data, setData] = useState({});
   const [selectedVendors, setSelectedVendors] = useState([]);
   const [DestinationPlant, setDestinationPlant] = useState([]);
+    //dropdown loader 
+    const [inputLoader, setInputLoader] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -115,8 +118,10 @@ function AddVendorDrawer(props) {
           VendorId: newValue.value,
           VendorPlantId: getConfigurationKey().IsVendorPlantConfigurable ? newValue.value : "00000000-0000-0000-0000-000000000000",
         }
+        setInputLoader(true)
         dispatch(getVBCDetailByVendorId(data, (res) => {
           if (res && res.data && res.data.Data) {
+            setInputLoader(false)
             setData(res.data.Data)
           }
         }))
@@ -151,6 +156,7 @@ function AddVendorDrawer(props) {
         VendorPlantId: getConfigurationKey().IsVendorPlantConfigurable ? newValue.value : "00000000-0000-0000-0000-000000000000",
       }
       dispatch(getVBCDetailByVendorId(data, (res) => {
+        
         if (res && res.data && res.data.Data) {
           setData(res.data.Data)
         }
@@ -217,7 +223,9 @@ function AddVendorDrawer(props) {
                 </Col>
 
                 {initialConfiguration?.IsDestinationPlantConfigure &&
+                
                   <Col md="12">
+                    {inputLoader  && <LoaderCustom customClass="input-loader vendor-input"/>}
                     <SearchableSelectHookForm
                       label={"Destination Plant"}
                       name={"DestinationPlant"}
