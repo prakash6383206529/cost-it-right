@@ -44,9 +44,9 @@ function Icc(props) {
     const onPressInventory = (value) => {
 
         setIsInventoryApplicable(!IsInventoryApplicable)
-       
+     
             callInventoryAPI(value)
-    
+        
         dispatch(gridDataAdded(true))
     }
 

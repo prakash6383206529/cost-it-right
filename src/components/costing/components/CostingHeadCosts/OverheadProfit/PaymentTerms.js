@@ -63,9 +63,9 @@ function PaymentTerms(props) {
      */
     const onPressPaymentTerms = (value) => {
         setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
-   
+
             callPaymentTermAPI(value)
-   
+       
         dispatch(gridDataAdded(true))
     }
 
