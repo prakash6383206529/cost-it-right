@@ -10,10 +10,11 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import _ from 'lodash'
 
 const gridOptions = {};
 
-function AssemblyWiseImpact(props) {
+function AssemblyWiseImpactSummary(props) {
     const { impactType, dataForAssemblyImpact, isPartImpactAssembly } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
@@ -23,13 +24,13 @@ function AssemblyWiseImpact(props) {
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const dispatch = useDispatch();
 
-    const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
+    const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
 
     useEffect(() => {
         setloader(true)
         if (dataForAssemblyImpact !== undefined && (Object.keys(dataForAssemblyImpact).length !== 0 || dataForAssemblyImpact.length > 0) && count === 0) {
             let requestData = []
-            let isAssemblyInDraft = true
+            let isAssemblyInDraft = false
             if (isPartImpactAssembly) {
                 let obj = {
                     CostingId: dataForAssemblyImpact?.CostingId,
@@ -39,6 +40,13 @@ function AssemblyWiseImpact(props) {
                 requestData = [obj]
 
             } else {
+                let uniqueArr = _.uniqBy(dataForAssemblyImpact, function(o){
+                    return o.CostingId;
+                });
+                uniqueArr && uniqueArr.map(item => {
+                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+                    return null
+                })
                 dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
                     requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
                     return null
@@ -59,15 +67,6 @@ function AssemblyWiseImpact(props) {
         setloader(false)
 
     }, [dataForAssemblyImpact])
-
-    /**
-    * @method hyphenFormatter
-    */
-    const hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -101,7 +100,6 @@ function AssemblyWiseImpact(props) {
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        hyphenFormatter: hyphenFormatter
     };
 
     return (
@@ -131,7 +129,7 @@ function AssemblyWiseImpact(props) {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                rowData={simulationAssemblyList}
+                                rowData={simulationAssemblyListSummary}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
@@ -143,14 +141,14 @@ function AssemblyWiseImpact(props) {
                                 }}
                                 frameworkComponents={frameworkComponents}
                             >
-                                <AgGridColumn field="PartNumber" headerName='Assembly Number' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="RevisionNumber" headerName='Revision No.' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="PartName" headerName='Name' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Level" headerName="Child's Level" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="PartNumber" headerName='Assembly Number'></AgGridColumn>
+                                <AgGridColumn field="RevisionNumber" headerName='Revision No.'></AgGridColumn>
+                                <AgGridColumn field="PartName" headerName='Name'></AgGridColumn>
+                                <AgGridColumn field="Level" headerName="Child's Level"></AgGridColumn>
+                                {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity'></AgGridColumn>}
+                                <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly'></AgGridColumn>
+                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly'></AgGridColumn>}
+                                <AgGridColumn field="Variance" headerName='Variance/Assembly'></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -180,5 +178,5 @@ function AssemblyWiseImpact(props) {
 * @param {function} mapStateToProps
 * @param {function} mapDispatchToProps
 */
-export default AssemblyWiseImpact;
+export default AssemblyWiseImpactSummary;
 

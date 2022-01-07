@@ -45,6 +45,7 @@ function ApproveRejectDrawer(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
   const [loader, setLoader] = useState(false)
+  const [isDisable, setIsDisable] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -260,7 +261,7 @@ function ApproveRejectDrawer(props) {
 
       //THIS CONDITION IS FOR SAVE SIMULATION
       dispatch(saveSimulationForRawMaterial(simObj, res => {
-        if (res.data.Result) {
+        if (res?.data?.Result) {
           setLoader(true)
           Toaster.success('Simulation has been saved successfully.')
           setLoader(false)
@@ -328,6 +329,7 @@ function ApproveRejectDrawer(props) {
       }
       if (!reason) return false
     }
+    setIsDisable(true)
     if (!isSimulation) {
       /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
       let Data = []
@@ -353,7 +355,8 @@ function ApproveRejectDrawer(props) {
       if (type === 'Approve') {
         reset()
         dispatch(approvalRequestByApprove(Data, res => {
-          if (res.data.Result) {
+          setIsDisable(false)
+          if (res?.data?.Result) {
             if (IsPushDrawer) {
               Toaster.success('The costing has been approved')
               setOpenPushButton(true)
@@ -367,7 +370,8 @@ function ApproveRejectDrawer(props) {
       } else {
         // REJECT CONDITION
         dispatch(rejectRequestByApprove(Data, res => {
-          if (res.data.Result) {
+          setIsDisable(false)
+          if (res?.data?.Result) {
             Toaster.success('Costing Rejected')
             props.closeDrawer('', 'submit')
           }
@@ -470,7 +474,8 @@ function ApproveRejectDrawer(props) {
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
-          if (res.data.Result) {
+          setIsDisable(false)
+          if (res?.data?.Result) {
             Toaster.success('Simulation token has been sent for approval.')
             props.closeDrawer('', 'submit')
           }
@@ -479,7 +484,8 @@ function ApproveRejectDrawer(props) {
       else if (type === 'Approve') {
         //THIS CONDITION IS FOR APPROVE THE SIMULATION REQUEST 
         dispatch(simulationApprovalRequestByApprove(approverObject, res => {
-          if (res.data.Result) {
+          setIsDisable(false)
+          if (res?.data?.Result) {
             if (IsPushDrawer) {
               Toaster.success('The simulation token has been approved')
               setOpenPushButton(true)
@@ -493,14 +499,15 @@ function ApproveRejectDrawer(props) {
       } else {
         //SIMULATION REJECT CONDITION
         dispatch(simulationRejectRequestByApprove(approverObject, res => {
-          if (res.data.Result) {
+          setIsDisable(false)
+          if (res?.data?.Result) {
             Toaster.success('The simulation token has been rejected')
             props.closeDrawer('', 'submit')
           }
         }))
       }
     }
-  }), 500)
+  }), 600)
 
   const renderDropdownListing = (label) => {
     const tempDropdownList = []
@@ -1003,6 +1010,7 @@ function ApproveRejectDrawer(props) {
                     type="button"
                     className="submit-button  save-btn"
                     onClick={onSubmit}
+                    disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}

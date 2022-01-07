@@ -28,6 +28,7 @@ class AddFuel extends Component {
     this.state = {
       isEditFlag: false,
       FuelDetailId: '',
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       fuel: [],
       UOM: [],
@@ -256,9 +257,12 @@ class AddFuel extends Component {
       rateGridEditIndex: index,
       isEditIndex: true,
       //effectiveDate: new Date(moment(tempData.effectiveDate).format('DD/MM/YYYY')),
-      effectiveDate: tempData.effectiveDate,
+      effectiveDate: new Date(DayTime(tempData.effectiveDate).format("MM/DD/YYYY")),
+
       StateName: { label: tempData.StateLabel, value: tempData.StateId },
     }, () => this.props.change('Rate', tempData.Rate))
+
+
   }
 
   /**
@@ -292,9 +296,9 @@ class AddFuel extends Component {
   }
 
   /**
- * @method handleChange
- * @description Handle Effective Date
- */
+  * @method handleChange
+  * @description Handle Effective Date
+  */
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
@@ -407,15 +411,7 @@ class AddFuel extends Component {
       }
 
 
-      // 
-      // 
-      // 
-      // 
-      // if (AddUpdate && (HandleChanged) && DeleteChanged) {
-      //   
-      //   this.cancel()
-      //   return false
-      // }
+
 
       let requestData = {
         FuelDetailId: FuelDetailId,
@@ -464,7 +460,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag } = this.state;
+    const { isOpenFuelDrawer, isEditFlag, isViewMode } = this.state;
 
     return (
       <>
@@ -503,7 +499,6 @@ class AddFuel extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("fuel")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
                                     this.state.fuel == null ||
                                       this.state.fuel.length === 0
@@ -567,12 +562,10 @@ class AddFuel extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("state")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleState}
                                   valueDescription={this.state.StateName}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                 />
                               </div>
                             </div>
@@ -588,6 +581,7 @@ class AddFuel extends Component {
                               required={true}
                               className=""
                               customClassName=" withBorder"
+                              disabled={isViewMode}
                             />
                           </Col>
                           <Col md="3">
@@ -599,7 +593,7 @@ class AddFuel extends Component {
                                 <DatePicker
                                   required
                                   name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
+                                  selected={(this.state.effectiveDate)}
                                   onChange={this.handleEffectiveDateChange}
                                   showMonthDropdown
                                   showYearDropdown
@@ -611,7 +605,7 @@ class AddFuel extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                 />
                               </div>
                             </div>
@@ -621,12 +615,12 @@ class AddFuel extends Component {
                               {this.state.isEditIndex ? (
                                 <>
                                   <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
-                                  {/* <button type="button" className={'btn btn-secondary mt30 pull-left'} onClick={this.resetRateGridData} >Cancel</button> */}
                                 </>
                               ) : (
                                 <button
                                   type="button"
                                   className={"user-btn mt30 pull-left"}
+                                  disabled={isViewMode}
                                   onClick={this.rateTableHandler}
                                 >
                                   <div className={"plus"}></div>ADD
@@ -661,6 +655,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Edit mr-2"
                                             type={"button"}
+                                            disabled={isViewMode}
                                             onClick={() =>
                                               this.editItemDetails(index)
                                             }
@@ -668,6 +663,7 @@ class AddFuel extends Component {
                                           <button
                                             className="Delete"
                                             type={"button"}
+                                            disabled={isViewMode}
                                             onClick={() =>
                                               this.deleteItem(index)
                                             }
@@ -698,6 +694,7 @@ class AddFuel extends Component {
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
+                            disabled={isViewMode}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}

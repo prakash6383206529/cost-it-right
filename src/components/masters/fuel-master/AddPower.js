@@ -37,6 +37,7 @@ class AddPower extends Component {
       IsVendor: false,
       temp: 0,
       StateName: [],
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       selectedPlants: [],
       effectiveDate: new Date(),
@@ -370,7 +371,7 @@ class AddPower extends Component {
         PowerDetailID: '',
       })
       this.props.getPowerDetailData('', () => { })
-      //this.props.getVendorPowerDetailData('', () => { })
+
     }
   }
 
@@ -523,8 +524,7 @@ class AddPower extends Component {
       return false;
     }
 
-    // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
-    // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+
 
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
@@ -612,8 +612,6 @@ class AddPower extends Component {
 
 
 
-    // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
-    // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
 
@@ -636,8 +634,7 @@ class AddPower extends Component {
       isAddedSEB: true,
     }, () => {
 
-      //this.props.change('SEBCostPerUnit', 0)
-      //this.props.change('SEBPowerContributaion', 0)
+
     });
     this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
@@ -668,10 +665,7 @@ class AddPower extends Component {
       return false;
     }
 
-    // if (this.state.temp > 100) {
-    //   Toaster.warning('Fields 100');
-    //   return false;
-    // }
+
 
     if (source.label === 'Generator Diesel' && fieldsObj.UnitGeneratedPerUnitOfFuel === undefined) {
       Toaster.warning('Fields should not be empty');
@@ -1205,7 +1199,7 @@ class AddPower extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
-      checkPowerContribution, netContributionValue } = this.state;
+      checkPowerContribution, netContributionValue, isViewMode } = this.state;
     let tempp = 0
     return (
       <>
@@ -1265,7 +1259,6 @@ class AddPower extends Component {
                                     component={searchableSelect}
                                     placeholder={'Select'}
                                     options={this.renderListing('VendorNameList')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                     validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
                                     required={true}
                                     handleChangeDescription={this.handleVendorName}
@@ -1293,7 +1286,7 @@ class AddPower extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                disabled={false}
+                                disabled={isViewMode}
                               />
                             </Col>}
                             <Col md="4">
@@ -1309,6 +1302,7 @@ class AddPower extends Component {
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1334,7 +1328,6 @@ class AddPower extends Component {
                                     component={searchableSelect}
                                     placeholder={'Select'}
                                     options={this.renderListing('state')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
                                     validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
                                     required={true}
                                     handleChangeDescription={this.handleState}
@@ -1386,7 +1379,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1404,7 +1397,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1440,7 +1433,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1476,7 +1469,7 @@ class AddPower extends Component {
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1494,7 +1487,7 @@ class AddPower extends Component {
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={!isCostPerUnitConfigurable ? true : false}
+                                    disabled={!isCostPerUnitConfigurable || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1511,7 +1504,7 @@ class AddPower extends Component {
                                     component={renderText}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1528,7 +1521,7 @@ class AddPower extends Component {
                                     component={renderNumberInputField}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                    disabled={isEditFlagForStateElectricity || isViewMode ? true : false}
                                   />
                                 </div>
                               </div>
@@ -1559,7 +1552,7 @@ class AddPower extends Component {
                                     <div className="inputbox date-section">
                                       <DatePicker
                                         name="EffectiveDate"
-                                        selected={this.state.effectiveDate}
+                                        selected={new Date(this.state.effectiveDate)}
                                         onChange={this.handleEffectiveDateChange}
                                         showMonthDropdown
                                         showYearDropdown
@@ -1591,7 +1584,7 @@ class AddPower extends Component {
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
-                                  disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity ? true : false}
+                                  disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity || isViewMode ? true : false}
                                 />
                               </div>
                               <div className="btn-mr-rate pr-0 col-auto">
@@ -1639,12 +1632,10 @@ class AddPower extends Component {
                                     component={searchableSelect}
                                     placeholder={'Select'}
                                     options={this.renderListing('Source')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    //validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
                                     required={true}
                                     handleChangeDescription={this.handleSource}
                                     valueDescription={this.state.source}
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1659,10 +1650,9 @@ class AddPower extends Component {
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderText}
-                                    //required={true}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1677,10 +1667,9 @@ class AddPower extends Component {
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                     component={renderText}
-                                    //required={true}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1697,12 +1686,9 @@ class AddPower extends Component {
                                         component={searchableSelect}
                                         placeholder={'Select'}
                                         options={this.renderListing('UOM')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                                        //required={true}
                                         handleChangeDescription={this.handleUOM}
                                         valueDescription={this.state.UOM}
-                                        disabled={false}
+                                        disabled={isViewMode}
                                       />
                                     </div>
                                   </div>
@@ -1719,7 +1705,7 @@ class AddPower extends Component {
                                         component={renderNumberInputField}
                                         className=""
                                         customClassName=" withBorder"
-                                        disabled={false}
+                                        disabled={isViewMode}
                                       />
                                     </div>
                                   </div>
@@ -1737,7 +1723,7 @@ class AddPower extends Component {
                                         required={true}
                                         className=""
                                         customClassName=" withBorder"
-                                        disabled={false}
+                                        disabled={isViewMode}
                                       />
                                     </div>
                                   </div>
@@ -1757,7 +1743,7 @@ class AddPower extends Component {
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
                                   />
                                 </div>
                               </div>
@@ -1791,7 +1777,7 @@ class AddPower extends Component {
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
-                                    disabled={false}
+                                    disabled={isViewMode}
 
                                   />
                                 </div>
@@ -1818,7 +1804,7 @@ class AddPower extends Component {
                                   <button
                                     type="button"
                                     className={`${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
-                                    disabled={checkPowerContribution ? true : false}
+                                    disabled={checkPowerContribution || isViewMode ? true : false}
                                     onClick={() => this.powerTableHandler(true)}>
                                     <div className={'plus'}></div>ADD</button>}
 
@@ -1839,8 +1825,7 @@ class AddPower extends Component {
                                   {
                                     this.state.powerGrid &&
                                     this.state.powerGrid.map((item, index) => {
-                                      // tempp = Number(tempp) + Number(item.PowerContributionPercentage)
-                                      // this.state.temp = Number(this.state.temp) + Number(item.PowerContributionPercentage)
+
                                       return (
                                         <tr key={index}>
                                           <td>{item.SourcePowerType}</td>
@@ -1849,8 +1834,8 @@ class AddPower extends Component {
                                           {/* Ask which value to use for trim */}
                                           <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
-                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                            <button className="Edit mr-2" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
+                                            <button className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
                                           </td>
                                         </tr>
                                       )
@@ -1859,8 +1844,7 @@ class AddPower extends Component {
                                 </tbody>
 
                                 <tfoot>
-                                  {/* <div className="bluefooter-butn border row">
-                                                                    <div className="col-md-12 text-right"> */}
+
                                   <tr className="bluefooter-butn">
                                     <td></td>
                                     <td></td>
@@ -1868,8 +1852,7 @@ class AddPower extends Component {
                                     <td><label> {checkForDecimalAndNull(netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label></td>
                                     <td></td>
                                   </tr>
-                                  {/* </div>
-                                                                </div> */}
+
                                 </tfoot>
 
                                 <tbody>
@@ -1880,14 +1863,7 @@ class AddPower extends Component {
                                   </tr>
                                 </tbody>
                               </Table>
-                              {/* <div className="bluefooter-butn border row">
-                                                            <div className="col-md-12 text-right">
-                                                                <span className="col-md-12">
-                                                                    {`Net Loss Weight:`}
-                                                                    {1}
-                                                                </span>
-                                                            </div>
-                                                        </div> */}
+
                             </Col>
                           </Row>
                         </>
@@ -1903,6 +1879,7 @@ class AddPower extends Component {
                         </button>
                         <button
                           type="submit"
+                          disabled={isViewMode}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}

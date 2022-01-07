@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import {
     deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
-    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList
+    getRawMaterialFilterSelectList,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
@@ -24,9 +24,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getFilteredRMData } from '../../../helper';
-import { func } from 'prop-types';
-//import {  Controller, useWatch } from 'react-hook-form'
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { ColumnController } from 'ag-grid-community';
@@ -40,28 +37,24 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, ViewAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
-    const [tableData, settableData] = useState([]);
-    const [RawMaterial, setRawMaterial] = useState([]);
-    const [RMGrade, setRMGrade] = useState([]);
-    const [vendorName, setvendorName] = useState([]);
-    const [costingHead, setcostingHead] = useState([]);
-    const [plant, setplant] = useState([]);
+    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
+
+
+
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [shown, setshown] = useState(isSimulation ? true : false);
-    const [technology, settechnology] = useState([]);
-    const [gridApi, setgridApi] = useState(null);
-    const [gridColumnApi, setgridColumnApi] = useState(null);
+
+    const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+    const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+
     const [loader, setloader] = useState(true);
-    const [statusId, setstatusId] = useState(0);
     const dispatch = useDispatch();
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
-    const [selectedRowData, setSelectedRowData] = useState([]);
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
@@ -74,11 +67,6 @@ function RMDomesticListing(props) {
     * @description Called after rendering the component
     */
 
-    //////////
-    // useEffect(() => {
-    //     // callFilterApi()
-    //     getDataList()
-    // }, [])
 
     const callFilterApi = () => {
         if (isSimulation || shown) {
@@ -95,20 +83,11 @@ function RMDomesticListing(props) {
         callFilterApi()
     }, [shown])
 
-    // const handleFilterButton = ()=>{
-    //     setshown(!shown)
-    //     callFilterApi()
-    // }
 
     useEffect(() => {
 
         if (isSimulation) {
-            setcostingHead(filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : []);
-            setplant(filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : []);
-            setRawMaterial(filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : []);
-            setRMGrade(filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : []);
-            setvendorName(filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : []);
-            setstatusId(CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0);
+
             setvalue({ min: 0, max: 0 });
         }
         getDataList()
@@ -122,40 +101,6 @@ function RMDomesticListing(props) {
             return rmDataList
         }
     }
-
-    /**
-    * @method getInitialRange
-    * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
-    */
-    const getInitialRange = () => {
-        // const { value } = this.state;
-
-        // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
-        // const filterData = {
-        //     costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
-        //     plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
-        //     material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
-        //     grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
-        //     vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
-        //     // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
-        //     technologyId: isSimulation ? props.technology : 0,
-        //     net_landed_min_range: value.min,
-        //     net_landed_max_range: value.max,
-        //     statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
-        // }
-
-        // //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
-        // if (!props.isMasterSummaryDrawer) {
-        //     dispatch(getRMDomesticDataList(filterData, (res) => {
-        //         if (res && res.status === 200) {
-        //             let DynamicData = res.data.DynamicData;
-        //             setvalue({ min: 0, max: DynamicData.MaxRange });
-        //         }
-        //         setloader(false);
-        //     }))
-        // }
-    }
-
 
 
 
@@ -183,24 +128,14 @@ function RMDomesticListing(props) {
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     let DynamicData = res.data.DynamicData;
-                    settableData(Data);
                     setmaxRange(DynamicData.MaxRange);
                     setloader(false);
-                    // if (isSimulation) {
-                    //     apply(Data)
-                    // }
-
-                    // const func = () => {
-                    // }
-                    // func()
 
                 } else if (res && res.response && res.response.status === 412) {
-                    settableData([]);
                     setmaxRange(0);
                     setloader(false);
 
                 } else {
-                    settableData([]);
                     setmaxRange(0);
                     setloader(false);
                 }
@@ -269,7 +204,7 @@ function RMDomesticListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
-        //const { EditAccessibility, DeleteAccessibility } = props;
+
 
         if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
             if (EditAccessibility && !rowData.IsRMAssociated) {
@@ -355,52 +290,6 @@ function RMDomesticListing(props) {
     }
 
 
-    /**
-    * @method handleRMChange
-    * @description  used to handle row material selection
-    */
-    const handleRMChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-
-            setRawMaterial(newValue);
-            const fun = () => {
-                dispatch(getGradeFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
-                dispatch(getVendorFilterByRawMaterialSelectList(RawMaterial.value, res => { }))
-            }
-
-            fun();
-        } else {
-
-            setRawMaterial([]);
-            const fun = () => {
-                props.getGradeSelectList(res => { });
-
-            }
-            func();
-        }
-    }
-
-    /**
-    * @method handleGradeChange
-    * @description  used to handle row material grade selection
-    */
-
-    /**
-     * @method handleVendorName
-     * @description called
-     */
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-
 
     const formToggle = () => {
         props.formToggle()
@@ -412,7 +301,6 @@ function RMDomesticListing(props) {
 
     const closeBulkUploadDrawer = () => {
         setisBulkUpload(false);
-        getInitialRange()
         getDataList(null, null, null)
 
 
@@ -425,29 +313,8 @@ function RMDomesticListing(props) {
     const densityAlert = () => {
     }
 
-    const handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setcostingHead(newValue);
-        } else {
-            setcostingHead([]);
-        }
-    };
 
-    const handlePlantChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            setplant(newValue);
-        } else {
-            setplant([]);
-        }
-    }
 
-    const handleTechnologyChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            settechnology(newValue);
-        } else {
-            settechnology([]);
-        }
-    }
     /**
     * @method confirmDensity
     * @description confirm density popup.
@@ -476,19 +343,27 @@ function RMDomesticListing(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
+
         temp = TempData && TempData.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
+                item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+
             } else if (item.CostingHead === false) {
                 item.CostingHead = 'Zero Based'
+                item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+
             } else {
-                return false
+                item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+
             }
             return item
         })
+
+
         return (
 
-            <ExcelSheet data={TempData} name={RmDomestic}>
+            <ExcelSheet data={temp} name={RmDomestic}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -524,7 +399,6 @@ function RMDomesticListing(props) {
     */
 
 
-    //const { isBulkUpload, } = this.state;
     const isFirstColumn = (params) => {
         if (isSimulation) {
 
@@ -542,18 +416,13 @@ function RMDomesticListing(props) {
         var selectedRows = gridApi.getSelectedRows();
         if (isSimulation) {
             let length = gridApi.getSelectedRows().length
-            dispatch(setSelectedRowCountForSimulationMessage(length))
 
-            apply(selectedRows)
+            apply(selectedRows, length)
+
         }
-        // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-        setSelectedRowData(selectedRows)
 
     }
 
-    const onFloatingFilterChanged = (p) => {
-        gridApi.deselectAll()
-    }
 
     const defaultColDef = {
         resizable: true,
@@ -580,7 +449,7 @@ function RMDomesticListing(props) {
 
     return (
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-            {/* { this.props.loading && <Loader />} */}
+
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
                 <Row className="filter-row-large pt-4 ">
 
@@ -636,7 +505,6 @@ function RMDomesticListing(props) {
 
                                             </>
 
-                                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                         }
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -664,13 +532,11 @@ function RMDomesticListing(props) {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                // columnDefs={c}
                                 rowData={getFilterRMData()}
                                 pagination={true}
                                 paginationPageSize={10}
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
-                                // loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
@@ -679,7 +545,6 @@ function RMDomesticListing(props) {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
-                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
@@ -744,25 +609,6 @@ function RMDomesticListing(props) {
 
 
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-// function mapStateToProps({ material, comman, auth }) {
-//     const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, filteredRMData } = material;
-//     const { initialConfiguration } = auth;
-//     const { plantSelectList, technologySelectList } = comman;
 
-//     return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList, technologySelectList, filteredRMData }
-
-// }
-
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
 export default RMDomesticListing;
 

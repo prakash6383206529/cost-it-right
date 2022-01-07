@@ -24,7 +24,6 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -89,14 +88,16 @@ class MachineRateListing extends Component {
     * @method editItemDetails
     * @description edit material type
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
             IsVendor: rowData.CostingHead,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(data);
     }
+
 
     /**
     * @method copyItem
@@ -124,7 +125,7 @@ class MachineRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        // return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
+
     }
 
     /**
@@ -162,10 +163,11 @@ class MachineRateListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -226,14 +228,8 @@ class MachineRateListing extends Component {
     }
 
 
-    // renderPlantFormatter = (props) => {
-    //     const row = props?.data;
-    //     return row.IsVendor ? row.DestinationPlant : row.Plants
-    // }
     renderPlantFormatter = (props) => {
-
         const row = props?.data;
-
 
         const value = row.CostingHead === 'VBC' ? row.DestinationPlant : row.Plants
         return value
@@ -250,17 +246,6 @@ class MachineRateListing extends Component {
             this.getDataList()
         })
     }
-
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-
-
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
 
 
     displayForm = () => {
@@ -289,8 +274,6 @@ class MachineRateListing extends Component {
                 item.MachineTypeName = ' '
             } else if (item.VendorName === '-') {
                 item.VendorName = ' '
-            } else {
-                return false
             }
             if (item.EffectiveDate !== null) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
@@ -299,7 +282,7 @@ class MachineRateListing extends Component {
             return item
         })
 
-        return (<ExcelSheet data={TempData} name={`${MachineRate}`}>
+        return (<ExcelSheet data={temp} name={`${MachineRate}`}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
             }
         </ExcelSheet>);
@@ -317,11 +300,15 @@ class MachineRateListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, this.props.machineDatalist)
+        if (this.props.isSimulation === true) {
+            const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
+            data && data.map((item => {
+                tempArr.push(item.data)
+            }))
+        } else {
+            tempArr = this.props.machineDatalist && this.props.machineDatalist
+        }
+        return this.returnExcelColumn(MACHINERATE_DOWNLOAD_EXCEl, tempArr)
     };
 
     onFilterTextBoxChanged(e) {
@@ -375,21 +362,14 @@ class MachineRateListing extends Component {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (isSimulation) {
                 let length = this.state.gridApi.getSelectedRows().length
-                this.props.setSelectedRowCountForSimulationMessage(length)
-                this.props.apply(selectedRows)
+                this.props.apply(selectedRows, length)
             }
-            // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-            // this.setState({ selectedRowData: selectedRows })
 
         }
 
-        const onFloatingFilterChanged = (p) => {
-            this.state.gridApi.deselectAll()
-        }
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
 
@@ -440,8 +420,6 @@ class MachineRateListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                         <div className="refresh mr-0"></div>
@@ -468,7 +446,6 @@ class MachineRateListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    // columnDefs={c}
                                     rowData={this.props.machineDatalist}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -484,7 +461,6 @@ class MachineRateListing extends Component {
 
                                     rowSelection={'multiple'}
                                     onSelectionChanged={onRowSelect}
-                                    onFilterModified={onFloatingFilterChanged}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                                     {!isSimulation && <AgGridColumn field="Technologies" headerName="Technology"></AgGridColumn>}
@@ -496,7 +472,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!isSimulation && <AgGridColumn field="MachineId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!isSimulation && <AgGridColumn field="MachineId" width={200} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -566,7 +542,6 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectListByTechnology,
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
-    setSelectedRowCountForSimulationMessage
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

@@ -83,13 +83,14 @@ class FuelListing extends Component {
     }
 
     /**
-    * @method editItemDetails
-    * @description Edit Fuel
+    * @method viewOrEditItemDetails
+    * @description Edit or view Fuel
     */
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
         let data = {
             isEditFlag: true,
             Id: Id,
+            isViewMode: isViewMode
         }
         this.props.getDetails(data);
     }
@@ -112,12 +113,7 @@ class FuelListing extends Component {
     * @description confirm delete Fuel details
     */
     confirmDelete = (ID) => {
-        // this.props.deleteFuelDetailAPI(ID, (res) => {
-        //     if (res.data.Result === true) {
-        //         toastr.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
-        //         this.getDataList()
-        //     }
-        // });
+
     }
 
     /**
@@ -136,10 +132,11 @@ class FuelListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
             </>
         )
     };
@@ -234,12 +231,8 @@ class FuelListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-        return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, this.props.fuelDataList)
+        let tempArr = this.props.fuelDataList && this.props.fuelDataList
+        return this.returnExcelColumn(FUELLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
     onFilterTextBoxChanged(e) {
@@ -344,7 +337,7 @@ class FuelListing extends Component {
 
                                         </>
 
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -370,7 +363,6 @@ class FuelListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    // columnDefs={c}
                                     rowData={this.props.fuelDataList}
                                     pagination={true}
                                     paginationPageSize={10}

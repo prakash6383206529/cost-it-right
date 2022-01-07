@@ -8,13 +8,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isMultipleRMAllow, isRMDivisorApplicable } from '../../../../../helper'
+import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
-import { G, INR, KG, MG, PLASTIC } from '../../../../../config/constants'
+import { G, INR, KG, MG } from '../../../../../config/constants'
 import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity,PLASTIC,isMultipleRMAllow} from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 
 let counter = 0;
@@ -113,7 +113,7 @@ function RawMaterialCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
 
-      if (isMultipleRMAllow(costData.TechnologyName)) {
+      if (isMultipleRMAllow(costData.ETechnologyType)) {
         let rowArray = rowData && rowData.map(el => {
           return {
             RMName: `${el.RawMaterial} - ${el.RMGrade}`,
@@ -543,6 +543,9 @@ function RawMaterialCost(props) {
     let grossWeight
     let finishWeight
 
+
+    // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
+
     if (Object.keys(weightData).length > 0) {
       if (weightData.UOMForDimension === G) {
         grossWeight = weightData.GrossWeight / 1000
@@ -553,6 +556,9 @@ function RawMaterialCost(props) {
       } else if (weightData.UOMForDimension === MG) {
         grossWeight = weightData.GrossWeight / 1000000
         finishWeight = weightData.FinishWeight / 1000000
+      } else {
+        grossWeight = weightData.GrossWeight
+        finishWeight = weightData.FinishWeight
       }
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
@@ -782,7 +788,7 @@ function RawMaterialCost(props) {
       isShow = true;
     }
 
-    if (costData && costData.TechnologyName === PLASTIC) {
+    if (costData && (isMultipleRMAllow(costData.ETechnologyType))) {
       isShow = true;
     }
 
@@ -921,9 +927,10 @@ function RawMaterialCost(props) {
                                 disabled={CostingViewMode ? true : false}
                               />
                             </td>
+
                             {
 
-                              costData.TechnologyName === PLASTIC && <td>{item.BurningLossWeight}</td>
+                              costData.TechnologyName === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                             }
                             {
                               isScrapRecoveryPercentageApplied &&

@@ -14,7 +14,7 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../config/constants';
@@ -28,12 +28,12 @@ function CostingHeaderTabs(props) {
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData,checkIsDataChange } = useSelector(state => state.costing)
-
+    IsCostingDateDisabled, ActualCostingDataList, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData,checkIsDataChange,checkIsOverheadProfitChange,checkIsFreightPackageChange,checkIsToolTabChange } = useSelector(state => state.costing)
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
   const [effectiveDate, setEffectiveDate] = useState(DayTime(costingData.EffectiveDate).isValid() ? DayTime(costingData.EffectiveDate) : '');
+  
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -104,7 +104,8 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
+    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
+      
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
@@ -128,28 +129,38 @@ function CostingHeaderTabs(props) {
             checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
         },
       }
-      dispatch(saveComponentOverheadProfitTab(reqData, res => {
-        callAssemblyAPi(3)
-        dispatch(setComponentOverheadItemData({}, () => { }))
-        InjectDiscountAPICall()
-      }))
+      if(ComponentItemOverheadData.IsAssemblyPart){
+        dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
+          callAssemblyAPi(3)
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }))
+      }else{
+
+        dispatch(saveComponentOverheadProfitTab(reqData, res => {
+          callAssemblyAPi(3)
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }))
+      }
 
 
     }
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true) {
+    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true &&checkIsFreightPackageChange) {
+      
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
         "PartNumber": costData.PartNumber,
         "NetPOPrice": netPOPrice,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
         "CostingPartDetails": ComponentItemPackageFreightData.CostingPartDetails,
-        "EffectiveDate": CostingEffectiveDate,
-        "TotalCost": netPOPrice,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         callAssemblyAPi(4)
@@ -160,7 +171,8 @@ function CostingHeaderTabs(props) {
 
     // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
 
-    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true &&ComponentItemToolData.CostingPartDetails.TotalToolCost >0 && activeTab !== '5') {
+    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true &&ComponentItemToolData.CostingPartDetails.TotalToolCost >0 && activeTab !== '5' && checkIsToolTabChange) {
+      
       const data = {
         "IsToolCostProcessWise": false,
         "CostingId": costData.CostingId,
@@ -175,13 +187,15 @@ function CostingHeaderTabs(props) {
       dispatch(saveToolTab(data, res => {
         callAssemblyAPi(5)
         dispatch(setComponentToolItemData({}, () => { }))
+        dispatch(isToolDataChange(false))
         InjectDiscountAPICall()
       }))
     }
 
 
     // USED FOR SAVE OTHER DISCOUNT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    InjectDiscountAPICall()
+   // if(checkIsDataChange || ComponentItemToolData.IsChanged === true  || ComponentItemPackageFreightData.IsChanged === true|| ComponentItemToolData.IsChanged === true| (Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') )
+    // InjectDiscountAPICall()
     if(checkIsDataChange === false){
       dispatch(CloseOpenAccordion())
       dispatch(isDataChange(false))
@@ -266,6 +280,7 @@ function CostingHeaderTabs(props) {
 
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && ComponentItemDiscountData.IsChanged === true && activeTab !== '6') {
+      
       dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1 }, res => {
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
       }))

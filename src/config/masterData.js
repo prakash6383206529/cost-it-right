@@ -1747,8 +1747,12 @@ export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area'
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
 export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
+export const MULTIPLERMTECHNOLOGY=[4,5,7,8,14,16,17,6,9,10,2,15]
 
-
+export function isMultipleRMAllow(technology) {
+    const allowedMultipleRM =[4,5,7,8,14,16,17,6,9,10,2,15]
+    return allowedMultipleRM.includes(technology);
+  }
 
 
 
@@ -1768,6 +1772,11 @@ export const ASSEMBLY = 13
 export const MACHINING = 14
 export const FABRICATION = 15
 export const CORRUGATEDBOX = 20
+export const WIRING_HARNESS = 16
+export const ELECTRONICS = 17
+export const HARDWARE=18
+export const RIVET=19
+export const PLATING=21
 
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
@@ -2591,9 +2600,9 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "RMShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "CutOffPrice", value: "CutOffPrice", },
     { label: "EffectiveDate", value: "EffectiveDate", },
-
-
+    { label: "Remark", value: "Remark", }
 
 ]
 
@@ -2613,7 +2622,9 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "RMShearingCost", value: "RMShearingCost", },
     { label: "ScrapRate", value: "ScrapRate", },
     { label: "NetLandedCost", value: "NetLandedCost", },
+    { label: "CutOffPrice", value: "CutOffPrice", },
     { label: "EffectiveDate", value: "EffectiveDate", },
+    { label: "Remark", value: "Remark", }
 ]
 
 export const RMLISTING_DOWNLOAD_EXCEl = [

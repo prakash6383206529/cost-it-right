@@ -20,6 +20,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -256,13 +257,8 @@ class UOMMaster extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, this.state.dataList)
+    let tempArr = this.state.dataList && this.state.dataList
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
@@ -315,8 +311,9 @@ class UOMMaster extends Component {
 
     return (
       <>
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           {/* {this.props.loading && <Loader />} */}
+          <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}>
               <h1 className="mb-0">{`Unit of Measurement Master`}</h1>

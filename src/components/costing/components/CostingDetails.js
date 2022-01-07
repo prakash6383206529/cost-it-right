@@ -14,8 +14,7 @@ import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlant
 import DayTime from '../../common/DayTimeWrapper'
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
-import {
-  getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+import {   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
@@ -27,9 +26,9 @@ import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import TooltipCustom from '../../common/Tooltip';
-import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 export const ViewCostingContext = React.createContext()
 
@@ -116,16 +115,18 @@ function CostingDetails(props) {
   const { topAndLeftMenuData } = useSelector(state => state.auth);
 
   useEffect(() => {
-    setValue('Technology', '')
-    setValue('Part', '')
-    reset()
-    applyPermission(topAndLeftMenuData, technology.label)
-    dispatch(storePartNumber(''))
-    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-    dispatch(getPartSelectListByTechnology('', () => { }))
-    dispatch(getAllPartSelectList(() => { }))
-    dispatch(getPartInfo('', () => { }))
-    dispatch(gridDataAdded(false))
+    if( reactLocalStorage.get('location') === '/costing'){
+
+      setValue('Technology', '')
+      setValue('Part', '')
+      reset()
+      applyPermission(topAndLeftMenuData, technology.label)
+      dispatch(storePartNumber(''))
+      dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+      dispatch(getPartSelectListByTechnology('', () => { }))
+      dispatch(getPartInfo('', () => { }))
+      dispatch(gridDataAdded(false))
+    }
   }, [])
 
   useEffect(() => {
@@ -165,7 +166,7 @@ function CostingDetails(props) {
   }, [partNumber.isChanged])
 
   useEffect(() => {
-    if (Object.keys(partNumber).length > 0 && partNumber.technologyName) {
+    if (Object.keys(partNumber).length > 0 && partNumber.technologyName &&  reactLocalStorage.get('location') === '/costing') {
       applyPermission(topAndLeftMenuData, technology.label)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
@@ -367,13 +368,13 @@ function CostingDetails(props) {
         }
       }))
 
-
-      dispatch(getNCCExistingCosting(part.value,(res=>{
-        if(res.data.Result){
-          let Data = res.data.DataList
-          setNccGrid(Data)
-        }
-      })))
+      /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/ 
+      // dispatch(getNCCExistingCosting(part.value,(res=>{
+      //   if(res.data.Result){
+      //     let Data = res.data.DataList
+      //     setNccGrid(Data)
+      //   }
+      // })))
 
       setIsOpenVendorSOBDetails(true)
     } else {
@@ -1217,6 +1218,7 @@ const nccDrawerToggle=()=>{
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+    
 
     dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
     dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
@@ -2283,4 +2285,4 @@ const nccDrawerToggle=()=>{
   );
 }
 
-export default CostingDetails
+export default React.memo(CostingDetails)

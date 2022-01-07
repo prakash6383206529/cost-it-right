@@ -6,6 +6,7 @@ import ZBCPlantListing from './ZBCPlantListing';
 import VBCPlantListing from './VBCPlantListing';
 import { checkPermission } from '../../../helper/util';
 import { MASTERS, PLANT } from '../../../config/constants';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class PlantMaster extends Component {
     constructor(props) {
@@ -77,9 +78,9 @@ class PlantMaster extends Component {
         const { initialConfiguration } = this.props;
         return (
             <>
-                <Container fluid className="user-page p-0">
+                <Container fluid className="user-page p-0" id='go-to-top'>
                     {/* {this.props.loading && <Loader/>} */}
-
+                    <ScrollToTop pointProp="go-to-top" />
                     <Col>
                         <h1>Plant Master</h1>
                         <Nav tabs className="subtabs">
@@ -104,6 +105,7 @@ class PlantMaster extends Component {
                                         BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                         ActivateAccessibility={this.state.ActivateAccessibility}
                                         DownloadAccessibility={this.state.DownloadAccessibility}
+                                        ViewAccessibility={this.state.ViewAccessibility}
                                     />
                                 </TabPane>}
                             {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.activeTab === '2' &&

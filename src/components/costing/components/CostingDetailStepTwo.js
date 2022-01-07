@@ -7,7 +7,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
-import CostingHeadTabs from './CostingHeaderTabs/index'
+import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
 import { ViewCostingContext } from './CostingDetails';
@@ -360,7 +360,7 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
                           <th style={{ width: '160px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Discounts`}</span></th>
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost(INR)`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Net Cost(INR)`}</span></th>
                         </tr>
                       </thead>
                       <tbody>

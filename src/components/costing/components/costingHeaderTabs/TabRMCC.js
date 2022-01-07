@@ -49,6 +49,7 @@ function TabRMCC(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
+      console.log('TopHeaderValues: ', TopHeaderValues);
 
       let topHeaderData = {};
 
@@ -1588,8 +1589,12 @@ function TabRMCC(props) {
           "LoggedInUserId": loggedInUserId()
 
         }
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        if(!CostingViewMode){
+
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
       }
+
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
@@ -1710,8 +1715,10 @@ function TabRMCC(props) {
         "LoggedInUserId": loggedInUserId()
   
       }
-  
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+  if(!CostingViewMode && checkIsDataChange){
+
+    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+  }
      }))
   }
 

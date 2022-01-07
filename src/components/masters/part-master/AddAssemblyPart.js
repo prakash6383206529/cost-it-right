@@ -35,6 +35,7 @@ class AddAssemblyPart extends Component {
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       isLoader: false,
       PartId: '',
 
@@ -95,6 +96,7 @@ class AddAssemblyPart extends Component {
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
           this.setState({ DataToCheck: Data })
+
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -631,7 +633,7 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode } = this.state;
     console.log('this.dropzone?.current?.files: ', this.dropzone?.current?.files);
     return (
       <>
@@ -704,6 +706,7 @@ class AddAssemblyPart extends Component {
                             required={true}
                             className=""
                             customClassName={"withBorder"}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -717,6 +720,7 @@ class AddAssemblyPart extends Component {
                             required={false}
                             className=""
                             customClassName={"withBorder"}
+                            disabled={isViewMode}
                           />
                         </Col>
                       </Row>
@@ -733,6 +737,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             className=""
                             customClassName={"withBorder"}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -746,6 +751,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             className=""
                             customClassName={"withBorder"}
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -759,6 +765,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             className=""
                             customClassName={"withBorder"}
+                            disabled={isViewMode}
                           />
                         </Col>
                       </Row>
@@ -781,9 +788,9 @@ class AddAssemblyPart extends Component {
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
-                              mendatory={true}
                               className="multiselect-with-border"
-                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              disabled={isViewMode}
                             />
                           </Col>
                         ) :
@@ -795,52 +802,19 @@ class AddAssemblyPart extends Component {
                               placeholder={""}
                               validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                               component={renderText}
-                              //required={true}
                               className=""
                               customClassName={"withBorder"}
+                              disabled={isViewMode}
                             />
                           </Col>
                         }
 
-                        {/* <Col md="3">
-                          <Field
-                            label="Plant"
-                            name="Plant"
-                            placeholder={"Select"}
-                            selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                            options={this.renderListing("plant")}
-                            selectionChanged={this.handlePlant}
-                            optionValue={(option) => option.Value}
-                            optionLabel={(option) => option.Text}
-                            component={renderMultiSelectField}
-                            //mendatory={true}
-                            className="multiselect-with-border"
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col> */}
+
                         <Col md="3">
                           <div className="form-group">
-                            {/* <label>
-                              Effective Date */}
-                            {/* <span className="asterisk-required">*</span> */}
-                            {/* </label> */}
+
                             <div className="inputbox date-section">
-                              {/* <DatePicker
-                                name="EffectiveDate"
-                                selected={this.state.effectiveDate}
-                                onChange={this.handleEffectiveDateChange}
-                                showMonthDropdown
-                                showYearDropdown
-                                dateFormat="dd/MM/yyyy"
-                                //maxDate={new Date()}
-                                dropdownMode="select"
-                                placeholderText="Select date"
-                                className="withBorder"
-                                autoComplete={"off"}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                disabled={isEditFlag ? true : false}
-                              /> */}
+
                               <Field
                                 label="Effective Date"
                                 name="EffectiveDate"
@@ -851,11 +825,10 @@ class AddAssemblyPart extends Component {
                                 autoComplete={'off'}
                                 required={true}
                                 changeHandler={(e) => {
-                                  //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isEditFlag ? getConfigurationKey().IsBOMEditable ? false : true : false}
+                                disabled={isEditFlag && !isViewMode ? getConfigurationKey().IsBOMEditable ? false : true : (isViewMode)}
 
                               />
                             </div>
@@ -864,6 +837,7 @@ class AddAssemblyPart extends Component {
                         <Col md="3">
                           <button
                             type="button"
+                            disabled={isViewMode}
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
@@ -888,6 +862,7 @@ class AddAssemblyPart extends Component {
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="5000"
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -901,7 +876,7 @@ class AddAssemblyPart extends Component {
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              //onSubmit={this.handleSubmit}
+                              disabled={isViewMode}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -950,24 +925,19 @@ class AddAssemblyPart extends Component {
                                     <a href={fileURL} target="_blank" rel="noreferrer">
                                       {f.OriginalFileName}
                                     </a>
-                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
 
-                                    <img
-                                      alt={""}
-                                      className="float-right"
-                                      onClick={() =>
-                                        this.deleteFile(
-                                          f.FileId,
-                                          f.FileName
-                                        )
-                                      }
-                                      src={imgRedcross}
-                                    ></img>
+                                    {!isViewMode &&
+                                      <img
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() =>
+                                          this.deleteFile(
+                                            f.FileId,
+                                            f.FileName
+                                          )
+                                        }
+                                        src={imgRedcross}
+                                      ></img>}
                                   </div>
                                 );
                               })}
@@ -989,6 +959,7 @@ class AddAssemblyPart extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
+                          disabled={isViewMode}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}

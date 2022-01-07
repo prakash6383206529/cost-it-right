@@ -19,12 +19,12 @@ import {
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
     SET_ATTACHMENT_FILE_DATA,
-    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
     GET_ASSEMBLY_SIMULATION_LIST,
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
+    GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -392,6 +392,7 @@ export function simulationApprovalRequestByApprove(data, callback) {
             .catch((error) => {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
+                callback(error)
             })
     }
 }
@@ -415,6 +416,7 @@ export function simulationRejectRequestByApprove(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
@@ -671,15 +673,6 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
     };
 }
 
-export function setSelectedRowCountForSimulationMessage(selectedMaster) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
-            payload: selectedMaster,
-        });
-    }
-}
-
 export function runVerifyMachineRateSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
@@ -762,18 +755,28 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
     }
 }
 
-export function getSimulatedAssemblyWiseImpactDate(requestData, callback) {
-    console.log('requestData: ', requestData);
-
+export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, callback) {
     return (dispatch) => {
+        dispatch({
+            type: GET_ASSEMBLY_SIMULATION_LIST,
+            payload: [],
+        })
         const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?strRequest=${JSON.stringify(requestData)}`, headers);
         request.then((response) => {
             if (response.data.Result) {
-                dispatch({
-                    type: GET_ASSEMBLY_SIMULATION_LIST,
-                    payload: response.data.DataList
-                })
-                callback(response)
+                if (isAssemblyInDraft === true) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST,
+                        payload: response.data.DataList
+                    })
+                } if (isAssemblyInDraft === false) {
+
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+                        payload: response.data.DataList
+                    })
+                    callback(response)
+                }
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

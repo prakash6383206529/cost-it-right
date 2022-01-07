@@ -6,17 +6,18 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../..
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
+import { isOverheadProfitDataChange } from '../../../actions/Costing';
 
 
 
 function Rejection(props) {
 
-    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingRejectionDetail } = props
+    const { Controller, control, register, defaultValue, data, setValue, getValues, errors, useWatch, CostingRejectionDetail, clearErrors } = props
     const headerCosts = useContext(netHeadCostContext);
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
 
-    // const { CostingRejectionDetail } = props.data.CostingPartDetails;
+
 
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { RMCCutOffObj } = useSelector(state => state.costing)
@@ -216,6 +217,8 @@ function Rejection(props) {
                     break;
             }
         }
+
+        dispatch(isOverheadProfitDataChange(true))
     }
 
 
@@ -229,6 +232,7 @@ function Rejection(props) {
             setApplicability(newValue)
             checkRejectionApplicability(newValue.label)
             setIsChangedApplicability(!IsChangedApplicability)
+            clearErrors()
         } else {
             setApplicability([])
             checkRejectionApplicability('')
@@ -300,7 +304,7 @@ function Rejection(props) {
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
-                            errors={errors.RejectionPercentage}
+                            // errors={errors.RejectionPercentage}   //MANUAL CSS TO BE APPLIED FOR ERROR VALIDATION MESSAGE
                             disabled={CostingViewMode ? true : false}
                         />}
                 </Col>

@@ -11,6 +11,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import MachineApproval from './MachineApproval';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -180,13 +181,13 @@ class MachineMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-top-top'>
                     <Row>
                         <Col sm="4">
                             <h1>{`Machine Master`}</h1>
                         </Col>
                     </Row>
-
+                    <ScrollToTop pointProp={"go-top-top"} />
                     <Row>
                         <Col>
                             <div>
@@ -223,6 +224,7 @@ class MachineMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                ViewAccessibility={this.state.ViewAccessibility}
                                             />
                                         </TabPane>}
 

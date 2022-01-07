@@ -12,7 +12,6 @@ import AddClientDrawer from './AddClientDrawer';
 import { checkPermission } from '../../../helper/util';
 import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { CLIENT_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -20,6 +19,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -39,6 +39,7 @@ class ClientListing extends Component {
             isOpenVendor: false,
             tableData: [],
             ID: '',
+            isViewMode: false,
 
             AddAccessibility: false,
             EditAccessibility: false,
@@ -118,13 +119,16 @@ class ClientListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: isViewMode,
         })
     }
+
+
 
     /**
     * @method deleteItem
@@ -161,10 +165,11 @@ class ClientListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility, } = this.state;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {<button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -222,7 +227,7 @@ class ClientListing extends Component {
 
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -268,17 +273,15 @@ class ClientListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ClientName === null) {
                 item.ClientName = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={Clientmaster}>
+            <ExcelSheet data={temp} name={Clientmaster}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -333,8 +336,8 @@ class ClientListing extends Component {
 
         return (
             // <div className="">
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+                <ScrollToTop pointProp="go-to-top" />
                 {/* {this.props.loading && <Loader />} */}
                 < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -360,7 +363,7 @@ class ClientListing extends Component {
                                                 {this.onBtExport()}
                                             </ExcelFile>
                                         </>
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -425,6 +428,7 @@ class ClientListing extends Component {
                             isOpen={isOpenVendor}
                             closeDrawer={this.closeVendorDrawer}
                             isEditFlag={isEditFlag}
+                            isViewMode={this.state.isViewMode}
                             ID={this.state.ID}
                             anchor={'right'}
                         />

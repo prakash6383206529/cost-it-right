@@ -856,7 +856,6 @@ input.form-control{
   border: none;
   cursor: pointer;
 }
-
 .Balance {
   width: 32px;
   height: 32px;
@@ -1188,6 +1187,14 @@ input.form-control{
   width: 13px;
   height: 16px;
   background: transparent url("../../assests/images/send-for-approval.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
+.pdf-btn{
+  margin-right: 5px;
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/pdf.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   background-size: contain;
 }
@@ -1840,10 +1847,27 @@ $roboto: "Roboto", sans-serif;
   thead{
     .main-row{
       th{
-        width: 33%;
-        min-width: 410px;
+        width: 23%;
+        min-width: 384px;
         vertical-align: middle;
         font-weight: 500;
+        &:first-child {
+          width: 15%;
+          min-width: 238px;
+        }
+        .checkbox-text {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          background-color: #fff;
+          padding:9px 5px;
+          min-width: 186px;
+          &:hover {
+            overflow: visible;
+            min-width: fit-content;
+            z-index: 1;
+          }
+        }
       }
     }
   }
@@ -3213,17 +3237,16 @@ opacity: 0.5;
   display: inline-block;
   .tooltiptext {
     visibility: hidden;
-    min-width: 300px;
+    min-width: 250px;
     background-color: #D0D8E5;
     color: #3d4465;
-    text-align: center;
+    text-align: right;
     border-radius: 6px;
-    padding: 5px 10px;
-    /* Position the tooltip */
+    padding: 5px 15px 5px 5px;
     position: absolute;
     z-index: 1;
     bottom: 100%;
-    left: -140px;
+    left: -115px;
     margin-left: -4px;
     font-size: 14px;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
@@ -3263,6 +3286,7 @@ opacity: 0.5;
 .refresh-icon.tooltip-n{
    .tooltiptext{
     left: -130px;
+    min-width: 300px;
    }
 }
 // ========tooltip css=============
@@ -3892,7 +3916,7 @@ body{
     tr{
       th{
         border: none;
-        font-weight: bold;
+        font-weight: 500;
       }
     }
   }
@@ -5675,6 +5699,7 @@ body{
       td,.ag-cell {
         .Error,
         .Pushed,
+        .POUpdated,
         .Draft,
         [class^="Pending"],
         [class^="Awaiting"],
@@ -6336,7 +6361,7 @@ left: 17rem;
     .share-of-business {min-width: 110px;}
     .costing-status {min-width: 230px;}
     .costing-price {min-width: 115px;}
-    .costing-action {min-width: 240px;}
+    .costing-action {min-width: 250px;}
   }
   @media screen and (max-width:$miniDesktop) {
    td, th {
@@ -6504,6 +6529,47 @@ left: 17rem;
     min-width: 125px;
   }
 }
+
+@media screen and (max-width:$middleDesktop) {
+  .costing-summary-table {
+    thead{
+      .main-row{
+        th{
+          min-width: 340px;
+          font-size: 14px;
+          width: 27%;
+          &:first-child{
+            width: 19%;
+            min-width: 180px;
+          }
+          
+        }
+      }
+    }
+    tr {
+      td {
+        .bg-grey {
+          font-size: 14px;
+          small {
+            font-size: 13px;
+          }
+        }
+         span {
+          font-size: 14px;
+        }
+      }
+      &.background-light-blue {
+        th {
+          font-size: 14px;
+        }
+      }
+    }
+    .custom-check {
+      font-size: 14px;
+    }
+  }
+}
+
 .align-table {
   transform: translateY(-13px);
 }
@@ -6513,11 +6579,8 @@ left: 17rem;
   padding: 0 28px !important;
 }
 .rmcc-main-headings {
-  position: relative;
-  th {
-    position: sticky;
-    top: 0;
-    padding: 5px 15px !important;
+  th,td {
+    padding: 10px 15px !important;
   }
 }
 .min-height-auto {
@@ -6538,10 +6601,21 @@ left: 17rem;
 .alert-danger, .attachment.images {
   font-size: 15px;   //maximum file upload font
 }
+//START Navbar version css
 .version {
   color: #256bd1;
   margin-right: 15px;
 }
+//END Navbar version css
+//START login page version css
+.login-version {
+  position: absolute;
+  bottom: 10px;
+  right: 15px;
+  color: #4a4a4af7;
+  font-size: 14px;
+}
+//END login page version css
 .loader_container.simulation-history-loader {
   background-color: rgba(255, 255, 255, 0.97);
 }
@@ -6550,3 +6624,66 @@ left: 17rem;
 }
 .width33 {width: 33.33%;}
 .fs1.font-weight-500.py-3 {font-size: 16px;}
+
+.sticky-btn-footer {
+  position: sticky !important;
+  bottom: 0;
+  .bluefooter-butn {
+    padding: 2px 12px !important;
+  }
+}
+.overhead-profit-save-btn {
+  margin: 0 -15px;
+  padding: 0 !important;
+  @media screen and (min-width:1600px) {
+    margin: 0 -30px;
+  }
+  .bluefooter-butn {
+    padding: 2px 15px !important;
+  }
+}
+.packaging-freight-btn-save {
+  padding: 2px 15px !important;
+}
+
+// PDF Img style
+.pdf-header-wrapper{
+  display: flex;
+  grid-gap: 10px;
+  justify-content: center;
+  img {
+    height: 50px;
+    display: block;
+    margin:8px;
+    margin: auto;
+  }
+}
+.ag-pinned-right-header {
+  .ag-header-row-column-group {
+    border-right:  solid #e5eaf9;
+  }
+}
+.ag-header-group-cell.ag-focus-managed.ag-header-group-cell-no-group:first-child {
+  border-left: 1px solid #e5eaf9;
+}
+
+//START Radio hook custom css//
+.label-container {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  input {
+    margin-bottom: 2px;
+  }
+}
+//END Radio hook custom css//
+.pdf-loader {
+  top: -1900;
+}
+.loader-wrapper {
+  height: calc(100vh - 924px);
+  overflow: hidden;
+  @media screen and (max-width: $miniDesktop) {
+    height: calc(100vh - 668px);
+  }
+}
