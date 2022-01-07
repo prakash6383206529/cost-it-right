@@ -123,12 +123,12 @@ class ExchangeRateListing extends Component {
 
 
     /**
-    * @method editItemDetails
-    * @description confirm edit item
+    * @method viewOrEditItemDetails
+    * @description confirm edit or view  item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
-            data: { isEditFlag: true, ID: Id },
+            data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
             toggleForm: true,
         })
     }
@@ -146,7 +146,7 @@ class ExchangeRateListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />
         };
-        // return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
+
     }
 
 
@@ -205,10 +205,11 @@ class ExchangeRateListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -378,7 +379,7 @@ class ExchangeRateListing extends Component {
                                                         {this.onBtExport()}
                                                     </ExcelFile>
                                                 </>
-                                                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                                             }
 
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
