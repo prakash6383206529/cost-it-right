@@ -708,8 +708,8 @@ class VendorListing extends Component {
                                 </div>
                             </Col>
                         )}
-                        <Col md="6"> 
-                        {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
+                        <Col md="6">
+                            {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
                         </Col>
                         <Col md="6" lg="6">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -792,7 +792,7 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" headerName="Actions" width={220} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
                             <div className="paging-container d-inline-block float-right">
