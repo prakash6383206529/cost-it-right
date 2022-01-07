@@ -11,7 +11,7 @@ import AssemblyWiseImpact from './AssemblyWiseImpact';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue } = props
   const [shown, setshown] = useState(false)
   const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
@@ -137,22 +137,26 @@ function VerifyImpactDrawer(props) {
                 </Col>
               </Row>
 
-              <Row className="mb-3 pr-0 mx-0">
-                <Col md="6"> <HeaderTitle title={'Assembly Wise Impact:'} /></Col>
-                <Col md="6">
-                  <div className={'right-details'}>
-                    <a onClick={() => setShowAssemblyWise(!showAssemblyWise)} className={`${showAssemblyWise ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
-                  </div>
-                </Col>
-                {showAssemblyWise && <div className="accordian-content w-100 px-3 impacted-min-height">
-                  <AssemblyWiseImpact
-                    dataForAssemblyImpact={dataForAssemblyImpactInVerifyImpact}
-                    impactType={'AssemblySummary'}
-                    isPartImpactAssembly={false}
-                  />
-                </div>
-                }
-              </Row>
+              {assemblyImpactButtonTrue &&
+                <>
+                  <Row className="mb-3 pr-0 mx-0">
+                    <Col md="6"> <HeaderTitle title={'Assembly Wise Impact:'} /></Col>
+                    <Col md="6">
+                      <div className={'right-details'}>
+                        <a onClick={() => setShowAssemblyWise(!showAssemblyWise)} className={`${showAssemblyWise ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                      </div>
+                    </Col>
+                    {showAssemblyWise && <div className="accordian-content w-100 px-3 impacted-min-height">
+                      <AssemblyWiseImpact
+                        dataForAssemblyImpact={dataForAssemblyImpactInVerifyImpact}
+                        impactType={'AssemblySummary'}
+                        isPartImpactAssembly={false}
+                      />
+                    </div>
+                    }
+                  </Row>
+                </>
+              }
 
               <Row className="mb-3 pr-0 mx-0">
                 <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
