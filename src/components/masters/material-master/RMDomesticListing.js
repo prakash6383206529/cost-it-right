@@ -26,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getFilteredRMData } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { ColumnController } from 'ag-grid-community';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,6 +58,8 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
+    
+
 
 
     /**
@@ -139,20 +142,25 @@ function RMDomesticListing(props) {
             }))
         }
     }
-
+   
     /**
     * @method editItemDetails
     * @description edit material type
     */
-    const editItemDetails = (Id, rowData = {}) => {
+    const viewOrEditItemDetails = (Id, rowData = {} , isViewMode) => {
         let data = {
+           
             isEditFlag: true,
+            isViewFlag: isViewMode,
             Id: Id,
             IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
         props.getDetails(data);
     }
+  
+      
 
+    
     /**
     * @method deleteItem
     * @description confirm delete Raw Material details
@@ -207,9 +215,13 @@ function RMDomesticListing(props) {
         } else {
             isEditbale = EditAccessibility
         }
+
         return (
             <>
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
+            
+              
+              <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue , rowData, true)} />
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData , false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
@@ -433,7 +445,7 @@ function RMDomesticListing(props) {
         statusFormatter: statusFormatter,
         hyphenFormatter: hyphenFormatter
 
-    };
+    }
 
     return (
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -551,6 +563,9 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                                 <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+            
+                                
+                                
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
@@ -590,7 +605,8 @@ function RMDomesticListing(props) {
             }
         </div >
     );
-}
+        }
+
 
 
 
