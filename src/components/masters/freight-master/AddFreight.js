@@ -29,6 +29,7 @@ class AddFreight extends Component {
     this.state = {
       FreightID: "",
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       IsVendor: false,
       TransPortMood: [],
       FullTruckCapacity: [],
@@ -533,7 +534,7 @@ class AddFreight extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isOpenVendor, isEditFlag, } = this.state;
+    const { isOpenVendor, isEditFlag, isViewMode } = this.state;
 
     return (
       <>
@@ -703,7 +704,7 @@ class AddFreight extends Component {
                               <input
                                 type="checkbox"
                                 checked={this.state.IsLoadingUnloadingApplicable}
-                                disabled={false}
+                                disabled={isViewMode}
                               />
                               <span
                                 className=" before-box"
@@ -721,8 +722,7 @@ class AddFreight extends Component {
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderText}
-                              //required={true}
-                              disabled={false}
+                              disabled={isViewMode}
                               className=""
                               customClassName=" withBorder mn-height-auto"
                             />
@@ -743,7 +743,7 @@ class AddFreight extends Component {
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderText}
-                              disabled={false}
+                              disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -756,7 +756,7 @@ class AddFreight extends Component {
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderText}
-                              disabled={false}
+                              disabled={isViewMode}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -780,12 +780,10 @@ class AddFreight extends Component {
                                   options={this.renderListing(
                                     "FULL_TRUCK_CAPACITY"
                                   )}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  //validate={(this.state.FullTruckCapacity == null || this.state.FullTruckCapacity.length == 0) ? [required] : []}
-                                  //required={true}
+
                                   handleChangeDescription={this.handleCapacity}
                                   valueDescription={this.state.FullTruckCapacity}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                 />
                               </div>
                             </div>
@@ -800,9 +798,7 @@ class AddFreight extends Component {
                               options={this.renderListing(
                                 "FREIGHT_RATE_CRITERIA"
                               )}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.RateCriteria == null || this.state.RateCriteria.length == 0) ? [required] : []}
-                              //required={true}
+                              disabled={isViewMode}
                               handleChangeDescription={this.criteriaHandler}
                               valueDescription={this.state.RateCriteria}
                             />
@@ -816,7 +812,7 @@ class AddFreight extends Component {
                               validate={[positiveAndDecimalNumber, maxLength10]}
                               component={renderText}
                               //required={true}
-                              disabled={false}
+                              disabled={isViewMode}
                               className=" "
                               customClassName="withBorder"
                             />
@@ -825,7 +821,7 @@ class AddFreight extends Component {
                             <div className="form-group">
                               <label>
                                 Effective Date
-                                {/* <span className="asterisk-required">*</span> */}
+
                               </label>
                               <div className="inputbox date-section">
                                 <DatePicker
@@ -835,14 +831,13 @@ class AddFreight extends Component {
                                   showMonthDropdown
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
                                   dropdownMode="select"
                                   placeholderText="Select date"
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
+                                  disabled={isViewMode}
                                 />
                               </div>
                             </div>
@@ -871,6 +866,7 @@ class AddFreight extends Component {
                               ) : (
                                 <button
                                   type="button"
+                                  disabled={isViewMode}
                                   className={"user-btn mt30 pull-left"}
                                   onClick={this.gridHandler}
                                 >
@@ -905,8 +901,8 @@ class AddFreight extends Component {
                                           {item.EffectiveDate ? DayTime(item.EffectiveDate).format("DD/MM/YYYY") : '-'}
                                         </td>
                                         <td>
-                                          <button className="Edit mr-2" type={"button"} onClick={() => this.editGridItemDetails(index)} />
-                                          <button className="Delete" type={"button"} onClick={() => this.deleteGridItem(index)} />
+                                          <button className="Edit mr-2" type={"button"} disabled={isViewMode} onClick={() => this.editGridItemDetails(index)} />
+                                          <button className="Delete" type={"button"} disabled={isViewMode} onClick={() => this.deleteGridItem(index)} />
                                         </td>
                                       </tr>
                                     );
@@ -932,6 +928,7 @@ class AddFreight extends Component {
                           </button>
                           <button
                             type="submit"
+                            disabled={isViewMode}
                             className="user-btn mr5 save-btn"
                           >
                             <div className={"save-icon"}></div>

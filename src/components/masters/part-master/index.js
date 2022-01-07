@@ -165,15 +165,15 @@ class PartMaster extends Component {
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
                             <div className="d-flex justify-content-between">
-                            <h1>Part Master</h1>
-                            <button
-                                        type="button"
-                                        className={'user-btn mr5 mt-1'}
-                                        title="Add"
-                                        onClick={this.openFetchDrawer}>
-                                        <div className={'swap mr-0'}></div></button>
+                                <h1>Part Master</h1>
+                                <button
+                                    type="button"
+                                    className={'user-btn mr5 mt-1'}
+                                    title="Add"
+                                    onClick={this.openFetchDrawer}>
+                                    <div className={'swap mr-0'}></div></button>
                             </div>
-                           
+
 
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
@@ -206,6 +206,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '2' &&
@@ -218,6 +219,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '3' &&
@@ -230,6 +232,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                             </TabContent>

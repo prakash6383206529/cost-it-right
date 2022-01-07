@@ -3890,7 +3890,7 @@ body{
     tr{
       th{
         border: none;
-        font-weight: bold;
+        font-weight: 500;
       }
     }
   }
@@ -6594,8 +6594,8 @@ left: 17rem;
   padding: 0 28px !important;
 }
 .rmcc-main-headings {
-  th {
-    padding: 5px 15px !important;
+  th,td {
+    padding: 10px 15px !important;
   }
 }
 .min-height-auto {
@@ -6704,4 +6704,11 @@ left: 17rem;
 
 .pdf-loader {
   top: -1900;
+}
+.loader-wrapper {
+  height: calc(100vh - 924px);
+  overflow: hidden;
+  @media screen and (max-width: $miniDesktop) {
+    height: calc(100vh - 668px);
+  }
 }

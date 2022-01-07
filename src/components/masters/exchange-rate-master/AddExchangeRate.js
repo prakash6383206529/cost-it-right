@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthsix, decimalLengthThree, } from "../../../helper/validation";
+import { required, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthsix, decimalLengthThree, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import Toaster from '../../common/Toaster';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
@@ -11,7 +11,7 @@ import { loggedInUserId, } from "../../../helper/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../common/DayTimeWrapper'
-import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
+import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 const
@@ -23,6 +23,7 @@ class AddExchangeRate extends Component {
     this.child = React.createRef();
     this.state = {
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       currency: [],
       effectiveDate: '',
       ExchangeRateId: '',
@@ -40,7 +41,7 @@ class AddExchangeRate extends Component {
   componentDidMount() {
 
     this.props.getCurrencySelectList(() => { })
-    // this.props.getExchangeRateData('', (res) => { })
+
     this.getDetail()
   }
 
@@ -154,7 +155,7 @@ class AddExchangeRate extends Component {
       isEditFlag: false,
     })
     this.props.hideForm()
-    // this.props.getExchangeRateData('', (res) => { })
+
   }
 
   /**
@@ -255,7 +256,7 @@ class AddExchangeRate extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, } = this.state;
+    const { isEditFlag, isViewMode } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -313,7 +314,7 @@ class AddExchangeRate extends Component {
                           validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           required={true}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName="withBorder"
                         />
@@ -326,7 +327,7 @@ class AddExchangeRate extends Component {
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -340,7 +341,7 @@ class AddExchangeRate extends Component {
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                           component={renderText}
                           max={100}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -354,7 +355,7 @@ class AddExchangeRate extends Component {
                           placeholder={"Enter"}
                           validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -375,7 +376,6 @@ class AddExchangeRate extends Component {
                               showMonthDropdown
                               showYearDropdown
                               dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"
@@ -387,22 +387,7 @@ class AddExchangeRate extends Component {
                               disabled={isEditFlag ? true : false}
 
                             />
-                            {/* <Field
-                              label="Effective Date"
-                              name="EffectiveDate"
-                              // selected={this.state.effectiveDate}
-                              onChange={this.handleEffectiveDateChange}
-                              type="text"
-                              validate={[required]}
-                              autoComplete={'off'}
-                              required={true}
-                              changeHandler={(e) => {
-                                //e.preventDefault()
-                              }}
-                              component={renderDatePicker}
-                              className="form-control"
-                            //minDate={moment()}
-                            /> */}
+
                           </div>
                         </div>
                       </Col>
@@ -420,6 +405,7 @@ class AddExchangeRate extends Component {
                       </button>
                       <button
                         type="submit"
+                        disabled={isViewMode}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
@@ -457,9 +443,8 @@ function mapStateToProps(state) {
       BankRate: exchangeRateData.BankRate ? exchangeRateData.BankRate : '',
       BankCommissionPercentage: exchangeRateData.BankCommissionPercentage ? exchangeRateData.BankCommissionPercentage : '',
       CustomRate: exchangeRateData.CustomRate ? exchangeRateData.CustomRate : '',
-      // EffectiveDate: exchangeRateData.EffectiveDate ? exchangeRateData.EffectiveDate : ''
       EffectiveDate: DayTime(exchangeRateData.EffectiveDate).isValid() ? DayTime(exchangeRateData.EffectiveDate) : ''
-      // effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+
 
     }
   }

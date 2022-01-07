@@ -4,9 +4,11 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummary from './CostingSummary';
-import { setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPOPrice, setRMCCData, setToolTabData, storePartNumber } from '../actions/Costing';
+import {  storePartNumber } from '../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { useHistory } from "react-router-dom";
+
+
 
 function Costing(props) {
 
@@ -36,23 +38,13 @@ function Costing(props) {
   }, [])
 
   const showDetail = (partInfo, costingInfo) => {
+    
     setPartInfo(partInfo)
     setCostingData(costingInfo)
-    // dispatch(setPOPrice(0,()=>{}))
-    // dispatch(setRMCCData([],()=>{}))                            //THIS WILL CLEAR RM CC REDUCER
-    // dispatch(setComponentItemData({},()=>{}))
+    if(costingInfo && costingInfo.length>0){
 
-    // dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
-    // dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
-
-    // dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
-    // dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
-
-    // dispatch(setToolTabData([], () => { }))                     //THIS WILL CLEAR TOOL ARR FROM REDUCER  
-    // dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
-
-    // dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
-    toggle("1");
+      toggle("1");
+    }
   }
 
   /**

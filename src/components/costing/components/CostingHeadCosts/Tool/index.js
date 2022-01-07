@@ -45,9 +45,9 @@ function Tool(props) {
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  // const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingToolCostResponse.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
+ const [applicability, setApplicability] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 && data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !==null ? { label: data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType, value: data.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
   
-  const [applicability,setApplicability] = useState([])
+ 
   const [toolObj,setToolObj]=useState({})
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
@@ -120,6 +120,7 @@ function Tool(props) {
       setValue('ToolMaintenanceCost', event.target.value)
 
       const ToolMaintenanceCost = checkForNull(event.target.value)
+      console.log('ToolMaintenanceCost: ', ToolMaintenanceCost);
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(getValues('Life'))
       const ToolAmortizationCost = ToolCost/Life
@@ -138,7 +139,7 @@ function Tool(props) {
         "Life": Life,
         "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice),
         "TotalToolCost": null,
-        "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
+        "ToolMaintenanceCost": ToolMaintenanceCost,
         "ToolCostType":toolObj.ToolApplicability,
         "ToolApplicabilityTypeId":toolObj.ToolApplicabilityId,
         "ToolMaintenancePercentage":toolObj.MaintanencePercentage,
@@ -408,7 +409,7 @@ function Tool(props) {
                       ...toolObj,
                       ToolApplicabilityId: applicability.value,
                       ToolApplicability: applicability.label,
-                      MaintanencePercentage: maintanencePercentage,
+                      MaintanencePercentage:maintanencePercentage,
                       ToolApplicabilityCost: '-',
                       ToolMaintenanceCost: checkForDecimalAndNull(maintanencePercentage, initialConfiguration.NoOfDecimalForPrice)
                   })
@@ -445,7 +446,7 @@ function Tool(props) {
         "Life": Life,
         "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), initialConfiguration.NoOfDecimalForPrice),
         "TotalToolCost": null,
-        "ToolMaintenanceCost": toolObj.ToolMaintenanceCost,
+        "ToolMaintenanceCost": ToolMaintenanceCost,
         "ToolCostType":toolObj.ToolApplicability,
         "ToolApplicabilityTypeId":toolObj.ToolApplicabilityId,
         "ToolMaintenancePercentage":toolObj.MaintanencePercentage,

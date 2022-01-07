@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData } from '../actions/Simulation'
+import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
@@ -228,11 +228,23 @@ function SimulationApprovalSummary(props) {
         setViewButton(false)
     }
 
-    const closeApproveDrawer = (e = '', type) => {
+    const closeApproveDrawer = (e = '', type, status = '') => {
         if (type === 'submit') {
             setApproveDrawer(false)
             setShowListing(true)
             setRejectDrawer(false)
+            if (status === 200 && showFinalLevelButtons === true && approveDrawer === true) {
+                simulationDetail.Attachements && simulationDetail.Attachements.map((Data) => {
+
+                    let Category = Data.AttachementCategory.replaceAll(' ', '_')
+                    let path = `${Category}\\\\${Data.FileName}`
+                    let uploadData = new FormData()
+                    uploadData.append('path', path)
+                    dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
+
+                })
+            }
+
         } else {
             setApproveDrawer(false)
             setRejectDrawer(false)
@@ -681,8 +693,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
-
+                      <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
 
                         {recordInsertStatusBox &&
                             <div className="error-box-container">
@@ -1209,6 +1220,7 @@ function SimulationApprovalSummary(props) {
                 // reasonId={approvalDetails.ReasonId}
                 IsFinalLevel={showFinalLevelButtons}
                 costingList={costingList}
+                attachments={simulationDetail.Attachements}
             // IsPushDrawer={showPushDrawer}
             // dataSend={[approvalDetails, partDetail]}
             />}

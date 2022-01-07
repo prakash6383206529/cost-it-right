@@ -1740,6 +1740,7 @@ function OverheadProfit(props) {
               getValues={getValues}
               errors={errors}
               useWatch={useWatch}
+              CostingInterestRateDetail={CostingInterestRateDetail}
               PaymentTermDetail={PaymentTermDetail}
               data={data}
               setPaymentTermsDetail={props.setPaymentTermsDetail}

@@ -13,7 +13,6 @@ import { checkPermission } from '../../../helper/util';
 import { CLIENT, Clientmaster, CUSTOMER, MASTERS } from '../../../config/constants';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { CLIENT_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -41,6 +40,7 @@ class ClientListing extends Component {
             isOpenVendor: false,
             tableData: [],
             ID: '',
+            isViewMode: false,
 
             AddAccessibility: false,
             EditAccessibility: false,
@@ -120,13 +120,16 @@ class ClientListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         this.setState({
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: isViewMode,
         })
     }
+
+
 
     /**
     * @method deleteItem
@@ -163,10 +166,11 @@ class ClientListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility, } = this.state;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {<button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -225,7 +229,7 @@ class ClientListing extends Component {
 
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -361,7 +365,7 @@ class ClientListing extends Component {
                                                 {this.onBtExport()}
                                             </ExcelFile>
                                         </>
-                                        //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -426,6 +430,7 @@ class ClientListing extends Component {
                             isOpen={isOpenVendor}
                             closeDrawer={this.closeVendorDrawer}
                             isEditFlag={isEditFlag}
+                            isViewMode={this.state.isViewMode}
                             ID={this.state.ID}
                             anchor={'right'}
                         />

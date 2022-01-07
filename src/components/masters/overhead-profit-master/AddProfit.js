@@ -35,6 +35,7 @@ class AddProfit extends Component {
       isShowForm: false,
       isEditFlag: false,
       IsVendor: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       ModelType: [],
       vendorName: [],
@@ -667,7 +668,7 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC } = this.state;
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode } = this.state;
 
     return (
       <>
@@ -760,7 +761,7 @@ class AddProfit extends Component {
                               this.handleModelTypeChange
                             }
                             valueDescription={this.state.ModelType}
-                          //disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
@@ -834,7 +835,7 @@ class AddProfit extends Component {
                               this.handleOverheadChange
                             }
                             valueDescription={this.state.overheadAppli}
-                          //disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                           />
                         </Col>
                         {!isHideOverhead && (
@@ -855,7 +856,7 @@ class AddProfit extends Component {
                               className=""
                               customClassName=" withBorder"
                               max={100}
-                              disabled={isOverheadPercent ? true : false}
+                              disabled={isOverheadPercent || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -868,11 +869,10 @@ class AddProfit extends Component {
                               placeholder={!isRM ? "Enter" : ""}
                               validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
-                              //onChange={this.handleCalculation}
                               required={!isRM ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isRM ? true : false}
+                              disabled={isRM || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -889,7 +889,7 @@ class AddProfit extends Component {
                               required={!isCC ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isCC ? true : false}
+                              disabled={isCC || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -906,7 +906,7 @@ class AddProfit extends Component {
                               required={!isBOP ? true : false}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isBOP ? true : false}
+                              disabled={isBOP || isViewMode ? true : false}
                             />
                           </Col>
                         )}
@@ -922,12 +922,12 @@ class AddProfit extends Component {
                               autoComplete={'off'}
                               required={true}
                               changeHandler={(e) => {
-                                //e.preventDefault()
+
                               }}
                               component={renderDatePicker}
                               className="form-control"
                               disabled={isEditFlag ? true : false}
-                            //minDate={moment()}
+
                             />
                           </div>
                         </Col>
@@ -952,6 +952,7 @@ class AddProfit extends Component {
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="512"
+                            disabled={isViewMode}
                           />
                         </Col>
                         <Col md="3">
@@ -965,7 +966,7 @@ class AddProfit extends Component {
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              //onSubmit={this.handleSubmit}
+                              disabled={isViewMode}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -1020,7 +1021,7 @@ class AddProfit extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                    <img
+                                    {!isViewMode && <img
                                       alt={""}
                                       className="float-right"
                                       onClick={() =>
@@ -1030,7 +1031,7 @@ class AddProfit extends Component {
                                         )
                                       }
                                       src={attachClose}
-                                    ></img>
+                                    ></img>}
                                   </div>
                                 );
                               })}
@@ -1051,6 +1052,7 @@ class AddProfit extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
+                          disabled={isViewMode}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
