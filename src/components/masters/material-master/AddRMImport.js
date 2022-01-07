@@ -48,6 +48,7 @@ class AddRMImport extends Component {
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
+      isViewFlag: this.props?.data?.isViewFlag?true:false,
       RawMaterialID: '',
 
       RawMaterial: [],
@@ -1086,7 +1087,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag} = this.state;
 
     return (
       <>
@@ -1156,7 +1157,7 @@ class AddRMImport extends Component {
                               required={true}
                               handleChangeDescription={this.handleTechnologyChange}
                               valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
+                              disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
                           <Col md="4">
@@ -1174,7 +1175,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                               {!isEditFlag && (
@@ -1201,7 +1202,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                               {/* {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
@@ -1235,7 +1236,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleSpecChange}
                                   valueDescription={this.state.RMSpec}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                               {/* {!isEditFlag && (
@@ -1261,7 +1262,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleCategoryChange}
                                   valueDescription={this.state.Category}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                             </div>
@@ -1277,7 +1278,7 @@ class AddRMImport extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={true}
+                              disabled={isEditFlag || isViewFlag}
                             />
 
                           </Col>
@@ -1300,6 +1301,7 @@ class AddRMImport extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
+                                
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>)
@@ -1323,7 +1325,7 @@ class AddRMImport extends Component {
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
+                                disabled={isEditFlag || isViewFlag}
                               />
                             </Col>
                           }
@@ -1370,7 +1372,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                               {!isEditFlag && (
@@ -1413,7 +1415,7 @@ class AddRMImport extends Component {
                                     validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
                                     //required={true}
-                                    disabled={false}
+                                    disabled={isViewFlag}
                                     onChange={this.handleSource}
                                     valueDescription={this.state.source}
                                     className=" "
@@ -1433,6 +1435,7 @@ class AddRMImport extends Component {
                                     //required={true}
                                     handleChangeDescription={this.handleSourceSupplierCity}
                                     valueDescription={this.state.sourceLocation}
+                                    disabled={isViewFlag }
                                   />
                                 </Col>
                               </>
@@ -1463,7 +1466,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                               {/* {!isEditFlag && <div
@@ -1485,7 +1488,7 @@ class AddRMImport extends Component {
                               required={true}
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
-                              disabled={isEditFlag ? true : false}
+                              disabled={isEditFlag || isViewFlag}
                             >
                               {this.state.showWarning && <WarningMessage dClass="mt-1" message={`${this.state.currency.label} rate is not present in the Exchange Master`} />}
                             </Field>
@@ -1508,6 +1511,7 @@ class AddRMImport extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
+                                  disabled={isViewFlag }
                                 //minDate={moment()}
                                 />
                               </div>
@@ -1522,7 +1526,7 @@ class AddRMImport extends Component {
                               validate={[]}
                               component={renderText}
                               required={false}
-                              disabled={false}
+                              disabled={isViewFlag }
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1536,7 +1540,7 @@ class AddRMImport extends Component {
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={false}
+                              disabled={isViewFlag ? true:false}
                               maxLength="15"
                               className=" "
                               customClassName=" withBorder"
@@ -1555,6 +1559,7 @@ class AddRMImport extends Component {
                               maxLength="15"
                               customClassName=" withBorder"
                               onChange={this.handleScrapRate}
+                              disabled={isViewFlag }
                             />
                           </Col>
                           <Col md="4">
@@ -1569,6 +1574,7 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
+                              disabled={isViewFlag }
                             />
                           </Col>
                           <Col md="4">
@@ -1583,6 +1589,7 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
+                              disabled={isViewFlag }
                             />
                           </Col>
                           <Col md="4">
@@ -1594,9 +1601,10 @@ class AddRMImport extends Component {
                               validate={[]}
                               component={renderText}
                               required={false}
-                              disabled={true}
+                              
                               className=" "
                               customClassName=" withBorder mb-0"
+                              disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
                           {
@@ -1610,9 +1618,10 @@ class AddRMImport extends Component {
                                 validate={[]}
                                 component={renderText}
                                 required={false}
-                                disabled={true}
+                                
                                 className=" "
                                 customClassName=" withBorder mb-0"
+                                disabled={isEditFlag || isViewFlag}
                               />
                             </Col>
                           }
@@ -1640,6 +1649,8 @@ class AddRMImport extends Component {
                               component={renderTextAreaField}
                               maxLength="512"
                               rows="10"
+                              disabled={isViewFlag}
+
                             />
                           </Col>
                           <Col md="3">
@@ -1686,6 +1697,7 @@ class AddRMImport extends Component {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 classNames="draper-drop"
+                                disabled={isViewFlag }
                               />
                             </div>
                           </Col>
@@ -1710,7 +1722,7 @@ class AddRMImport extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                      <img
+                                      {!isViewFlag&&<img
                                         className="float-right"
                                         alt={""}
                                         onClick={() =>
@@ -1720,10 +1732,11 @@ class AddRMImport extends Component {
                                           )
                                         }
                                         src={imgRedcross}
-                                      ></img>
+                                      ></img>}
                                     </div>
                                   );
                                 })}
+
                             </div>
                           </Col>
                         </Row>
@@ -1743,7 +1756,7 @@ class AddRMImport extends Component {
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 onClick={() => scroll.scrollToTop()}
-                                disabled={this.state.isFinalApprovar}
+                                disabled={isViewFlag }
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
