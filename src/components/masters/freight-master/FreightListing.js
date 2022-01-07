@@ -79,9 +79,9 @@ class FreightListing extends Component {
         let Data = res.data.DataList;
         this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       } else {
-        this.setState({ tableData: [] })
+        this.setState({ tableData: [], isLoader: false })
       }
     })
   }
