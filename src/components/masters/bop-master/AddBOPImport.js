@@ -848,10 +848,11 @@ class AddBOPImport extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              <div
-                                onClick={this.categoryToggler}
-                                className={"plus-icon-square right"}
-                              ></div>
+                              {!isViewMode &&
+                                <div
+                                  onClick={this.categoryToggler}
+                                  className={"plus-icon-square right"}
+                                ></div>}
                             </div>
                           </Col>
                           <Col md="3">
