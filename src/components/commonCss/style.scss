@@ -3829,7 +3829,7 @@ body{
   .nodate-section{
     margin: 20px 0;
     img{
-      width: 60px;
+      width: 60px  !important;
     }
     .my-2{
       margin: 2px 0 !important;
@@ -6693,3 +6693,17 @@ left: 17rem;
     }
 }
 // <------END input field loader----->
+
+.verify-drawer {
+  .ag-grid-wrapper.height-width-wrapper {
+    min-height: auto !important;
+  }
+}
+.impacted-min-height {
+  .ag-row-no-animation {
+    min-height: 120px;
+  }
+  .ag-overlay-wrapper {
+    padding-top: 175px !important;
+  }
+}
