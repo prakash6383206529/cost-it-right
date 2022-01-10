@@ -649,19 +649,26 @@ function RawMaterialCost(props) {
     tempData = {
       ...tempData,
 
-      Remark: getValues('remarkPopUp')
+      Remark: getValues(`remarkPopUp${index}`)
     }
     tempArr = Object.assign([...gridData], { [index]: tempData })
     setGridData(tempArr)
 
-    if (getValues('remarkPopUp')) {
+    if (getValues(`remarkPopUp${index}`)) {
       Toaster.success('Remark saved successfully')
-    } else {
-
-      Toaster.warning('Please enter the remark')
     }
 
+    var button = document.getElementById(`popUpTrigger${index}`)
+    button.click()
 
+
+  }
+
+
+  const onRemarkPopUpClose = (index) => {
+
+    var button = document.getElementById(`popUpTrigger${index}`)
+    button.click()
   }
 
   /**
@@ -1010,25 +1017,30 @@ function RawMaterialCost(props) {
                                 type={'button'}
                                 onClick={() => deleteItem(index)}
                               />}
-                              <Popup trigger={<button className="View ml-2" type={'button'} />}
+                              <Popup trigger={<button id={`popUpTrigger${index}`} className="View ml-2" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
-                                  label="Remark"
-                                  name={"remarkPopUp"}
+                                  label="Remark :"
+                                  name={`remarkPopUp${index}`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
                                   rules={{}}
                                   handleChange={(e) => { }}
-                                  defaultValue={""}
+                                  defaultValue={item.Remark}
                                   className=""
                                   customClassName={"withBorder"}
                                   errors={errors.MBId}
                                   disabled={false}
                                   hidden={false}
                                 />
-                                <button className='submit-button mr5 save-btn' onClick={() => onRemarkPopUpClick(index)} >Save</button>
+                                <Row>
+                                  <Col md="12" className='remark-btn-container'>
+                                    <button className='submit-button mr-2' onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                    <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                  </Col>
+                                </Row>
 
                               </Popup>
 
@@ -1185,32 +1197,36 @@ function RawMaterialCost(props) {
           </form>
         </div>
       </div>
-      {isDrawerOpen && (
-        <AddRM
-          isOpen={isDrawerOpen}
-          closeDrawer={closeDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-          IsApplyMasterBatch={IsApplyMasterBatch}
-          Ids={Ids}
-        />
-      )}
-      {isWeightDrawerOpen && (
-        <OpenWeightCalculator
-          isOpen={isWeightDrawerOpen}
-          CostingViewMode={CostingViewMode}
-          closeDrawer={closeWeightDrawer}
-          isEditFlag={CostingViewMode ? false : true}
-          inputDiameter={inputDiameter}
-          item={item}
-          technology={costData.ETechnologyType}
-          ID={''}
-          anchor={'right'}
-          rmRowData={gridData[editIndex]}
-          isSummary={false}
-        />
-      )}
+      {
+        isDrawerOpen && (
+          <AddRM
+            isOpen={isDrawerOpen}
+            closeDrawer={closeDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+            IsApplyMasterBatch={IsApplyMasterBatch}
+            Ids={Ids}
+          />
+        )
+      }
+      {
+        isWeightDrawerOpen && (
+          <OpenWeightCalculator
+            isOpen={isWeightDrawerOpen}
+            CostingViewMode={CostingViewMode}
+            closeDrawer={closeWeightDrawer}
+            isEditFlag={CostingViewMode ? false : true}
+            inputDiameter={inputDiameter}
+            item={item}
+            technology={costData.ETechnologyType}
+            ID={''}
+            anchor={'right'}
+            rmRowData={gridData[editIndex]}
+            isSummary={false}
+          />
+        )
+      }
     </>
   )
 }

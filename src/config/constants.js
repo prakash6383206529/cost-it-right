@@ -299,6 +299,12 @@ export const API = {
   getManageBOPSOBById: `${BASE_URL}/masters-bought-out-part/get-bought-out-part-vendor-share-of-business-by-bop-part-number`,
   updateBOPSOBVendors: `${BASE_URL}/masters-bought-out-part/update-bought-out-part-vendor-share-of-business`,
 
+  //BOP APPROVAL API'S
+
+  getBOPApprovalList: `${BASE_URL}/masters-approval-Bought-Out-Part/get-master-approvals-by-filter`,
+
+
+
   //BOP Category
   createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
   getBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
@@ -1076,6 +1082,7 @@ export const GET_INITIAL_SOB_VENDORS_SUCCESS = 'GET_INITIAL_SOB_VENDORS_SUCCESS'
 export const GET_BOP_DOMESTIC_DATA_LIST = 'GET_BOP_DOMESTIC_DATA_LIST'
 export const GET_BOP_IMPORT_DATA_LIST = 'GET_BOP_IMPORT_DATA_LIST'
 export const GET_SOB_LISTING = 'GET_SOB_LISTING'
+export const GET_BOP_APPROVAL_LIST = 'GET_BOP_APPROVAL_LIST'
 
 //PROCESS MASTER
 export const CREATE_PROCESS_SUCCESS = 'CREATE_PROCESS_SUCCESS'
@@ -1758,4 +1765,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.76";
+export const VERSION = "V1.1.77";
