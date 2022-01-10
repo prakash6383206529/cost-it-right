@@ -224,8 +224,8 @@ function ERSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className="ag-grid-wrapper height-width-wrapper">
-                                    <div className="ag-grid-header d-flex">
+                                <div className="ag-grid-wrapper height-width-wrapper reset-btn-container">
+                                    <div className="ag-grid-header d-flex ">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                           <div className="refresh mr-0"></div></button>
