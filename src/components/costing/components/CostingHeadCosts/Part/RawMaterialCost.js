@@ -6,7 +6,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA, PLASTIC } from '../../../../../config/constants'
-import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
 import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
@@ -14,8 +14,10 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, INR, KG, MG } from '../../../../../config/constants'
 import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity,isMultipleRMAllow} from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 
 let counter = 0;
 function RawMaterialCost(props) {
@@ -47,6 +49,7 @@ function RawMaterialCost(props) {
   const [Ids, setIds] = useState([])
   const [editCalculation, setEditCalculation] = useState(true)
   const [oldGridData, setOldGridData] = useState(props.data)
+  const [remarkPopUpData, setRemarkPopUpData] = useState("")
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
@@ -327,6 +330,7 @@ function RawMaterialCost(props) {
     setEditCalculation(false)
     if (checkForNull(event.target.value) <= 0) {
 
+
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? checkForNull(tempData.GrossWeight) : 0;
 
@@ -343,7 +347,8 @@ function RawMaterialCost(props) {
         WeightCalculationId: "00000000-0000-0000-0000-000000000000",
         IsCalculatedEntry: false,
         CutOffRMC: CutOffRMC,
-        ScrapWeight: scrapWeight
+        ScrapWeight: scrapWeight,
+        Remark: remarkPopUpData ? remarkPopUpData : ""
       }
       tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -362,7 +367,8 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight
+          ScrapWeight: scrapWeight,
+          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
       }
@@ -391,7 +397,8 @@ function RawMaterialCost(props) {
           WeightCalculationId: "00000000-0000-0000-0000-000000000000",
           IsCalculatedEntry: false,
           CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight
+          ScrapWeight: scrapWeight,
+          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -410,7 +417,8 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
-            ScrapWeight: scrapWeight
+            ScrapWeight: scrapWeight,
+            Remark: remarkPopUpData ? remarkPopUpData : ""
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -431,7 +439,8 @@ function RawMaterialCost(props) {
           NetLandedCost: isRMDivisorApplicable(costData.TechnologyName) ? checkForDecimalAndNull(NetLandedCost / RMDivisor, initialConfiguration.NoOfDecimalForPrice) : NetLandedCost,
           WeightCalculatorRequest: {},
           CutOffRMC: CutOffRMC,
-          ScrapWeight: scrapWeight
+          ScrapWeight: scrapWeight,
+          Remark: remarkPopUpData ? remarkPopUpData : ""
         }
         tempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -450,7 +459,8 @@ function RawMaterialCost(props) {
             WeightCalculationId: "00000000-0000-0000-0000-000000000000",
             IsCalculatedEntry: false,
             CutOffRMC: CutOffRMC,
-            ScrapWeight: scrapWeight
+            ScrapWeight: scrapWeight,
+            Remark: remarkPopUpData ? remarkPopUpData : ""
           }
           tempArr = Object.assign([...gridData], { [index]: tempData })
         }
@@ -627,6 +637,38 @@ function RawMaterialCost(props) {
     setIds(selectedIds)
 
     setIsApplyMasterBatch(false)
+  }
+
+
+  const onRemarkPopUpClick = (index) => {
+
+    setRemarkPopUpData(getValues('remarkPopUp'))
+    let tempArr = []
+    let tempData = gridData[index]
+
+    tempData = {
+      ...tempData,
+
+      Remark: getValues(`remarkPopUp${index}`)
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    setGridData(tempArr)
+
+    if (getValues(`remarkPopUp${index}`)) {
+      Toaster.success('Remark saved successfully')
+    }
+
+    var button = document.getElementById(`popUpTrigger${index}`)
+    button.click()
+
+
+  }
+
+
+  const onRemarkPopUpClose = (index) => {
+
+    var button = document.getElementById(`popUpTrigger${index}`)
+    button.click()
   }
 
   /**
@@ -975,6 +1017,33 @@ function RawMaterialCost(props) {
                                 type={'button'}
                                 onClick={() => deleteItem(index)}
                               />}
+                              <Popup trigger={<button id={`popUpTrigger${index}`} className="View ml-2" type={'button'} />}
+                                position="top center">
+                                <TextAreaHookForm
+                                  label="Remark :"
+                                  name={`remarkPopUp${index}`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{}}
+                                  handleChange={(e) => { }}
+                                  defaultValue={item.Remark}
+                                  className=""
+                                  customClassName={"withBorder"}
+                                  errors={errors.MBId}
+                                  disabled={CostingViewMode ? true : false}
+                                  hidden={false}
+                                />
+                                <Row>
+                                  <Col md="12" className='remark-btn-container'>
+                                    <button className='submit-button mr-2' disabled={CostingViewMode ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                    <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                  </Col>
+                                </Row>
+
+                              </Popup>
+
                             </td>
                           </tr>
                         )
@@ -1128,32 +1197,36 @@ function RawMaterialCost(props) {
           </form>
         </div>
       </div>
-      {isDrawerOpen && (
-        <AddRM
-          isOpen={isDrawerOpen}
-          closeDrawer={closeDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-          IsApplyMasterBatch={IsApplyMasterBatch}
-          Ids={Ids}
-        />
-      )}
-      {isWeightDrawerOpen && (
-        <OpenWeightCalculator
-          isOpen={isWeightDrawerOpen}
-          CostingViewMode={CostingViewMode}
-          closeDrawer={closeWeightDrawer}
-          isEditFlag={CostingViewMode ? false : true}
-          inputDiameter={inputDiameter}
-          item={item}
-          technology={costData.ETechnologyType}
-          ID={''}
-          anchor={'right'}
-          rmRowData={gridData[editIndex]}
-          isSummary={false}
-        />
-      )}
+      {
+        isDrawerOpen && (
+          <AddRM
+            isOpen={isDrawerOpen}
+            closeDrawer={closeDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+            IsApplyMasterBatch={IsApplyMasterBatch}
+            Ids={Ids}
+          />
+        )
+      }
+      {
+        isWeightDrawerOpen && (
+          <OpenWeightCalculator
+            isOpen={isWeightDrawerOpen}
+            CostingViewMode={CostingViewMode}
+            closeDrawer={closeWeightDrawer}
+            isEditFlag={CostingViewMode ? false : true}
+            inputDiameter={inputDiameter}
+            item={item}
+            technology={costData.ETechnologyType}
+            ID={''}
+            anchor={'right'}
+            rmRowData={gridData[editIndex]}
+            isSummary={false}
+          />
+        )
+      }
     </>
   )
 }
