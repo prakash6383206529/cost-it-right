@@ -14,6 +14,7 @@ import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
 import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
+import LoaderCustom from '../../../common/LoaderCustom';
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -36,7 +37,7 @@ function ApprovalSummary(props) {
   const [showPushDrawer, setShowPushDrawer] = useState(false)
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
-
+  const [isLoader, setIsLoader] =useState(false);
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
@@ -44,15 +45,16 @@ function ApprovalSummary(props) {
   }, [])
 
   const approvalSummaryHandler = () => {
+    setIsLoader(true)
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
-
+    
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
         CostingId, PartId, PurchasingGroup, MaterialGroup, DecimalOption } = res?.data?.Data?.Costings[0];
 
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       const partNumber = PartDetails.PartNumber
-
+      setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId }))
       setPartDetail(PartDetails)
       setApprovalDetails(ApprovalDetails[0])
@@ -74,6 +76,7 @@ function ApprovalSummary(props) {
         DecimalOption: DecimalOption
       })
     }),
+    
     )
   }
 
@@ -129,6 +132,7 @@ function ApprovalSummary(props) {
       {
         showListing === false &&
         <>
+         {isLoader && <LoaderCustom />}
           <div className="container-fluid approval-summary-page">
             {/* <Errorbox customClass="d-none" errorText="There is some error in your page" /> */}
             <h2 className="heading-main">Approval Summary</h2>
