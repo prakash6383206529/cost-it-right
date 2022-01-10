@@ -36,7 +36,7 @@ class AddIndivisualProduct extends Component {
             DataToCheck: [],
             DropdownChanged: true,
             uploadAttachements: true,
-            isSurfaceTreatment: false,
+            isImpactCalculation: false,
 
         }
     }
@@ -81,7 +81,7 @@ class AddIndivisualProduct extends Component {
                             // isLoader: false,
                             effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
-                            isSurfaceTreatment: Data.IsConsideredForMBOM,
+                            isImpactCalculation: Data.IsConsideredForMBOM,
                         }, () => this.setState({ isLoader: false }))
                         // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
                         let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -238,7 +238,7 @@ class AddIndivisualProduct extends Component {
         this.setState({
             RawMaterial: [],
             selectedPlants: [],
-            isSurfaceTreatment: false,
+            isImpactCalculation: false,
         })
         this.props.getProductData('', res => { })
         this.props.hideForm()
@@ -249,7 +249,7 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isSurfaceTreatment, uploadAttachements } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -278,7 +278,7 @@ class AddIndivisualProduct extends Component {
                 // Plants: [],
                 Attachements: updatedFiles,
                 IsForcefulUpdated: true,
-                IsConsideredForMBOM: isSurfaceTreatment,
+                IsConsideredForMBOM: isImpactCalculation,
             }
 
             if (isEditFlag) {
@@ -309,7 +309,7 @@ class AddIndivisualProduct extends Component {
                 ProductGroupCode: values.ProductGroupCode,
                 // Plants: [],
                 Attachements: files,
-                IsConsideredForMBOM: isSurfaceTreatment,
+                IsConsideredForMBOM: isImpactCalculation,
             }
 
             this.props.reset()
@@ -329,11 +329,11 @@ class AddIndivisualProduct extends Component {
     };
 
     /**
-    * @method onPressSurfaceTreatment
+    * @method onPressImpactCalculation
     * @description Used for Surface Treatment
     */
-    onPressSurfaceTreatment = () => {
-        this.setState({ isSurfaceTreatment: !this.state.isSurfaceTreatment, DropdownChanged: false });
+    onPressImpactCalculation = () => {
+        this.setState({ isImpactCalculation: !this.state.isImpactCalculation, DropdownChanged: false });
     }
 
     /**
@@ -515,19 +515,19 @@ class AddIndivisualProduct extends Component {
                                                         <label
                                                             className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                                                                 }`}
-                                                            onChange={this.onPressSurfaceTreatment}
+                                                            onChange={this.onPressImpactCalculation}
                                                         >
                                                             Preferred for Impact Calculation
                                                             <input
                                                                 disabled={isViewMode}
                                                                 type="checkbox"
-                                                                checked={this.state.isSurfaceTreatment}
+                                                                checked={this.state.isImpactCalculation}
 
                                                             />
                                                             <span
                                                                 className=" before-box"
-                                                                checked={this.state.isSurfaceTreatment}
-                                                                onChange={this.onPressSurfaceTreatment}
+                                                                checked={this.state.isImpactCalculation}
+                                                                onChange={this.onPressImpactCalculation}
                                                             />
                                                         </label>
                                                     </Col>

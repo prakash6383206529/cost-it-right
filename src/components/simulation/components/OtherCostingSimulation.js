@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { SimulationUtils } from '../SimulationUtils'
+import ViewAssembly from './ViewAssembly';
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -76,6 +77,8 @@ function OtherCostingSimulation(props) {
         hideOveheadAndProfit: false
     })
     const [amendmentDetails, setAmendmentDetails] = useState({})
+    const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
+    const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
 
     const dispatch = useDispatch()
 
@@ -178,6 +181,11 @@ function OtherCostingSimulation(props) {
         }))
     }
 
+    const viewAssembly = (cell, row, rowIndex) => {
+        const data = row
+        setDataForAssemblyImpact(data)
+        setShowViewAssemblyDrawer(true)
+    }
 
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -185,6 +193,7 @@ function OtherCostingSimulation(props) {
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
+                {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
 
             </>
         )
@@ -253,6 +262,10 @@ function OtherCostingSimulation(props) {
         if (type === 'cancel') {
             setIsVerifyImpactDrawer(false);
         }
+    }
+
+    const closeAssemblyDrawer = () => {
+        setShowViewAssemblyDrawer(false)
     }
 
     const descriptionFormatter = (props) => {
@@ -693,6 +706,18 @@ function OtherCostingSimulation(props) {
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
                 />}
+
+            {showViewAssemblyDrawer &&
+                <ViewAssembly
+                    isOpen={showViewAssemblyDrawer}
+                    closeDrawer={closeAssemblyDrawer}
+                    // approvalData={approvalData}
+                    anchor={'bottom'}
+                    dataForAssemblyImpact={dataForAssemblyImpact}
+                    vendorIdState={vendorIdState}
+                    isPartImpactAssembly={true}
+                />
+            }
         </>
 
     );
