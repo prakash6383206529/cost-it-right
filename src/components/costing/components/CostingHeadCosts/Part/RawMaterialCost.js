@@ -1023,12 +1023,12 @@ function RawMaterialCost(props) {
                                   className=""
                                   customClassName={"withBorder"}
                                   errors={errors.MBId}
-                                  disabled={false}
+                                  disabled={CostingViewMode ? true : false}
                                   hidden={false}
                                 />
                                 <Row>
                                   <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                    <button className='submit-button mr-2' disabled={CostingViewMode ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
                                     <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                   </Col>
                                 </Row>
