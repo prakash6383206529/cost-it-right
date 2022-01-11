@@ -42,31 +42,24 @@ function OPSImulation(props) {
         }
     )
     const [applicabilityForGrid, setApplicabilityForGrid] = useState('')
+    const [isDisable, setIsDisable] = useState(false)
+    const [tableData, setTableData] = useState([])
 
-    const [isRM, setIsRM] = useState(false)
-    const [isCC, setIsCC] = useState(false)
-    const [isBOP, setIsBOP] = useState(false)
-    const [isOverheadPercent, setIsOverheadPercent] = useState(false)
-    const [reload, setReload] = useState(true)
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
+
     useEffect(() => {
-        // console.log('gridOptions.columnApi: ', gridOptions);
-
-        console.log(gridApi, 'gridApigridApi');
-        // if (gridApi !== null) {
-        //     gridApi.redrawRows();
-        // }
-
-
-
-    }, [isBOP])
-    // useEffect(() => {
-    //     setValuesForDropdownInAgGrid(prevState => ({ ...prevState, applicability: ['BOP', 'BOP + CC', 'CC', 'Fixed', 'RM', 'RM + BOP', 'RM + CC', 'RM + CC + BOP'] }))
-    //     setValuesForDropdownInAgGrid(prevState => ({ ...prevState, modelType: ['All', 'High Volume', 'Low Volume', 'Medium Volume', 'New Development'] }))
-    // }, [])
+        list && list.map((item) => {
+            item.NewOverheadApplicabilityType = list[0].OverheadApplicabilityType
+            item.NewOverheadBOPPercentage = list[0].OverheadBOPPercentage
+            item.NewOverheadMachiningCCPercentage = list[0].OverheadMachiningCCPercentage
+            item.NewOverheadRMPercentage = list[0].OverheadRMPercentage
+            item.NewOverheadPercentage = list[0].OverheadPercentage
+            return null
+        })
+    }, [list])
 
     const dispatch = useDispatch()
 
@@ -79,30 +72,44 @@ function OPSImulation(props) {
             setValue('NoOfCorrectRow', rowCount.correctRow)
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
         }
+        setTableData(list)
     }, [])
 
     const verifySimulation = debounce(() => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
+        let OverheadApplicabilityTypeCount = 0
+        let OverheadRMPercentageCount = 0
+        let OverheadMachiningCCPercentageCount = 0
+        let OverheadBOPPercentageCount = 0
 
         list && list.map((li) => {
 
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
-
-                basicRateCount = basicRateCount + 1
+            if (li.OverheadApplicabilityType === li.NewOverheadApplicabilityType || li?.NewOverheadApplicabilityType === undefined) {
+                OverheadApplicabilityTypeCount = OverheadApplicabilityTypeCount + 1
             }
-            if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
-                basicScrapCount = basicScrapCount + 1
+            if (Number(li.OverheadRMPercentage) === Number(li.NewOverheadRMPercentage) || li?.NewOverheadRMPercentage === undefined) {
+                OverheadRMPercentageCount = OverheadRMPercentageCount + 1
+            }
+            if (Number(li.OverheadMachiningCCPercentage) === Number(li.NewOverheadMachiningCCPercentage) || li?.NewOverheadMachiningCCPercentage === undefined) {
+                OverheadMachiningCCPercentageCount = OverheadMachiningCCPercentageCount + 1
+            }
+            if (Number(li.OverheadBOPPercentage) === Number(li.NewOverheadBOPPercentage) || li?.NewOverheadBOPPercentage === undefined) {
+                OverheadBOPPercentageCount = OverheadBOPPercentageCount + 1
             }
             return null;
         })
 
-        // if (basicRateCount === list.length && basicScrapCount === list.length) {
-        //     Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
-        //     return false
-        // }
-        basicRateCount = 0
-        basicScrapCount = 0
+        console.log('OverheadApplicabilityTypeCount: ', OverheadApplicabilityTypeCount);
+        console.log('OverheadRMPercentageCount: ', OverheadRMPercentageCount);
+        console.log('OverheadMachiningCCPercentageCount: ', OverheadMachiningCCPercentageCount);
+        console.log('OverheadBOPPercentageCount: ', OverheadBOPPercentageCount);
+        if (OverheadApplicabilityTypeCount === list.length && OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length
+            && OverheadBOPPercentageCount === list.length) {
+            Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
+            return false
+        }
+        setIsDisable(true)
+        OverheadApplicabilityTypeCount = 0
+        OverheadRMPercentageCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
@@ -119,41 +126,56 @@ function OPSImulation(props) {
         }
         let tempArr = []
         list && list.map(item => {
-            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
-                let tempObj = {}
+            console.log('list: ', list);
+            let tempObj = {}
+            console.log('item: ', item);
+            if (item.OverheadApplicabilityType !== item.NewOverheadApplicabilityType ||
+                Number(item.OverheadBOPPercentage) !== Number(item.NewOverheadBOPPercentage) ||
+                Number(item.OverheadRMPercentage) !== Number(item.NewOverheadRMPercentage) ||
+                Number(item.OverheadMachiningCCPercentage) !== Number(item.NewOverheadMachiningCCPercentage) ||
+                Number(item.OverheadPercentage) !== Number(item.NewOverheadPercentage)) {
+
                 tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
-                tempObj.RawMaterialName = item.RawMaterial
-                tempObj.MaterialType = item.MaterialType
-                tempObj.RawMaterialGrade = item.RMGrade
-                tempObj.RawMaterialSpecification = item.RMSpec
-                tempObj.RawMaterialCategory = item.Category
-                tempObj.UOM = item.UOM
-                tempObj.OldBasicRate = item.BasicRate
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
-                tempObj.OldScrapRate = item.ScrapRate
-                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-                tempObj.OldNetLandedCost = item.NetLandedCost
-                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+                tempObj.ClientName = item.ClientName
+                tempObj.CompanyName = item.CompanyName
+                tempObj.CreatedDate = item.CreatedDate
                 tempObj.EffectiveDate = item.EffectiveDate
-                tempObj.RawMaterialId = item.RawMaterialId
-                tempObj.PlantId = item.PlantId
+                tempObj.IsActive = item.IsActive
+                tempObj.ModelType = item.ModelType
+                tempObj.ModelTypeId = item.ModelTypeId
+                tempObj.OldOverheadApplicabilityId = item.OverheadApplicabilityId
+                tempObj.OverheadApplicabilityType = item.OverheadApplicabilityType
+                tempObj.OldOverheadBOPPercentage = item.OverheadBOPPercentage
+                tempObj.OverheadId = item.OverheadId
+                tempObj.OldOverheadMachiningCCPercentage = item.OverheadMachiningCCPercentage
+                tempObj.OldOverheadPercentage = item.OverheadPercentage
+                tempObj.OldOverheadRMPercentage = item.OverheadRMPercentage
+
+                tempObj.NewOverheadApplicabilityType = Number(item.NewOverheadApplicabilityType)
+                tempObj.NewOverheadBOPPercentage = Number(item.NewOverheadBOPPercentage)
+                tempObj.NewOverheadRMPercentage = Number(item.NewOverheadRMPercentage)
+                tempObj.NewOverheadMachiningCCPercentage = Number(item.NewOverheadMachiningCCPercentage)
+
+                tempObj.TypeOfHead = item.TypeOfHead
                 tempObj.VendorId = item.VendorId
-                tempObj.Delta = 0
+                tempObj.VendorName = item.VendorName
                 tempArr.push(tempObj)
+
+                return null;
             }
-            return null;
         })
         obj.SimulationRawMaterials = tempArr
+        console.log('obj: ', obj);
 
         dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 
+            setIsDisable(false)
             if (res.data.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
+        setIsDisable(false)
         setShowVerifyPage(true)
     }, 500)
 
@@ -173,13 +195,7 @@ function OPSImulation(props) {
 
         return cell != null ? cell : '-';
     }
-    const reloadIt = () => {
-        setReload(false)
-        setTimeout(() => {
 
-        }, 200);
-        setReload(true)
-    }
     /**
     * @method freightCostFormatter
     * @description Renders buttons
@@ -204,6 +220,21 @@ function OPSImulation(props) {
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
+    const newOverheadApplicabilityTypeFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCellOverheadApplicability(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.NewOverheadApplicabilityType :
+                        <span className='form-control height33' >{value ? cell : row.OverheadApplicabilityType} </span>
+                }
+
+            </>
+        )
+    }
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -212,8 +243,8 @@ function OPSImulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.NewBasicRate) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        row.NewBasicRate :
+                        <span className='form-control height33' >{cell && value ? cell : ''} </span>
                 }
 
             </>
@@ -228,13 +259,133 @@ function OPSImulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldBasicRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span className='form-control height33' >{cell && value ? cell : row.BasicRate} </span>
                 }
 
             </>
         )
     }
+    const newOverheadBOPPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.NewOverheadBOPPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : ''} </span>
+                }
 
+            </>
+        )
+    }
+    const oldOverheadBOPPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldOverheadBOPPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : row.OverheadBOPPercentage} </span>
+                }
+
+            </>
+        )
+    }
+    const newOverheadMachiningCCPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.NewOverheadMachiningCCPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : ''} </span>
+                }
+
+            </>
+        )
+    }
+    const oldOverheadMachiningCCPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldOverheadMachiningCCPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : row.OverheadMachiningCCPercentage} </span>
+                }
+
+            </>
+        )
+    }
+    const newOverheadRMPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.NewOverheadMachiningCCPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : ''} </span>
+                }
+
+            </>
+        )
+    }
+    const oldOverheadRMPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldOverheadMachiningCCPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : row.OverheadMachiningCCPercentage} </span>
+                }
+
+            </>
+        )
+    }
+    const newOverheadPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        console.log('value: ', value);
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.NewOverheadPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : ''} </span>
+                }
+
+            </>
+        )
+    }
+    const oldOverheadPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldOverheadPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : row.OverheadPercentage} </span>
+                }
+
+            </>
+        )
+    }
 
     const newScrapRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -245,7 +396,7 @@ function OPSImulation(props) {
                 {
                     isImpactedMaster ?
                         row.NewScrapRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span className='form-control height33' >{cell && value ? cell : ''}</span>
                 }
             </>
         )
@@ -259,7 +410,7 @@ function OPSImulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldScrapRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span className='form-control height33' >{cell && value ? cell : row.ScrapRate}</span>
                 }
             </>
         )
@@ -282,22 +433,33 @@ function OPSImulation(props) {
     }
 
     /**
-  * @method beforeSaveCell
-  * @description CHECK FOR ENTER NUMBER IN CELL
-  */
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
     const beforeSaveCell = (props) => {
         const cellValue = props
-        if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
-            if (cellValue.length > 8) {
-                Toaster.warning("Value should not be more than 8")
-                return false
-            }
+        if (cellValue === undefined) {
             return true
-        } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        }
+        if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             return false
         }
         return true
+    }
+
+    /**
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
+    const beforeSaveCellOverheadApplicability = (props) => {
+        const cellValue = props
+        if ((cellValue === 'BOP' || cellValue === 'BOP + CC' || cellValue === 'CC' || cellValue === 'Fixed' || cellValue === 'RM'
+            || cellValue === 'RM + BOP' || cellValue === 'RM + CC' || cellValue === 'RM + CC + BOP') && cellValue !== undefined) {
+            return true
+        } else {
+            return false
+        }
     }
 
     const afterSaveCell = (row, cellName, cellValue, index) => {
@@ -377,9 +539,7 @@ function OPSImulation(props) {
         setShowRunSimulationDrawer(false)
 
     }
-    const textTemp = () => {
-        props.openEditPageReload()
-    }
+
     const defaultColDef = {
         resizable: true,
         filter: true,
@@ -406,115 +566,6 @@ function OPSImulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
-    const checkOverheadFields = (applicabilityForGridProp) => {
-
-        switch (applicabilityForGridProp) {
-            case 'RM':
-                setIsRM(false)
-                setIsCC(true)
-                setIsBOP(true)
-                setIsOverheadPercent(true)
-                // setIsHideOverhead(true)
-                // setIsHideRM(false)
-                // setIsHideCC(true)
-                // setIsHideBOP(true)
-                // gridApi.redrawRows();
-
-                // dispatch(setData(true))
-                // reloadIt()
-                break;
-            case 'CC':
-                setIsRM(true)
-                setIsCC(false)
-                setIsBOP(true)
-                setIsOverheadPercent(true)
-                // setIsHideOverhead(true)
-                // setIsHideRM(true)
-                // setIsHideCC(false)
-                // setIsHideBOP(true)
-                // gridApi.redrawRows();
-                // dispatch(setData(false))
-                // reloadIt()
-                break;
-            case 'BOP':
-                setIsRM(true)
-                setIsBOP(false)
-                setIsCC(true)
-                setIsOverheadPercent(true)
-                // setIsHideOverhead(true)
-                // setIsHideRM(true)
-                // setIsHideCC(true)
-                // setIsHideBOP(false)
-                // gridApi.redrawRows();
-                break;
-            case 'Fixed':
-                setIsRM(true)
-                setIsCC(true)
-                setIsBOP(true)
-                setIsOverheadPercent(true)
-                // setIsHideOverhead(true)
-                // setIsHideRM(true)
-                // setIsHideCC(true)
-                // setIsHideBOP(true)
-                // gridApi.redrawRows();
-                break;
-            case 'RM + CC':
-                setIsRM(false)
-                setIsCC(false)
-                setIsBOP(true)
-                setIsOverheadPercent(false)
-                // setIsHideOverhead(false)
-                // setIsHideBOP(true)
-                // setIsHideRM(false)
-                // setIsHideCC(false)
-                // gridApi.redrawRows();
-                break;
-            case 'RM + BOP':
-                setIsRM(false)
-                setIsCC(true)
-                setIsBOP(false)
-                setIsOverheadPercent(false)
-                // setIsHideOverhead(false)
-                // setIsHideCC(true)
-                // setIsHideRM(false)
-                // setIsHideBOP(false)
-                // gridApi.redrawRows();
-                break;
-            case 'BOP + CC':
-                setIsRM(true)
-                setIsBOP(false)
-                setIsCC(false)
-                setIsOverheadPercent(false)
-                // setIsHideOverhead(false)
-                // setIsHideRM(true)
-                // setIsHideBOP(false)
-                // setIsHideCC(false)
-                // gridApi.redrawRows();
-                break;
-            case 'RM + CC + BOP':
-                setIsRM(false)
-                setIsCC(false)
-                setIsBOP(false)
-                setIsOverheadPercent(false)
-                // setIsHideOverhead(false)
-                // setIsHideBOP(false)
-                // setIsHideCC(false)
-                // setIsHideRM(false)
-
-                // gridApi.redrawRows();
-                break;
-            default:
-                return 'foo';
-
-        }
-
-        var params = {
-            force: true,
-            suppressFlash: false,
-        };
-        // gridOptions.api.refreshCells(params);
-    }
-
     const cellChange = (props) => {
         // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -527,15 +578,321 @@ function OPSImulation(props) {
             params: { values: valuesForDropdownInAgGrid.applicability }
         };
     }
-    const EditableCallback = (props) => {
+    const EditableCallbackForBOP = (props) => {
+        const rowData = props?.data;
+        let value = false
+        switch (list[0].NewOverheadApplicabilityType) {
+            case 'RM':
+                value = false
+                return value
 
-        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return true
+            case 'CC':
+                value = false
+                return value
+
+            case 'BOP':
+                value = true
+                return value
+
+            case 'Fixed':
+                value = false
+                return value
+
+            case 'RM + CC':
+
+
+                value = false
+                return value
+
+            case 'RM + BOP':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            case 'BOP + CC':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            case 'RM + CC + BOP':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            default:
+                return 'foo';
+
+
+        }
     }
+    const EditableCallbackForCC = (props) => {
+        const rowData = props?.data;
+        let value = false
+        switch (list[0].NewOverheadApplicabilityType) {
+            case 'RM':
+                value = false
+                return value
+
+            case 'CC':
+                value = true
+                return value
+
+            case 'BOP':
+                value = false
+                return value
+
+            case 'Fixed':
+                value = false
+                return value
+
+            case 'RM + CC':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+            case 'RM + BOP':
+
+                value = false
+                return value
+
+            case 'BOP + CC':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            case 'RM + CC + BOP':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            default:
+                return 'foo';
+
+
+        }
+    }
+    const EditableCallbackForRM = (props) => {
+        const rowData = props?.data;
+        let value = false
+        switch (list[0].NewOverheadApplicabilityType) {
+            case 'RM':
+                value = true
+
+                return value
+            case 'CC':
+                value = false
+
+                return value
+            case 'BOP':
+                value = false
+
+                return value
+            case 'Fixed':
+                value = false
+
+                return value
+            case 'RM + CC':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+            case 'RM + BOP':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            case 'BOP + CC':
+                value = false
+                return value
+
+            case 'RM + CC + BOP':
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            default:
+                return 'foo';
+
+
+        }
+    }
+    const EditableCallbackForOP = (props, index) => {
+        const rowData = props?.data;
+        let value = false
+        switch (list[0].NewOverheadApplicabilityType) {
+            case 'RM':
+                value = false
+                return value
+
+            case 'CC':
+                value = false
+                return value
+
+            case 'BOP':
+                value = false
+                return value
+
+            case 'Fixed':
+                value = false
+                return value
+
+            case 'RM + CC':
+                if ((rowData.NewOverheadMachiningCCPercentage !== null && rowData.NewOverheadMachiningCCPercentage !== undefined && rowData.NewOverheadMachiningCCPercentage !== '' && rowData.NewOverheadMachiningCCPercentage !== ' ')
+                    || (rowData.NewOverheadRMPercentage !== null && rowData.NewOverheadRMPercentage !== undefined && rowData.NewOverheadRMPercentage !== '' && rowData.NewOverheadRMPercentage !== ' ')) {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+            case 'RM + BOP':
+                if ((rowData.NewOverheadBOPPercentage !== null && rowData.NewOverheadBOPPercentage !== undefined && rowData.NewOverheadBOPPercentage !== '' && rowData.NewOverheadBOPPercentage !== ' ')
+                    || (rowData.NewOverheadRMPercentage !== null && rowData.NewOverheadRMPercentage !== undefined && rowData.NewOverheadRMPercentage !== '' && rowData.NewOverheadRMPercentage !== ' ')) {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            case 'BOP + CC':
+                if ((rowData.NewOverheadBOPPercentage !== null && rowData.NewOverheadBOPPercentage !== undefined && rowData.NewOverheadBOPPercentage !== '' && rowData.NewOverheadBOPPercentage !== ' ')
+                    || (rowData.NewOverheadMachiningCCPercentage !== null && rowData.NewOverheadMachiningCCPercentage !== undefined && rowData.NewOverheadMachiningCCPercentage !== '' && rowData.NewOverheadMachiningCCPercentage !== ' ')) {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            case 'RM + CC + BOP':
+                if ((rowData.NewOverheadBOPPercentage !== null && rowData.NewOverheadBOPPercentage !== undefined && rowData.NewOverheadBOPPercentage !== '' && rowData.NewOverheadBOPPercentage !== ' ')
+                    || (rowData.NewOverheadMachiningCCPercentage !== null && rowData.NewOverheadMachiningCCPercentage !== undefined && rowData.NewOverheadMachiningCCPercentage !== '' && rowData.NewOverheadMachiningCCPercentage !== ' ')
+                    || (rowData.NewOverheadRMPercentage !== null && rowData.NewOverheadRMPercentage !== undefined && rowData.NewOverheadRMPercentage !== '' && rowData.NewOverheadRMPercentage !== ' ')) {
+                    value = false
+                } else {
+                    value = true
+                }
+                return value
+
+            default:
+                return 'foo';
+
+
+        }
+
+
+        // if ((list[0].OverheadBOPPercentage !== null && list[0].OverheadBOPPercentage !== undefined)
+        //     || (list[0].OverheadRMPercentage !== null && list[0].OverheadRMPercentage !== undefined)) {
+        //     return false
+        // } else {
+        //     return true
+        // }
+    }
+
     const onCellValueChanged = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if ((props?.value === 'BOP' || props?.value === 'BOP + CC' || props?.value === 'CC' || props?.value === 'Fixed' || props?.value === 'RM'
+            || props?.value === 'RM + BOP' || props?.value === 'RM + CC' || props?.value === 'RM + CC + BOP') && props?.value !== undefined) {
+            list && list.map((item) => {
+                item.NewOverheadApplicabilityType = props?.value
+                switch (list[0].NewOverheadApplicabilityType) {
+                    case 'RM':
+                        item.NewOverheadBOPPercentage = ''
+                        item.NewOverheadMachiningCCPercentage = ''
+                        item.NewOverheadPercentage = ''
+
+                        break;
+                    case 'CC':
+                        item.NewOverheadBOPPercentage = ''
+                        item.NewOverheadRMPercentage = ''
+                        item.NewOverheadPercentage = ''
+
+                        break;
+                    case 'BOP':
+                        item.NewOverheadRMPercentage = ''
+                        item.NewOverheadMachiningCCPercentage = ''
+                        item.NewOverheadPercentage = ''
+
+                        break;
+
+                    case 'Fixed':
+                        item.NewOverheadBOPPercentage = ''
+                        item.NewOverheadRMPercentage = ''
+                        item.NewOverheadMachiningCCPercentage = ''
+                        item.NewOverheadPercentage = ''
+
+                        break;
+
+                    case 'RM + CC':
+                        item.NewOverheadBOPPercentage = ''
+
+                        break;
+
+                    case 'RM + BOP':
+                        item.NewOverheadMachiningCCPercentage = ''
+
+                        break;
+
+                    case 'BOP + CC':
+                        item.NewOverheadRMPercentage = ''
+
+                        break;
+
+                    case 'RM + CC + BOP':
+
+                        break;
+
+                    default:
+                        return 'foo';
+
+                }
+                return null
+            })
+
+        }
+        gridApi.redrawRows()
+
         setApplicabilityForGrid(props.value)
-        checkOverheadFields(props.value);
+    }
+
+    const oldOverheadApplicabilityTypeFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldOverheadApplicabilityType :
+                        <span className='form-control height33' >{cell ? cell : row.OverheadApplicabilityType} </span>
+                }
+
+            </>
+        )
     }
 
     const frameworkComponents = {
@@ -547,15 +904,28 @@ function OPSImulation(props) {
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newBasicRateFormatter: newBasicRateFormatter,
+        newOverheadApplicabilityTypeFormatter: newOverheadApplicabilityTypeFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
+        newBasicRateFormatter: newBasicRateFormatter,
         oldScrapRateFormatter: oldScrapRateFormatter,
         cellEditorSelector: cellEditorSelector,
         applicabilityCellEditor: applicabilityCellEditor,
         modelTypeFormatter: modelTypeFormatter,
         onCellValueChanged: onCellValueChanged,
-        EditableCallback: EditableCallback
+        EditableCallbackForBOP: EditableCallbackForBOP,
+        EditableCallbackForCC: EditableCallbackForCC,
+        EditableCallbackForRM: EditableCallbackForRM,
+        EditableCallbackForOP: EditableCallbackForOP,
+        oldOverheadApplicabilityTypeFormatter: oldOverheadApplicabilityTypeFormatter,
+        newOverheadBOPPercentageFormatter: newOverheadBOPPercentageFormatter,
+        oldOverheadBOPPercentageFormatter: oldOverheadBOPPercentageFormatter,
+        oldOverheadMachiningCCPercentageFormatter: oldOverheadMachiningCCPercentageFormatter,
+        newOverheadMachiningCCPercentageFormatter: newOverheadMachiningCCPercentageFormatter,
+        oldOverheadRMPercentageFormatter: oldOverheadRMPercentageFormatter,
+        newOverheadRMPercentageFormatter: newOverheadRMPercentageFormatter,
+        oldOverheadPercentageFormatter: oldOverheadPercentageFormatter,
+        newOverheadPercentageFormatter: newOverheadPercentageFormatter
     };
 
 
@@ -648,7 +1018,6 @@ function OPSImulation(props) {
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onCellValueChanged={onCellValueChanged}
-                                            EditableCallback={EditableCallback}
 
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
@@ -657,13 +1026,37 @@ function OPSImulation(props) {
                                             <AgGridColumn field="VendorName" editable='false' headerName="Vendor Name" minWidth={190}></AgGridColumn>
 
                                             <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="OverheadApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn>
 
-                                            <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" editable={isBOP} minWidth={190}  ></AgGridColumn>
-                                            {/* <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" minWidth={190} editable={isBOP} ></AgGridColumn> */}
-                                            {/* <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead Machining CC Percentage" editable={isCC} minWidth={190}></AgGridColumn>
-                                                <AgGridColumn field="OverheadPercentage" headerName="Overhead Percentage" minWidth={190} editable={isOverheadPercent}></AgGridColumn>
-                                                <AgGridColumn field="OverheadRMPercentage" headerName="Overhead RM Percentage" minWidth={190} editable={isRM} ></AgGridColumn>  */}
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Overhead Applicability Type" marryChildren={true} >
+                                                <AgGridColumn width={160} field="OverheadApplicabilityType" editable='false' headerName="Old" cellRenderer='oldOverheadApplicabilityTypeFormatter' colId="OverheadApplicabilityType"></AgGridColumn>
+                                                <AgGridColumn width={160} cellRenderer='newOverheadApplicabilityTypeFormatter' cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} field="NewOverheadApplicabilityType" headerName="New" colId='NewOverheadApplicabilityType'></AgGridColumn>
+                                            </AgGridColumn>
+                                            {/* <AgGridColumn field="OverheadApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn> */}
+
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead BOP Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="OverheadBOPPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadBOPPercentageFormatter' colId="OverheadBOPPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadBOPPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadBOPPercentage" headerName="New" colId='NewOverheadBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
+                                            </AgGridColumn>
+                                            {/* <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" minWidth={190} editable={EditableCallbackForBOP} ></AgGridColumn> */}
+
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead Machining CC Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="OverheadMachiningCCPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadMachiningCCPercentageFormatter' colId="OverheadMachiningCCPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadMachiningCCPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadMachiningCCPercentage" headerName="New" colId='NewOverheadMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
+                                            </AgGridColumn>
+                                            {/* <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead Machining CC Percentage" editable={EditableCallbackForCC} minWidth={190}></AgGridColumn> */}
+
+
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead RM Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="OverheadRMPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadRMPercentageFormatter' colId="OverheadRMPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadRMPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadRMPercentage" headerName="New" colId='NewOverheadRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
+                                            </AgGridColumn>
+                                            {/* <AgGridColumn field="OverheadRMPercentage" headerName="Overhead RM Percentage" minWidth={190} editable={EditableCallbackForRM} ></AgGridColumn> */}
+
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="OverheadPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadPercentageFormatter' colId="OverheadPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadPercentage" headerName="New" colId='NewOverheadPercentage' editable={EditableCallbackForOP}></AgGridColumn>
+                                            </AgGridColumn>
+                                            {/* <AgGridColumn field="OverheadPercentage" headerName="Overhead Percentage" minWidth={190} editable={EditableCallbackForOP}></AgGridColumn> */}
 
 
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
@@ -692,14 +1085,11 @@ function OPSImulation(props) {
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn">
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}
                                     </button>
-                                    <button type="button" className={"user-btn mt2 mr5"} onClick={reloadIt} >
-                                        <div className={"edit-icon"}></div>  {"RELOAD"} </button>
-
 
                                     {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run"}>
