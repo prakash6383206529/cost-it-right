@@ -1008,7 +1008,7 @@ function RawMaterialCost(props) {
                                 type={'button'}
                                 onClick={() => deleteItem(index)}
                               />}
-                              <Popup trigger={<button id={`popUpTrigger${index}`} className="View ml-2" type={'button'} />}
+                              <Popup trigger={<button id={`popUpTrigger${index}`} className="Comment-box ml-2" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
                                   label="Remark:"
