@@ -6707,3 +6707,21 @@ left: 17rem;
     padding-top: 175px !important;
   }
 }
+// <----START Remark popup css->
+.popup-content  {
+  // width: 189px;
+  // div {
+  //   left: 53%;
+  // }
+}
+.remark-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  .submit-button {
+    width: 55px;
+    .save-icon {
+      margin: auto;
+    }
+  }
+}
+// <----END Remark popup css->
