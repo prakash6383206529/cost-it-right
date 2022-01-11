@@ -6702,6 +6702,9 @@ left: 17rem;
       font-size: 30px;
       padding-right: 0;
       margin-right: -20px;
+      @-moz-document url-prefix() {      //firefox css
+        margin-right: -50px;
+      }
       .img_loader {
         max-width: 130px;
         user-select: none;
@@ -6714,6 +6717,9 @@ left: 17rem;
       bottom: 42px;
     .loaderinner {
       margin-right: -14px;
+      @-moz-document url-prefix() {      //firefox css
+        margin-right: -28px;
+      }
       }
     }
     &.add-rm-vendor {
