@@ -105,7 +105,7 @@ function AssemblyWiseImpact(props) {
     };
 
     return (
-        <div className={`ag-grid-react `}>
+        <div className={`ag-grid-react`}>
             {/* { this.props.loading && <Loader />} */}
             <Row>
                 <Col className="mb-3">
