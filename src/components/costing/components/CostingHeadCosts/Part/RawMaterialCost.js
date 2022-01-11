@@ -1020,7 +1020,7 @@ function RawMaterialCost(props) {
                               <Popup trigger={<button id={`popUpTrigger${index}`} className="View ml-2" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
-                                  label="Remark :"
+                                  label="Remark:"
                                   name={`remarkPopUp${index}`}
                                   Controller={Controller}
                                   control={control}
