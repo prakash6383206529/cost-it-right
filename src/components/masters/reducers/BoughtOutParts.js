@@ -16,7 +16,8 @@ import {
     GET_INITIAL_SOB_VENDORS_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
     GET_BOP_IMPORT_DATA_LIST,
-    GET_SOB_LISTING
+    GET_SOB_LISTING,
+    GET_BOP_APPROVAL_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -131,6 +132,13 @@ export default function BOPReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 bopSobList: action.payload
+            }
+        case GET_BOP_APPROVAL_LIST:
+            return {
+
+                ...state,
+                loading: false,
+                BopApprovalList: action.payload
             }
         default:
             return state;
