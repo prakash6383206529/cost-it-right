@@ -1522,7 +1522,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={`Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"FreightCharge"}
                               type="text"
                               placeholder={"Enter"}

@@ -376,13 +376,13 @@ class AddRMDomestic extends Component {
    * @description Used to get Details
    */
   getDetails = (data) => {
-    console.log(data,"Data")
+   
     if (data && data.isEditFlag) {
       this.setState({
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
-        console.log(res, "response");
+       
 
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
@@ -1519,7 +1519,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`RM Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
+                              label={`Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"FrieghtCharge"}
                               type="text"
                               placeholder={"Enter"}
