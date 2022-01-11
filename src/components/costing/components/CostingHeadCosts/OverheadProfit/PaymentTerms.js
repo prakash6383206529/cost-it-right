@@ -25,6 +25,7 @@ function PaymentTerms(props) {
     const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
     const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
     const [PaymentTermObj, setPaymentTermObj] = useState(PaymentTermDetail)
+    const [tempPaymentTermObj,setTempPaymentTermObj] = useState(PaymentTermDetail)
 
     const PaymentTermsFieldValues = useWatch({
         control,
@@ -37,6 +38,10 @@ function PaymentTerms(props) {
     });
 
     useEffect(() => {
+       
+    }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues, paymentTermsApplicability]);
+
+    useEffect(()=>{
         setTimeout(() => {
             let tempObj = {
                 "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
@@ -44,7 +49,7 @@ function PaymentTerms(props) {
                 "PaymentTermApplicability": Object.keys(paymentTermsApplicability).length > 0 ? paymentTermsApplicability.label : '',
                 "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
                 "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
-                "NetCost": IsPaymentTermsApplicable ? getValues('RepaymentPeriodCost') : '',
+                "NetCost": IsPaymentTermsApplicable ?tempPaymentTermObj.NetCost: '',
                 "EffectiveDate": ""
             }
 
@@ -53,8 +58,7 @@ function PaymentTerms(props) {
                 dispatch(isOverheadProfitDataChange(true))
             }
         }, 200)
-    }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues, paymentTermsApplicability]);
-
+    },[tempPaymentTermObj])
 
 
     /**
@@ -179,30 +183,64 @@ function PaymentTerms(props) {
             switch (Text) {
                 case 'RM':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost:checkForNull(headerCosts?.NetRawMaterialsCost * RepaymentCost)
+                    }) 
                     break;
 
                 case 'RM + CC':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost:  checkForNull(RMCC * RepaymentCost)
+                    })
                     break;
 
                 case 'RM + BOP':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                  
+                   setTempPaymentTermObj({
+                    ...tempPaymentTermObj,
+                    NetCost: checkForNull(RMBOP * RepaymentCost)
+                })
                     break;
 
                 case 'RM + CC + BOP':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                
+                   setTempPaymentTermObj({
+                    ...tempPaymentTermObj,
+                    NetCost:  checkForNull(RMBOPCC * RepaymentCost)
+                })
                     break;
 
                 case 'Fixed':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull(RepaymentPeriodPercentage, initialConfiguration.NoOfDecimalForPrice))
+                   
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost:  checkForNull(RepaymentPeriodPercentage)
+                    })
                     break;
 
                 case 'Annual ICC (%)':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
+                    
+                    setTempPaymentTermObj({
+                        ...tempPaymentTermObj,
+                        NetCost: checkForNull(RMBOPCC * RepaymentCost)
+                    })
                     break;
 
                 case 'Net Cost':
                     setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOPCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                  
+                   setTempPaymentTermObj({
+                    ...tempPaymentTermObj,
+                    NetCost: checkForNull(RMBOPCC * RepaymentCost)
+                })
                     break;
 
                 default:
