@@ -175,7 +175,7 @@ class OverheadListing extends Component {
     */
     effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
 
-        let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';
+        let value = cell.value != null ? (cell.value) : '';
         return value
     }
 
@@ -375,7 +375,6 @@ class OverheadListing extends Component {
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             costingHeadFormatter: this.costingHeadFormatter,
-            // renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
             hyphenFormatter: this.hyphenFormatter,
