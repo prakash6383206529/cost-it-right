@@ -49,7 +49,6 @@ function TabRMCC(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
-      console.log('TopHeaderValues: ', TopHeaderValues);
 
       let topHeaderData = {};
 

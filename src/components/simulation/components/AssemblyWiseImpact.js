@@ -105,11 +105,11 @@ function AssemblyWiseImpact(props) {
     };
 
     return (
-        <div className={`ag-grid-react `}>
+        <div className={`ag-grid-react ${props.customClass}`}>
             {/* { this.props.loading && <Loader />} */}
             <Row>
                 <Col className="mb-3">
-                    <div className="ag-grid-header">
+                    <div className="ag-grid-header d-flex">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
