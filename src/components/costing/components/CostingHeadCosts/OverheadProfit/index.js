@@ -274,10 +274,6 @@ function OverheadProfit(props) {
     }
   }
 
-
-
-
-
   /**
   * @method calculateProfitFixedTotalCost
   * @description CALCULATE PROFIT FIXED TOTAL COST
@@ -673,6 +669,19 @@ function OverheadProfit(props) {
               OverheadCombinedTotalCost: overheadTotalCost,
             })
             break;
+            case 'RM + BOP':
+              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
+              overheadCombinedCost = RMBOP 
+              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+              setValue('OverheadPercentage', OverheadPercentage)
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost,
+              })
+              break;
 
           default:
             break;
@@ -727,6 +736,19 @@ function OverheadProfit(props) {
               OverheadCombinedTotalCost: overheadTotalCost,
             })
             break;
+            case 'RM + BOP':
+              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
+              overheadCombinedCost = RMBOP 
+              overheadTotalCost = overheadCombinedCost * calculatePercentage(OverheadPercentage)
+              setValue('OverheadPercentage', OverheadPercentage)
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost,
+              })
+              break;
 
           default:
             break;
@@ -783,6 +805,20 @@ function OverheadProfit(props) {
               ProfitCombinedTotalCost: profitTotalCost,
             })
             break;
+            case 'RM + BOP':
+              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
+              profitCombinedCost = RMBOP 
+              profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
+              setValue('ProfitPercentage', ProfitPercentage)
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setProfitObj({
+                ...profitObj,
+                ProfitPercentage:ProfitPercentage,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost,
+              })
+              break;
 
           default:
             break;
@@ -839,6 +875,20 @@ function OverheadProfit(props) {
               ProfitCombinedTotalCost: profitTotalCost,
             })
             break;
+            case 'RM + BOP':
+              const RMBOP = (IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost) + headerCosts.NetBoughtOutPartCost;
+              profitCombinedCost = RMBOP 
+              profitTotalCost = profitCombinedCost * calculatePercentage(ProfitPercentage)
+              setValue('ProfitPercentage', ProfitPercentage)
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setProfitObj({
+                ...profitObj,
+                ProfitPercentage:ProfitPercentage,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost,
+              })
+              break;
 
           default:
             break;

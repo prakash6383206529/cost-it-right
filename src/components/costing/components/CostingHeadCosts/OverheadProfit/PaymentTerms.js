@@ -58,7 +58,7 @@ function PaymentTerms(props) {
                 dispatch(isOverheadProfitDataChange(true))
             }
         }, 200)
-    },[tempPaymentTermObj])
+    },[tempPaymentTermObj,paymentTermsApplicability])
 
 
     /**
