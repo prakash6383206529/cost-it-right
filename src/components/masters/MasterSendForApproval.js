@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
 import { approvalRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender, rejectRequestByMasterApprove } from './actions/Material';
+import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
 import { Container, Row, Col } from 'reactstrap'
@@ -159,24 +160,56 @@ function MasterSendForApproval(props) {
             senderObj.PurchasingGroup = ''
             senderObj.MaterialGroup = ''
             let tempArray = []
-            if (isBulkUpload) {
-                approvalData && approvalData.map(item => {
-                    tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
-                })
-            } else {
-                tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
-            }
-            senderObj.EntityList = tempArray
-            // senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
+            switch (masterId) {
+                case 1:
+                    if (isBulkUpload) {
+                        approvalData && approvalData.map(item => {
+                            tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
+                        })
+                    } else {
+                        tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
+                    }
+                    senderObj.EntityList = tempArray
+                    // senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
 
-            //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
-            dispatch(masterApprovalRequestBySender(senderObj, res => {
-                setIsDisable(false)
-                if (res?.data?.Result) {
-                    Toaster.success('Raw Material has been sent for approval.')
-                    props.closeDrawer('', 'submit')
-                }
-            }))
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalRequestBySender(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('Raw Material has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
+                    break;
+
+
+
+                case 2:
+
+                    if (isBulkUpload) {
+                        approvalData && approvalData.map(item => {
+                            tempArray.push({ BoughtPartId: item.BoughtPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {} })
+                        })
+                    } else {
+                        tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
+                    }
+                    senderObj.EntityList = tempArray
+
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalRequestBySenderBop(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('BOP has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
+                    break;
+
+
+                default:
+                    break;
+            }
+
         }
         else {
             let obj = {}
