@@ -546,7 +546,7 @@ function RMDomesticListing(props) {
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
                             >
-                                <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
+                                <AgGridColumn field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                 <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                 <AgGridColumn field="RMGrade"></AgGridColumn>
@@ -554,14 +554,14 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                 <AgGridColumn field="Category"></AgGridColumn>
                                 <AgGridColumn field="MaterialType"></AgGridColumn>
-                                <AgGridColumn field="Plant"></AgGridColumn>
+                                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                                 <AgGridColumn field="UOM"></AgGridColumn>
                                 <AgGridColumn field="BasicRate"></AgGridColumn>
                                 <AgGridColumn field="ScrapRate"></AgGridColumn>
-                                <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                                <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
-                                <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMFreightCost" headerName="FreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMShearingCost" headerName="ShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="NetLandedCost" headerName="NetCost" cellRenderer='costFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
             
                                 

@@ -525,7 +525,7 @@ function RMImportListing(props) {
                 rowSelection={'multiple'}
                 onSelectionChanged={onRowSelect}
               >
-                <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
+                <AgGridColumn field="CostingHead" headerName='Costing Head'></AgGridColumn>
                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                 <AgGridColumn field="RawMaterial" ></AgGridColumn>
                 <AgGridColumn field="RMGrade"></AgGridColumn>
@@ -533,14 +533,14 @@ function RMImportListing(props) {
                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                 <AgGridColumn field="Category"></AgGridColumn>
                 <AgGridColumn field="MaterialType"></AgGridColumn>
-                <AgGridColumn field="Plant"></AgGridColumn>
+                <AgGridColumn field="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
                 <AgGridColumn field="Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate"></AgGridColumn>
                 <AgGridColumn field="ScrapRate"></AgGridColumn>
-                <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                <AgGridColumn field="RMFreightCost" headerName="FreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                <AgGridColumn field="RMShearingCost" headerName="ShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                 <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
