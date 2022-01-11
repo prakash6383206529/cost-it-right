@@ -561,7 +561,7 @@ function RMImportListing(props) {
 
                 <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
 
-                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
 
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
