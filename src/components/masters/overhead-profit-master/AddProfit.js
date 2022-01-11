@@ -881,7 +881,7 @@ class AddProfit extends Component {
                         {!isHideCC && (
                           <Col md="4">
                             <Field
-                              label={`Profit on CC (Machining) (%)`}
+                              label={`Profit on CC (%)`}
                               name={"ProfitMachiningCCPercentage"}
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
