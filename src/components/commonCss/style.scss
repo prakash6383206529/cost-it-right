@@ -3850,7 +3850,7 @@ body{
   .nodate-section{
     margin: 20px 0;
     img{
-      width: 60px;
+      width: 60px  !important;
     }
     .my-2{
       margin: 2px 0 !important;
@@ -6739,3 +6739,35 @@ left: 17rem;
     }
 }
 // <------END input field loader----->
+
+.verify-drawer {
+  .ag-grid-wrapper.height-width-wrapper {
+    min-height: auto !important;
+  }
+}
+.impacted-min-height {
+  .ag-row-no-animation {
+    min-height: 120px;
+  }
+  .ag-overlay-wrapper {
+    padding-top: 175px !important;
+  }
+}
+// <----START Remark popup css->
+.popup-content  {
+  // width: 189px;
+  // div {
+  //   left: 53%;
+  // }
+}
+.remark-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  .submit-button {
+    width: 55px;
+    .save-icon {
+      margin: auto;
+    }
+  }
+}
+// <----END Remark popup css->
