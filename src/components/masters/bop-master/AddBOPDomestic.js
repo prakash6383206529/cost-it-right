@@ -31,7 +31,7 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import { CheckApprovalApplicableMaster } from '../../../helper'   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { CheckApprovalApplicableMaster } from '../../../helper';
+
 
 
 const selector = formValueSelector('AddBOPDomestic');
