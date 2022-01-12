@@ -10,6 +10,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
 
 const gridOptions = {};
 
@@ -66,16 +67,22 @@ function AssemblyWiseImpact(props) {
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+        
     }
 
-
-    const onGridReady = (params) => {
+    const varianceFormatter = (props) =>{
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue,  getConfigurationKey().NoOfDecimalForPrice) : '-';
+    
+      
+    }
+    function onGridReady(params) {
         setgridApi(params.api);
 
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
+        window.screen.width >= 1366 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
-    };
+    }
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
@@ -150,7 +157,7 @@ function AssemblyWiseImpact(props) {
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'varianceFormatter'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
