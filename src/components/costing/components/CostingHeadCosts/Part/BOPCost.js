@@ -327,14 +327,14 @@ function BOPCost(props) {
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
-                  <tbody >
+                  <tbody className='rm-table-body'>
                     {
                       gridData &&
                       gridData.map((item, index) => {
                         return (
                           editIndex === index ?
                             <tr key={index}>
-                              <td>{item.BOPPartNumber}</td>
+                              <td  className='rm-part-name'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                               <td>{item.BOPPartName}</td>
                                <td>{item.BoughtOutPartUOM}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -402,7 +402,7 @@ function BOPCost(props) {
                             </tr>
                             :
                             <tr key={index}>
-                              <td>{item.BOPPartNumber}</td>
+                              <td className='rm-part-name'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                               <td>{item.BOPPartName}</td>
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>

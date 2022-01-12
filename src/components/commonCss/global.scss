@@ -1003,6 +1003,9 @@ a:hover {
   &:first-child:focus{
     border-left: 1px solid #256bd1 !important;
   }
+  &.ag-cell-first-right-pinned {
+    border-left: 1px solid #256bd1 !important;
+  }
 }
 
 // ag-grid-react end
