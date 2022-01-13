@@ -46,7 +46,7 @@ function Tool(props) {
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
  const [applicability, setApplicability] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 && data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !==null ? { label: data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType, value: data.CostingPartDetails.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
-  
+  const[valueByAPI,setValueByAPI] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 && data.CostingPartDetails.CostingToolCostResponse[0].ToolCostType !==null ?true:false)
  
   const [toolObj,setToolObj]=useState({})
   const CostingViewMode = useContext(ViewCostingContext);
@@ -279,6 +279,7 @@ function Tool(props) {
         setApplicability(newValue)
         setValueOfToolCost(newValue.label)
         dispatch(isToolDataChange(true))
+        setValueByAPI(false)
         // setIsChangedApplicability(!IsChangedApplicability)
     } else {
         setApplicability([])
@@ -301,7 +302,9 @@ function Tool(props) {
       * @description REJECTION APPLICABILITY CALCULATION
       */
      const setValueOfToolCost = (Text) => {
-      if (headerCosts && Text !== '') {
+       console.log('Text: ', Text);
+      if (headerCosts && Text !== '' && valueByAPI === false) {
+        console.log('headerCosts: ', headerCosts);
         const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly): headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
           const RMBOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetRawMaterialsCost +ConversionCostForCalculation
 
@@ -309,6 +312,7 @@ function Tool(props) {
           const RMCC = headerCosts.NetRawMaterialsCost + ConversionCostForCalculation;
           const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
           const maintanencePercentage = getValues('maintanencePercentage')
+          console.log('maintanencePercentage: ', maintanencePercentage);
 
           switch (Text) {
               case 'RM':
@@ -322,6 +326,7 @@ function Tool(props) {
                       ToolApplicabilityCost: headerCosts.NetRawMaterialsCost,
                       ToolMaintenanceCost: checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(maintanencePercentage)), initialConfiguration.NoOfDecimalForPrice)
                   })
+
                   break;
 
               case 'BOP':
@@ -564,6 +569,7 @@ function Tool(props) {
                             handleChange={(e) => {
                               e.preventDefault()
                               dispatch(isToolDataChange(true))
+                              setValueByAPI(false)
                              }}
                             defaultValue={''}
                             className=""
@@ -584,7 +590,10 @@ function Tool(props) {
                                 required: false,
                                 pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
                             }}
-                            handleChange={() => { }}
+                            handleChange={(e) => { 
+                              e.preventDefault()
+                              setValueByAPI(false)
+                            }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
