@@ -303,7 +303,7 @@ function Insights(props) {
                         <Row>
                             <Col md="12">
                                 <div className={`ag-grid-react`}>
-                                    <div className="ag-grid-wrapper rminsights_table">
+                                    <div className={`ag-grid-wrapper rminsights_table  ${rowData?.length <=0 ?"overlay-contain": ""}`}>
                                         <div className="ag-theme-material">
                                             <AgGridReact
                                                 style={{ height: '100%', width: '100%' }}

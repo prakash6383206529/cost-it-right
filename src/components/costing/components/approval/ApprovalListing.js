@@ -490,7 +490,7 @@ function ApprovalListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-react`}>
-                <div className="ag-grid-wrapper height-width-wrapper min-height-auto">
+                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList?.length <=0 ?"overlay-contain": ""}`}>
                   <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                   </div>
