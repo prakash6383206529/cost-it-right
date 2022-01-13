@@ -62,7 +62,7 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    
+
 
 
 
@@ -148,14 +148,14 @@ function RMDomesticListing(props) {
             }))
         }
     }
-   
+
     /**
     * @method viewOrEditItemDetails
     * @description edit or view material type
     */
-    const viewOrEditItemDetails = (Id, rowData = {} , isViewMode) => {
+    const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
         let data = {
-           
+
             isEditFlag: true,
             isViewFlag: isViewMode,
             Id: Id,
@@ -163,10 +163,10 @@ function RMDomesticListing(props) {
         }
         props.getDetails(data);
     }
-  
-      
 
-    
+
+
+
     /**
     * @method deleteItem
     * @description confirm delete Raw Material details
@@ -226,7 +226,7 @@ function RMDomesticListing(props) {
             <>
             
               
-{ViewRMAccessibility && <button className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+{ViewRMAccessibility && <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData , false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
@@ -639,7 +639,7 @@ function RMDomesticListing(props) {
             }
         </div >
     );
-        }
+}
 
 
 

@@ -153,13 +153,13 @@ function RMImportListing(props) {
   const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
     let data = {
       isEditFlag: true,
-      isViewFlag:isViewMode,
+      isViewFlag: isViewMode,
       Id: Id,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     props.getDetails(data);
   }
-  
+
   /**
   * @method deleteItem
   * @description confirm delete Raw Material details
@@ -216,7 +216,7 @@ function RMImportListing(props) {
     }
     return (
       <>
-      {ViewRMAccessibility && <button className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+      {ViewRMAccessibility && <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
         {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() =>viewOrEditItemDetails(cellValue, rowData, false)} />}
         {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
