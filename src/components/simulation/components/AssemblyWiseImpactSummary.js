@@ -40,17 +40,14 @@ function AssemblyWiseImpactSummary(props) {
                 requestData = [obj]
 
             } else {
-                let uniqueArr = _.uniqBy(dataForAssemblyImpact, function(o){
+                let uniqueArr = _.uniqBy(dataForAssemblyImpact, function (o) {
                     return o.CostingId;
                 });
                 uniqueArr && uniqueArr.map(item => {
                     requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
                     return null
                 })
-                dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
-                    return null
-                })
+
             }
             setCount(1)
             dispatch(getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, (res) => {

@@ -96,6 +96,7 @@ function SimulationApprovalSummary(props) {
     const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
     const [dataForDownload, setDataForDownload] = useState([])
     const [count, setCount] = useState(0);
+    const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
 
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
@@ -216,6 +217,22 @@ function SimulationApprovalSummary(props) {
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
+
+    useEffect(() => {
+        let count = 0
+        DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map((item) => {
+
+            if (item.IsAssemblyExist === true) {
+                count++
+            }
+
+        })
+        if (count !== 0) {
+            setAssemblyImpactButtonTrue(true)
+        } else {
+            setAssemblyImpactButtonTrue(false)
+        }
+    }, [DataForAssemblyImpactForFg])
 
     useEffect(() => {
         if (impactedMasterData) {
@@ -522,7 +539,7 @@ function SimulationApprovalSummary(props) {
         return (
             <>
                 <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
-                <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>
+                    {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
 
 
             </>
@@ -1010,30 +1027,32 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </>
                         }
-                        <Row className='mt-2'>
-                            <Col md="10">
-                                <div className="left-border">{'Assembly wise Impact:'}</div>
-                            </Col>
-                            <Col md="2" className="text-right">
-                                <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
-                                        {assemblyWiseAcc ? (
-                                            <i className="fa fa-minus" ></i>
-                                        ) : (
-                                            <i className="fa fa-plus"></i>
-                                        )}
-                                    </button>
-                                </div>
-                            </Col>
-                        </Row>
-                        <div>
-                            {assemblyWiseAcc && <AssemblyWiseImpactSummary
-                                dataForAssemblyImpact={DataForAssemblyImpactForFg}
-                                vendorIdState={costingList[0]?.VendorId}
-                                impactType={'AssemblySummary'}
-                                isPartImpactAssembly={false}
-                            />}
-                        </div>
+                        {assemblyImpactButtonTrue && <>
+                            <Row className='mt-2'>
+                                <Col md="10">
+                                    <div className="left-border">{'Assembly wise Impact:'}</div>
+                                </Col>
+                                <Col md="2" className="text-right">
+                                    <div className="right-border">
+                                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
+                                            {assemblyWiseAcc ? (
+                                                <i className="fa fa-minus" ></i>
+                                            ) : (
+                                                <i className="fa fa-plus"></i>
+                                            )}
+                                        </button>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <div>
+                                {assemblyWiseAcc && <AssemblyWiseImpactSummary
+                                    dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                                    vendorIdState={costingList[0]?.VendorId}
+                                    impactType={'AssemblySummary'}
+                                    isPartImpactAssembly={false}
+                                />}
+                            </div>
+                        </>}
                         <Row className="mt-2">
                             <Col md="10">
                                 <div id="compare-costing" className="left-border">{'Compare Costing:'}</div>
