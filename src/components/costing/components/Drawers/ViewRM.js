@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import Drawer from '@material-ui/core/Drawer'
-import { TextFieldHookForm } from '../../../layout/HookFormInputs'
+import { TextAreaHookForm } from '../../../layout/HookFormInputs'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
@@ -11,15 +11,19 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import { EMPTY_GUID } from '../../../../config/constants';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css'
 
 function ViewRM(props) {
 
   const { viewRMData, rmMBDetail, isAssemblyCosting } = props
+
+
   /*
   * @method toggleDrawer
   * @description closing drawer
   */
-  const { register, control } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
 
@@ -32,7 +36,8 @@ function ViewRM(props) {
   useEffect(() => {
 
     setViewRM(viewRMData)
-    console.log(isAssemblyCosting, "VIEW RM DATA");
+    console.log(viewRMData, "rmdata");
+
   }, [])
 
   const dispatch = useDispatch()
@@ -64,6 +69,13 @@ function ViewRM(props) {
     }))
 
   }
+
+  const onRemarkPopUpClose = (index) => {
+
+    var button = document.getElementById(`popUpTrigger${index}`)
+    button.click()
+  }
+
 
   const toggleDrawer = (event) => {
     if (
@@ -117,7 +129,9 @@ function ViewRM(props) {
                     <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th>
                     <th>{`Burning Loss Weight`}</th>
-                    <th className="costing-border-right">{`Net RM Cost`}</th>
+                    <th >{`Net RM Cost`}</th>
+                    <th className="costing-border-right">{`Remark`}</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -142,6 +156,34 @@ function ViewRM(props) {
                         <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td><Popup trigger={<button id={`popUpTrigger${index}`} className="View ml-2" type={'button'} />}
+                          position="left center">
+                          <TextAreaHookForm
+                            label="Remark :"
+                            name={`remarkPopUp${index}`}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            rules={{}}
+                            handleChange={(e) => { }}
+                            defaultValue={item.Remark}
+                            className=""
+                            customClassName={"withBorder"}
+                            errors={errors.remarkPopUp}
+                            disabled={true}
+                            hidden={false}
+                          />
+                          <Row>
+                            <Col md="12" className='remark-btn-container'>
+                              <button className='submit-button mr-2' disabled={true} onClick={() => onRemarkPopUpClose(index)} > <div className='save-icon'></div> </button>
+                              <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                            </Col>
+                          </Row>
+
+                        </Popup>
+                        </td>
+
 
                       </tr>
                     )
