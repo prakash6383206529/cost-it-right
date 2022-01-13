@@ -31,6 +31,7 @@ function RowMaterialMaster(props) {
     const [isRMOpen, setisRMOpen] = useState(false);
     const [isOpen, setisOpen] = useState(false);
     const [isEditFlag, setisEditFlag] = useState(false);
+    const [isViewFlag, setisViewFlag] = useState(false);
     const [Id, setId] = useState('');
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '2');
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
@@ -163,6 +164,8 @@ function RowMaterialMaster(props) {
         setdata(data);
 
     }
+
+
 
     /**
     * @method getDetailsImport

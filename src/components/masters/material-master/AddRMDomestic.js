@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { AcceptableRMUOM } from '../../../config/masterData'
+import { AcceptableRMUOM, FASTNERS } from '../../../config/masterData'
 import {
   getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
@@ -47,8 +47,11 @@ class AddRMDomestic extends Component {
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
-      RawMaterialID: '',
+      isViewFlag: this.props?.data?.isViewFlag?true:false,
+      
 
+      RawMaterialID: '',
+      
       RawMaterial: [],
       RMGrade: [],
       RMSpec: [],
@@ -371,13 +374,17 @@ class AddRMDomestic extends Component {
    * @description Used to get Details
    */
   getDetails = (data) => {
+    console.log(data,"Data")
     if (data && data.isEditFlag) {
       this.setState({
         isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
+        console.log(res, "response");
+
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
+        
 
           
           this.setState({ DataToChange: Data }, () => { })
@@ -681,6 +688,7 @@ class AddRMDomestic extends Component {
       })
       return temp
     }
+
     if (label === 'technology') {
       technologySelectList &&
         technologySelectList.map((item) => {
@@ -1098,8 +1106,9 @@ class AddRMDomestic extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state
+
+    const { handleSubmit, initialConfiguration, data } = this.props
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag } = this.state
 
     return (
       <>
@@ -1135,6 +1144,7 @@ class AddRMDomestic extends Component {
                                 checked={this.state.IsVendor}
                                 id="normal-switch"
                                 disabled={isEditFlag ? true : false}
+                                
                                 background="#4DC771"
                                 onColor="#4DC771"
                                 onHandleColor="#ffffff"
@@ -1169,7 +1179,8 @@ class AddRMDomestic extends Component {
                                 this.handleTechnologyChange
                               }
                               valueDescription={this.state.Technology}
-                              disabled={isEditFlag ? true : false}
+                              
+                              disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
                           <Col md="4">
@@ -1187,8 +1198,10 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
-                                  disabled={isEditFlag ? true : false}
+                                  
+                                  
                                   className="fullinput-icon"
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                               {!isEditFlag && (
@@ -1213,7 +1226,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                             </div>
@@ -1233,7 +1246,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleSpecChange}
                                   valueDescription={this.state.RMSpec}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                             </div>
@@ -1251,7 +1264,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               handleChangeDescription={this.handleCategoryChange}
                               valueDescription={this.state.Category}
-                              disabled={isEditFlag ? true : false}
+                              disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
                           <Col md="4">
@@ -1265,7 +1278,7 @@ class AddRMDomestic extends Component {
                               required={true}
                               className=" "
                               customClassName=" withBorder"
-                              disabled={true}
+                              disabled={isEditFlag || isViewFlag}
                             />
                           </Col>
 
@@ -1305,7 +1318,7 @@ class AddRMDomestic extends Component {
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                disabled={isEditFlag ? true : false}
+                                disabled={isEditFlag || isViewFlag}
                               />
                             </Col>
                           }
@@ -1353,7 +1366,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag}
                                 />
                               </div>
                               {!isEditFlag && (
@@ -1381,6 +1394,7 @@ class AddRMDomestic extends Component {
                                 mendatory={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
+                                disabled={isViewFlag}
                               />
                             </Col>
                           )}
@@ -1400,6 +1414,8 @@ class AddRMDomestic extends Component {
                                     valueDescription={this.state.source}
                                     className=" "
                                     customClassName=" withBorder"
+                                    disabled={isViewFlag}
+                                  
                                   />
                                 </Col>
                                 <Col md="4">
@@ -1412,6 +1428,7 @@ class AddRMDomestic extends Component {
                                     options={this.renderListing("SourceLocation")}
                                     handleChangeDescription={this.handleSourceSupplierCity}
                                     valueDescription={this.state.sourceLocation}
+                                    disabled={isViewFlag }
                                   />
                                 </Col>
                               </>
@@ -1439,7 +1456,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={isEditFlag || isViewFlag} 
                                 />
                               </div>
 
@@ -1456,7 +1473,7 @@ class AddRMDomestic extends Component {
                               validate={[]}
                               component={renderText}
                               required={false}
-                              disabled={false}
+                              disabled={isViewFlag}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1471,7 +1488,8 @@ class AddRMDomestic extends Component {
                               component={renderText}
                               // onChange={this.handleBasicRate}
                               required={true}
-                              disabled={false}
+                              disabled={isViewFlag }
+                              
                               className=" "
                               customClassName=" withBorder"
                               maxLength={'15'}
@@ -1490,6 +1508,7 @@ class AddRMDomestic extends Component {
                               customClassName=" withBorder"
                               maxLength="15"
                               onChange={this.handleScrapRate}
+                              disabled={isViewFlag}
                             />
                           </Col>
                           {/* <Col md="4">
@@ -1505,6 +1524,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
+                              disabled={isViewFlag}
                             />
                           </Col>
                           <Col md="4">
@@ -1519,6 +1539,9 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
+                              disabled={isViewFlag}
+                              
+                             
                             />
                           </Col> */}
                           <Col md="4">
@@ -1531,6 +1554,7 @@ class AddRMDomestic extends Component {
                               component={renderText}
                               required={false}
                               disabled={true}
+                              isViewFlag={true}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1550,8 +1574,9 @@ class AddRMDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={false}
-
+                                disabled={isViewFlag}
+                                
+                              //minDate={moment()}
                               />
                             </div>
 
@@ -1578,6 +1603,7 @@ class AddRMDomestic extends Component {
                               component={renderTextAreaField}
                               maxLength="512"
                               rows="6"
+                              disabled={isViewFlag}
                             />
                           </Col>
                           <Col md="3">
@@ -1621,6 +1647,7 @@ class AddRMDomestic extends Component {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 classNames="draper-drop"
+                                disabled={isViewFlag }
                               />
                             </div>
                           </Col>
@@ -1640,14 +1667,14 @@ class AddRMDomestic extends Component {
                                       </a>
 
 
-                                      <img
+                                     {!isViewFlag&& <img
                                         className="float-right"
                                         alt={""}
                                         onClick={() =>
                                           this.deleteFile(f.FileId, f.FileName)
                                         }
                                         src={imgRedcross}
-                                      ></img>
+                                      ></img>}
                                     </div>
                                   );
                                 })}
@@ -1671,7 +1698,9 @@ class AddRMDomestic extends Component {
                                 class="user-btn approval-btn save-btn mr5"
                                 onClick={() => scroll.scrollToTop()}
                                 // onClick={this.sendForMasterApproval}
-                                disabled={this.state.isFinalApprovar}
+                                //disabled={this.state.isFinalApprovar}
+                                disabled={isViewFlag }
+                                
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -1683,6 +1712,7 @@ class AddRMDomestic extends Component {
                               >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}
+                                
                               </button>
                           }
 

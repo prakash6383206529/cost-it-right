@@ -26,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getFilteredRMData } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { ColumnController } from 'ag-grid-community';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,10 +37,13 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
-
-
-
+    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, ViewAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
+    const [tableData, settableData] = useState([]);
+    const [RawMaterial, setRawMaterial] = useState([]);
+    const [RMGrade, setRMGrade] = useState([]);
+    const [vendorName, setvendorName] = useState([]);
+    const [costingHead, setcostingHead] = useState([]);
+    const [plant, setplant] = useState([]);
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -57,6 +61,8 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
+    
+
 
 
     /**
@@ -139,20 +145,25 @@ function RMDomesticListing(props) {
             }))
         }
     }
-
+   
     /**
     * @method editItemDetails
     * @description edit material type
     */
-    const editItemDetails = (Id, rowData = {}) => {
+    const viewOrEditItemDetails = (Id, rowData = {} , isViewMode) => {
         let data = {
+           
             isEditFlag: true,
+            isViewFlag: isViewMode,
             Id: Id,
             IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
         props.getDetails(data);
     }
+  
+      
 
+    
     /**
     * @method deleteItem
     * @description confirm delete Raw Material details
@@ -207,9 +218,13 @@ function RMDomesticListing(props) {
         } else {
             isEditbale = EditAccessibility
         }
+
         return (
             <>
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
+            
+              
+              <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue , rowData, true)} />
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData , false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
@@ -433,7 +448,7 @@ function RMDomesticListing(props) {
         statusFormatter: statusFormatter,
         hyphenFormatter: hyphenFormatter
 
-    };
+    }
 
     return (
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -589,7 +604,8 @@ function RMDomesticListing(props) {
             }
         </div >
     );
-}
+        }
+
 
 
 
