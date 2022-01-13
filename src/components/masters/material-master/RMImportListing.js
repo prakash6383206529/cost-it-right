@@ -538,7 +538,7 @@ function RMImportListing(props) {
                 <AgGridColumn field="BasicRate"></AgGridColumn>
                 <AgGridColumn field="ScrapRate"></AgGridColumn>
                  {/* SHEARING AND FREIGHT COST WILL NOT COME HERE IN RE      */}
-                <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter' headerName="Net Cost"></AgGridColumn>
                 <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
