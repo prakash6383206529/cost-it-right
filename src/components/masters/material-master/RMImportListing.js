@@ -539,6 +539,8 @@ function RMImportListing(props) {
                 <AgGridColumn field="ScrapRate"></AgGridColumn>
                  {/* SHEARING AND FREIGHT COST WILL NOT COME HERE IN RE      */}
                 <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+
                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
