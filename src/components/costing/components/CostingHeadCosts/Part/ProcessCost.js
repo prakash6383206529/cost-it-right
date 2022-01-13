@@ -30,10 +30,9 @@ function ProcessCost(props) {
   const [gridData, setGridData] = useState(data && data.CostingProcessCostResponse)
 
   const trimValue = getConfigurationKey()
-  const trimForMeasurment = trimValue.NumberOfDecimalForWeightCalculation
-  const trimForCost = trimValue.NumberOfDecimalForPOPrice
-  const [rowObjData, setRowObjData] = useState({})
-  const [editIndex, setEditIndex] = useState('')
+  const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
+  const trimForCost = trimValue.NoOfDecimalForPrice
+ 
   const [calciIndex, setCalciIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
@@ -157,7 +156,7 @@ function ProcessCost(props) {
     setTimeout(() => {
       setTabData(tempArr2)
       setGridData(tempArray)
-      setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, weightData.UOM === HOUR ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForPrice) : weightData.Quantity)
+      setValue(`${ProcessGridFields}.${calciIndex}.Quantity`, weightData.UOM === HOUR ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForInputOutput) : weightData.Quantity)
       setValue(`${ProcessGridFields}.${calciIndex}.ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
     }, 100)
   }
@@ -292,109 +291,9 @@ function ProcessCost(props) {
     }, 200)
   }
 
-  const editItem = (index) => {
-    let tempArr = gridData && gridData.find((el, i) => i === index)
-    if (editIndex !== '') {
-      let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
-      setGridData(tempArr)
-    }
-    setEditIndex(index)
-    setRowObjData(tempArr)
-  }
 
-  const SaveItem = (index) => {
-    setEditIndex('')
-  }
 
-  const CancelItem = (index) => {
-    let tempArr = Object.assign([...gridData], { [index]: rowObjData })
-    setEditIndex('')
-    setGridData(tempArr)
-    setRowObjData({})
-  }
-
-  const handleCycleTimeChange = (event, index) => {
-    let tempArr = []
-    let tempData = gridData[index]
-
-    if (!isNaN(event.target.value)) {
-      const Cavity = tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0
-      const Efficiency = tempData.Efficiency !== undefined ? checkForNull(tempData.Efficiency) : 0;
-      const Quantity = (((event.target.value / 3600) * 100) / Efficiency) * Cavity;
-      const ProcessCost = tempData.MHR / parseInt(Quantity)
-
-      tempData = {
-        ...tempData,
-        Quantity: parseInt(Quantity),
-        CycleTime: checkForNull(event.target.value),
-        ProcessCost: ProcessCost,
-      }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-    } else {
-      Toaster.warning('Please enter valid number.')
-    }
-  }
-
-  const handleEfficiencyChange = (event, index) => {
-    let tempArr = []
-    let tempData = gridData[index]
-
-    if (!isNaN(event.target.value)) {
-      const Cavity = tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0;
-      const Quantity = (((tempData.CycleTime / 3600) * 100) / event.target.value) * Cavity;
-      const ProcessCost = tempData.MHR / parseInt(Quantity)
-
-      tempData = {
-        ...tempData,
-        Efficiency: checkForNull(event.target.value),
-        ProcessCost: ProcessCost,
-      }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-    } else {
-      Toaster.warning('Please enter valid number.')
-    }
-  }
-
-  const handleCavityChange = (event, index) => {
-    let tempArr = []
-    let tempData = gridData[index]
-
-    if (!isNaN(event.target.value)) {
-      const Efficiency = tempData.Efficiency !== undefined ? checkForNull(tempData.Efficiency) : 0
-      const CycleTime = tempData.CycleTime !== undefined ? checkForNull(tempData.CycleTime) : 0
-
-      const Quantity = (((CycleTime / 3600) * 100) / Efficiency) * event.target.value
-      const ProcessCost = tempData.MHR / parseInt(Quantity)
-
-      tempData = {
-        ...tempData,
-        Cavity: checkForNull(event.target.value),
-        ProcessCost: ProcessCost,
-      }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-    } else {
-      Toaster.warning('Please enter valid number.')
-    }
-  }
-
-  const handleQunatity = (event, index) => {
-    let tempData = gridData[index]
-    let netCost = Number(event.target.value) * Number(tempData.MHR)
-    tempData = {
-      ...tempData,
-      Quantity: event.target.value,
-      ProcessCost: netCost,
-    }
-    let gridTempArr = Object.assign([...gridData], { [index]: tempData })
-    setTimeout(() => {
-      setTabData(gridTempArr)
-      setGridData(gridTempArr)
-      setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-    }, 100)
-  }
+ 
 
   const handleQuantityChange = (event, index) => {
     let tempArr = []
@@ -406,7 +305,7 @@ function ProcessCost(props) {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
-        ProcessCost: checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice),
+        ProcessCost: ProcessCost
       }
       let gridTempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -432,7 +331,7 @@ function ProcessCost(props) {
         ...tempData,
         Quantity: 0,
         IsCalculatedEntry: false,
-        ProcessCost: checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice),
+        ProcessCost: ProcessCost,
       }
       let gridTempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -510,7 +409,7 @@ function ProcessCost(props) {
       ...tabData,
       //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
       IsShowToolCost: true,
-      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NoOfDecimalForPrice),
+      ToolsCostTotal: ToolsCostTotal,
       CostingToolsCostResponse: toolGrid,
     }
     props.setToolCost(tempObj, Params)

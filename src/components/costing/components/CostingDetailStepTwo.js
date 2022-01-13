@@ -266,12 +266,12 @@ function CostingDetailStepTwo(props) {
           data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
         }
 
-        const discountedCost =data.DiscountCostType==='Percentage'? checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), initialConfiguration.NoOfDecimalForPrice):data.DiscountsAndOtherCost;
+        const discountedCost =data.DiscountCostType==='Percentage'? checkForNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage)):data.DiscountsAndOtherCost;
         const discountValues = {
-          NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-          HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
-          AnyOtherCost: checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-          HundiOrDiscountPercentage: checkForDecimalAndNull(data.HundiOrDiscountPercentage, initialConfiguration.NoOfDecimalForPrice),
+          NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
+          HundiOrDiscountValue: checkForNull(discountedCost),
+          AnyOtherCost: checkForNull(data.AnyOtherCost),
+          HundiOrDiscountPercentage: checkForNull(data.HundiOrDiscountPercentage),
         }
         dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -279,13 +279,13 @@ function CostingDetailStepTwo(props) {
           checkForNull(tempData.NetSurfaceTreatmentCost) +
           checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(tempData.NetPackagingAndFreight) +
-          checkForNull(tempData.ToolCost) - checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice)
+          checkForNull(tempData.ToolCost) - checkForNull(discountedCost)
 
         tempData = {
           ...tempData,
-          NetDiscountsCost: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
-          NetOtherCost: checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-          TotalCost: OverAllCost + checkForDecimalAndNull(data.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice),
+          NetDiscountsCost: checkForNull(discountedCost),
+          NetOtherCost: checkForNull(data.AnyOtherCost),
+          TotalCost: OverAllCost + checkForNull(data.AnyOtherCost),
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
 
