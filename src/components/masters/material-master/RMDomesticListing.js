@@ -58,7 +58,7 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    
+
 
 
 
@@ -142,14 +142,14 @@ function RMDomesticListing(props) {
             }))
         }
     }
-   
+
     /**
     * @method editItemDetails
     * @description edit material type
     */
-    const viewOrEditItemDetails = (Id, rowData = {} , isViewMode) => {
+    const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
         let data = {
-           
+
             isEditFlag: true,
             isViewFlag: isViewMode,
             Id: Id,
@@ -157,10 +157,10 @@ function RMDomesticListing(props) {
         }
         props.getDetails(data);
     }
-  
-      
 
-    
+
+
+
     /**
     * @method deleteItem
     * @description confirm delete Raw Material details
@@ -218,10 +218,10 @@ function RMDomesticListing(props) {
 
         return (
             <>
-            
-              
-              <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue , rowData, true)} />
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData , false)} />}
+
+
+                <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
@@ -559,13 +559,13 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="UOM"></AgGridColumn>
                                 <AgGridColumn field="BasicRate"></AgGridColumn>
                                 <AgGridColumn field="ScrapRate"></AgGridColumn>
-                                <AgGridColumn field="RMFreightCost" headerName="FreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                                <AgGridColumn field="RMShearingCost" headerName="ShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
-                                <AgGridColumn field="NetLandedCost" headerName="NetCost" cellRenderer='costFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-            
-                                
-                                
+
+
+
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
 
@@ -605,7 +605,7 @@ function RMDomesticListing(props) {
             }
         </div >
     );
-        }
+}
 
 
 
