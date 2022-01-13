@@ -262,24 +262,7 @@ class LevelTechnologyListing extends Component {
 				</Row>
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12">
-						{/* <BootstrapTable
-							data={this.state.tableData}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
-						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+						<div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData <=0 ?"overlay-contain": ""}`}>
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 							</div>
@@ -339,24 +322,7 @@ class LevelTechnologyListing extends Component {
 
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12 ">
-						{/* <BootstrapTable
-							data={this.props.simulationLevelDataList}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.simulationButtonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
-						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+						<div className={`ag-grid-wrapper height-width-wrapper ${this.props.simulationLevelDataList?.length <=0 ?"overlay-contain": ""}`}>
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 							</div>
@@ -417,7 +383,7 @@ class LevelTechnologyListing extends Component {
 
 						<Row className="levellisting-page">
 							<Col className="level-table" md="12 ">
-								<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+								<div className={`ag-grid-wrapper height-width-wrapper ${this.props.masterLevelDataList?.length <=0 ?"overlay-contain": ""}`}>
 									<div className="ag-grid-header">
 										<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 									</div>

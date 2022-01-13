@@ -346,27 +346,7 @@ class FreightListing extends Component {
         </form>
         <Row>
           <Col>
-            {/* <BootstrapTable
-              data={this.props.freightDetail}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              exportCSV={DownloadAccessibility}
-                csvFileName={`${FreightMaster}.csv`}
-              //ignoreSinglePage
-              ref={'table'}
-              pagination>  */}
-            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="left" dataSort={true} >{'Mode'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="left" dataSort={true} >{'Source City'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
-            <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable>  */}
-            <div className="ag-grid-wrapper height-width-wrapper">
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.freightDetail?.length <=0 ?"overlay-contain": ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
