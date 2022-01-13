@@ -406,7 +406,7 @@ function BOPCost(props) {
                               <td>{item.BOPPartName}</td>
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
-                              <td style={{ width: 200 }}>{item.Quantity}</td>
+                              <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity,initialConfiguration.NoOfDecimalForInputOutput)}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 {!CostingViewMode && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}
