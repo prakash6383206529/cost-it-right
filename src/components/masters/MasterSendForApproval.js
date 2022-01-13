@@ -8,24 +8,23 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { TextAreaHookForm, SearchableSelectHookForm, DatePickerHookForm, TextFieldHookForm, } from '../layout/HookFormInputs'
+import { TextAreaHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../layout/HookFormInputs'
 import Toaster from '../common/Toaster';
 import { getReasonSelectList } from '../costing/actions/Approval';
 import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { EMPTY_GUID } from '../../config/constants';
-import PushSection from '../common/PushSection';
 
 
 function MasterSendForApproval(props) {
-    const { type, tokenNo, IsFinalLevel, IsPushDrawer, reasonId, simulationDetail, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
+    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData } = props
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
 
-    const [effectiveDate, setEffectiveDate] = useState('')
+
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [isDisable, setIsDisable] = useState(false)
 
@@ -33,9 +32,7 @@ function MasterSendForApproval(props) {
     const reasonsList = useSelector((state) => state.approval.reasonsList)
     const { deptList } = useSelector((state) => state.material)
 
-    const handleEffectiveDateChange = (date) => {
-        setEffectiveDate(date)
-    }
+
 
     const toggleDrawer = (event, type = 'cancel') => {
         if (
@@ -50,7 +47,6 @@ function MasterSendForApproval(props) {
     useEffect(() => {
 
         dispatch(getReasonSelectList((res) => { }))
-        // dispatch(getAllApprovalDepartment((res) => { }))
         dispatch(getAllMasterApprovalDepartment((res) => {
             const Data = res?.data?.SelectList
             const departObj = Data && Data.filter(item => item.Value === userDetails().DepartmentId)
@@ -140,7 +136,6 @@ function MasterSendForApproval(props) {
             senderObj.ReasonId = reason ? reason.value : ''
             senderObj.Reason = reason ? reason.label : ''
             senderObj.IsFinalApproved = false
-            // senderObj.ApprovalToken = 0
             senderObj.DepartmentId = dept && dept.value ? dept.value : ''
             senderObj.DepartmentName = dept && dept.label ? dept.label : ''
             senderObj.ApproverLevelId = approver && approver.levelId ? approver.levelId : ''
@@ -159,7 +154,7 @@ function MasterSendForApproval(props) {
             senderObj.MaterialGroup = ''
             let tempArray = []
             switch (masterId) {
-                case 1:
+                case 1:                        // CASE 1 FOR RAW MATERIAL
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
                             tempArray.push({ RawMaterialId: item.RawMaterialId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, RawMaterialRequest: {} })
@@ -168,7 +163,7 @@ function MasterSendForApproval(props) {
                         tempArray.push({ RawMaterialId: EMPTY_GUID, IsImportEntery: IsImportEntery, RawMaterialRequest: approvalObj })
                     }
                     senderObj.EntityList = tempArray
-                    // senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
+
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
                     dispatch(masterApprovalRequestBySender(senderObj, res => {
@@ -182,7 +177,7 @@ function MasterSendForApproval(props) {
 
 
 
-                case 2:
+                case 2:  //CASE 2 FOR BOP
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
@@ -261,7 +256,6 @@ function MasterSendForApproval(props) {
             <Drawer
                 anchor={props.anchor}
                 open={props.isOpen}
-            //onClose={(e) => toggleDrawer(e)}
             >
                 <Container>
                     <div className={'drawer-wrapper'}>
@@ -308,7 +302,6 @@ function MasterSendForApproval(props) {
                                                 control={control}
                                                 rules={{ required: false }}
                                                 register={register}
-                                                //defaultValue={isEditFlag ? plantName : ''}
                                                 options={approvalDropDown}
                                                 mandatory={false}
                                                 handleChange={() => { }}
@@ -332,7 +325,6 @@ function MasterSendForApproval(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                //defaultValue={isEditFlag ? plantName : ''}
                                                 options={renderDropdownListing('reasons')}
                                                 mandatory={true}
                                                 handleChange={() => { }}
@@ -340,19 +332,17 @@ function MasterSendForApproval(props) {
                                             />
                                         </div>
                                         {
-                                            !isBulkUpload &&
+                                            !isBulkUpload && masterId === Number('1') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label>Effective Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? DayTime(approvalObj.EffectiveDate) : ''}
-                                                            // onChange={handleEffectiveDateChange}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
@@ -377,7 +367,7 @@ function MasterSendForApproval(props) {
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.BasicRatePerUOM : ''}
                                                         disabled={true}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
                                                 <div className="input-group form-group col-md-12">
                                                     <TextFieldHookForm
@@ -392,7 +382,7 @@ function MasterSendForApproval(props) {
                                                         disabled={true}
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.ScrapRate : ''}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
                                                 <div className="input-group form-group col-md-12">
                                                     <TextFieldHookForm
@@ -407,7 +397,7 @@ function MasterSendForApproval(props) {
                                                         disabled={true}
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMFreightCost : ''}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
                                                 <div className="input-group form-group col-md-12">
                                                     <TextFieldHookForm
@@ -422,7 +412,7 @@ function MasterSendForApproval(props) {
                                                         disabled={true}
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMShearingCost : ''}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
                                                 <div className="input-group form-group col-md-12">
                                                     <TextFieldHookForm
@@ -437,26 +427,24 @@ function MasterSendForApproval(props) {
                                                         disabled={true}
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.NetLandedCost : ''}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
-                                                {/* <PushSection /> */}
+
                                             </>
                                         }
 
                                         {
-                                            !isBulkUpload && masterId == '2' &&
+                                            !isBulkUpload && String(masterId) === Number('2') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label>Effective Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? DayTime(approvalObj.EffectiveDate) : ''}
-                                                            // onChange={handleEffectiveDateChange}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
@@ -481,7 +469,7 @@ function MasterSendForApproval(props) {
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.BasicRate : ''}
                                                         disabled={true}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
 
 
@@ -499,15 +487,15 @@ function MasterSendForApproval(props) {
                                                         disabled={true}
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.NetLandedCost : ''}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
-                                                {/* <PushSection /> */}
+
                                             </>
                                         }
 
 
                                         {
-                                            !isBulkUpload && masterId == '3' &&
+                                            !isBulkUpload && masterId === Number('3') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label>Effective Date<span className="asterisk-required">*</span></label>
@@ -515,11 +503,9 @@ function MasterSendForApproval(props) {
                                                         <DatePicker
                                                             name="EffectiveDate"
                                                             selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
-                                                            // onChange={handleEffectiveDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
@@ -544,7 +530,7 @@ function MasterSendForApproval(props) {
                                                         defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.Rate : ''}
                                                         disabled={true}
                                                     />
-                                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                                 </div>
 
 
@@ -552,19 +538,17 @@ function MasterSendForApproval(props) {
                                         }
 
                                         {
-                                            !isBulkUpload && masterId == '4' &&
+                                            !isBulkUpload && masterId === Number('4') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label>Effective Date<span className="asterisk-required">*</span></label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
-                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? DayTime(approvalObj.EffectiveDate) : ''}
-                                                            // onChange={handleEffectiveDateChange}
+                                                            selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
                                                             dropdownMode="select"
                                                             placeholderText="Select date"
                                                             className="withBorder"
@@ -604,9 +588,6 @@ function MasterSendForApproval(props) {
                                             </>
                                         }
 
-
-
-
                                     </>
                                 }
                                 <div className="input-group form-group col-md-12">
@@ -619,13 +600,12 @@ function MasterSendForApproval(props) {
                                         mandatory={type === 'Approve' ? false : true}
                                         rules={{ required: type === 'Approve' ? false : true }}
                                         handleChange={() => { }}
-                                        //defaultValue={viewRM.RMRate}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.remark}
                                         disabled={false}
                                     />
-                                    {/* {showError && <span className="text-help">This is required field</span>} */}
+
                                 </div>
                             </Row>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
