@@ -203,7 +203,7 @@ class AddProfit extends Component {
 
     if (label === 'ProfitApplicability') {
       costingHead && costingHead.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -881,7 +881,7 @@ class AddProfit extends Component {
                         {!isHideCC && (
                           <Col md="4">
                             <Field
-                              label={`Profit on CC (Machining) (%)`}
+                              label={`Profit on CC (%)`}
                               name={"ProfitMachiningCCPercentage"}
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
