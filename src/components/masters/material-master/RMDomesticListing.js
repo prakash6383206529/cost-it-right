@@ -61,7 +61,7 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-    
+
 
 
 
@@ -145,14 +145,14 @@ function RMDomesticListing(props) {
             }))
         }
     }
-   
+
     /**
     * @method editItemDetails
     * @description edit material type
     */
-    const viewOrEditItemDetails = (Id, rowData = {} , isViewMode) => {
+    const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
         let data = {
-           
+
             isEditFlag: true,
             isViewFlag: isViewMode,
             Id: Id,
@@ -160,10 +160,10 @@ function RMDomesticListing(props) {
         }
         props.getDetails(data);
     }
-  
-      
 
-    
+
+
+
     /**
     * @method deleteItem
     * @description confirm delete Raw Material details
@@ -221,10 +221,10 @@ function RMDomesticListing(props) {
 
         return (
             <>
-            
-              
-              <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue , rowData, true)} />
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData , false)} />}
+
+
+                <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
@@ -563,7 +563,7 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="BasicRate"></AgGridColumn>
                                 <AgGridColumn field="ScrapRate"></AgGridColumn>
                                 {/* SHEARING AND FREIGHT COST WILL NOT COME HERE IN RE      */}
-                                <AgGridColumn field="NetLandedCost" headerName="NetCost" cellRenderer='costFormatter'></AgGridColumn>
+                                <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>}
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -604,7 +604,7 @@ function RMDomesticListing(props) {
             }
         </div >
     );
-        }
+}
 
 
 
