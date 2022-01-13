@@ -20,7 +20,7 @@ import LossStandardTable from '../LossStandardTable'
 
 function HotForging(props) {
   const trimValue = getConfigurationKey()
-  const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const trim = trimValue.NoOfDecimalForInputOutput
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
     forgeWeight: WeightCalculatorRequest &&
