@@ -549,7 +549,7 @@ function RMDomesticListing(props) {
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
                             >
-                                <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
+                                <AgGridColumn field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                 <AgGridColumn field="RawMaterial" ></AgGridColumn>
                                 <AgGridColumn field="RMGrade"></AgGridColumn>
@@ -557,13 +557,13 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                 <AgGridColumn field="Category"></AgGridColumn>
                                 <AgGridColumn field="MaterialType"></AgGridColumn>
-                                <AgGridColumn field="Plant"></AgGridColumn>
+                                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                                 <AgGridColumn field="UOM"></AgGridColumn>
                                 <AgGridColumn field="BasicRate"></AgGridColumn>
                                 <AgGridColumn field="ScrapRate"></AgGridColumn>
                                 {/* SHEARING AND FREIGHT COST WILL NOT COME HERE IN RE      */}
-                                <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                                <AgGridColumn field="NetLandedCost" headerName="NetCost" cellRenderer='costFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>}
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
