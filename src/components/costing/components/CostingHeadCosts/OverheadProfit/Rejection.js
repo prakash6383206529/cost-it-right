@@ -55,13 +55,19 @@ function Rejection(props) {
 
     useEffect(() => {
         checkRejectionApplicability(applicability.label)
+     
+
+    }, [rejectionFieldValues]);
+
+
+    useEffect(()=>{
         setTimeout(() => {
             let tempObj = {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
-                "RejectionCost": applicability ? checkForDecimalAndNull(getValues('RejectionCost'), initialConfiguration.NoOfDecimalForPrice) : '',
-                "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
+                "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
+                "RejectionTotalCost": applicability ?rejectionObj.RejectionTotalCost : '',
                 "IsSurfaceTreatmentApplicable": true,
             }
 
@@ -69,8 +75,7 @@ function Rejection(props) {
                 props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-
-    }, [rejectionFieldValues]);
+    },[rejectionObj])
 
 
     /**
@@ -117,8 +122,8 @@ function Rejection(props) {
                         RejectionApplicabilityId: applicability.value,
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
-                        RejectionCost: checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice),
-                        RejectionTotalCost: checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionCost: checkForNull(headerCosts.NetRawMaterialsCost),
+                        RejectionTotalCost: checkForNull((headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -131,7 +136,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: headerCosts.NetBoughtOutPartCost,
-                        RejectionTotalCost: checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionTotalCost: checkForNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -144,7 +149,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: ConversionCostForCalculation,
-                        RejectionTotalCost: checkForDecimalAndNull(((ConversionCostForCalculation) * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionTotalCost: checkForNull(((ConversionCostForCalculation) * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -157,7 +162,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: RMBOPCC,
-                        RejectionTotalCost: checkForDecimalAndNull((RMBOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionTotalCost: checkForNull((RMBOPCC * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -170,7 +175,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: RMBOP,
-                        RejectionTotalCost: checkForDecimalAndNull((RMBOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionTotalCost: checkForNull((RMBOP * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -183,7 +188,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: RMCC,
-                        RejectionTotalCost: checkForDecimalAndNull((RMCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionTotalCost: checkForNull((RMCC * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -196,7 +201,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: BOPCC,
-                        RejectionTotalCost: checkForDecimalAndNull((BOPCC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice)
+                        RejectionTotalCost: checkForNull((BOPCC * calculatePercentage(RejectionPercentage)))
                     })
                     break;
 
@@ -209,7 +214,7 @@ function Rejection(props) {
                         RejectionApplicability: applicability.label,
                         RejectionPercentage: RejectionPercentage,
                         RejectionCost: '-',
-                        RejectionTotalCost: checkForDecimalAndNull(RejectionPercentage, initialConfiguration.NoOfDecimalForPrice)
+                        RejectionTotalCost: checkForNull(RejectionPercentage)
                     })
                     break;
 
