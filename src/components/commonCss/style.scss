@@ -890,6 +890,13 @@ input.form-control{
   opacity: 1;
   border: none;
 }
+.Comment-box {
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/Comment-box.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
 .hirarchy-btn {
   width: 32px;
   height: 32px;
@@ -941,6 +948,7 @@ input.form-control{
 .Edit,
 .Delete,
 .View,
+.Comment-box,
 .Download,
 .Bulk,
 .Activate,
@@ -4931,6 +4939,7 @@ body{
       .Balance,
       .Delete,
       .View,
+      .Comment-box,
       .Download,
       .Bulk,
       .Activate,
@@ -6595,7 +6604,7 @@ left: 17rem;
 }
 .rmcc-main-headings {
   th,td {
-    padding: 10px 15px !important;
+    padding: 13px 15px !important;
   }
 }
 .min-height-auto {

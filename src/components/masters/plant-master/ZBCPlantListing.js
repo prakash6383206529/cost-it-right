@@ -296,7 +296,7 @@ class ZBCPlantListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -439,7 +439,7 @@ class ZBCPlantListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
+                            <AgGridColumn  field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                             {/* THIS IS COMMENTED IN RE  */}
                             {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
@@ -447,7 +447,7 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

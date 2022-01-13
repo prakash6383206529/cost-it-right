@@ -32,6 +32,7 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 
+
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -634,7 +635,7 @@ class AddBOPDomestic extends Component {
       //     if (res.data.Result) {
       //       Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
       //       //this.clearForm()
-      //       this.cancel()
+      //       this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
       //     }
       //   })
       // }
@@ -1148,13 +1149,12 @@ class AddBOPDomestic extends Component {
                             // (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
                             //   <button type="submit"
                             //     class="user-btn approval-btn save-btn mr5"
-
-                            //     disabled={this.state.isFinalApprovar}
+                            //     disabled={isViewMode}
                             //   >
                             //     <div className="send-for-approval"></div>
                             //     {'Send For Approval'}
                             //   </button>
-                            //   :
+                            //   :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
 
                             <button
                               type="submit"

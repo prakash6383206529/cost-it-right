@@ -302,6 +302,7 @@ export const API = {
   //BOP APPROVAL API'S
 
   getBOPApprovalList: `${BASE_URL}/masters-approval-Bought-Out-Part/get-master-approvals-by-filter`,
+  masterSendToApproverBop: `${BASE_URL}/masters-approval-Bought-Out-Part/master-send-to-approver-by-sender`,
 
 
 
