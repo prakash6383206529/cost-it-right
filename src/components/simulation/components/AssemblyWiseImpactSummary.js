@@ -135,6 +135,7 @@ function AssemblyWiseImpactSummary(props) {
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
+                                loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'
