@@ -547,8 +547,7 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="UOM"></AgGridColumn>
                                 <AgGridColumn field="BasicRate"></AgGridColumn>
                                 <AgGridColumn field="ScrapRate"></AgGridColumn>
-                                <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                                <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                                {/* SHEARING AND FREIGHT COST WILL NOT COME HERE IN RE      */}
                                 <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn>}

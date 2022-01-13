@@ -983,17 +983,42 @@ export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraf
         })
         const request = axios.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, headers);
         request.then((response) => {
+            // THIS BLOCK WORKS WHEN THERE IS DATA IN API
             if (response.data.Result) {
+
+                // THIS IS WHEN CALL COMES FROM DRAFT
                 if (isAssemblyInDraft === true) {
                     dispatch({
                         type: GET_ASSEMBLY_SIMULATION_LIST,
                         payload: response.data.DataList
                     })
-                } if (isAssemblyInDraft === false) {
+                }
 
+                // THIS IS WHEN CALL COMES FROM SUMMARY
+                if (isAssemblyInDraft === false) {
                     dispatch({
                         type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
                         payload: response.data.DataList
+                    })
+                    callback(response)
+                }
+            }
+            // THIS BLOCK WORKS WHEN THERE IS NO DATA IN API
+            else if (response.status === 204) {
+
+                // THIS IS WHEN CALL COMES FROM DRAFT
+                if (isAssemblyInDraft === true) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST,
+                        payload: []
+                    })
+                }
+
+                // THIS IS WHEN CALL COMES FROM SUMMARY
+                if (isAssemblyInDraft === false) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+                        payload: []
                     })
                     callback(response)
                 }
