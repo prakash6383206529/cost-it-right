@@ -184,7 +184,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} customClass="last-rivision-verify-drawer"/>}
+                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false}/>}
 
                 </div>
               </Row>
