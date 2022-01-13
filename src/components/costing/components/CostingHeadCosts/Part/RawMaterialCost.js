@@ -901,7 +901,7 @@ function RawMaterialCost(props) {
 
                         return (
                           <tr key={index} className=''>
-                            <td className='rm-part-name'>{item.RMName}</td>
+                            <td className='rm-part-name'><span title={item.RMName}>{item.RMName}</span></td>
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
