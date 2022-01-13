@@ -48,7 +48,7 @@ class AddRMImport extends Component {
     this.dropzone = React.createRef();
     this.state = {
       isEditFlag: false,
-      isViewFlag: this.props?.data?.isViewFlag?true:false,
+      isViewFlag: this.props?.data?.isViewFlag ? true : false,
       RawMaterialID: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
 
@@ -1094,7 +1094,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag} = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag } = this.state;
 
     return (
       <>
@@ -1394,7 +1394,6 @@ class AddRMImport extends Component {
                                     placeholder={"Enter"}
                                     validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                     component={renderText}
-                                    //required={true}
                                     disabled={isViewFlag}
                                     onChange={this.handleSource}
                                     valueDescription={this.state.source}
@@ -1413,7 +1412,7 @@ class AddRMImport extends Component {
                                     handleChangeDescription={this.handleSourceSupplierCity}
                                     disabled={isViewFlag}
                                     valueDescription={this.state.sourceLocation}
-                                   
+                                    disabled={isViewFlag}
                                   />
                                 </Col>
                               </>
@@ -1478,14 +1477,13 @@ class AddRMImport extends Component {
                                   validate={[required]}
                                   autoComplete={'off'}
                                   required={true}
-                                  disabled={isViewFlag}
                                   changeHandler={(e) => {
 
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                
-                                //minDate={moment()}
+                                  disabled={isViewFlag}
+
                                 />
                               </div>
                             </div>
@@ -1513,7 +1511,7 @@ class AddRMImport extends Component {
                               validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderText}
                               required={true}
-                              disabled={isViewFlag ? true:false}
+                              disabled={isViewFlag ? true : false}
                               maxLength="15"
                               className=" "
                               customClassName=" withBorder"
@@ -1552,7 +1550,7 @@ class AddRMImport extends Component {
                               maxLength="15"
                               disabled={isViewFlag}
                               customClassName=" withBorder"
-                             
+                              disabled={isViewFlag}
                             />
                           </Col>
                           <Col md="4">
@@ -1568,7 +1566,7 @@ class AddRMImport extends Component {
                               maxLength="15"
                               disabled={isViewFlag}
                               customClassName=" withBorder"
-                              
+                              disabled={isViewFlag}
                             />
                           </Col>
                           {
@@ -1613,7 +1611,7 @@ class AddRMImport extends Component {
                               validate={[]}
                               component={renderText}
                               required={false}
-                              
+
                               className=" "
                               customClassName=" withBorder mb-0"
                               disabled={isEditFlag || isViewFlag}
@@ -1630,7 +1628,7 @@ class AddRMImport extends Component {
                                 validate={[]}
                                 component={renderText}
                                 required={false}
-                                
+
                                 className=" "
                                 customClassName=" withBorder mb-0"
                                 disabled={isEditFlag || isViewFlag}
@@ -1709,7 +1707,7 @@ class AddRMImport extends Component {
                                     extra.reject ? { color: "red" } : {},
                                 }}
                                 classNames="draper-drop"
-                                
+                                disabled={isViewFlag}
                               />
                             </div>
                           </Col>
@@ -1734,7 +1732,7 @@ class AddRMImport extends Component {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                      {!isViewFlag&&<img
+                                      {!isViewFlag && <img
                                         className="float-right"
                                         alt={""}
                                         onClick={() =>
@@ -1778,6 +1776,7 @@ class AddRMImport extends Component {
                                 type="submit"
                                 disabled={isViewFlag}
                                 className="user-btn mr5 save-btn"
+                                disabled={isViewFlag}
                               >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}
