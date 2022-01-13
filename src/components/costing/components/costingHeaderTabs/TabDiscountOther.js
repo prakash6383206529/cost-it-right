@@ -885,7 +885,7 @@ function TabDiscountOther(props) {
                           rules={{
                             required: false,
                             pattern: {
-                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              value:/^\d*\.?\d*$/,
                               message: 'Invalid Number.'
                             },
                             max: {
