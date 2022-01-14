@@ -490,7 +490,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup,BOMChanged } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
     const { initialConfiguration } = this.props;
 
@@ -733,7 +733,6 @@ class AddAssemblyPart extends Component {
                             placeholder={""}
                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                             component={renderText}
-                            //required={true}
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
@@ -747,7 +746,6 @@ class AddAssemblyPart extends Component {
                             placeholder={""}
                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                             component={renderText}
-                            //required={true}
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
@@ -761,7 +759,6 @@ class AddAssemblyPart extends Component {
                             placeholder={""}
                             validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                             component={renderText}
-                            //required={true}
                             className=""
                             customClassName={"withBorder"}
                             disabled={isViewMode}
@@ -785,7 +782,6 @@ class AddAssemblyPart extends Component {
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
                               className="multiselect-with-border"
-                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               disabled={isViewMode}
                             />
                           </Col>
@@ -833,7 +829,7 @@ class AddAssemblyPart extends Component {
                         <Col md="3">
                           <button
                             type="button"
-                            disabled={isViewMode}
+                            disabled={false}
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
@@ -855,7 +851,6 @@ class AddAssemblyPart extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             validate={[maxLength512, checkWhiteSpaces]}
-                            //required={true}
                             component={renderTextAreaField}
                             maxLength="5000"
                             disabled={isViewMode}
@@ -986,6 +981,7 @@ class AddAssemblyPart extends Component {
               closeDrawer={this.closeBOMViewerDrawer}
               isEditFlag={this.state.isEditFlag}
               PartId={this.state.PartId}
+              isViewMode={isViewMode}
               anchor={"right"}
               BOMViewerData={this.state.BOMViewerData}
               NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
