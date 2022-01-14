@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -172,30 +172,30 @@ function VerifySimulation(props) {
                     }
                 }))
                 break;
-            case Number(BOPIMPORT):
-
-                dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                    if (res.data.Result) {
-                        const data = res.data.Data
-                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                            Toaster.warning('No approved costing exist for this bought out part.')
-                            setHideRunButton(true)
-                            return false
-                        }
-                        setTokenNo(data.TokenNumber)
-                        setSimualtionId(data.SimulationId)
-                        // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
-                        setHideRunButton(false)
-                    }
-                }))
-                break;
             // case Number(BOPIMPORT):
 
-            // dispatch(getVerifyOverheadProfitSimulationList(props.token, (res) => {
+            //     dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+            //         if (res.data.Result) {
+            //             const data = res.data.Data
+            //             if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+            //                 Toaster.warning('No approved costing exist for this bought out part.')
+            //                 setHideRunButton(true)
+            //                 return false
+            //             }
+            //             setTokenNo(data.TokenNumber)
+            //             setSimualtionId(data.SimulationId)
+            //             // setMasterId(data.SimulationtechnologyId)
+            //             // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+            //             setHideRunButton(false)
+            //         }
+            //     }))
+            //     break;
+            // case Number(BOPIMPORT):
+
+            // dispatch(getVerifyOverheadSimulationList(props.token, (res) => {
             //     if (res.data.Result) {
             //         const data = res.data.Data
-            //         if (data.SimulationOverheadProfitImpactedCostings.length === 0) {           //   for condition
+            //         if (data.SimulationOverheadImpactedCostings.length === 0) {           //   for condition
             //             Toaster.warning('No approved costing exist for this bought out part.')
             //             setHideRunButton(true)
             //             return false
@@ -208,6 +208,24 @@ function VerifySimulation(props) {
             //     }
             // }))
             // break;
+            case Number(BOPIMPORT):
+
+                dispatch(getVerifyProfitSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationProfitImpactedCostings.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this bought out part.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        setHideRunButton(false)
+                    }
+                }))
+                break;
             default:
                 break;
         }

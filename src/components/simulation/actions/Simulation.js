@@ -24,8 +24,9 @@ import {
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
     SET_DATA_TEMP,
-    GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+    GET_VERIFY_OVERHEAD_SIMULATION_LIST,
+    GET_VERIFY_PROFIT_SIMULATION_LIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -844,14 +845,14 @@ export function setData(valdataTemp) {
     }
 }
 
-export function getVerifyOverheadProfitSimulationList(token, callback) {
+export function getVerifyOverheadSimulationList(token, callback) {
 
     return (dispatch) => {
         const request = axios.get(`${API.getVerifyOverheadProfitSimulationList}?simulationId=${token}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
+                    type: GET_VERIFY_OVERHEAD_SIMULATION_LIST,
                     payload: response.data.Data.SimulationExchangeRateImpactedCostings
                 })
                 callback(response)
@@ -863,9 +864,9 @@ export function getVerifyOverheadProfitSimulationList(token, callback) {
     }
 }
 
-export function runSimulationOnSelectedOverheadProfitCosting(data, callback) {
+export function runSimulationOnSelectedOverheadCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedOverheadProfitCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedOverheadCosting, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -877,4 +878,63 @@ export function runSimulationOnSelectedOverheadProfitCosting(data, callback) {
     };
 }
 
+export function runVerifyOverheadSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftOverheadSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function runVerifyProfitSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftProfitSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getVerifyProfitSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getVerifyProfitSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_PROFIT_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedProfitCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedProfitCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 
