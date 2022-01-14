@@ -216,8 +216,8 @@ function RMImportListing(props) {
     }
     return (
       <>
-      {ViewRMAccessibility && <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-        {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() =>viewOrEditItemDetails(cellValue, rowData, false)} />}
+         {ViewRMAccessibility &&<button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+        {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
         {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
@@ -440,10 +440,10 @@ function RMImportListing(props) {
     statusFormatter: statusFormatter,
     hyphenFormatter: hyphenFormatter,
     companyFormatter: companyFormatter,
-    statusFormatter: statusFormatter,
   }
 
 
+  
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
@@ -556,13 +556,9 @@ function RMImportListing(props) {
                 <AgGridColumn field="RMSpec" headerName="RM Spec"></AgGridColumn>
 
                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-
-                <AgGridColumn field="Category" headerName="Category"></AgGridColumn>
-
-                <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
-
+                <AgGridColumn field="Category"></AgGridColumn>
+                <AgGridColumn field="MaterialType"></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
-
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
                 <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='companyFormatter'></AgGridColumn>
