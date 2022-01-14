@@ -172,24 +172,24 @@ function VerifySimulation(props) {
                     }
                 }))
                 break;
-            // case Number(BOPIMPORT):
+            case Number(BOPIMPORT):
 
-            //     dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-            //         if (res.data.Result) {
-            //             const data = res.data.Data
-            //             if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-            //                 Toaster.warning('No approved costing exist for this bought out part.')
-            //                 setHideRunButton(true)
-            //                 return false
-            //             }
-            //             setTokenNo(data.TokenNumber)
-            //             setSimualtionId(data.SimulationId)
-            //             // setMasterId(data.SimulationtechnologyId)
-            //             // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
-            //             setHideRunButton(false)
-            //         }
-            //     }))
-            //     break;
+                dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                    if (res.data.Result) {
+                        const data = res.data.Data
+                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this bought out part.')
+                            setHideRunButton(true)
+                            return false
+                        }
+                        setTokenNo(data.TokenNumber)
+                        setSimualtionId(data.SimulationId)
+                        // setMasterId(data.SimulationtechnologyId)
+                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        setHideRunButton(false)
+                    }
+                }))
+                break;
             // case Number(BOPIMPORT):
 
             // dispatch(getVerifyOverheadSimulationList(props.token, (res) => {
@@ -208,24 +208,24 @@ function VerifySimulation(props) {
             //     }
             // }))
             // break;
-            case Number(BOPIMPORT):
+            // case Number(BOPIMPORT):
 
-                dispatch(getVerifyProfitSimulationList(props.token, (res) => {
-                    if (res.data.Result) {
-                        const data = res.data.Data
-                        if (data.SimulationProfitImpactedCostings.length === 0) {           //   for condition
-                            Toaster.warning('No approved costing exist for this bought out part.')
-                            setHideRunButton(true)
-                            return false
-                        }
-                        setTokenNo(data.TokenNumber)
-                        setSimualtionId(data.SimulationId)
-                        // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
-                        setHideRunButton(false)
-                    }
-                }))
-                break;
+            //     dispatch(getVerifyProfitSimulationList(props.token, (res) => {
+            //         if (res.data.Result) {
+            //             const data = res.data.Data
+            //             if (data.SimulationProfitImpactedCostings.length === 0) {           //   for condition
+            //                 Toaster.warning('No approved costing exist for this bought out part.')
+            //                 setHideRunButton(true)
+            //                 return false
+            //             }
+            //             setTokenNo(data.TokenNumber)
+            //             setSimualtionId(data.SimulationId)
+            //             // setMasterId(data.SimulationtechnologyId)
+            //             // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+            //             setHideRunButton(false)
+            //         }
+            //     }))
+            //     break;
             default:
                 break;
         }
