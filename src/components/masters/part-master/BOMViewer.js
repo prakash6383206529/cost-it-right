@@ -279,7 +279,7 @@ class BOMViewer extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration, isViewMode } = this.props;
+    const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration } = this.props;
     const { isOpenChildDrawer, isOpenVisualDrawer, flowpoints } = this.state;
 
     return (
@@ -318,7 +318,6 @@ class BOMViewer extends Component {
                           <>
                             <button
                               type={"button"}
-                              disabled={isViewMode ? isViewMode : false}
                               className="pull-right mt10 btn-danger"
                               onClick={() =>
                                 this.setState({
@@ -334,7 +333,6 @@ class BOMViewer extends Component {
                             </button>
                             <button
                               type="button"
-                              disabled={isViewMode ? isViewMode : false}
                               onClick={() =>
                                 this.setState({
                                   displayEditIcon: !this.state.displayEditIcon,
@@ -352,7 +350,6 @@ class BOMViewer extends Component {
                         <button
                           type="button"
                           onClick={this.childDrawerToggle}
-                          disabled={isViewMode ? isViewMode : false}
                           className={"user-btn mr15 pull-right mt10"}
                         >
                           <div className={"plus"}></div>ADD
@@ -462,7 +459,6 @@ class BOMViewer extends Component {
                     {!isFromVishualAd && (
                       <button
                         type="submit"
-                        disabled={isViewMode ? isViewMode : false}
                         className="submit-button mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
