@@ -424,7 +424,7 @@ function RMImportListing(props) {
     hyphenFormatter: hyphenFormatter
 
   };
-  console.log(getFilterRMData(), 'getFilterRMData()getFilterRMData()');
+
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
