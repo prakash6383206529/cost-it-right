@@ -491,7 +491,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, BOMChanged } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
     const { initialConfiguration } = this.props;
 
@@ -982,11 +982,10 @@ class AddAssemblyPart extends Component {
               closeDrawer={this.closeBOMViewerDrawer}
               isEditFlag={this.state.isEditFlag}
               PartId={this.state.PartId}
-              isViewMode={isViewMode}
               anchor={"right"}
               BOMViewerData={this.state.BOMViewerData}
               NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
-              isFromVishualAd={false}
+              isFromVishualAd={isViewMode}
               avoidAPICall={this.state.avoidAPICall}
             />
           )}
