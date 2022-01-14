@@ -203,7 +203,7 @@ class AddOverhead extends Component {
 
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || item.Text ==='Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });

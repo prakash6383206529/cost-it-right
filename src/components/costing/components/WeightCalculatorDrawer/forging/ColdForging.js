@@ -19,7 +19,7 @@ function ColdForging(props) {
 
   const { rmRowData } = props
   const trimValue = getConfigurationKey()
-  const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const trim = trimValue.NoOfDecimalForInputOutput
   const [tableData, setTableData] = useState([])
   const [isChecked, setIsChecked] = useState(false)
   const [showLabel, setIsShowLabel] = useState(false)

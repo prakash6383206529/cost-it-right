@@ -189,7 +189,7 @@ class AddBOPImport extends Component {
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
-            this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+            this.handleCurrency({ label: currencyObj?.Text, value: currencyObj?.Value })
             this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
@@ -912,23 +912,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           )}
-                          {/* <Col md="3">
-                            <Field
-                              label="Part/ Assembly No."
-                              name="PartAssemblyNo"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0 ? [] : this.state.selectedPartAssembly}
-                              options={this.renderListing("PartAssembly")}
-                              selectionChanged={this.handlePartAssembly}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              // mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                            />
-                          </Col> */}
+
                         </Row>
 
                         <Row>
@@ -953,10 +937,7 @@ class AddBOPImport extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {/* <div
-                                                        onClick={this.vendorToggler}
-                                                        className={'plus-icon-square mr15 right'}>
-                                                    </div> */}
+
                             </div>
                           </Col>
                           {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
@@ -1005,10 +986,7 @@ class AddBOPImport extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("SourceLocation")}
                                   disabled={isViewMode}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  // validate={
-                                  //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
-                                  // required={true}
+
                                   handleChangeDescription={this.handleSourceSupplierCity}
                                   valueDescription={this.state.sourceLocation}
                                 />
@@ -1031,7 +1009,6 @@ class AddBOPImport extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("currency")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
                                 this.state.currency == null ||
                                   this.state.currency.length === 0
@@ -1057,7 +1034,6 @@ class AddBOPImport extends Component {
                                 autoComplete={'off'}
                                 required={true}
                                 changeHandler={(e) => {
-                                  //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
@@ -1214,12 +1190,6 @@ class AddBOPImport extends Component {
                                       <a href={fileURL} target="_blank" rel="noreferrer">
                                         {f.OriginalFileName}
                                       </a>
-                                      {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                      {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
 
                                       {!isViewMode && <img
                                         alt={""}

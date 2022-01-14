@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import Drawer from '@material-ui/core/Drawer'
-import { TextFieldHookForm } from '../../../layout/HookFormInputs'
+import { TextAreaHookForm } from '../../../layout/HookFormInputs'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
@@ -11,15 +11,19 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import { EMPTY_GUID } from '../../../../config/constants';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css'
 
 function ViewRM(props) {
 
   const { viewRMData, rmMBDetail, isAssemblyCosting } = props
+
+
   /*
   * @method toggleDrawer
   * @description closing drawer
   */
-  const { register, control } = useForm({
+  const { register, control, formState: { errors }, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
 
@@ -32,7 +36,8 @@ function ViewRM(props) {
   useEffect(() => {
 
     setViewRM(viewRMData)
-    console.log(isAssemblyCosting, "VIEW RM DATA");
+
+
   }, [])
 
   const dispatch = useDispatch()
@@ -52,18 +57,18 @@ function ViewRM(props) {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
         setCalciData({ ...viewRM[index], WeightCalculatorRequest: data })
-        // setViewRM(prevState => ({ ...prevState, WeightCalculatorRequest: data }))
         setWeightCalculatorDrawer(true)
-        // tempData = { ...tempData, WeightCalculatorRequest: data, }
-        // tempArr = Object.assign([...gridData], { [index]: tempData })
-        // setTimeout(() => {
-        //   setGridData(tempArr)
-        //   setWeightDrawerOpen(true)
-        // }, 100)
       }
     }))
 
   }
+
+  const onRemarkPopUpClose = (index) => {
+
+    var button = document.getElementById(`popUpTrigger${index}`)
+    button.click()
+  }
+
 
   const toggleDrawer = (event) => {
     if (
@@ -86,7 +91,7 @@ function ViewRM(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
+
       >
         <Container>
           <div className={"drawer-wrapper drawer-1500px"}>
@@ -117,7 +122,9 @@ function ViewRM(props) {
                     <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th>
                     <th>{`Burning Loss Weight`}</th>
-                    <th className="costing-border-right">{`Net RM Cost`}</th>
+                    <th >{`Net RM Cost`}</th>
+                    <th className="costing-border-right">{`Remark`}</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -142,6 +149,34 @@ function ViewRM(props) {
                         <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td><Popup trigger={<button id={`popUpTrigger${index}`} className="Comment-box ml-2" type={'button'} />}
+                          position="left center">
+                          <TextAreaHookForm
+                            label="Remark :"
+                            name={`remarkPopUp${index}`}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            rules={{}}
+                            handleChange={(e) => { }}
+                            defaultValue={item?.Remark ? item.Remark : ""}
+                            className=""
+                            customClassName={"withBorder"}
+                            errors={errors.remarkPopUp}
+                            disabled={true}
+                            hidden={false}
+                          />
+                          <Row>
+                            <Col md="12" className='remark-btn-container'>
+                              <button className='submit-button mr-2' disabled={true}  > <div className='save-icon'></div> </button>
+                              <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                            </Col>
+                          </Row>
+
+                        </Popup>
+                        </td>
+
 
                       </tr>
                     )
@@ -156,119 +191,7 @@ function ViewRM(props) {
                 </tbody>
               </Table>
             </Col>
-            {/* <form>
-              <Row className="pl-3">
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  <TextFieldHookForm
-                    label="RM Name -Grade"
-                    name={"rmName"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    //defaultValue={`${viewRM[0].RMName}`}
-                    defaultValue={viewRM && viewRM.RMName !== undefined ? viewRM.RMName : '-'}
-                    className=""
-                    customClassName={"withBorder"}
-                    //errors={errors.ECNNumber}
-                    disabled={true}
-                  />
-                </div>
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  <TextFieldHookForm
-                    label="RM Rate"
-                    name={"rmRate"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.RMRate !== undefined ? viewRM.RMRate : '-'}
-                    className=""
-                    customClassName={"withBorder"}
-                    //errors={errors.ECNNumber}
-                    disabled={true}
-                  />
-                </div>
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  <TextFieldHookForm
-                    label="Scrap Rate"
-                    name={"scrapRate"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.ScrapRate !== undefined ? viewRM.ScrapRate : '-'}
-                    className=""
-                    customClassName={"withBorder"}
-                    //errors={errors.ECNNumber}
-                    disabled={true}
-                  />
-                </div>
-                {
-                  viewRM && viewRM.WeightCalculationId !== '00000000-0000-0000-0000-000000000000' &&
 
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <label>Calculator</label>
-                    <button
-                      className="CalculatorIcon cr-cl-icon mr-auto ml-0"
-                      type={"button"}
-                      onClick={() => { getWeightData() }}
-                    />
-                  </div>
-                }
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  <TextFieldHookForm
-                    label="Gross Weight(Kg)"
-                    name={"grossweight"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.GrossWeight !== undefined ? checkForDecimalAndNull(viewRM.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ""}
-                    className=""
-                    customClassName={"withBorder"}
-                    //errors={errors.ECNNumber}
-                    disabled={true}
-                  />
-                </div>
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  <TextFieldHookForm
-                    label="Finish Weight(Kg)"
-                    name={"finishWeight"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.FinishWeight !== undefined ? checkForDecimalAndNull(viewRM.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput) : 0}
-                    className=""
-                    customClassName={"withBorder"}
-                    //errors={errors.ECNNumber}
-                    disabled={true}
-                  />
-                </div>
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  <TextFieldHookForm
-                    label="Net RM Cost"
-                    name={"netRMCost"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.NetLandedCost !== undefined ? checkForDecimalAndNull(viewRM.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-                    className=""
-                    customClassName={"withBorder"}
-                    //errors={errors.ECNNumber}
-                    disabled={true}
-                  />
-                </div>
-              </Row>
-            </form> */}
             {weightCalculatorDrawer && (
               <WeightCalculator
                 rmRowData={viewRM !== undefined ? calciData : {}}
