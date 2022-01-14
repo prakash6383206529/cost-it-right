@@ -152,13 +152,13 @@ function RMImportListing(props) {
   const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
     let data = {
       isEditFlag: true,
-      isViewFlag:isViewMode,
+      isViewFlag: isViewMode,
       Id: Id,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
     props.getDetails(data);
   }
-  
+
   /**
   * @method deleteItem
   * @description confirm delete Raw Material details
@@ -215,8 +215,8 @@ function RMImportListing(props) {
     }
     return (
       <>
-         <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue , rowData, true)} /> 
-        {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() =>viewOrEditItemDetails(cellValue, rowData, false)} />}
+        <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+        {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
         {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
@@ -424,7 +424,7 @@ function RMImportListing(props) {
     hyphenFormatter: hyphenFormatter
 
   };
-
+  console.log(getFilterRMData(), 'getFilterRMData()getFilterRMData()');
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
@@ -533,7 +533,7 @@ function RMImportListing(props) {
                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                 <AgGridColumn field="Category"></AgGridColumn>
                 <AgGridColumn field="MaterialType"></AgGridColumn>
-                <AgGridColumn field="Plant(Code)"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
                 <AgGridColumn field="Currency"></AgGridColumn>
