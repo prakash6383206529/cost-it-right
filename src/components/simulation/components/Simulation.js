@@ -27,9 +27,11 @@ import OtherCostingSimulation from './OtherCostingSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
-import OPSimulation from './SimulationPages/OPSimulation';
 import OverheadListing from '../../masters/overhead-profit-master/OverheadListing'
+import ProfitListing from '../../masters/overhead-profit-master/ProfitListing'
 import ScrollToTop from '../../common/ScrollToTop';
+import OverheadSimulation from './SimulationPages/OverheadSimulation';
+import ProfitSimulation from './SimulationPages/ProfitSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -189,6 +191,8 @@ function Simulation(props) {
                 return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            // case BOPIMPORT:
+            //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -461,12 +465,12 @@ function Simulation(props) {
                 }
                 Data && Data.forEach((element, index) => {
                     if (index !== 0) {
-                        if (element.IsVendor !== Data[index - 1].IsVendor) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.Vendor !== Data[index - 1].Vendor) {
+                        if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
@@ -497,12 +501,12 @@ function Simulation(props) {
                 }
                 Data && Data.forEach((element, index) => {
                     if (index !== 0) {
-                        if (element.IsVendor !== Data[index - 1].IsVendor) {
+                        if (element.CostingHead !== Data[index - 1].CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.Vendor !== Data[index - 1].Vendor) {
+                        if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
@@ -514,7 +518,90 @@ function Simulation(props) {
                         }
                     }
                 });
+                if (flag === true && vendorFlag === true && plantFlag === true) {
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                } if (flag === false && vendorFlag === false && plantFlag === false) {
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                }
                 break;
+            // case BOPIMPORT:
+            //     if (Data.length === 0) {
+            //         setEditWarning(true)
+            //         return false
+            //     }
+            //     Data && Data.forEach((element, index) => {
+            //         if (index !== 0) {
+            //             if (element.IsVendor !== Data[index - 1].IsVendor) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+            //                 setEditWarning(true);
+            //                 flag = false
+            //             }
+            //             if (element.Vendor !== Data[index - 1].Vendor) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //                 setEditWarning(true);
+            //                 vendorFlag = false
+            //             }
+            //             if (element.OverheadApplicabilityType !== Data[index - 1].OverheadApplicabilityType) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+            //                 setEditWarning(true);
+            //                 plantFlag = false
+            //             }
+            //         }
+            //     });
+            // if (flag === true && vendorFlag === true && plantFlag === true) {
+            //     setEditWarning(false)
+            // } if (flag === false && vendorFlag === false) {
+            //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+            // } if (vendorFlag === false && plantFlag === false) {
+            //     (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+            // } if (flag === false && plantFlag === false) {
+            //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+            // } if (flag === false && vendorFlag === false && plantFlag === false) {
+            //     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+            // }
+            //     break;
+            // case BOPIMPORT:
+            //     if (Data.length === 0) {
+            //         setEditWarning(true)
+            //         return false
+            //     }
+            //     Data && Data.forEach((element, index) => {
+            //         if (index !== 0) {
+            //             if (element.CostingHead !== Data[index - 1].CostingHead) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+            //                 setEditWarning(true);
+            //                 flag = false
+            //             }
+            //             if (element.VendorName !== Data[index - 1].VendorName) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //                 setEditWarning(true);
+            //                 vendorFlag = false
+            //             }
+            //             if (element.ProfitApplicabilityType !== Data[index - 1].ProfitApplicabilityType) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Applicability Type')
+            //                 setEditWarning(true);
+            //                 plantFlag = false
+            //             }
+            //         }
+            //     });
+            //     if (flag === true && vendorFlag === true && plantFlag === true) {
+            //         setEditWarning(false)
+            //     } if (flag === false && vendorFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+            //     } if (vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one  Vendor, Overhead Applicability at a time.`)
+            //     } if (flag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Overhead Applicability at a time.`)
+            //     } if (flag === false && vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Overhead Applicability')
+            //     }
+            //     break;
 
 
             default:
@@ -552,7 +639,9 @@ function Simulation(props) {
             case BOPIMPORT:
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             // case BOPIMPORT:
-            //     return <OPSimulation isOperation={true} openEditPageReload={openEditPageReload} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            //     return <OverheadSimulation isOperation={true} openEditPageReload={openEditPageReload} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            // case BOPIMPORT:
+            //     return <ProfitSimulation isOperation={true} openEditPageReload={openEditPageReload} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }
