@@ -764,7 +764,7 @@ class VendorListing extends Component {
                         </Col>
                     </Row>
                 </form>
-                <div className="ag-grid-wrapper height-width-wrapper pt-2">
+                <div className={`ag-grid-wrapper height-width-wrapper pt-2  ${this.props.supplierDataList && this.props.supplierDataList?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-theme-material">
                         <AgGridReact
                             defaultColDef={defaultColDef}

@@ -543,7 +543,7 @@ class IndivisualPartListing extends Component {
 
 
 
-                    <div className="ag-grid-wrapper height-width-wrapper">
+                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <=0 ?"overlay-contain": ""}`}>
                         <div className="ag-grid-header mt-4 pt-1">
                            
                         </div>
