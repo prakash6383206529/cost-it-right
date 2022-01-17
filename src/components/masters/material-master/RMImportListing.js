@@ -533,7 +533,7 @@ function RMImportListing(props) {
                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                 <AgGridColumn field="Category"></AgGridColumn>
                 <AgGridColumn field="MaterialType"></AgGridColumn>
-                <AgGridColumn field="Plant(Code)"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
                 <AgGridColumn field="Currency"></AgGridColumn>

@@ -10,6 +10,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import { checkForDecimalAndNull } from '../../../helper';
 
 const gridOptions = {};
 
@@ -24,6 +25,7 @@ function AssemblyWiseImpact(props) {
     const dispatch = useDispatch();
 
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
+    const { initialConfiguration } = useSelector(state => state.auth)
 
     useEffect(() => {
         setloader(true)
@@ -68,6 +70,13 @@ function AssemblyWiseImpact(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
+    /**
+    * @method costFormatter
+    */
+    const costFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
+    }
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -101,7 +110,8 @@ function AssemblyWiseImpact(props) {
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        hyphenFormatter: hyphenFormatter
+        hyphenFormatter: hyphenFormatter,
+        costFormatter: costFormatter
     };
 
     return (
@@ -148,9 +158,9 @@ function AssemblyWiseImpact(props) {
                                 <AgGridColumn field="PartName" headerName='Name' cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Level" headerName="Child's Level" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
+                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
