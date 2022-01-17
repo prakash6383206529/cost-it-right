@@ -132,7 +132,7 @@ function AssemblyWiseImpact(props) {
             <Row>
                 <Col>
                     {(loader) && <LoaderCustom />}
-                    <div className="ag-grid-wrapper height-width-wrapper">
+                    <div className={`ag-grid-wrapper height-width-wrapper  ${simulationAssemblyList && simulationAssemblyList?.length <=0 ?"overlay-contain": ""}`}>
                         <div
                             className="ag-theme-material"
                         >

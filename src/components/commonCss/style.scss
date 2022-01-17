@@ -2762,7 +2762,7 @@ input:disabled{
   margin: 0 -30px -15px;
 }
 .add-min-height{
-  min-height: calc(100vh - 298px);
+  min-height: calc(100vh - 275px);
 }
 .role-permision-page{
   .add-min-height{
@@ -6762,9 +6762,6 @@ left: 17rem;
   }
 }
 .impacted-min-height {
-  .ag-row-no-animation {
-    min-height: 120px;
-  }
   .ag-overlay-wrapper {
     padding-top: 175px !important;
   }
@@ -6807,7 +6804,15 @@ left: 17rem;
     }
   }
 }
+.break-word {
+  word-break: break-word !important;
+}
 
 .popup-content {
   z-index: 1301 !important;
+}
+.simulation-edit {
+  .height-width-wrapper {
+    min-height: calc(100vh - 288px) !important;
+  }
 }
