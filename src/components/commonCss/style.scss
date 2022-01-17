@@ -2762,7 +2762,7 @@ input:disabled{
   margin: 0 -30px -15px;
 }
 .add-min-height{
-  min-height: calc(100vh - 298px);
+  min-height: calc(100vh - 275px);
 }
 .role-permision-page{
   .add-min-height{
@@ -6810,4 +6810,9 @@ left: 17rem;
 
 .popup-content {
   z-index: 1301 !important;
+}
+.simulation-edit {
+  .height-width-wrapper {
+    min-height: calc(100vh - 288px) !important;
+  }
 }
