@@ -435,7 +435,7 @@ class MachineRateListing extends Component {
                     <Col>
                         {isLoader && <LoaderCustom />}
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.machineDatalist?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.machineDatalist && this.props.machineDatalist?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
