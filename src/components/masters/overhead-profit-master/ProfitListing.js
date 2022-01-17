@@ -194,7 +194,7 @@ class ProfitListing extends Component {
   */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? (cellValue) : '';
     }
 
 
@@ -327,11 +327,37 @@ class ProfitListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
+        const onRowSelect = () => {
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (this.props.isSimulation) {
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
+            }
+
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const isFirstColumn = (params) => {
+            if (this.props.isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
 
         };
 
@@ -426,6 +452,8 @@ class ProfitListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

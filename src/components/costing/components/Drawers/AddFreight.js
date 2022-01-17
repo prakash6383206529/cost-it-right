@@ -3,11 +3,11 @@ import { useForm, Controller, useWatch, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, Label } from 'reactstrap';
 import { getFreigtFullTruckCapacitySelectList, getRateCriteriaByCapacitySelectList, getRateByCapacityCriteria } from '../../actions/Costing';
-import { netHeadCostContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
 import Switch from "react-switch";
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
 
@@ -34,6 +34,10 @@ function AddFreight(props) {
   const dispatch = useDispatch()
 
   const headCostData = useContext(netHeadCostContext)
+  const costData = useContext(costingInfoContext);
+
+  const costingHead = useSelector(state => state.comman.costingHead)
+  const { CostingDataList } = useSelector(state => state.costing)
 
   const [capacity, setCapacity] = useState([]);
   const [criteria, setCriteria] = useState([]);
@@ -41,6 +45,9 @@ function AddFreight(props) {
 
   const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : '');
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
+
+
+  const [freightCost,setFreightCost] = useState('')
 
   useEffect(() => {
     setTimeout(() => {
@@ -113,17 +120,17 @@ function AddFreight(props) {
     }
 
     if (label === 'Applicability') {
-      return [
-        { label: 'RM', value: 'RM' },
-        { label: 'CC', value: 'CC' },
-        { label: 'RM + CC', value: 'RM + CC' },
-        { label: 'RM + BOP', value: 'RM + BOP' },
-        { label: 'RM + CC + BOP', value: 'RM + CC + BOP' },
-      ];
+      costingHead && costingHead.map(item => {
+        if (item.Value === '0' || item.Text ==='Fixed') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+    });
+    return temp;
     }
 
   }
 
+    // WILL BE USED LATER FOR OTHER RADIO BUTON CALCULATION
   /**
   * @method handleCapacityChange
   * @description  CAPACITY CHANGE HANDLE
@@ -172,43 +179,78 @@ function AddFreight(props) {
     }
   }
 
+  
   /**
    * @method calculateCost
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
-    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC, ProcessCostTotal, OperationCostTotal } = headCostData;
-    const RMBOPCC = NetRawMaterialsCost + NetBoughtOutPartCost + ProcessCostTotal + OperationCostTotal
-    const RMBOP = NetRawMaterialsCost + NetBoughtOutPartCost;
-    const RMCC = NetRawMaterialsCost + ProcessCostTotal + OperationCostTotal;
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, ProcessCostTotal, OperationCostTotal } = headCostData;
+ 
+    const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
+    const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) +ConversionCostForCalculation
+    const RMBOP = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost);
+    const RMCC = checkForNull(NetRawMaterialsCost) +ConversionCostForCalculation;
+    const BOPCC = checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
     const RateAsPercentage = getValues('Rate');
+    let dataList =CostingDataList && CostingDataList.length >0 ? CostingDataList[0]:{}
+      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) 
 
+    let totalFreightCost = ''
     switch (Text) {
       case 'RM':
-        setValue('FreightCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(RateAsPercentage), 2))
+        totalFreightCost = NetRawMaterialsCost * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
+        break;
+      
+      case  'BOP':
+        totalFreightCost = NetBoughtOutPartCost * calculatePercentage(RateAsPercentage)
+        console.log("COMING HERE",totalFreightCost);
+        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC':
-        setValue('FreightCost', checkForDecimalAndNull((RMCC) * calculatePercentage(RateAsPercentage), 2))
+        totalFreightCost = (RMCC) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
         break;
-
+      
+      case 'BOP + CC': 
+          totalFreightCost = BOPCC * calculatePercentage(RateAsPercentage)
+          setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+          setFreightCost(totalFreightCost)
+          break;
       case 'CC':
-        setValue('FreightCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(RateAsPercentage), 2))
+        totalFreightCost = (RMCC) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(RateAsPercentage), getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
         break;
 
       case 'RM + CC + BOP':
-        setValue('FreightCost', checkForDecimalAndNull((RMBOPCC) * calculatePercentage(RateAsPercentage), 2))
+        totalFreightCost = (RMBOPCC) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
         break;
 
       case 'RM + BOP':
-        setValue('FreightCost', checkForDecimalAndNull((NetRawMaterialsCost + NetBoughtOutPartCost) * calculatePercentage(RateAsPercentage), 2))
+        totalFreightCost = (RMBOP) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
         break;
+      case 'Net Cost':
+          totalFreightCost = (totalTabCost) * calculatePercentage(RateAsPercentage)
+          setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+          setFreightCost(totalFreightCost)
+          break;
 
       default:
         break;
     }
   }
 
+  // MAY BE USED LATER 
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
       const Rate = getValues('Rate')
@@ -231,6 +273,7 @@ function AddFreight(props) {
 
   }
 
+  // WILL BE USED LATER FOR OTHER RADIO BUTON CALCULATION
   /**
     * @method IsPartTruckToggle
     * @description FREIGHT TYPE 
@@ -278,7 +321,7 @@ function AddFreight(props) {
       Criteria: freightType === Fixed ? '' : (freightType === Percentage ? applicability.label : data.Criteria.value),
       Rate: freightType === Fixed ? '' : data.Rate,
       Quantity: freightType === Fixed || freightType === Percentage ? '' : data.Quantity,
-      FreightCost: data.FreightCost,
+      FreightCost: freightType === Percentage ? freightCost : data.FreightCost,
       Freight: '',
       EFreightLoadType: freightType,
       FreightType: freightTypeText,
