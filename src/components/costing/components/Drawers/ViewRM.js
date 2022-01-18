@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useForm, Controller } from "react-hook-form";
 import Drawer from '@material-ui/core/Drawer'
-import { TextAreaHookForm } from '../../../layout/HookFormInputs'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
@@ -11,7 +9,6 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import { EMPTY_GUID } from '../../../../config/constants';
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css'
 
 function ViewRM(props) {
@@ -23,11 +20,7 @@ function ViewRM(props) {
   * @method toggleDrawer
   * @description closing drawer
   */
-  const { register, control, formState: { errors }, } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
 
-  });
   const [viewRM, setViewRM] = useState(viewRMData)
   const [index, setIndex] = useState('')
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
@@ -61,12 +54,6 @@ function ViewRM(props) {
       }
     }))
 
-  }
-
-  const onRemarkPopUpClose = (index) => {
-
-    var button = document.getElementById(`popUpTrigger${index}`)
-    button.click()
   }
 
 
@@ -150,7 +137,7 @@ function ViewRM(props) {
                         <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>
-                          {item?.Remark ? item.Remark : ""}
+                          {item?.Remark ? item.Remark : "-"}
                         </td>
 
                       </tr>
