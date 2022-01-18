@@ -227,7 +227,7 @@ closePopUp= () =>{
           </Row>
           <Row class="">
             <Col className="table-mt-0">
-              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData?.length <=0 ?"overlay-contain": ""}`}>
+              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <=0 ?"overlay-contain": ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>

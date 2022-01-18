@@ -496,7 +496,7 @@ function RMImportListing(props) {
       <Row>
         <Col>
           {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-          <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData()?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <=0 ?"overlay-contain": ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>

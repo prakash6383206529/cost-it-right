@@ -262,7 +262,7 @@ class LevelTechnologyListing extends Component {
 				</Row>
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12">
-						<div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData <=0 ?"overlay-contain": ""}`}>
+						<div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <=0 ?"overlay-contain": ""}`}>
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 							</div>
@@ -322,7 +322,7 @@ class LevelTechnologyListing extends Component {
 
 				<Row className="levellisting-page">
 					<Col className="level-table" md="12 ">
-						<div className={`ag-grid-wrapper height-width-wrapper ${this.props.simulationLevelDataList?.length <=0 ?"overlay-contain": ""}`}>
+						<div className={`ag-grid-wrapper height-width-wrapper ${this.props.simulationLevelDataList && this.props.simulationLevelDataList?.length <=0 ?"overlay-contain": ""}`}>
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 							</div>
@@ -384,7 +384,7 @@ class LevelTechnologyListing extends Component {
 
 						<Row className="levellisting-page">
 							<Col className="level-table" md="12 ">
-								<div className={`ag-grid-wrapper height-width-wrapper ${this.props.masterLevelDataList?.length <=0 ?"overlay-contain": ""}`}>
+								<div className={`ag-grid-wrapper height-width-wrapper ${this.props.masterLevelDataList && this.props.masterLevelDataList?.length <=0 ?"overlay-contain": ""}`}>
 									<div className="ag-grid-header">
 										<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 									</div>
