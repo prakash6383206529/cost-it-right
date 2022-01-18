@@ -901,7 +901,12 @@ export const API = {
   getverifyBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-boutght-out-part-impacted-simulation-costings`,
   getSimulatedAssemblyWiseImpactDate: `${BASE_URL}/simulation/get-simulated-assembly-wise-impact-data-by-costingId`,
   getVerifyOverheadProfitSimulationList: `${BASE_URL}/simulation/get-all-overhead-profit-impacted-simulation-costings`,
-  runSimulationOnSelectedOverheadProfitCosting: `${BASE_URL}/simulation/run-simulation-on-overhead-profit-costing`,
+  runSimulationOnSelectedOverheadCosting: `${BASE_URL}/simulation/run-simulation-on-overhead-costing`,
+  getverifyOverheadSimulationList: `${BASE_URL}/simulation/get-all-overhead-impacted-simulation-costings`,
+  getVerifyProfitSimulationList: `${BASE_URL}/simulation/get-all-profit-impacted-simulation-costings`,
+  runSimulationOnSelectedProfitCosting: `${BASE_URL}/simulation/run-simulation-on-profit-costing`,
+  draftOverheadSimulation: `${BASE_URL}/simulation/draft-simulation-overhead`,
+  draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
 
   //SIMULATION APPROVAL 
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1481,7 +1486,8 @@ export const GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST = 'GET_VERIFY_BOUGHTOUTPAR
 export const GET_ASSEMBLY_SIMULATION_LIST = 'GET_ASSEMBLY_SIMULATION_LIST'
 export const GET_ASSEMBLY_SIMULATION_LIST_SUMMARY = 'GET_ASSEMBLY_SIMULATION_LIST_SUMMARY'
 export const SET_DATA_TEMP = 'SET_DATA_TEMP'
-export const GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST = 'GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST'
+export const GET_VERIFY_OVERHEAD_SIMULATION_LIST = 'GET_VERIFY_OVERHEAD_SIMULATION_LIST'
+export const GET_VERIFY_PROFIT_SIMULATION_LIST = 'GET_VERIFY_PROFIT_SIMULATION_LIST'
 
 
 //SIMULATION APPROVAL
