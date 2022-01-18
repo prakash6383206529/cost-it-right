@@ -28,10 +28,19 @@ export default function OverheadProfitReducer(state = initialState, action) {
                 loading: false
             };
         case GET_OVERHEAD_PROFIT_SUCCESS:
+            let arr = []
+
+            arr = action.payload && action.payload.filter((el, i) => {
+
+                el.EffectiveDateNew = el.EffectiveDate
+                return true
+
+            })
+
             return {
                 ...state,
                 loading: false,
-                overheadProfitList: action.payload
+                overheadProfitList: arr
             };
         case GET_OVERHEAD_PROFIT_COMBO_DATA_SUCCESS:
             return {
