@@ -12,8 +12,6 @@ import { createToprowObjAndSave } from '../../CostingUtil';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode } = props;
-  console.log('item: ', item);
-
   const [IsOpenTool, setIsOpenTool] = useState(false);
 
   const dispatch = useDispatch()

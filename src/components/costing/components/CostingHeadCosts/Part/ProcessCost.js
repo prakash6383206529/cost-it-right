@@ -361,7 +361,7 @@ function ProcessCost(props) {
    * @method setOperationCost
    * @description SET BOP COST
    */
-  const setOperationCost = (operationGrid, index) => {
+  const setOperationCost = (operationGrid,params, index) => {
     let OperationCostTotal = 0
     OperationCostTotal = operationGrid && operationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -375,10 +375,10 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOperationCost(tempArr, props.index, item)
+    props.setOperationCost(tempArr,params, item)
   }
 
-  const setOtherOperationCost = (otherOperationGrid, index) => {
+  const setOtherOperationCost = (otherOperationGrid,params, index) => {
     let OtherOperationCostTotal = 0
     OtherOperationCostTotal = otherOperationGrid && otherOperationGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.OperationCost)
@@ -392,7 +392,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOtherOperationCost(tempArr, props.index, item)
+    props.setOtherOperationCost(tempArr, params, item)
   }
 
   /**

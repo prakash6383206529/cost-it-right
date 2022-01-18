@@ -22,6 +22,7 @@ import {
   CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
   CHECK_IS_TOOL_DATA_CHANGE,
   CHECK_IS_DISCOUNT_DATA_CHANGE,
+  SET_NEW_ARRAY_FOR_COSTING,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2224,12 +2225,21 @@ export function saveAssemblyBOPHandlingCharge(data, callback) {
 }
 
 
-export function setAllCostingInArray(data){
+export function setAllCostingInArray(data,isNewArray){
   return (dispatch)=>{
-    dispatch({
-      type:SET_ARRAY_FOR_COSTING,
-      payload:data
-    })
+    // IF isNewArray THEN WE ARE REPLACING WHOLE ARRAY WITH NEW VALUE ELSE WE ARE APPENDING VALUE IN OLD ARRAY
+    if(isNewArray){
+      dispatch({
+        type:SET_NEW_ARRAY_FOR_COSTING,
+        payload:data
+      })
+    }else{
+      
+      dispatch({
+        type:SET_ARRAY_FOR_COSTING,
+        payload:data
+      })
+    }
   }
 }
 

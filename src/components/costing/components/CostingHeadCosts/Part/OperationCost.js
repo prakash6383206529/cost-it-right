@@ -42,7 +42,7 @@ function OperationCost(props) {
     }
     if (!CostingViewMode) {
       if (props.IsAssemblyCalculation) {
-        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false,props.item)
       } else {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }

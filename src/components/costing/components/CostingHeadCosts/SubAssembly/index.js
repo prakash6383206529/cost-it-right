@@ -18,7 +18,7 @@ function AssemblyPart(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { CostingEffectiveDate,setArrayForCosting } = useSelector(state => state.costing)
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber) => {
@@ -41,9 +41,9 @@ function AssemblyPart(props) {
             dispatch(saveAssemblyBOPHandlingCharge(obj, () => {
             }))
           }
+          // let tempArr = setArrayForCosting
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item=>{
-
-            dispatch(setAllCostingInArray(item))
+            dispatch(setAllCostingInArray(item,false))
           })
           props.toggleAssembly(BOMLevel, PartNumber, Data)
         }

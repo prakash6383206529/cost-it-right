@@ -574,9 +574,9 @@ export default function costingReducer(state = initialState, action) {
         loading:false,
         checkIsDataChange:action.payload
       }
-    case SET_ARRAY_FOR_COSTING:
-      
-      let tempArray= [...state.setArrayForCosting,action.payload]
+      case SET_ARRAY_FOR_COSTING:          
+
+      let tempArray = [...state.setArrayForCosting,action.payload]
       return {
         ...state,
         loading:false,
@@ -608,6 +608,8 @@ export default function costingReducer(state = initialState, action) {
       }
   
     
+    
+
     default:
       return state
   }
