@@ -251,24 +251,24 @@ function RunSimulationDrawer(props) {
                 }))
                 runSimulationCosting()
                 break;
-            // case Number(BOPIMPORT):
-            //     dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-            //         checkForResponse(res)
-            //     }))
-            //     runSimulationCosting()
-            //     break;
+            case Number(BOPIMPORT):
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                    checkForResponse(res)
+                }))
+                runSimulationCosting()
+                break;
             // case Number(BOPIMPORT):
             //     dispatch(runSimulationOnSelectedOverheadCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
             //         checkForResponse(res)
             //     }))
             //     runSimulationCosting()
             //     break;
-            case Number(BOPIMPORT):
-                dispatch(runSimulationOnSelectedProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                    checkForResponse(res)
-                }))
-                runSimulationCosting()
-                break;
+            // case Number(BOPIMPORT):
+            //     dispatch(runSimulationOnSelectedProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+            //         checkForResponse(res)
+            //     }))
+            //     runSimulationCosting()
+            //     break;
             default:
                 break;
         }

@@ -484,12 +484,12 @@ function Simulation(props) {
                 }
                 Data && Data.forEach((element, index) => {
                     if (index !== 0) {
-                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                        if (element.IsVendor !== Data[index - 1].IsVendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
+                        if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
@@ -520,12 +520,12 @@ function Simulation(props) {
                 }
                 Data && Data.forEach((element, index) => {
                     if (index !== 0) {
-                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                        if (element.IsVendor !== Data[index - 1].IsVendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
+                        if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
