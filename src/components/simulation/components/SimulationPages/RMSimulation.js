@@ -454,7 +454,7 @@ function RMSimulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <=0 ?"overlay-contain": ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between align-items-center">
                                         <div className='d-flex'>
                                         <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />

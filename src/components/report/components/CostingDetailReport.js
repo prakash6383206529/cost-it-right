@@ -527,7 +527,7 @@ function ReportListing(props) {
             </form>
 
 
-            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray?.length <=0 ?"overlay-contain": ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <=0 ?"overlay-contain": ""}`}>
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>

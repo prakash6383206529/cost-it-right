@@ -824,7 +824,7 @@ class AddVolume extends Component {
                           </Col>
 
                           <Col>
-                            <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData?.length <=0 ?"overlay-contain": ""}`} style={{ width: '100%', height: '100%' }}>
+                            <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <=0 ?"overlay-contain": ""}`} style={{ width: '100%', height: '100%' }}>
                               {/* <Col md="12"> */}
                               <div
                                 className="ag-theme-material"
