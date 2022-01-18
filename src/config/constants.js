@@ -1772,8 +1772,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-<<<<<<< HEAD
-export const VERSION = "V1.1.95";
-=======
-export const VERSION = "V1.1.94";
->>>>>>> a09470950d1bd85cbc50563de50eae0051ae1698
+export const VERSION = "V1.1.96";
