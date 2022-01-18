@@ -266,8 +266,9 @@ class InterestRateListing extends Component {
   * @description Renders Costing head
   */
   costingHeadFormatter = (props) => {
+    console.log('props: ', props);
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue ? 'Vendor Based' : 'Zero Based';
+    return cellValue;
   }
 
   /**
