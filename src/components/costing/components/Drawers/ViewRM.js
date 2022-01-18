@@ -149,34 +149,9 @@ function ViewRM(props) {
                         <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                        <td><Popup trigger={<button id={`popUpTrigger${index}`} className="Comment-box ml-2" type={'button'} />}
-                          position="left center">
-                          <TextAreaHookForm
-                            label="Remark :"
-                            name={`remarkPopUp${index}`}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{}}
-                            handleChange={(e) => { }}
-                            defaultValue={item?.Remark ? item.Remark : ""}
-                            className=""
-                            customClassName={"withBorder"}
-                            errors={errors.remarkPopUp}
-                            disabled={true}
-                            hidden={false}
-                          />
-                          <Row>
-                            <Col md="12" className='remark-btn-container'>
-                              <button className='submit-button mr-2' disabled={true}  > <div className='save-icon'></div> </button>
-                              <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
-                            </Col>
-                          </Row>
-
-                        </Popup>
+                        <td>
+                          {item?.Remark ? item.Remark : ""}
                         </td>
-
 
                       </tr>
                     )

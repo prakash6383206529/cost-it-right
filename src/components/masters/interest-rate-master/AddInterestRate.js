@@ -454,6 +454,9 @@ class AddInterestRate extends Component {
                           disabled={isViewMode}
                         />
                       </Col>
+                      {
+                        this.state.ICCApplicability.label !== 'Fixed' &&
+
                       <Col md="3">
                         <Field
                           label={`Annual ICC (%)`}
@@ -469,6 +472,7 @@ class AddInterestRate extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>
+                      }
                     </Row>
 
                     <Row>
@@ -501,6 +505,10 @@ class AddInterestRate extends Component {
                           disabled={isViewMode}
                         />
                       </Col>
+                      {
+                        this.state.PaymentTermsApplicability.label !=='Fixed' &&
+<>
+
                       <Col md="3">
                         <Field
                           label={`Repayment Period (Days)`}
@@ -530,6 +538,8 @@ class AddInterestRate extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>
+</>
+                      }
                       <Col md="3">
                         <div className="form-group">
                           {/* <label>
