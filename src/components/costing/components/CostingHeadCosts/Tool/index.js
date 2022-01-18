@@ -152,6 +152,7 @@ function Tool(props) {
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
+      dispatch(isToolDataChange(true))
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
@@ -428,7 +429,7 @@ function Tool(props) {
                       ToolApplicabilityId: applicability.value,
                       ToolApplicability: applicability.label,
                       MaintanencePercentage:maintanencePercentage,
-                      ToolApplicabilityCost: '-',
+                      ToolApplicabilityCost: maintanencePercentage,
                       ToolMaintenanceCost: checkForNull(maintanencePercentage)
                   })
                   break;
@@ -496,7 +497,7 @@ calculateNetToolCost()
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-     
+      dispatch(isToolDataChange(true))
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
