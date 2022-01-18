@@ -407,7 +407,7 @@ function OverheadProfit(props) {
       }
 
       if (dataObj.IsOverheadRMApplicable) {
-        console.log("Coming in RM applicable");
+        console.log(IsCutOffApplicable,"Coming in RM applicable",CutOffRMC);
         setValue('OverheadRMPercentage',dataObj.OverheadRMPercentage)
         setValue('OverheadRMCost', IsCutOffApplicable ? checkForDecimalAndNull(CutOffRMC, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))   
         const totalOverheadCost = IsCutOffApplicable ? CutOffRMC : headerCosts.NetRawMaterialsCost * calculatePercentage(dataObj.OverheadRMPercentage)        
