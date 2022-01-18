@@ -476,7 +476,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag } = this.state;
+    const { isOpenFuelDrawer, isEditFlag ,isViewMode} = this.state;
 
     return (
       <>
