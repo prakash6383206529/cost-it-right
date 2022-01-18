@@ -851,7 +851,7 @@ function TabDiscountOther(props) {
                   </Col>
                     }
                     {
-                      <Col md="2" >
+                      <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <NumberFieldHookForm
                           label="Percentage(%)"
                           name={"PercentageOtherCost"}
@@ -900,7 +900,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode ? true : false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="2">
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}
@@ -966,7 +966,7 @@ function TabDiscountOther(props) {
                   </Col>
                     }
                     {
-                      <Col md="2" >
+                      <Col className={`${hundiscountType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <TextFieldHookForm
                           label="Discount(%)"
                           name={"HundiOrDiscountPercentage"}
@@ -1023,7 +1023,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode || hundiscountType.value === 'Percentage' || Object.keys(hundiscountType).length === 0 ? true : false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="2">
                       <TextFieldHookForm
                         label="Net PO Price (INR)"
                         name={'NetPOPriceINR'}
