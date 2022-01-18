@@ -3,35 +3,33 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, checkForNullReturnBlank, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
-import { runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedOverheadProfitCosting, setData } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
+import { runVerifyProfitSimulation } from '../../actions/Simulation';
 
 const gridOptions = {
 
 };
 
 
-function OPSImulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+function ProfitSimulation(props) {
+    const { list, technology, master, isImpactedMaster } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
@@ -45,18 +43,13 @@ function OPSImulation(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [tableData, setTableData] = useState([])
 
-    const { register, control, setValue, formState: { errors }, } = useForm({
-        mode: 'onChange',
-        reValidateMode: 'onChange',
-    })
-
     useEffect(() => {
         list && list.map((item) => {
-            item.NewOverheadApplicabilityType = list[0].OverheadApplicabilityType
-            item.NewOverheadBOPPercentage = list[0].OverheadBOPPercentage
-            item.NewOverheadMachiningCCPercentage = list[0].OverheadMachiningCCPercentage
-            item.NewOverheadRMPercentage = list[0].OverheadRMPercentage
-            item.NewOverheadPercentage = list[0].OverheadPercentage
+            item.NewProfitApplicabilityType = item.ProfitApplicabilityType
+            item.NewProfitBOPPercentage = item.ProfitBOPPercentage
+            item.NewProfitMachiningCCPercentage = item.ProfitMachiningCCPercentage
+            item.NewProfitRMPercentage = item.ProfitRMPercentage
+            item.NewProfitPercentage = item.ProfitPercentage
             return null
         })
     }, [list])
@@ -64,52 +57,199 @@ function OPSImulation(props) {
     const dispatch = useDispatch()
 
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const { valdataTemp } = useSelector(state => state.simulation)
 
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
-        if (isbulkUpload) {
-            setValue('NoOfCorrectRow', rowCount.correctRow)
-            setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
-        }
         setTableData(list)
     }, [])
 
     const verifySimulation = debounce(() => {
-        let OverheadApplicabilityTypeCount = 0
-        let OverheadRMPercentageCount = 0
-        let OverheadMachiningCCPercentageCount = 0
-        let OverheadBOPPercentageCount = 0
+        let ProfitApplicabilityTypeCount = 0
+        let ProfitRMPercentageCount = 0
+        let ProfitMachiningCCPercentageCount = 0
+        let ProfitBOPPercentageCount = 0
+        let ProfitPercentageCount = 0
+        let temp = 0
+        let tempRM = 0
+        let tempCC = 0
+        let tempBOP = 0
+        let tempRMCC = 0
+        let tempRMBOP = 0
+        let tempBOPCC = 0
+        let tempRMCCBOP = 0
+        let tempFIXED = 0
 
+        let checkRMPercent_NOT_CHANGED = 0
+        let checkCCPercent_NOT_CHANGED = 0
+        let checkBOPPercent_NOT_CHANGED = 0
+        let checkPercent_NOT_CHANGED = 0
+
+
+        list && list.map((item) => {
+
+            switch (item.NewProfitApplicabilityType) {
+                case 'RM':
+                    if (item.NewProfitRMPercentage === null || item.NewProfitRMPercentage === undefined
+                        || item.NewProfitRMPercentage === '' || item.NewProfitRMPercentage === ' ') {
+
+                        tempRM = 1
+                    }
+                    break;
+
+                case 'CC':
+                    if (item.NewProfitMachiningCCPercentage === null || item.NewProfitMachiningCCPercentage === undefined
+                        || item.NewProfitMachiningCCPercentage === '' || item.NewProfitMachiningCCPercentage === ' ') {
+
+                        tempCC = 1
+                    }
+                    break;
+
+                case 'BOP':
+                    if (item.NewProfitBOPPercentage === null || item.NewProfitBOPPercentage === undefined
+                        || item.NewProfitBOPPercentage === '' || item.NewProfitBOPPercentage === ' ') {
+
+                        tempBOP = 1
+                    }
+                    break;
+
+                case 'Fixed':
+                    tempFIXED = 1
+
+                    break;
+
+                case 'RM + CC':
+                    if ((item.NewProfitPercentage === null || item.NewProfitPercentage === undefined
+                        || item.NewProfitPercentage === '' || item.NewProfitPercentage === ' ') &&
+
+                        ((item.NewProfitRMPercentage === null || item.NewProfitRMPercentage === undefined
+                            || item.NewProfitRMPercentage === '' || item.NewProfitRMPercentage === ' ') ||
+
+                            (item.NewProfitMachiningCCPercentage === null || item.NewProfitMachiningCCPercentage === undefined
+                                || item.NewProfitMachiningCCPercentage === '' || item.NewProfitMachiningCCPercentage === ' '))) {
+
+                        tempRMCC = 1
+                    }
+                    break;
+
+                case 'RM + BOP':
+                    if ((item.NewProfitPercentage === null || item.NewProfitPercentage === undefined
+                        || item.NewProfitPercentage === '' || item.NewProfitPercentage === ' ') &&
+
+                        ((item.NewProfitRMPercentage === null || item.NewProfitRMPercentage === undefined
+                            || item.NewProfitRMPercentage === '' || item.NewProfitRMPercentage === ' ') ||
+
+                            (item.NewProfitBOPPercentage === null || item.NewProfitBOPPercentage === undefined
+                                || item.NewProfitBOPPercentage === '' || item.NewProfitBOPPercentage === ' '))) {
+
+                        tempRMBOP = 1
+                    }
+                    break;
+                case 'BOP + CC':
+                    if ((item.NewProfitPercentage === null || item.NewProfitPercentage === undefined
+                        || item.NewProfitPercentage === '' || item.NewProfitPercentage === ' ') &&
+
+                        ((item.NewProfitMachiningCCPercentage === null || item.NewProfitMachiningCCPercentage === undefined
+                            || item.NewProfitMachiningCCPercentage === '' || item.NewProfitMachiningCCPercentage === ' ') ||
+
+                            (item.NewProfitBOPPercentage === null || item.NewProfitBOPPercentage === undefined
+                                || item.NewProfitBOPPercentage === '' || item.NewProfitBOPPercentage === ' '))) {
+
+                        tempBOPCC = 1
+                    }
+                    break;
+
+                case 'RM + CC + BOP':
+                    if ((item.NewProfitPercentage === null || item.NewProfitPercentage === undefined
+                        || item.NewProfitPercentage === '' || item.NewProfitPercentage === ' ') &&
+
+                        ((item.NewProfitRMPercentage === null || item.NewProfitRMPercentage === undefined
+                            || item.NewProfitRMPercentage === '' || item.NewProfitRMPercentage === ' ') ||
+
+                            (item.NewProfitBOPPercentage === null || item.NewProfitBOPPercentage === undefined
+                                || item.NewProfitBOPPercentage === '' || item.NewProfitBOPPercentage === ' ') ||
+
+                            (item.NewProfitMachiningCCPercentage === null || item.NewProfitMachiningCCPercentage === undefined
+                                || item.NewProfitMachiningCCPercentage === '' || item.NewProfitMachiningCCPercentage === ' '))) {
+
+                        tempRMCCBOP = 1
+                    }
+                    break;
+                default:
+                    return 'foo';
+            }
+
+            if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0
+                || tempFIXED !== 0) {
+                temp = temp + 1
+            }
+
+        })
+
+
+        if (Number(temp) !== list.length) {
+            if (tempRM !== 0) {
+                Toaster.warning('Please fill RM');
+                return false
+            } else if (tempCC !== 0) {
+                Toaster.warning('Please fill CC');
+                return false
+            } else if (tempBOP !== 0) {
+                Toaster.warning('Please fill BPOM');
+                return false
+            } else if (tempRMCC !== 0) {
+                Toaster.warning('Please fill both RM and CC');
+                return false
+            } else if (tempRMBOP !== 0) {
+                Toaster.warning('Please fill both RM and BOP');
+                return false
+            } else if (tempBOPCC !== 0) {
+                Toaster.warning('Please fill both BOP and CC');
+                return false
+            } else if (tempRMCCBOP !== 0) {
+                Toaster.warning('Please fill all values RM, CC and BOP');
+                return false
+            }
+        }
         list && list.map((li) => {
 
-            if (li.OverheadApplicabilityType === li.NewOverheadApplicabilityType || li?.NewOverheadApplicabilityType === undefined) {
-                OverheadApplicabilityTypeCount = OverheadApplicabilityTypeCount + 1
+            if (li.ProfitApplicabilityType === li.NewProfitApplicabilityType || li?.NewProfitApplicabilityType === undefined) {
+                ProfitApplicabilityTypeCount = ProfitApplicabilityTypeCount + 1
             }
-            if (Number(li.OverheadRMPercentage) === Number(li.NewOverheadRMPercentage) || li?.NewOverheadRMPercentage === undefined) {
-                OverheadRMPercentageCount = OverheadRMPercentageCount + 1
+
+            if ((String(li.NewProfitPercentage) !== '' ? String(li.ProfitPercentage) === String(li.NewProfitPercentage) : true) || li?.NewProfitPercentage === undefined
+                || li?.NewProfitPercentage === null || li?.NewProfitPercentage === '') {
+                ProfitPercentageCount = ProfitPercentageCount + 1
             }
-            if (Number(li.OverheadMachiningCCPercentage) === Number(li.NewOverheadMachiningCCPercentage) || li?.NewOverheadMachiningCCPercentage === undefined) {
-                OverheadMachiningCCPercentageCount = OverheadMachiningCCPercentageCount + 1
+            if (String(li.ProfitRMPercentage) === String(li.NewProfitRMPercentage) || li?.NewProfitRMPercentage === undefined
+                || li?.NewProfitRMPercentage === null || li?.NewProfitRMPercentage === '') {
+                ProfitRMPercentageCount = ProfitRMPercentageCount + 1
             }
-            if (Number(li.OverheadBOPPercentage) === Number(li.NewOverheadBOPPercentage) || li?.NewOverheadBOPPercentage === undefined) {
-                OverheadBOPPercentageCount = OverheadBOPPercentageCount + 1
+            if (String(li.ProfitMachiningCCPercentage) === String(li.NewProfitMachiningCCPercentage) || li?.NewProfitMachiningCCPercentage === undefined
+                || li?.NewProfitMachiningCCPercentage === null || li?.NewProfitMachiningCCPercentage === '') {
+                ProfitMachiningCCPercentageCount = ProfitMachiningCCPercentageCount + 1
+            }
+
+            if (String(li.ProfitBOPPercentage) === String(li.NewProfitBOPPercentage) || li?.NewProfitBOPPercentage === undefined
+                || li?.NewProfitBOPPercentage === null || li?.NewProfitBOPPercentage === '') {
+                ProfitBOPPercentageCount = ProfitBOPPercentageCount + 1
             }
             return null;
         })
 
-        console.log('OverheadApplicabilityTypeCount: ', OverheadApplicabilityTypeCount);
-        console.log('OverheadRMPercentageCount: ', OverheadRMPercentageCount);
-        console.log('OverheadMachiningCCPercentageCount: ', OverheadMachiningCCPercentageCount);
-        console.log('OverheadBOPPercentageCount: ', OverheadBOPPercentageCount);
-        if (OverheadApplicabilityTypeCount === list.length && OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length
-            && OverheadBOPPercentageCount === list.length) {
+        // if (ProfitPercentageCount === list.length && ProfitRMPercentageCount === list.length
+        //     && ProfitMachiningCCPercentageCount === list.length && ProfitBOPPercentageCount === list.length) {
+        //     Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
+        //     return false
+        // }
+
+        if (ProfitPercentageCount === list.length && ProfitRMPercentageCount === list.length
+            && ProfitMachiningCCPercentageCount === list.length && ProfitBOPPercentageCount === list.length) {
             Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
             return false
         }
         setIsDisable(true)
-        OverheadApplicabilityTypeCount = 0
-        OverheadRMPercentageCount = 0
+        ProfitApplicabilityTypeCount = 0
+        ProfitRMPercentageCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
@@ -126,14 +266,11 @@ function OPSImulation(props) {
         }
         let tempArr = []
         list && list.map(item => {
-            console.log('list: ', list);
             let tempObj = {}
-            console.log('item: ', item);
-            if (item.OverheadApplicabilityType !== item.NewOverheadApplicabilityType ||
-                Number(item.OverheadBOPPercentage) !== Number(item.NewOverheadBOPPercentage) ||
-                Number(item.OverheadRMPercentage) !== Number(item.NewOverheadRMPercentage) ||
-                Number(item.OverheadMachiningCCPercentage) !== Number(item.NewOverheadMachiningCCPercentage) ||
-                Number(item.OverheadPercentage) !== Number(item.NewOverheadPercentage)) {
+            if (Number(item.ProfitBOPPercentage) !== Number(item.NewProfitBOPPercentage) ||
+                Number(item.ProfitRMPercentage) !== Number(item.NewProfitRMPercentage) ||
+                Number(item.ProfitMachiningCCPercentage) !== Number(item.NewProfitMachiningCCPercentage) ||
+                Number(item.ProfitPercentage) !== Number(item.NewProfitPercentage)) {
 
                 tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.ClientName = item.ClientName
@@ -143,18 +280,19 @@ function OPSImulation(props) {
                 tempObj.IsActive = item.IsActive
                 tempObj.ModelType = item.ModelType
                 tempObj.ModelTypeId = item.ModelTypeId
-                tempObj.OldOverheadApplicabilityId = item.OverheadApplicabilityId
-                tempObj.OverheadApplicabilityType = item.OverheadApplicabilityType
-                tempObj.OldOverheadBOPPercentage = item.OverheadBOPPercentage
-                tempObj.OverheadId = item.OverheadId
-                tempObj.OldOverheadMachiningCCPercentage = item.OverheadMachiningCCPercentage
-                tempObj.OldOverheadPercentage = item.OverheadPercentage
-                tempObj.OldOverheadRMPercentage = item.OverheadRMPercentage
+                tempObj.OldProfitApplicabilityId = item.ProfitApplicabilityId
+                tempObj.ProfitApplicabilityType = item.ProfitApplicabilityType
+                tempObj.OldProfitBOPPercentage = item.ProfitBOPPercentage
+                tempObj.ProfitId = item.ProfitId
+                tempObj.OldProfitMachiningCCPercentage = item.ProfitMachiningCCPercentage
+                tempObj.OldProfitPercentage = item.ProfitPercentage
+                tempObj.OldProfitRMPercentage = item.ProfitRMPercentage
 
-                tempObj.NewOverheadApplicabilityType = Number(item.NewOverheadApplicabilityType)
-                tempObj.NewOverheadBOPPercentage = Number(item.NewOverheadBOPPercentage)
-                tempObj.NewOverheadRMPercentage = Number(item.NewOverheadRMPercentage)
-                tempObj.NewOverheadMachiningCCPercentage = Number(item.NewOverheadMachiningCCPercentage)
+                tempObj.NewProfitApplicabilityType = item.NewProfitApplicabilityType
+                tempObj.NewProfitBOPPercentage = Number(item.NewProfitBOPPercentage)
+                tempObj.NewProfitRMPercentage = Number(item.NewProfitRMPercentage)
+                tempObj.NewProfitMachiningCCPercentage = Number(item.NewProfitMachiningCCPercentage)
+                tempObj.NewProfitPercentage = Number(item.NewProfitPercentage)
 
                 tempObj.TypeOfHead = item.TypeOfHead
                 tempObj.VendorId = item.VendorId
@@ -165,9 +303,9 @@ function OPSImulation(props) {
             }
         })
         obj.SimulationRawMaterials = tempArr
-        console.log('obj: ', obj);
 
-        dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
+
+        dispatch(runVerifyProfitSimulation(obj, res => {
 
             setIsDisable(false)
             if (res.data.Result) {
@@ -220,16 +358,16 @@ function OPSImulation(props) {
         return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
-    const newOverheadApplicabilityTypeFormatter = (props) => {
+    const newProfitApplicabilityTypeFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCellOverheadApplicability(cell)
+        const value = beforeSaveCellProfitApplicability(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
-                        row.NewOverheadApplicabilityType :
-                        <span className='form-control height33' >{value ? cell : row.OverheadApplicabilityType} </span>
+                        row.NewProfitApplicabilityType :
+                        <span className='form-control height33' >{value ? cell : row.ProfitApplicabilityType} </span>
                 }
 
             </>
@@ -265,7 +403,7 @@ function OPSImulation(props) {
             </>
         )
     }
-    const newOverheadBOPPercentageFormatter = (props) => {
+    const newProfitBOPPercentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -273,14 +411,29 @@ function OPSImulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewOverheadBOPPercentage :
+                        row.NewProfitBOPPercentage :
+                        <span className='form-control height33' >{row.NewProfitBOPPercentage && value ? row.NewProfitBOPPercentage : ''} </span>
+                }
+
+            </>
+        )
+    }
+    const oldProfitBOPPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldProfitBOPPercentage :
                         <span className='form-control height33' >{cell && value ? cell : ''} </span>
                 }
 
             </>
         )
     }
-    const oldOverheadBOPPercentageFormatter = (props) => {
+    const newProfitMachiningCCPercentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -288,14 +441,14 @@ function OPSImulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.OldOverheadBOPPercentage :
-                        <span className='form-control height33' >{cell && value ? cell : row.OverheadBOPPercentage} </span>
+                        row.NewProfitMachiningCCPercentage :
+                        <span className='form-control height33' >{row.NewProfitMachiningCCPercentage && value ? row.NewProfitMachiningCCPercentage : ''} </span>
                 }
 
             </>
         )
     }
-    const newOverheadMachiningCCPercentageFormatter = (props) => {
+    const oldProfitMachiningCCPercentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -303,29 +456,30 @@ function OPSImulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewOverheadMachiningCCPercentage :
+                        row.OldProfitMachiningCCPercentage :
                         <span className='form-control height33' >{cell && value ? cell : ''} </span>
                 }
 
             </>
         )
     }
-    const oldOverheadMachiningCCPercentageFormatter = (props) => {
+    const newProfitRMPercentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
+
         return (
             <>
                 {
                     isImpactedMaster ?
-                        row.OldOverheadMachiningCCPercentage :
-                        <span className='form-control height33' >{cell && value ? cell : row.OverheadMachiningCCPercentage} </span>
+                        row.NewProfitRMPercentage :
+                        <span className='form-control height33' >{row.NewProfitRMPercentage && value ? row.NewProfitRMPercentage : null} </span>
                 }
 
             </>
         )
     }
-    const newOverheadRMPercentageFormatter = (props) => {
+    const oldProfitRMPercentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -333,14 +487,30 @@ function OPSImulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewOverheadMachiningCCPercentage :
+                        row.NewProfitRMPercentage :
+                        <span className='form-control height33' >{cell && value ? cell : null} </span>
+                }
+
+            </>
+        )
+    }
+    const newProfitPercentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.NewProfitPercentage :
                         <span className='form-control height33' >{cell && value ? cell : ''} </span>
                 }
 
             </>
         )
     }
-    const oldOverheadRMPercentageFormatter = (props) => {
+    const oldProfitPercentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
@@ -348,39 +518,8 @@ function OPSImulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.OldOverheadMachiningCCPercentage :
-                        <span className='form-control height33' >{cell && value ? cell : row.OverheadMachiningCCPercentage} </span>
-                }
-
-            </>
-        )
-    }
-    const newOverheadPercentageFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
-        console.log('value: ', value);
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        row.NewOverheadPercentage :
+                        row.OldProfitPercentage :
                         <span className='form-control height33' >{cell && value ? cell : ''} </span>
-                }
-
-            </>
-        )
-    }
-    const oldOverheadPercentageFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        row.OldOverheadPercentage :
-                        <span className='form-control height33' >{cell && value ? cell : row.OverheadPercentage} </span>
                 }
 
             </>
@@ -410,7 +549,7 @@ function OPSImulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldScrapRate :
-                        <span className='form-control height33' >{cell && value ? cell : row.ScrapRate}</span>
+                        <span className='form-control height33' >{cell && value ? cell : ''}</span>
                 }
             </>
         )
@@ -426,10 +565,6 @@ function OPSImulation(props) {
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-    }
-
-    const renderPaginationShowsTotal = (start, to, total) => {
-        return <GridTotalFormate start={start} to={to} total={total} />
     }
 
     /**
@@ -452,7 +587,7 @@ function OPSImulation(props) {
     * @method beforeSaveCell
     * @description CHECK FOR ENTER NUMBER IN CELL
     */
-    const beforeSaveCellOverheadApplicability = (props) => {
+    const beforeSaveCellProfitApplicability = (props) => {
         const cellValue = props
         if ((cellValue === 'BOP' || cellValue === 'BOP + CC' || cellValue === 'CC' || cellValue === 'Fixed' || cellValue === 'RM'
             || cellValue === 'RM + BOP' || cellValue === 'RM + CC' || cellValue === 'RM + CC + BOP') && cellValue !== undefined) {
@@ -460,19 +595,6 @@ function OPSImulation(props) {
         } else {
             return false
         }
-    }
-
-    const afterSaveCell = (row, cellName, cellValue, index) => {
-
-        if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value form-control')
-        } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value form-control')
-        } else {
-            setColorClass('form-class')
-        }
-        return false
-
     }
 
     const NewcostFormatter = (props) => {
@@ -484,36 +606,13 @@ function OPSImulation(props) {
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
 
-    const modelTypeFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-        const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
-        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-        // return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
+    const cellChange = (props) => {
+        const cell = props?.value;
+
     }
 
-    const runSimulation = () => {
-        let basicRateCount = 0
-        let basicScrapCount = 0
-        list && list.map((li) => {
-            if (li.BasicRate === li.NewBasicRate) {
-                basicRateCount = basicRateCount + 1
-            }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
-
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
-            } else {
-                setShowRunSimulationDrawer(true)
-            }
-
-        })
-    }
     const applicabilityCellEditor = (params) => {
-        const selectedCountry = params.data?.OverheadApplicabilityType;
+        const selectedCountry = params.data?.ProfitApplicabilityType;
         const allowedCities = valuesForDropdownInAgGrid.applicability;
 
         return {
@@ -521,15 +620,7 @@ function OPSImulation(props) {
             formatValue: (value) => `${value} (${selectedCountry})`,
         };
     };
-    const modelTypeCellEditor = (params) => {
-        const selectedCountry = params.data?.ModelType;
-        const allowedCities = valuesForDropdownInAgGrid.modelType;
 
-        return {
-            values: allowedCities,
-            formatValue: (value) => `${value} (${selectedCountry})`,
-        };
-    };
     const cancel = () => {
         // props.cancelEditPage()
         setShowMainSimulation(true)
@@ -566,12 +657,6 @@ function OPSImulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
-    const cellChange = (props) => {
-        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-    }
-
     const cellEditorSelector = (params) => {
         return {
             component: 'agRichSelectCellEditor',
@@ -581,7 +666,7 @@ function OPSImulation(props) {
     const EditableCallbackForBOP = (props) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        switch (list[0].NewProfitApplicabilityType) {
             case 'RM':
                 value = false
                 return value
@@ -599,13 +684,17 @@ function OPSImulation(props) {
                 return value
 
             case 'RM + CC':
-
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
 
                 value = false
                 return value
 
             case 'RM + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
@@ -613,7 +702,7 @@ function OPSImulation(props) {
                 return value
 
             case 'BOP + CC':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
@@ -621,7 +710,7 @@ function OPSImulation(props) {
                 return value
 
             case 'RM + CC + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
@@ -637,7 +726,7 @@ function OPSImulation(props) {
     const EditableCallbackForCC = (props) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        switch (list[0].NewProfitApplicabilityType) {
             case 'RM':
                 value = false
                 return value
@@ -655,19 +744,22 @@ function OPSImulation(props) {
                 return value
 
             case 'RM + CC':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
                 }
                 return value
             case 'RM + BOP':
-
-                value = false
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
                 return value
 
             case 'BOP + CC':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
@@ -675,7 +767,7 @@ function OPSImulation(props) {
                 return value
 
             case 'RM + CC + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
@@ -691,7 +783,7 @@ function OPSImulation(props) {
     const EditableCallbackForRM = (props) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        switch (list[0].NewProfitApplicabilityType) {
             case 'RM':
                 value = true
 
@@ -709,14 +801,14 @@ function OPSImulation(props) {
 
                 return value
             case 'RM + CC':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
                 }
                 return value
             case 'RM + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
@@ -724,11 +816,15 @@ function OPSImulation(props) {
                 return value
 
             case 'BOP + CC':
-                value = false
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
                 return value
 
             case 'RM + CC + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
                     value = true
@@ -744,7 +840,7 @@ function OPSImulation(props) {
     const EditableCallbackForOP = (props, index) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        switch (list[0].NewProfitApplicabilityType) {
             case 'RM':
                 value = false
                 return value
@@ -762,16 +858,16 @@ function OPSImulation(props) {
                 return value
 
             case 'RM + CC':
-                if ((rowData.NewOverheadMachiningCCPercentage !== null && rowData.NewOverheadMachiningCCPercentage !== undefined && rowData.NewOverheadMachiningCCPercentage !== '' && rowData.NewOverheadMachiningCCPercentage !== ' ')
-                    || (rowData.NewOverheadRMPercentage !== null && rowData.NewOverheadRMPercentage !== undefined && rowData.NewOverheadRMPercentage !== '' && rowData.NewOverheadRMPercentage !== ' ')) {
+                if ((rowData.NewProfitMachiningCCPercentage !== null && rowData.NewProfitMachiningCCPercentage !== undefined && rowData.NewProfitMachiningCCPercentage !== '' && rowData.NewProfitMachiningCCPercentage !== ' ')
+                    || (rowData.NewProfitRMPercentage !== null && rowData.NewProfitRMPercentage !== undefined && rowData.NewProfitRMPercentage !== '' && rowData.NewProfitRMPercentage !== ' ')) {
                     value = false
                 } else {
                     value = true
                 }
                 return value
             case 'RM + BOP':
-                if ((rowData.NewOverheadBOPPercentage !== null && rowData.NewOverheadBOPPercentage !== undefined && rowData.NewOverheadBOPPercentage !== '' && rowData.NewOverheadBOPPercentage !== ' ')
-                    || (rowData.NewOverheadRMPercentage !== null && rowData.NewOverheadRMPercentage !== undefined && rowData.NewOverheadRMPercentage !== '' && rowData.NewOverheadRMPercentage !== ' ')) {
+                if ((rowData.NewProfitBOPPercentage !== null && rowData.NewProfitBOPPercentage !== undefined && rowData.NewProfitBOPPercentage !== '' && rowData.NewProfitBOPPercentage !== ' ')
+                    || (rowData.NewProfitRMPercentage !== null && rowData.NewProfitRMPercentage !== undefined && rowData.NewProfitRMPercentage !== '' && rowData.NewProfitRMPercentage !== ' ')) {
                     value = false
                 } else {
                     value = true
@@ -779,8 +875,8 @@ function OPSImulation(props) {
                 return value
 
             case 'BOP + CC':
-                if ((rowData.NewOverheadBOPPercentage !== null && rowData.NewOverheadBOPPercentage !== undefined && rowData.NewOverheadBOPPercentage !== '' && rowData.NewOverheadBOPPercentage !== ' ')
-                    || (rowData.NewOverheadMachiningCCPercentage !== null && rowData.NewOverheadMachiningCCPercentage !== undefined && rowData.NewOverheadMachiningCCPercentage !== '' && rowData.NewOverheadMachiningCCPercentage !== ' ')) {
+                if ((rowData.NewProfitBOPPercentage !== null && rowData.NewProfitBOPPercentage !== undefined && rowData.NewProfitBOPPercentage !== '' && rowData.NewProfitBOPPercentage !== ' ')
+                    || (rowData.NewProfitMachiningCCPercentage !== null && rowData.NewProfitMachiningCCPercentage !== undefined && rowData.NewProfitMachiningCCPercentage !== '' && rowData.NewProfitMachiningCCPercentage !== ' ')) {
                     value = false
                 } else {
                     value = true
@@ -788,9 +884,9 @@ function OPSImulation(props) {
                 return value
 
             case 'RM + CC + BOP':
-                if ((rowData.NewOverheadBOPPercentage !== null && rowData.NewOverheadBOPPercentage !== undefined && rowData.NewOverheadBOPPercentage !== '' && rowData.NewOverheadBOPPercentage !== ' ')
-                    || (rowData.NewOverheadMachiningCCPercentage !== null && rowData.NewOverheadMachiningCCPercentage !== undefined && rowData.NewOverheadMachiningCCPercentage !== '' && rowData.NewOverheadMachiningCCPercentage !== ' ')
-                    || (rowData.NewOverheadRMPercentage !== null && rowData.NewOverheadRMPercentage !== undefined && rowData.NewOverheadRMPercentage !== '' && rowData.NewOverheadRMPercentage !== ' ')) {
+                if ((rowData.NewProfitBOPPercentage !== null && rowData.NewProfitBOPPercentage !== undefined && rowData.NewProfitBOPPercentage !== '' && rowData.NewProfitBOPPercentage !== ' ')
+                    || (rowData.NewProfitMachiningCCPercentage !== null && rowData.NewProfitMachiningCCPercentage !== undefined && rowData.NewProfitMachiningCCPercentage !== '' && rowData.NewProfitMachiningCCPercentage !== ' ')
+                    || (rowData.NewProfitRMPercentage !== null && rowData.NewProfitRMPercentage !== undefined && rowData.NewProfitRMPercentage !== '' && rowData.NewProfitRMPercentage !== ' ')) {
                     value = false
                 } else {
                     value = true
@@ -804,8 +900,8 @@ function OPSImulation(props) {
         }
 
 
-        // if ((list[0].OverheadBOPPercentage !== null && list[0].OverheadBOPPercentage !== undefined)
-        //     || (list[0].OverheadRMPercentage !== null && list[0].OverheadRMPercentage !== undefined)) {
+        // if ((list[0].ProfitBOPPercentage !== null && list[0].ProfitBOPPercentage !== undefined)
+        //     || (list[0].ProfitRMPercentage !== null && list[0].ProfitRMPercentage !== undefined)) {
         //     return false
         // } else {
         //     return true
@@ -813,56 +909,93 @@ function OPSImulation(props) {
     }
 
     const onCellValueChanged = (props) => {
-        const rowData = props?.data;
+
+        // DONT REMOVE THIS BLOCK OF CODE
+        // const rowData = props?.data;
+        // const valueField = props?.column?.userProvidedColDef?.field
+        // const index = props?.node?.rowIndex
+        // if (checkForNullReturnBlank(props?.value) === null) {
+        //     switch (valueField) {
+        //         case 'NewProfitRMPercentage':
+        //             list[index].NewProfitRMPercentage = null
+
+        //             break;
+        //         case 'NewProfitPercentage':
+        //             list[index].NewProfitPercentage = null
+
+
+        //             break;
+        //         case 'NewProfitMachiningCCPercentage':
+        //             list[index].NewProfitMachiningCCPercentage = null
+
+
+        //             break;
+
+        //         case 'NewProfitBOPPercentage':
+        //             list[index].NewProfitBOPPercentage = null
+
+
+
+        //             break;
+
+        //         default:
+        //             return 'foo';
+
+        //     }
+        // }
         let value = false
         if ((props?.value === 'BOP' || props?.value === 'BOP + CC' || props?.value === 'CC' || props?.value === 'Fixed' || props?.value === 'RM'
             || props?.value === 'RM + BOP' || props?.value === 'RM + CC' || props?.value === 'RM + CC + BOP') && props?.value !== undefined) {
             list && list.map((item) => {
-                item.NewOverheadApplicabilityType = props?.value
-                switch (list[0].NewOverheadApplicabilityType) {
+                item.NewProfitApplicabilityType = props?.value
+                switch (list[0].NewProfitApplicabilityType) {
                     case 'RM':
-                        item.NewOverheadBOPPercentage = ''
-                        item.NewOverheadMachiningCCPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        item.NewProfitBOPPercentage = ''
+                        item.NewProfitMachiningCCPercentage = ''
+                        item.NewProfitPercentage = ''
 
                         break;
                     case 'CC':
-                        item.NewOverheadBOPPercentage = ''
-                        item.NewOverheadRMPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        item.NewProfitBOPPercentage = ''
+                        item.NewProfitRMPercentage = ''
+                        item.NewProfitPercentage = ''
 
                         break;
                     case 'BOP':
-                        item.NewOverheadRMPercentage = ''
-                        item.NewOverheadMachiningCCPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        item.NewProfitRMPercentage = ''
+                        item.NewProfitMachiningCCPercentage = ''
+                        item.NewProfitPercentage = ''
 
                         break;
 
                     case 'Fixed':
-                        item.NewOverheadBOPPercentage = ''
-                        item.NewOverheadRMPercentage = ''
-                        item.NewOverheadMachiningCCPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        item.NewProfitBOPPercentage = ''
+                        item.NewProfitRMPercentage = ''
+                        item.NewProfitMachiningCCPercentage = ''
+                        item.NewProfitPercentage = ''
 
                         break;
 
                     case 'RM + CC':
-                        item.NewOverheadBOPPercentage = ''
+                        item.NewProfitBOPPercentage = ''
+                        item.NewProfitPercentage = ''
 
                         break;
 
                     case 'RM + BOP':
-                        item.NewOverheadMachiningCCPercentage = ''
+                        item.NewProfitMachiningCCPercentage = ''
+                        item.NewProfitPercentage = ''
 
                         break;
 
                     case 'BOP + CC':
-                        item.NewOverheadRMPercentage = ''
+                        item.NewProfitRMPercentage = ''
+                        item.NewProfitPercentage = ''
 
                         break;
 
                     case 'RM + CC + BOP':
+                        item.NewProfitPercentage = ''
 
                         break;
 
@@ -879,7 +1012,7 @@ function OPSImulation(props) {
         setApplicabilityForGrid(props.value)
     }
 
-    const oldOverheadApplicabilityTypeFormatter = (props) => {
+    const oldProfitApplicabilityTypeFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // const value = beforeSaveCell(cell)
@@ -887,8 +1020,8 @@ function OPSImulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.OldOverheadApplicabilityType :
-                        <span className='form-control height33' >{cell ? cell : row.OverheadApplicabilityType} </span>
+                        row.OldProfitApplicabilityType :
+                        <span className='form-control height33' >{cell ? cell : row.ProfitApplicabilityType} </span>
                 }
 
             </>
@@ -904,28 +1037,27 @@ function OPSImulation(props) {
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newOverheadApplicabilityTypeFormatter: newOverheadApplicabilityTypeFormatter,
+        newProfitApplicabilityTypeFormatter: newProfitApplicabilityTypeFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         newBasicRateFormatter: newBasicRateFormatter,
         oldScrapRateFormatter: oldScrapRateFormatter,
         cellEditorSelector: cellEditorSelector,
         applicabilityCellEditor: applicabilityCellEditor,
-        modelTypeFormatter: modelTypeFormatter,
         onCellValueChanged: onCellValueChanged,
         EditableCallbackForBOP: EditableCallbackForBOP,
         EditableCallbackForCC: EditableCallbackForCC,
         EditableCallbackForRM: EditableCallbackForRM,
         EditableCallbackForOP: EditableCallbackForOP,
-        oldOverheadApplicabilityTypeFormatter: oldOverheadApplicabilityTypeFormatter,
-        newOverheadBOPPercentageFormatter: newOverheadBOPPercentageFormatter,
-        oldOverheadBOPPercentageFormatter: oldOverheadBOPPercentageFormatter,
-        oldOverheadMachiningCCPercentageFormatter: oldOverheadMachiningCCPercentageFormatter,
-        newOverheadMachiningCCPercentageFormatter: newOverheadMachiningCCPercentageFormatter,
-        oldOverheadRMPercentageFormatter: oldOverheadRMPercentageFormatter,
-        newOverheadRMPercentageFormatter: newOverheadRMPercentageFormatter,
-        oldOverheadPercentageFormatter: oldOverheadPercentageFormatter,
-        newOverheadPercentageFormatter: newOverheadPercentageFormatter
+        oldProfitApplicabilityTypeFormatter: oldProfitApplicabilityTypeFormatter,
+        newProfitBOPPercentageFormatter: newProfitBOPPercentageFormatter,
+        oldProfitBOPPercentageFormatter: oldProfitBOPPercentageFormatter,
+        oldProfitMachiningCCPercentageFormatter: oldProfitMachiningCCPercentageFormatter,
+        newProfitMachiningCCPercentageFormatter: newProfitMachiningCCPercentageFormatter,
+        oldProfitRMPercentageFormatter: oldProfitRMPercentageFormatter,
+        newProfitRMPercentageFormatter: newProfitRMPercentageFormatter,
+        oldProfitPercentageFormatter: oldProfitPercentageFormatter,
+        newProfitPercentageFormatter: newProfitPercentageFormatter
     };
 
 
@@ -947,54 +1079,9 @@ function OPSImulation(props) {
 
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {
-                            isbulkUpload &&
-                            <Row className="sm-edit-row justify-content-end">
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows with changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfCorrectRow'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfCorrectRow}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div className="d-flex align-items-center">
-                                        <label>No of rows without changes:</label>
-                                        <TextFieldHookForm
-                                            label=""
-                                            name={'NoOfRowsWithoutChange'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            rules={{ required: false }}
-                                            mandatory={false}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                            errors={errors.NoOfRowsWithoutChange}
-                                            disabled={true}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
@@ -1027,36 +1114,36 @@ function OPSImulation(props) {
 
                                             <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn>
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Overhead Applicability Type" marryChildren={true} >
-                                                <AgGridColumn width={160} field="OverheadApplicabilityType" editable='false' headerName="Old" cellRenderer='oldOverheadApplicabilityTypeFormatter' colId="OverheadApplicabilityType"></AgGridColumn>
-                                                <AgGridColumn width={160} cellRenderer='newOverheadApplicabilityTypeFormatter' cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} field="NewOverheadApplicabilityType" headerName="New" colId='NewOverheadApplicabilityType'></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Profit Applicability Type" marryChildren={true} >
+                                                <AgGridColumn width={160} field="ProfitApplicabilityType" editable='false' headerName="Old" cellRenderer='oldProfitApplicabilityTypeFormatter' colId="ProfitApplicabilityType"></AgGridColumn>
+                                                <AgGridColumn width={160} cellRenderer='newProfitApplicabilityTypeFormatter' cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} field="NewProfitApplicabilityType" headerName="New" colId='NewProfitApplicabilityType'></AgGridColumn>
                                             </AgGridColumn>
-                                            {/* <AgGridColumn field="OverheadApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn> */}
+                                            {/* <AgGridColumn field="ProfitApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn> */}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead BOP Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadBOPPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadBOPPercentageFormatter' colId="OverheadBOPPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadBOPPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadBOPPercentage" headerName="New" colId='NewOverheadBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit BOP Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="ProfitBOPPercentage" editable='false' headerName="Old" cellRenderer='oldProfitBOPPercentageFormatter' colId="ProfitBOPPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitBOPPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitBOPPercentage" headerName="New" colId='NewProfitBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
                                             </AgGridColumn>
-                                            {/* <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" minWidth={190} editable={EditableCallbackForBOP} ></AgGridColumn> */}
+                                            {/* <AgGridColumn field="ProfitBOPPercentage" headerName="Profit BOP Percentage" minWidth={190} editable={EditableCallbackForBOP} ></AgGridColumn> */}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead Machining CC Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadMachiningCCPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadMachiningCCPercentageFormatter' colId="OverheadMachiningCCPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadMachiningCCPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadMachiningCCPercentage" headerName="New" colId='NewOverheadMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit Machining CC Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="ProfitMachiningCCPercentage" editable='false' headerName="Old" cellRenderer='oldProfitMachiningCCPercentageFormatter' colId="ProfitMachiningCCPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitMachiningCCPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitMachiningCCPercentage" headerName="New" colId='NewProfitMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
                                             </AgGridColumn>
-                                            {/* <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead Machining CC Percentage" editable={EditableCallbackForCC} minWidth={190}></AgGridColumn> */}
+                                            {/* <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit Machining CC Percentage" editable={EditableCallbackForCC} minWidth={190}></AgGridColumn> */}
 
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead RM Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadRMPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadRMPercentageFormatter' colId="OverheadRMPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadRMPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadRMPercentage" headerName="New" colId='NewOverheadRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit RM Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="ProfitRMPercentage" editable='false' headerName="Old" cellRenderer='oldProfitRMPercentageFormatter' colId="ProfitRMPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitRMPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitRMPercentage" headerName="New" colId='NewProfitRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
                                             </AgGridColumn>
-                                            {/* <AgGridColumn field="OverheadRMPercentage" headerName="Overhead RM Percentage" minWidth={190} editable={EditableCallbackForRM} ></AgGridColumn> */}
+                                            {/* <AgGridColumn field="ProfitRMPercentage" headerName="Profit RM Percentage" minWidth={190} editable={EditableCallbackForRM} ></AgGridColumn> */}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead Percentage" marryChildren={true} >
-                                                <AgGridColumn width={120} field="OverheadPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadPercentageFormatter' colId="OverheadPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadPercentageFormatter' onCellValueChanged='cellChange' field="NewOverheadPercentage" headerName="New" colId='NewOverheadPercentage' editable={EditableCallbackForOP}></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Profit Percentage" marryChildren={true} >
+                                                <AgGridColumn width={120} field="ProfitPercentage" editable='false' headerName="Old" cellRenderer='oldProfitPercentageFormatter' colId="ProfitPercentage"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newProfitPercentageFormatter' onCellValueChanged='cellChange' field="NewProfitPercentage" headerName="New" colId='NewProfitPercentage' editable={EditableCallbackForOP}></AgGridColumn>
                                             </AgGridColumn>
-                                            {/* <AgGridColumn field="OverheadPercentage" headerName="Overhead Percentage" minWidth={190} editable={EditableCallbackForOP}></AgGridColumn> */}
+                                            {/* <AgGridColumn field="ProfitPercentage" headerName="Profit Percentage" minWidth={190} editable={EditableCallbackForOP}></AgGridColumn> */}
 
 
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
@@ -1124,4 +1211,4 @@ function OPSImulation(props) {
 }
 
 
-export default OPSImulation;
+export default ProfitSimulation;

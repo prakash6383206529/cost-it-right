@@ -240,7 +240,8 @@ class IndivisualPartListing extends Component {
         this.props.deletePart(ID, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
-                this.getTableListData();
+                //this.getTableListData();
+                this.ApiActionCreator(this.state.currentRowIndex, 100, this.state.floatingFilterData, true)
             }
         });
         this.setState({ showPopup: false })
@@ -486,7 +487,7 @@ class IndivisualPartListing extends Component {
 
                     <Row className="pt-3 no-filter-row">
                         <Col md="8">
-                        <div className="warning-message mt-1">
+                            <div className="warning-message mt-1">
                                 {this.state.warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
                             </div>
                         </Col>
@@ -542,9 +543,9 @@ class IndivisualPartListing extends Component {
 
 
 
-                    <div className="ag-grid-wrapper height-width-wrapper">
+                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header mt-4 pt-1">
-                           
+
                         </div>
                         <div className="ag-theme-material">
                             <AgGridReact

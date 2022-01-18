@@ -83,7 +83,6 @@ class AddFuel extends Component {
             const { fuelComboSelectList } = this.props;
 
             const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => Number(item.Value) === Data.FuelId)
-            //const StateObj = fuelComboSelectList && fuelComboSelectList.States.find(item => item.Value == Data.StateId)
             const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value === Data.UnitOfMeasurementId)
 
             let rateGridArray = Data && Data.FuelDetatils.map((item) => {
@@ -91,7 +90,6 @@ class AddFuel extends Component {
                 Id: item.Id,
                 StateLabel: item.StateName,
                 StateId: item.StateId,
-                //effectiveDate: moment(item.EffectiveDate).format('DD/MM/YYYY'),
                 effectiveDate: DayTime(item.EffectiveDate),
                 Rate: item.Rate,
               }
@@ -99,7 +97,6 @@ class AddFuel extends Component {
 
             this.setState({
               isEditFlag: true,
-              // isLoader: false,
               fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               rateGrid: rateGridArray,
@@ -201,6 +198,19 @@ class AddFuel extends Component {
     this.setState({ AddUpdate: false })
   }
 
+
+
+  rateTableReset = () => {
+
+    this.setState({
+      StateName: [],
+      effectiveDate: "",
+    }, () => this.props.change('Rate', 0));
+    this.setState({ AddUpdate: false })
+
+
+  }
+
   /**
 * @method updateRateGrid
 * @description Used to handle updateProcessGrid
@@ -256,8 +266,8 @@ class AddFuel extends Component {
     this.setState({
       rateGridEditIndex: index,
       isEditIndex: true,
-      //effectiveDate: new Date(moment(tempData.effectiveDate).format('DD/MM/YYYY')),
-      effectiveDate: tempData.effectiveDate,
+      effectiveDate: new Date(DayTime(tempData.effectiveDate).format("MM/DD/YYYY")),
+
       StateName: { label: tempData.StateLabel, value: tempData.StateId },
     }, () => this.props.change('Rate', tempData.Rate))
   }
@@ -367,7 +377,7 @@ class AddFuel extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, AddUpdate, RateChange, DeleteChanged, HandleChanged } = this.state;
+    const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
       Toaster.warning('Rate should not be empty.');
@@ -392,17 +402,17 @@ class AddFuel extends Component {
       if (rateGrid.length > this.state.RateChange.FuelDetatils.length) {
         addRow = 1
       }
-      if (addRow == 0) {
+      if (addRow === 0) {
         for (let i = 0; i < rateGrid.length; i++) {
           let grid = this.state.RateChange.FuelDetatils[i]
           let sgrid = rateGrid[i]
-          if (grid.Rate == sgrid.Rate && grid.StateName == sgrid.StateLabel) {
+          if (grid.Rate === sgrid.Rate && grid.StateName === sgrid.StateLabel) {
             count++
           }
         }
       }
       // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
-      if (HandleChanged && addRow == 0 && count == rateGrid.length && DeleteChanged) {
+      if (HandleChanged && addRow === 0 && count === rateGrid.length && DeleteChanged) {
         this.cancel()
         return false
       }
@@ -595,7 +605,6 @@ class AddFuel extends Component {
                                   showMonthDropdown
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
                                   dropdownMode="select"
                                   placeholderText="Select date"
                                   className="withBorder"
@@ -623,6 +632,15 @@ class AddFuel extends Component {
                                   <div className={"plus"}></div>ADD
                                 </button>
                               )}
+                              <button
+                                type="button"
+                                className={"reset-btn mt30 ml5 pull-left"}
+                                disabled={isViewMode}
+                                onClick={this.rateTableReset}
+                              >
+                                <div className={"plus"}></div>Cancel
+                              </button>
+
                             </div>
                           </Col>
                           <Col md="12">

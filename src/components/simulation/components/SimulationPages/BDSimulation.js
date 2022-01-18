@@ -422,7 +422,7 @@ function BDSimulation(props) {
                             </Row>
                         }
                         <Row>
-                            <Col className="add-min-height mb-3 sm-edit-page">
+                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />

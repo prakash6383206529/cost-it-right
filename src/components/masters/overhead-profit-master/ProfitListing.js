@@ -327,11 +327,37 @@ class ProfitListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
 
+        const onRowSelect = () => {
+            var selectedRows = this.state.gridApi.getSelectedRows();
+            if (this.props.isSimulation) {
+                let length = this.state.gridApi.getSelectedRows().length
+                this.props.apply(selectedRows, length)
+            }
+
+            this.setState({ selectedRowData: selectedRows })
+
+        }
+
+        const isFirstColumn = (params) => {
+            if (this.props.isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
 
         };
 
@@ -402,7 +428,7 @@ class ProfitListing extends Component {
                     <Col>
 
 
-                        <div className="ag-grid-wrapper height-width-wrapper">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.overheadProfitList && this.props.overheadProfitList?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -426,6 +452,8 @@ class ProfitListing extends Component {
                                         imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={frameworkComponents}
+                                    rowSelection={'multiple'}
+                                    onSelectionChanged={onRowSelect}
                                 >
                                     <AgGridColumn field="TypeOfHead" headerName="Costing Head"></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

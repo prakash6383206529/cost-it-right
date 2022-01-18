@@ -452,12 +452,27 @@ function RMSimulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container`}>
-                                    <div className="ag-grid-header d-flex">
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                    <div className="ag-grid-header d-flex justify-content-between align-items-center">
+                                        <div className='d-flex'>
                                         <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
+                                        </div>
+                                         {/* <div className='d-flex'>
+                                             <div className='d-flex pl-3'>
+                                             <label>Technology: </label>
+                                             <p className='surface-treatment-btn mx-1' > RM Domestic </p>
+                                             </div>
+                                             <div className='d-flex pl-3'>
+                                             <label className='mx-1'> Vendor:</label>
+                                             <p> vendor(123456)</p>
+                                             </div>
+                                             
+                                         </div> 
+                                         <------------------Work on fuure please dont remove it-------->
+                                         */}
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact

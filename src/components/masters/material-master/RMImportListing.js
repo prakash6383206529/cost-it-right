@@ -496,7 +496,7 @@ function RMImportListing(props) {
       <Row>
         <Col>
           {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-          <div className="ag-grid-wrapper height-width-wrapper">
+          <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <=0 ?"overlay-contain": ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
@@ -531,7 +531,7 @@ function RMImportListing(props) {
                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                 <AgGridColumn field="Category"></AgGridColumn>
                 <AgGridColumn field="MaterialType"></AgGridColumn>
-                <AgGridColumn field="Plant(Code)"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
                 <AgGridColumn field="Currency"></AgGridColumn>
