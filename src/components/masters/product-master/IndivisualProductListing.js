@@ -137,15 +137,8 @@ class IndivisualProductListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let value;
-        if (cellValue === null || cellValue === '') {
-            value = '-'
-        }
-        else {
-            value = cellValue
-        }
-        return value;
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -295,7 +288,7 @@ class IndivisualProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -311,7 +304,7 @@ class IndivisualProductListing extends Component {
         })
         return (
 
-            <ExcelSheet data={TempData} name={ComponentPart}>
+            <ExcelSheet data={temp} name={ComponentPart}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -425,7 +418,7 @@ class IndivisualProductListing extends Component {
                     </Col>
                 </Row>
 
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.newPartsListing && this.props.newPartsListing?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>

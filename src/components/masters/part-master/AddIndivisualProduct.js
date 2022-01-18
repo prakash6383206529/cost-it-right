@@ -27,6 +27,7 @@ class AddIndivisualProduct extends Component {
             isEditFlag: false,
             isLoader: false,
             PartId: '',
+            isViewMode: this.props?.data?.isViewMode ? true : false,
 
             selectedPlants: [],
             effectiveDate: '',
@@ -35,7 +36,7 @@ class AddIndivisualProduct extends Component {
             DataToCheck: [],
             DropdownChanged: true,
             uploadAttachements: true,
-            isSurfaceTreatment: false,
+            isImpactCalculation: false,
 
         }
     }
@@ -73,13 +74,14 @@ class AddIndivisualProduct extends Component {
                     this.setState({ DataToCheck: Data })
 
                     this.props.change("EffectiveDate", DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
                             // isLoader: false,
                             effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                             files: Data.Attachements,
-                            isSurfaceTreatment: Data.IsConsideredForMBOM,
+                            isImpactCalculation: Data.IsConsideredForMBOM,
                         }, () => this.setState({ isLoader: false }))
                         // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
                         let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -236,7 +238,7 @@ class AddIndivisualProduct extends Component {
         this.setState({
             RawMaterial: [],
             selectedPlants: [],
-            isSurfaceTreatment: false,
+            isImpactCalculation: false,
         })
         this.props.getProductData('', res => { })
         this.props.hideForm()
@@ -247,14 +249,14 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isSurfaceTreatment } = this.state;
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
         if (isEditFlag) {
 
 
-            if (DropdownChanged) {
+            if (DropdownChanged && uploadAttachements) {
                 this.cancel()
                 return false;
             }
@@ -276,7 +278,7 @@ class AddIndivisualProduct extends Component {
                 // Plants: [],
                 Attachements: updatedFiles,
                 IsForcefulUpdated: true,
-                IsConsideredForMBOM: isSurfaceTreatment,
+                IsConsideredForMBOM: isImpactCalculation,
             }
 
             if (isEditFlag) {
@@ -287,14 +289,7 @@ class AddIndivisualProduct extends Component {
                         this.cancel()
                     }
                 });
-                // const toastrConfirmOptions = {
-                //     onOk: () => {
 
-                //     },
-                //     onCancel: () => { },
-                //     component: () => <ConfirmComponent />,
-                // }
-                // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
             }
 
 
@@ -314,7 +309,7 @@ class AddIndivisualProduct extends Component {
                 ProductGroupCode: values.ProductGroupCode,
                 // Plants: [],
                 Attachements: files,
-                IsConsideredForMBOM: isSurfaceTreatment,
+                IsConsideredForMBOM: isImpactCalculation,
             }
 
             this.props.reset()
@@ -334,11 +329,11 @@ class AddIndivisualProduct extends Component {
     };
 
     /**
-    * @method onPressSurfaceTreatment
+    * @method onPressImpactCalculation
     * @description Used for Surface Treatment
     */
-    onPressSurfaceTreatment = () => {
-        this.setState({ isSurfaceTreatment: !this.state.isSurfaceTreatment, DropdownChanged: false });
+    onPressImpactCalculation = () => {
+        this.setState({ isImpactCalculation: !this.state.isImpactCalculation, DropdownChanged: false });
     }
 
     /**
@@ -347,7 +342,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration } = this.props;
-        const { isEditFlag, } = this.state;
+        const { isEditFlag, isViewMode } = this.state;
         return (
             <>
                 {this.state.isLoader && <LoaderCustom />}
@@ -404,23 +399,7 @@ class AddIndivisualProduct extends Component {
                                                             disabled={isEditFlag ? true : false}
                                                         />
                                                     </Col>
-                                                    {/* {initialConfiguration &&
-                            initialConfiguration.IsBOMNumberDisplay && (
-                              <Col md="3">
-                                <Field
-                                  label={`BOM No.`}
-                                  name={"BOMNumber"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20]}
-                                  component={renderText}
-                                  required={true}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </Col>
-                            )} */}
+
                                                     <Col md="3">
                                                         <Field
                                                             label={`Description`}
@@ -452,7 +431,7 @@ class AddIndivisualProduct extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName={"withBorder"}
-                                                                    disabled={false}
+                                                                    disabled={isViewMode}
                                                                 />
                                                             </Col>
                                                         )}
@@ -505,27 +484,9 @@ class AddIndivisualProduct extends Component {
 
                                                     <Col md="3">
                                                         <div className="form-group">
-                                                            {/* <label>
-                                Effective Date
-                                    <span className="asterisk-required">*</span>
-                              </label> */}
+
                                                             <div className="inputbox date-section">
-                                                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
+
                                                                 <Field
                                                                     label="Effective Date"
                                                                     name="EffectiveDate"
@@ -536,12 +497,12 @@ class AddIndivisualProduct extends Component {
                                                                     autoComplete={'off'}
                                                                     required={true}
                                                                     changeHandler={(e) => {
-                                                                        //e.preventDefault()
+
                                                                     }}
                                                                     component={renderDatePicker}
                                                                     className="form-control"
-                                                                    disabled={false}
-                                                                //minDate={moment()}
+                                                                    disabled={isViewMode}
+
                                                                 />
 
                                                             </div>
@@ -554,45 +515,26 @@ class AddIndivisualProduct extends Component {
                                                         <label
                                                             className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                                                                 }`}
-                                                            onChange={this.onPressSurfaceTreatment}
+                                                            onChange={this.onPressImpactCalculation}
                                                         >
                                                             Preferred for Impact Calculation
                                                             <input
+                                                                disabled={isViewMode}
                                                                 type="checkbox"
-                                                                checked={this.state.isSurfaceTreatment}
-                                                            // disabled={isEditFlag ? true : false}
+                                                                checked={this.state.isImpactCalculation}
+
                                                             />
                                                             <span
                                                                 className=" before-box"
-                                                                checked={this.state.isSurfaceTreatment}
-                                                                onChange={this.onPressSurfaceTreatment}
+                                                                checked={this.state.isImpactCalculation}
+                                                                onChange={this.onPressImpactCalculation}
                                                             />
                                                         </label>
                                                     </Col>
 
                                                 </Row>
                                                 <Row>
-                                                    {/* <Col md="3">
-                            <Field
-                              label="Plant"
-                              name="Plant"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPlants == null ||
-                                  this.state.selectedPlants.length === 0
-                                  ? []
-                                  : this.state.selectedPlants
-                              }
-                              options={this.renderListing("plant")}
-                              selectionChanged={this.handlePlant}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              //mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={isEditFlag ? true : false}
-                            />
-                          </Col> */}
+
 
 
                                                 </Row>
@@ -635,6 +577,7 @@ class AddIndivisualProduct extends Component {
                                                                 initialFiles={this.state.initialFiles}
                                                                 maxFiles={3}
                                                                 maxSizeBytes={2000000}
+                                                                disabled={isViewMode}
                                                                 inputContent={(files, extra) =>
                                                                     extra.reject ? (
                                                                         "Image, audio and video files only"
@@ -661,7 +604,7 @@ class AddIndivisualProduct extends Component {
                                                                         extra.reject ? { color: "red" } : {},
                                                                 }}
                                                                 classNames="draper-drop"
-                                                                disabled={isEditFlag ? true : false}
+
                                                             />
                                                         </div>
                                                     </Col>
@@ -679,24 +622,19 @@ class AddIndivisualProduct extends Component {
                                                                             <a href={fileURL} target="_blank" rel="noreferrer">
                                                                                 {f.OriginalFileName}
                                                                             </a>
-                                                                            {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                                                            {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
 
-                                                                            <img
-                                                                                alt={""}
-                                                                                className="float-right"
-                                                                                onClick={() =>
-                                                                                    this.deleteFile(
-                                                                                        f.FileId,
-                                                                                        f.FileName
-                                                                                    )
-                                                                                }
-                                                                                src={imgRedcross}
-                                                                            ></img>
+                                                                            {!isViewMode &&
+                                                                                <img
+                                                                                    alt={""}
+                                                                                    className="float-right"
+                                                                                    onClick={() =>
+                                                                                        this.deleteFile(
+                                                                                            f.FileId,
+                                                                                            f.FileName
+                                                                                        )
+                                                                                    }
+                                                                                    src={imgRedcross}
+                                                                                ></img>}
                                                                         </div>
                                                                     );
                                                                 })}
@@ -718,6 +656,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type="submit"
                                                         className="user-btn mr5 save-btn"
+                                                        disabled={isViewMode}
                                                     >
                                                         <div className={"save-icon"}></div>
                                                         {isEditFlag ? "Update" : "Save"}

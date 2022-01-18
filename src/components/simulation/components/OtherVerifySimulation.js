@@ -252,7 +252,7 @@ function OtherVerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className="ag-grid-wrapper height-width-wrapper">
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <=0 ?"overlay-contain": ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -264,7 +264,6 @@ function OtherVerifySimulation(props) {
 
                                         >
                                             <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
@@ -317,7 +316,7 @@ function OtherVerifySimulation(props) {
 
                         </Col>
                     </Row>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
                                 <div className={"cancel-icon"}></div>

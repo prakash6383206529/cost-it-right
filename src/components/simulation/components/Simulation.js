@@ -4,12 +4,12 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setSelectedRowCountForSimulationMessage, setTechnologyForSimulation } from '../actions/Simulation';
+import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
@@ -27,6 +27,11 @@ import OtherCostingSimulation from './OtherCostingSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
+import OverheadListing from '../../masters/overhead-profit-master/OverheadListing'
+import ProfitListing from '../../masters/overhead-profit-master/ProfitListing'
+import ScrollToTop from '../../common/ScrollToTop';
+import OverheadSimulation from './SimulationPages/OverheadSimulation';
+import ProfitSimulation from './SimulationPages/ProfitSimulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -39,7 +44,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, selectedRowCountForSimulationMessage } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -68,14 +73,8 @@ function Simulation(props) {
             setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)
         }
-        // setFilterStatus(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
         setOnLoad(true)
     }, [])
-
-    // useEffect(() => {
-
-    //     editTable(tableData)
-    // }, [selectedRowCountForSimulationMessage])
 
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
@@ -99,6 +98,7 @@ function Simulation(props) {
             setShowMasterList(true)
         }
         setEditWarning(applyEditCondSimulation(value.value))
+        setFilterStatus(`Please check the ${(value.label)} that you want to edit.`)
 
     }
 
@@ -106,9 +106,9 @@ function Simulation(props) {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setTechnology(value)
         setShowMasterList(false)
+        setEditWarning(true);
         setTimeout(() => {
             dispatch(setTechnologyForSimulation(value))
-            dispatch(setSelectedRowCountForSimulationMessage(0))
             if (value !== '' && Object.keys(master).length > 0) {
                 setShowMasterList(true)
             }
@@ -189,6 +189,10 @@ function Simulation(props) {
                 return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case SURFACETREATMENT:
                 return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            // case BOPIMPORT:
+            //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
+            // case BOPIMPORT:
+            //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -210,6 +214,8 @@ function Simulation(props) {
                 return returnExcelColumn(BOPDomesticSimulation, tableData && tableData.length > 0 ? tableData : [])
             case BOPIMPORT:
                 return returnExcelColumn(BOPImportSimulation, tableData && tableData.length > 0 ? tableData : [])
+            // case BOPIMPORT:
+            //     return returnExcelColumn(OverheadProfitSimulation, tableData && tableData.length > 0 ? tableData : [])
             default:
                 return 'foo';
         }
@@ -249,9 +255,9 @@ function Simulation(props) {
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
    */
-    const closeDrawer = (e = '', tableData = {}, correctRow = 0, NoOfRowsWithoutChange = 0) => {
+    const closeDrawer = (e = '', tableData = {}, correctRow = 0, NoOfRowsWithoutChange = 0, isSaveButtonClicked) => {
         setShowDrawer(false)
-        if (Object.keys(tableData).length > 0) {
+        if (Object.keys(tableData).length > 0 && isSaveButtonClicked === true) {
             setTableData(tableData)
             setRowCount({ correctRow: correctRow, NoOfRowsWithoutChange: NoOfRowsWithoutChange })
             setShowEditTable(true)
@@ -259,17 +265,16 @@ function Simulation(props) {
         }
     }
 
-    const editTable = (Data) => {
+    const editTable = (Data, length) => {
         setTableData(Data)
         // alert('Hello')
         let flag = true;
         let vendorFlag = true;
         let plantFlag = true;
         //  setShowEditTable(true)
-        if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
+        if (length === 0 || length === undefined || length === null) {
             setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
         }
-        // console.log(selectedRowCountForSimulationMessage, 'selectedRowCountForSimulationMessageselectedRowCountForSimulationMessage')
         switch (master.value) {
             case RMDOMESTIC:
                 if (Data.length === 0) {
@@ -282,45 +287,36 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
-                        }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            // Toaster.warning('Please select one vendor at a time.')
-                            setEditWarning(true);
-                            vendorFlag = false
-                            return false
                         }
                         if (element.PlantId !== Data[index - 1].PlantId) {
-
+                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case RMIMPORT:
+                if (Data.length === 0) {
+                    setEditWarning(true)
+                    return false
+                }
                 Data && Data.forEach((element, index) => {
 
                     if (index !== 0) {
@@ -328,32 +324,29 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.PlantId !== Data[index - 1].PlantId) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 })
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
 
@@ -368,37 +361,30 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case OPERATIONS:
                 if (Data.length === 0) {
@@ -411,37 +397,30 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // Toaster.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case MACHINERATE:
                 if (Data.length === 0) {
@@ -454,37 +433,30 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case BOPDOMESTIC:
                 if (Data.length === 0) {
@@ -497,37 +469,30 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
             case BOPIMPORT:
                 if (Data.length === 0) {
@@ -540,53 +505,120 @@ function Simulation(props) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
-                            // return false
                         }
                         if (element.Vendor !== Data[index - 1].Vendor) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            // toastr.warning('Please select one vendor at a time.')
                             setEditWarning(true);
                             vendorFlag = false
-                            // return false
                         }
                         if (element.DestinationPlant !== Data[index - 1].DestinationPlant) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
-                            // return false
                         }
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
                 } if (vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
                 } if (flag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
-                    (selectedRowCountForSimulationMessage !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
-                //  else {
-                //     setEditWarning(true)
-                // }
                 break;
+            // case BOPIMPORT:
+            //     if (Data.length === 0) {
+            //         setEditWarning(true)
+            //         return false
+            //     }
+            //     Data && Data.forEach((element, index) => {
+            //         if (index !== 0) {
+            //             if (element.IsVendor !== Data[index - 1].IsVendor) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+            //                 setEditWarning(true);
+            //                 flag = false
+            //             }
+            //             if (element.Vendor !== Data[index - 1].Vendor) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //                 setEditWarning(true);
+            //                 vendorFlag = false
+            //             }
+            //             if (element.OverheadApplicabilityType !== Data[index - 1].OverheadApplicabilityType) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+            //                 setEditWarning(true);
+            //                 plantFlag = false
+            //             }
+            //         }
+            //     });
+            // if (flag === true && vendorFlag === true && plantFlag === true) {
+            //     setEditWarning(false)
+            // } if (flag === false && vendorFlag === false) {
+            //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+            // } if (vendorFlag === false && plantFlag === false) {
+            //     (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+            // } if (flag === false && plantFlag === false) {
+            //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+            // } if (flag === false && vendorFlag === false && plantFlag === false) {
+            //     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+            // }
+            //     break;
+            // case BOPIMPORT:
+            //     if (Data.length === 0) {
+            //         setEditWarning(true)
+            //         return false
+            //     }
+            //     Data && Data.forEach((element, index) => {
+            //         if (index !== 0) {
+            //             if (element.CostingHead !== Data[index - 1].CostingHead) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+            //                 setEditWarning(true);
+            //                 flag = false
+            //             }
+            //             if (element.VendorName !== Data[index - 1].VendorName) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //                 setEditWarning(true);
+            //                 vendorFlag = false
+            //             }
+            //             if (element.ProfitApplicabilityType !== Data[index - 1].ProfitApplicabilityType) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Applicability Type')
+            //                 setEditWarning(true);
+            //                 plantFlag = false
+            //             }
+            //         }
+            //     });
+            //     if (flag === true && vendorFlag === true && plantFlag === true) {
+            //         setEditWarning(false)
+            //     } if (flag === false && vendorFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+            //     } if (vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one  Vendor, Overhead Applicability at a time.`)
+            //     } if (flag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Overhead Applicability at a time.`)
+            //     } if (flag === false && vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Overhead Applicability')
+            //     }
+            //     break;
 
 
             default:
                 break;
         }
-        if (selectedRowCountForSimulationMessage === 0 || selectedRowCountForSimulationMessage === undefined) {
-            setFilterStatus(`Please check the ${(master.label)} that you want to edit.`)
-        }
-
     }
 
     const openEditPage = () => {
         setShowEditTable(true)
     }
+    const openEditPageReload = () => {
+        setShowEditTable(false)
+        setTimeout(() => {
 
+            setShowEditTable(true)
+        }, 1);
+    }
 
     const editMasterPage = (page) => {
         switch (page) {
@@ -606,6 +638,10 @@ function Simulation(props) {
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             case BOPIMPORT:
                 return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            // case BOPIMPORT:
+            //     return <OverheadSimulation isOperation={true} openEditPageReload={openEditPageReload} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+            // case BOPIMPORT:
+            //     return <ProfitSimulation isOperation={true} openEditPageReload={openEditPageReload} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             default:
                 break;
         }
@@ -627,13 +663,13 @@ function Simulation(props) {
         <div className="container-fluid simulation-page">
             {
                 !showEditTable &&
-                <div className="simulation-main">
+                <div className="simulation-main" id="go-to-top">
                     <Row>
                         <Col sm="12">
                             <h1>{`Simulation`}</h1>
                         </Col>
                     </Row>
-
+                    <ScrollToTop pointProp={"go-to-top"} />
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
 
@@ -685,9 +721,9 @@ function Simulation(props) {
                     {showMasterList && renderModule(master)}
 
                     {showMasterList &&
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center">
+                                <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                                     {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                                     <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(rmDomesticListing && rmDomesticListing.length === 0 || rmImportListing && rmImportListing.length === 0 || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
@@ -702,7 +738,6 @@ function Simulation(props) {
                                         </>
                                     }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
-
 
                                 </div>
                             </div>

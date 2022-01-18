@@ -11,6 +11,7 @@ import { checkPermission } from '../../../helper/util';
 import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
 import FetchDrawer from './FetchBOMDrawer'
+import ScrollToTop from '../../common/ScrollToTop';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -158,20 +159,21 @@ class PartMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
+                    <ScrollToTop pointProp="go-to-top" />
                     <div className="user-page p-0">
                         {/* {this.props.loading && <Loader/>} */}
                         <div>
                             <div className="d-flex justify-content-between">
-                            <h1>Part Master</h1>
-                            <button
-                                        type="button"
-                                        className={'user-btn mr5 mt-1'}
-                                        title="Add"
-                                        onClick={this.openFetchDrawer}>
-                                        <div className={'swap mr-0'}></div></button>
+                                <h1>Part Master</h1>
+                                <button
+                                    type="button"
+                                    className={'user-btn mr5 mt-1'}
+                                    title="Add"
+                                    onClick={this.openFetchDrawer}>
+                                    <div className={'swap mr-0'}></div></button>
                             </div>
-                           
+
 
                             <Nav tabs className="subtabs mt-0">
                                 <NavItem>
@@ -204,6 +206,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '2' &&
@@ -216,6 +219,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                                 {this.state.activeTab === '3' &&
@@ -228,6 +232,7 @@ class PartMaster extends Component {
                                             DeleteAccessibility={this.state.DeleteAccessibility}
                                             BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                             DownloadAccessibility={this.state.DownloadAccessibility}
+                                            ViewAccessibility={this.state.ViewAccessibility}
                                         />
                                     </TabPane>}
                             </TabContent>

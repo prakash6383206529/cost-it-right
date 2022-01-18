@@ -135,9 +135,9 @@ function TabSurfaceTreatment(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (Params, Data, aar) => {
-    console.log('aar: ', aar);
-    console.log('Data: ', Data);
-    console.log('Params: ', Params);
+    
+    
+    
     let tempArr = [];
     try {
       tempArr = aar && aar.map(i => {
@@ -167,7 +167,7 @@ function TabSurfaceTreatment(props) {
           i.CostingPartDetails.TransportationCost = checkForNull(Data.TransportationCost);
           i.CostingPartDetails.SurfaceTreatmentDetails = Data.SurfaceTreatmentDetails;
           i.CostingPartDetails.TransportationDetails = Data.TransportationDetails;
-          console.log(' i: ',  i);
+          
           i.IsOpen = !Data.IsOpen;
 
         } else {
@@ -299,6 +299,7 @@ function TabSurfaceTreatment(props) {
   * @description DISPATCHED SURFACE COST
   */
   const dispatchSurfaceCost = (surfaceGrid, params, arr) => {
+    
     let tempArr = [];
     try {
 
@@ -632,7 +633,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Transportation Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Extra Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
                         </tr>

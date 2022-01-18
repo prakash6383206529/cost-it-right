@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, reset, propTypes } from "redux-form";
+import { Field, reduxForm, formValueSelector, propTypes } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
+import { required, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
@@ -11,10 +11,8 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DayTime from '../../common/DayTimeWrapper'
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const selector = formValueSelector('AddInterestRate');
@@ -31,6 +29,7 @@ class AddInterestRate extends Component {
       PaymentTermsApplicability: [],
 
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
@@ -89,14 +88,14 @@ class AddInterestRate extends Component {
     }
     if (label === 'ICC') {
       iccApplicabilitySelectList && iccApplicabilitySelectList.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
       return temp;
     }
     if (label === 'PaymentTerms') {
       paymentTermsSelectList && paymentTermsSelectList.map(item => {
-        if (item.Value === '0') return false;
+        if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
       return temp;
@@ -184,12 +183,11 @@ class AddInterestRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              // isLoader: false,
               IsVendor: Data.IsVendor,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
-              effectiveDate: DayTime(Data.EffectiveDate)._isValid ? DayTime(Data.EffectiveDate)._d : ''
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
             }, () => this.setState({ isLoader: false }))
           }, 500)
 
@@ -251,10 +249,10 @@ class AddInterestRate extends Component {
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
 
-      if (Data.ICCApplicability == ICCApplicability.label && Data.ICCPercent == values.ICCPercent &&
-        Data.PaymentTermApplicability == PaymentTermsApplicability.label &&
-        Data.PaymentTermPercent == values.PaymentTermPercent &&
-        Data.RepaymentPeriod == values.RepaymentPeriod && DropdownChanged) {
+      if (Data.ICCApplicability === ICCApplicability.label && Data.ICCPercent === values.ICCPercent &&
+        Data.PaymentTermApplicability === PaymentTermsApplicability.label &&
+        Data.PaymentTermPercent === values.PaymentTermPercent &&
+        Data.RepaymentPeriod === values.RepaymentPeriod && DropdownChanged) {
 
         this.cancel()
         return false;
@@ -282,22 +280,9 @@ class AddInterestRate extends Component {
       if (this.state.isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
 
-        const toastrConfirmOptions = {
-          onOk: () => {
-            this.props.reset()
-            this.props.updateInterestRate(updateData, (res) => {
-              if (res.data.Result) {
-                Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-                this.setState({ showPopup: false })
-                this.cancel()
-              }
-            });
-          },
-          onCancel: () => { },
-          component: () => <ConfirmComponent />
-        }
 
-        // return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+
+
       }
 
 
@@ -320,7 +305,7 @@ class AddInterestRate extends Component {
       this.props.createInterestRate(formData, (res) => {
 
         if (res.data.Result) {
-          // toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
+
           Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS)
           this.cancel();
 
@@ -347,7 +332,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, } = this.state;
+    const { isEditFlag, isViewMode } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -407,7 +392,6 @@ class AddInterestRate extends Component {
                                 component={searchableSelect}
                                 placeholder={"Select"}
                                 options={this.renderListing("VendorNameList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={
                                   this.state.vendorName == null ||
                                     this.state.vendorName.length === 0
@@ -439,7 +423,6 @@ class AddInterestRate extends Component {
                           component={searchableSelect}
                           placeholder={"Select"}
                           options={this.renderListing("ICC")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
                             this.state.ICCApplicability == null ||
                               this.state.ICCApplicability.length === 0
@@ -451,9 +434,12 @@ class AddInterestRate extends Component {
                             this.handleICCApplicability
                           }
                           valueDescription={this.state.ICCApplicability}
-                          disabled={false}
+                          disabled={isViewMode}
                         />
                       </Col>
+                      {
+                        this.state.ICCApplicability.label !== 'Fixed' &&
+
                       <Col md="3">
                         <Field
                           label={`Annual ICC (%)`}
@@ -464,11 +450,12 @@ class AddInterestRate extends Component {
                           max={100}
                           component={renderText}
                           required={true}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
                       </Col>
+                      }
                     </Row>
 
                     <Row>
@@ -484,7 +471,6 @@ class AddInterestRate extends Component {
                           component={searchableSelect}
                           placeholder={"Select"}
                           options={this.renderListing("PaymentTerms")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
                             this.state.PaymentTermsApplicability == null ||
                               this.state.PaymentTermsApplicability.length === 0
@@ -498,9 +484,13 @@ class AddInterestRate extends Component {
                           valueDescription={
                             this.state.PaymentTermsApplicability
                           }
-                          disabled={false}
+                          disabled={isViewMode}
                         />
                       </Col>
+                      {
+                        this.state.PaymentTermsApplicability.label !=='Fixed' &&
+<>
+
                       <Col md="3">
                         <Field
                           label={`Repayment Period (Days)`}
@@ -510,7 +500,7 @@ class AddInterestRate extends Component {
                           validate={[postiveNumber, maxLength10]}
                           component={renderText}
                           required={false}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -525,34 +515,18 @@ class AddInterestRate extends Component {
                           component={renderText}
                           max={100}
                           required={false}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
                       </Col>
+</>
+                      }
                       <Col md="3">
                         <div className="form-group">
-                          {/* <label>
-                            Effective Date */}
-                          {/* <span className="asterisk-required">*</span> */}
-                          {/* </label> */}
+
                           <div className="inputbox date-section">
-                            {/* <DatePicker
-                              name="EffectiveDate"
-                              selected={this.state.effectiveDate}
-                              onChange={this.handleEffectiveDateChange}
-                              showMonthDropdown
-                              showYearDropdown
-                              dateFormat="dd/MM/yyyy"
-                              //maxDate={new Date()}
-                              dropdownMode="select"
-                              placeholderText="Select date"
-                              className="withBorder"
-                              autoComplete={"off"}
-                              disabledKeyboardNavigation
-                              onChangeRaw={(e) => e.preventDefault()}
-                              disabled={isEditFlag ? true : false}
-                            /> */}
+
                             <Field
                               label="Effective Date"
                               name="EffectiveDate"
@@ -564,14 +538,13 @@ class AddInterestRate extends Component {
                               autoComplete={'off'}
                               required={true}
                               changeHandler={(e) => {
-                                // e.preventDefault()
+
                               }}
-                              // disabled={isEditFlag ? true : false}
                               component={renderDatePicker}
                               disabled={isEditFlag ? true : false
                               }
                               className="form-control"
-                            //minDate={moment()}
+
                             />
 
                           </div>
@@ -580,7 +553,7 @@ class AddInterestRate extends Component {
                     </Row>
                   </div>
 
-                  <Row className="sf-btn-footer add-interest-rate-footer no-gutters justify-content-between">
+                  <Row className="sf-btn-footer no-gutters justify-content-between">
                     <div className="col-sm-12 text-right bluefooter-butn">
                       <button
                         type={"button"}
@@ -592,6 +565,7 @@ class AddInterestRate extends Component {
                       </button>
                       <button
                         type="submit"
+                        disabled={isViewMode}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
@@ -619,11 +593,11 @@ class AddInterestRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { interestRate, material, comman } = state;
+  const { interestRate, comman } = state;
 
   const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
 
-  const { vendorListByVendorType } = material;
+
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
   const { vendorWithVendorCodeSelectList } = comman;
 

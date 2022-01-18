@@ -19,10 +19,13 @@ import {
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
     SET_ATTACHMENT_FILE_DATA,
-    SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
     GET_ASSEMBLY_SIMULATION_LIST,
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
+    SET_DATA_TEMP,
+    GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+    GET_VERIFY_OVERHEAD_SIMULATION_LIST,
+    GET_VERIFY_PROFIT_SIMULATION_LIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -210,6 +213,10 @@ export function runSimulationOnSelectedCosting(data, callback) {
 
 export function getSimulationApprovalList(filterData, callback) {
     return (dispatch) => {
+        dispatch({
+            type: GET_SIMULATION_APPROVAL_LIST,
+            payload: [],
+        })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}`, headers)
         request.then((response) => {
@@ -386,6 +393,7 @@ export function simulationApprovalRequestByApprove(data, callback) {
             .catch((error) => {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
+                callback(error)
             })
     }
 }
@@ -409,6 +417,7 @@ export function simulationRejectRequestByApprove(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
@@ -665,15 +674,6 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
     };
 }
 
-export function setSelectedRowCountForSimulationMessage(selectedMaster) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_SELECTED_ROW_COUNT_FOR_SIMULATION_MESSAGE,
-            payload: selectedMaster,
-        });
-    }
-}
-
 export function runVerifyMachineRateSimulation(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
@@ -756,15 +756,79 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
     }
 }
 
-export function getSimulatedAssemblyWiseImpactDate(token, callback) {
+export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraft, callback) {
+    return (dispatch) => {
+        dispatch({
+            type: GET_ASSEMBLY_SIMULATION_LIST,
+            payload: [],
+        })
+        const request = axios.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, headers);
+        request.then((response) => {
+            // THIS BLOCK WORKS WHEN THERE IS DATA IN API
+            if (response.data.Result) {
+
+                // THIS IS WHEN CALL COMES FROM DRAFT
+                if (isAssemblyInDraft === true) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST,
+                        payload: response.data.DataList
+                    })
+                }
+
+                // THIS IS WHEN CALL COMES FROM SUMMARY
+                if (isAssemblyInDraft === false) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+                        payload: response.data.DataList
+                    })
+                    callback(response)
+                }
+            }
+            // THIS BLOCK WORKS WHEN THERE IS NO DATA IN API
+            else if (response.status === 204) {
+
+                // THIS IS WHEN CALL COMES FROM DRAFT
+                if (isAssemblyInDraft === true) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST,
+                        payload: []
+                    })
+                }
+
+                // THIS IS WHEN CALL COMES FROM SUMMARY
+                if (isAssemblyInDraft === false) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+                        payload: []
+                    })
+                    callback(response)
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function setData(valdataTemp) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_DATA_TEMP,
+            payload: valdataTemp,
+        });
+    }
+}
+
+export function getVerifyOverheadSimulationList(token, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getSimulatedAssemblyWiseImpactDate}?costingHead=${token.costingHead}&impactPartNumber=${token.impactPartNumber}&plantCode=${token.plantCode}&vendorId=${token.vendorId}&delta=${token.delta}&quantity=${token.quantity}`, headers);
+        const request = axios.get(`${API.getVerifyOverheadProfitSimulationList}?simulationId=${token}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_ASSEMBLY_SIMULATION_LIST,
-                    payload: response.data.DataList
+                    type: GET_VERIFY_OVERHEAD_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
                 })
                 callback(response)
             }
@@ -775,6 +839,77 @@ export function getSimulatedAssemblyWiseImpactDate(token, callback) {
     }
 }
 
+export function runSimulationOnSelectedOverheadCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedOverheadCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 
+export function runVerifyOverheadSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftOverheadSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function runVerifyProfitSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftProfitSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 
+export function getVerifyProfitSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getVerifyProfitSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_PROFIT_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedProfitCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedProfitCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 

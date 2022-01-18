@@ -11,6 +11,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCosti
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
+import _ from 'lodash'
 
 let counter = 0;
 function BOPCost(props) {
@@ -85,6 +86,7 @@ function BOPCost(props) {
   * @description HIDE RM DRAWER
   */
   const closeDrawer = (e = '', rowData = {}) => {
+    
     if (Object.keys(rowData).length > 0) {
 
       let rowArray = rowData && rowData.map(el => {
@@ -96,6 +98,7 @@ function BOPCost(props) {
           LandedCostINR: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
           Quantity: 1,
           NetBoughtOutPartCost: el.Currency === '-' ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
+          BoughtOutPartUOM:el.UOM
         }
       })
 
@@ -146,6 +149,19 @@ function BOPCost(props) {
   }
 
   const SaveItem = (index) => {
+    let bopGridData = gridData[index]
+    if(bopGridData.BoughtOutPartUOM === 'Number'){
+      
+      let isValid =Number.isInteger(bopGridData.Quantity);
+      if(!isValid){
+        Toaster.warning('Please enter numeric value')
+        setTimeout(() => {
+          setValue(`${bopGridFields}.${index}.Quantity`, '')
+        }, 200)
+        return false
+      }
+    }
+
     setEditIndex('')
   }
 
@@ -291,7 +307,7 @@ function BOPCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD BOP</button>}
+                <div className={'plus'}></div>BOP</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -304,24 +320,54 @@ function BOPCost(props) {
                     <tr>
                       <th>{`BOP Part No.`}</th>
                       <th>{`BOP Part Name`}</th>
+                      <th>{`UOM`}</th>
                       <th style={{ width: "220px" }} >{`BOP Cost (INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
                       <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
-                  <tbody >
+                  <tbody className='rm-table-body'>
                     {
                       gridData &&
                       gridData.map((item, index) => {
                         return (
                           editIndex === index ?
                             <tr key={index}>
-                              <td>{item.BOPPartNumber}</td>
+                              <td  className='rm-part-name'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span></td>
                               <td>{item.BOPPartName}</td>
+                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
+                                  item.BoughtOutPartUOM === 'Number'?
+                                  <>
+                                  <NumberFieldHookForm
+                                  label=""
+                                  name={`${bopGridFields}.${index}.Quantity`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[1-9]\d*$/,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.Quantity}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleQuantityChange(e, index)
+                                  }}
+                                  errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
+                                  disabled={CostingViewMode ? true : false}
+                                />
+                                  </>
+                                  :
                                   <NumberFieldHookForm
                                     label=""
                                     name={`${bopGridFields}.${index}.Quantity`}
@@ -356,10 +402,11 @@ function BOPCost(props) {
                             </tr>
                             :
                             <tr key={index}>
-                              <td>{item.BOPPartNumber}</td>
+                              <td className='rm-part-name'><span title={item.BOPPartNumber}>{item.BOPPartNumber}</span> </td>
                               <td>{item.BOPPartName}</td>
+                              <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
-                              <td style={{ width: 200 }}>{item.Quantity}</td>
+                              <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity,initialConfiguration.NoOfDecimalForInputOutput)}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 {!CostingViewMode && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}

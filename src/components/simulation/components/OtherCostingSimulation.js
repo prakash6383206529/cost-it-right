@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { SimulationUtils } from '../SimulationUtils'
+import ViewAssembly from './ViewAssembly';
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -76,6 +77,8 @@ function OtherCostingSimulation(props) {
         hideOveheadAndProfit: false
     })
     const [amendmentDetails, setAmendmentDetails] = useState({})
+    const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
+    const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
 
     const dispatch = useDispatch()
 
@@ -108,7 +111,8 @@ function OtherCostingSimulation(props) {
                 setSelectedCostingIds(item.CostingId)
             }
             if (Number(master) === Number(EXCHNAGERATE)) {
-                item.Variance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
+                item.POVariance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
+                item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
             }
 
         })
@@ -177,6 +181,11 @@ function OtherCostingSimulation(props) {
         }))
     }
 
+    const viewAssembly = (cell, row, rowIndex) => {
+        const data = row
+        setDataForAssemblyImpact(data)
+        setShowViewAssemblyDrawer(true)
+    }
 
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -184,6 +193,7 @@ function OtherCostingSimulation(props) {
         return (
             <>
                 <button className="View" type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
+                {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
 
             </>
         )
@@ -252,6 +262,10 @@ function OtherCostingSimulation(props) {
         if (type === 'cancel') {
             setIsVerifyImpactDrawer(false);
         }
+    }
+
+    const closeAssemblyDrawer = () => {
+        setShowViewAssemblyDrawer(false)
     }
 
     const descriptionFormatter = (props) => {
@@ -537,7 +551,7 @@ function OtherCostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className="ag-grid-wrapper height-width-wrapper">
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData?.length <=0 ?"overlay-contain": ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>
@@ -545,7 +559,6 @@ function OtherCostingSimulation(props) {
                                                 className="ag-theme-material"
                                             >
                                                 <AgGridReact
-                                                    style={{ height: '100%', width: '100%' }}
                                                     defaultColDef={defaultColDef}
                                                     floatingFilter={true}
                                                     domLayout='autoHeight'
@@ -586,6 +599,7 @@ function OtherCostingSimulation(props) {
                                                         <>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='POVarianceFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldExchangeRate" headerName='Exchange Rate Old' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='Exchange Rate New' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
@@ -607,7 +621,7 @@ function OtherCostingSimulation(props) {
                                     </Col>
                                 </Row>
                             </div>
-                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
                                     <button
@@ -692,6 +706,18 @@ function OtherCostingSimulation(props) {
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
                 />}
+
+            {showViewAssemblyDrawer &&
+                <ViewAssembly
+                    isOpen={showViewAssemblyDrawer}
+                    closeDrawer={closeAssemblyDrawer}
+                    // approvalData={approvalData}
+                    anchor={'bottom'}
+                    dataForAssemblyImpact={dataForAssemblyImpact}
+                    vendorIdState={vendorIdState}
+                    isPartImpactAssembly={true}
+                />
+            }
         </>
 
     );

@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
-import { getInventoryDataByHeads, gridDataAdded, } from '../../../actions/Costing';
+import { getInventoryDataByHeads, gridDataAdded, isOverheadProfitDataChange, } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import Switch from "react-switch";
+import values from 'redux-form/lib/values';
 
 function Icc(props) {
 
@@ -21,6 +22,7 @@ function Icc(props) {
     const { IsIncludedSurfaceInOverheadProfit } = useSelector(state => state.costing)
 
     const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
+    const [tempInventoryObj,setTempInventoryObj] =useState(ICCApplicabilityDetail)
 
 
     const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
@@ -40,14 +42,22 @@ function Icc(props) {
      * @method onPressInventory
      * @description  USED TO HANDLE INVENTORY CHANGE
      */
-    const onPressInventory = () => {
+    const onPressInventory = (value) => {
+
         setIsInventoryApplicable(!IsInventoryApplicable)
+     
+            callInventoryAPI(value)
+        
         dispatch(gridDataAdded(true))
     }
 
 
-    useEffect(() => {
-        if (IsInventoryApplicable === true && Object.keys(costData).length >0) {
+    /**
+     * @method callInventoryAPI
+     * @description When we toogle on ICC to call API
+    */
+    const callInventoryAPI = (callAPI) => {
+        if (Object.keys(costData).length > 0 && callAPI) {
             const reqParams = {
                 VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
                 IsVendor: costData.IsVendor
@@ -77,7 +87,43 @@ function Icc(props) {
                 props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }
-    }, [IsInventoryApplicable])
+    }
+
+
+
+
+    // useEffect(() => {
+    //     if (IsInventoryApplicable === true && Object.keys(costData).length >0) {
+    //         const reqParams = {
+    //             VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+    //             IsVendor: costData.IsVendor
+    //         }
+    //         dispatch(getInventoryDataByHeads(reqParams, res => {
+    //             if (res && res.data && res.data.Result) {
+    //                 let Data = res.data.Data;
+    //                 setValue('InterestRatePercentage', Data.InterestRate)
+    //                 setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
+    //                 setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
+    //                 setInventoryObj(Data)
+    //                 checkInventoryApplicability(Data.ICCApplicability)
+
+    //             } else if (res && res.status === 204) {
+    //                 setValue('InterestRatePercentage', '')
+    //                 setValue('InterestRateCost', '')
+    //                 setValue('NetICCTotal', '')
+    //                 checkInventoryApplicability('')
+    //                 setICCapplicability([])
+    //                 setInventoryObj({})
+    //             }
+
+    //         }))
+    //     } else {
+    //         setICCapplicability([])
+    //         if (!CostingViewMode) {
+    //             props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+    //         }
+    //     }
+    // }, [IsInventoryApplicable])
 
     /**
     * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
@@ -105,41 +151,78 @@ function Icc(props) {
                 case 'RM':
                     setValue('InterestRateCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        InterestRateCost:checkForNull(headerCosts.NetRawMaterialsCost),
+                        NetICCTotal:checkForNull(headerCosts?.NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
+                    })
                     break;
 
                 case 'RM + CC':
                     setValue('InterestRateCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        InterestRateCost:checkForNull(RMCC),
+                        NetICCTotal:checkForNull(RMCC) * calculatePercentage(InterestRatePercentage)
+                    })
                     break;
 
                 case 'RM + BOP':
-                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP), initialConfiguration.NoOfDecimalForPrice)
+                    setValue('InterestRateCost', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        InterestRateCost:checkForNull(RMBOP),
+                        NetICCTotal:checkForNull(RMBOP) * calculatePercentage(InterestRatePercentage)
+                    })
                     break;
 
                 case 'RM + CC + BOP':
                     setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        InterestRateCost:checkForNull(RMBOPCC),
+                        NetICCTotal:checkForNull(RMBOPCC) * calculatePercentage(InterestRatePercentage)
+                    })
                     break;
 
                 case 'Fixed':
                     setValue('InterestRateCost', '-')
                     setValue('NetICCTotal', checkForDecimalAndNull(InterestRatePercentage, initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        InterestRateCost:'-',
+                        NetICCTotal:checkForNull(InterestRatePercentage)
+                    })
                     break;
 
                 case 'Annual ICC (%)':
                     setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) // NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        InterestRateCost:checkForNull(RMBOPCC),
+                        NetICCTotal:checkForNull(RMBOPCC) * calculatePercentage(InterestRatePercentage)
+                    })
                     break;
 
                 case 'Net Cost':
                     setValue('InterestRateCost', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
                     setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setTempInventoryObj({
+                        ...tempInventoryObj,
+                        InterestRateCost:checkForNull(RMBOPCC),
+                        NetICCTotal:checkForNull(RMBOPCC) * calculatePercentage(InterestRatePercentage)
+                    })
                     break;
 
                 default:
                     break;
             }
+
+            dispatch(isOverheadProfitDataChange(true))
         }
     }
 
@@ -147,14 +230,18 @@ function Icc(props) {
     useEffect(() => {
         checkInventoryApplicability(ICCapplicability?.label)
 
+        
+    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability]);
+
+    useEffect(()=>{
         setTimeout(() => {
             let tempObj = {
                 "InterestRateId": ICCapplicability.label !== 'Fixed' ? (ICCApplicabilityDetail ? ICCInterestRateId : '') : null,
                 "IccDetailId": InventoryObj ? InventoryObj.InterestRateId : '',
                 "ICCApplicability": Object.keys(ICCapplicability).length > 0 ? ICCapplicability.label : '',
-                "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
+                "CostApplicability": IsInventoryApplicable ? tempInventoryObj.InterestRateCost : '',
                 "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
-                "NetCost": IsInventoryApplicable ? getValues('NetICCTotal') : '',
+                "NetCost": IsInventoryApplicable ? tempInventoryObj.NetICCTotal : '',
                 "EffectiveDate": "",
             }
 
@@ -162,8 +249,7 @@ function Icc(props) {
                 props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    }, [interestRateValues, IsIncludedSurfaceInOverheadProfit, ICCapplicability]);
-
+    },[tempInventoryObj])
 
 
 

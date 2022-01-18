@@ -189,15 +189,8 @@ class AssemblyProductListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let data;
-        if (cellValue === '' || cellValue === null) {
-            data = '-'
-        }
-        else {
-            data = cellValue
-        }
-        return data;
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -306,7 +299,7 @@ class AssemblyProductListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        temp = TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.ECNNumber === null) {
                 item.ECNNumber = ' '
             } else if (item.RevisionNumber === null) {
@@ -434,7 +427,7 @@ class AssemblyProductListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <=0 ?"overlay-contain": ""}`}> 
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>

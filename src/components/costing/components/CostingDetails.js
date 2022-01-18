@@ -14,11 +14,10 @@ import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlant
 import DayTime from '../../common/DayTimeWrapper'
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
-import {
-  getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+import {   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -27,9 +26,10 @@ import BOMUpload from '../../massUpload/BOMUpload';
 
 import Clientbasedcostingdrawer from './ClientBasedCostingDrawer';
 import TooltipCustom from '../../common/Tooltip';
-import { toastr } from 'react-redux-toastr';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
+import LoaderCustom from '../../common/LoaderCustom';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 export const ViewCostingContext = React.createContext()
 
@@ -106,6 +106,9 @@ function CostingDetails(props) {
     index: []
   })
   const [titleObj, setTitleObj] = useState({})
+  //dropdown loader 
+  const [inputLoader, setInputLoader] = useState(false)
+  
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -116,16 +119,18 @@ function CostingDetails(props) {
   const { topAndLeftMenuData } = useSelector(state => state.auth);
 
   useEffect(() => {
-    setValue('Technology', '')
-    setValue('Part', '')
-    reset()
-    applyPermission(topAndLeftMenuData, technology.label)
-    dispatch(storePartNumber(''))
-    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-    dispatch(getPartSelectListByTechnology('', () => { }))
-    dispatch(getAllPartSelectList(() => { }))
-    dispatch(getPartInfo('', () => { }))
-    dispatch(gridDataAdded(false))
+    if( reactLocalStorage.get('location') === '/costing'){
+
+      setValue('Technology', '')
+      setValue('Part', '')
+      reset()
+      applyPermission(topAndLeftMenuData, technology.label)
+      dispatch(storePartNumber(''))
+      dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+      dispatch(getPartSelectListByTechnology('', () => { }))
+      dispatch(getPartInfo('', () => { }))
+      dispatch(gridDataAdded(false))
+    }
   }, [])
 
   useEffect(() => {
@@ -165,7 +170,7 @@ function CostingDetails(props) {
   }, [partNumber.isChanged])
 
   useEffect(() => {
-    if (Object.keys(partNumber).length > 0 && partNumber.technologyName) {
+    if (Object.keys(partNumber).length > 0 && partNumber.technologyName &&  reactLocalStorage.get('location') === '/costing') {
       applyPermission(topAndLeftMenuData, technology.label)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
@@ -257,7 +262,10 @@ function CostingDetails(props) {
   const handleTechnologyChange = (newValue) => {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
-      dispatch(getPartSelectListByTechnology(newValue.value, () => { }))
+      setInputLoader(true)
+      dispatch(getPartSelectListByTechnology(newValue.value, () => { 
+        setInputLoader(false)
+      }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
@@ -367,13 +375,13 @@ function CostingDetails(props) {
         }
       }))
 
-
-      dispatch(getNCCExistingCosting(part.value,(res=>{
-        if(res.data.Result){
-          let Data = res.data.DataList
-          setNccGrid(Data)
-        }
-      })))
+      /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/ 
+      // dispatch(getNCCExistingCosting(part.value,(res=>{
+      //   if(res.data.Result){
+      //     let Data = res.data.DataList
+      //     setNccGrid(Data)
+      //   }
+      // })))
 
       setIsOpenVendorSOBDetails(true)
     } else {
@@ -1217,6 +1225,7 @@ const nccDrawerToggle=()=>{
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+    
 
     dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
     dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
@@ -1225,6 +1234,8 @@ const nccDrawerToggle=()=>{
     dispatch(setComponentToolItemData({}, () => { }))           //THIS WILL CLEAR TOOL ITEM DATA FROM REDUCER
 
     dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
+
+    dispatch(saveAssemblyBOPHandlingCharge({},()=>{}))
 
     dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
@@ -1641,6 +1652,7 @@ const nccDrawerToggle=()=>{
                         />
                       </Col>
                       <Col className="col-md-15">
+                      {inputLoader  && <LoaderCustom customClass="input-loader"/>}
                         <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
@@ -1814,7 +1826,7 @@ const nccDrawerToggle=()=>{
                               className={"user-btn"}
                               onClick={plantDrawerToggle}
                             >
-                              <div className={"plus"}></div>ADD PLANT
+                              <div className={"plus"}></div>PLANT
                             </button>
                           </Col>
                         </Row>
@@ -1950,7 +1962,7 @@ const nccDrawerToggle=()=>{
                                 className={"user-btn"}
                                 onClick={nccDrawerToggle}
                               >
-                                <div className={"plus"}></div>Add Vendor or Plant
+                                <div className={"plus"}></div>Vendor/Plant
                               </button>
                             ) : (
                               ""
@@ -2055,7 +2067,7 @@ const nccDrawerToggle=()=>{
                                 className={"user-btn"}
                                 onClick={vendorDrawerToggle}
                               >
-                                <div className={"plus"}></div>ADD VENDOR
+                                <div className={"plus"}></div>VENDOR
                               </button>
                             ) : (
                               ""
@@ -2094,8 +2106,8 @@ const nccDrawerToggle=()=>{
 
                                   return (
                                     <tr key={index}>
-                                      <td>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
+                                      <td className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
@@ -2281,4 +2293,4 @@ const nccDrawerToggle=()=>{
   );
 }
 
-export default CostingDetails
+export default React.memo(CostingDetails)

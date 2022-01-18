@@ -132,10 +132,11 @@ function AddAssemblyOperation(props) {
       const discountAndOtherTabData = DiscountCostData
 
 
-    
+      if(!CostingViewMode){
       let assemblyRequestedData = createToprowObjAndSave(tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,1)
      
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+      }
       props.closeDrawer('')
     }))
   }

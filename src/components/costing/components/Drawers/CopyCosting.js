@@ -59,6 +59,7 @@ function CopyCosting(props) {
   const [toSwitch, setToSwitch] = useState(type === VBC ? true : false)
   const [showPopup, setShowPopup] = useState(false)
   const [updatedObj, setUpdatedObj] = useState({})
+  const [msgObj, setMsgObj] = useState({})
 
   useEffect(() => {
     const ZbcTemp = []
@@ -242,7 +243,7 @@ function CopyCosting(props) {
    * @descriptionfor changing vendor plant  based on vendor for "To"
    */
   const handleToVendorName = (value) => {
-    console.log('value: ', value);
+
     getVendorPlantDropdown(value.value, 'to')
     if (getConfigurationKey().IsDestinationPlantConfigure) {
       getDestinationPlant(value, 'to')
@@ -280,7 +281,7 @@ function CopyCosting(props) {
    * @description Submitting the form
    */
   const submitForm = (value) => {
-    console.log('value: ', value);
+
 
 
     const destination = value.toDestinationPlant && value.toDestinationPlant.label.split('(')
@@ -312,11 +313,11 @@ function CopyCosting(props) {
     }
     //COPY FROM VBC
     if (isFromVbc) {
-      const costNo = value.fromVbccostingId.label.split('-')
+      const costNo = value.fromVbccostingId.label.split(' ')
       const plantCode = value.fromVendorPlant && value.fromVendorPlant.label.split('(')
       const vendorCode = value.fromVendorName && value.fromVendorName.label.split('(')
       obj.CostingId = value.fromVbccostingId.value
-      obj.CostingNumber = `${costNo[0]}-${costNo[1]}`
+      obj.CostingNumber = `${costNo[0]}`
       obj.FromVendorId = value.fromVendorName.value
       obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1].split(')')[0]
       obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
@@ -357,7 +358,7 @@ function CopyCosting(props) {
     // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
-      console.log("res", res);
+
       const Data = res.data.Data
 
       if (Data.IsRMExist && Data.IsOperationExist && Data.IsProcessExist && Data.IsBOPExist && Data.IsOtherOperationExist) {
@@ -374,6 +375,7 @@ function CopyCosting(props) {
         ) // for saving data
       } else {
         setShowPopup(true)
+        setMsgObj(Data)
         setUpdatedObj(obj)
       }
     }))
@@ -801,7 +803,7 @@ function CopyCosting(props) {
         </Container>
       </Drawer>
       {
-        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!updatedObj.IsRMExist ? 'Raw Material,' : ''}${!updatedObj.IsOperationExist ? 'Operation,' : ''}${!updatedObj.IsProcessExist ? 'Process,' : ''}${!updatedObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : `is not available for the selected vendor. Do you still wish to continue ?`}`} />
+        showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : ` is not available for the selected vendor. Do you still wish to continue ?`}`} />
       }
     </>
   );

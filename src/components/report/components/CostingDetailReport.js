@@ -180,8 +180,8 @@ function ReportListing(props) {
     * @method hyphenFormatter
     */
     const hyphenFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value ? props.value : '-';
-        return cell
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     const statusFormatter = (props) => {
@@ -431,13 +431,12 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before btn-index">
+                <Row className="pt-4 blue-before ">
 
 
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
-
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
@@ -450,7 +449,7 @@ function ReportListing(props) {
             </form>
 
 
-            <div className="ag-grid-wrapper height-width-wrapper">
+            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <=0 ?"overlay-contain": ""}`}>
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>
@@ -484,7 +483,8 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-                        <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* IT IS COMMENTED IN BASE AND RE UNCOMMENT THIS IN MINDA */}
+                        {/* <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>

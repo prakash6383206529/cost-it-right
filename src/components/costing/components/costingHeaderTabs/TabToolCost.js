@@ -4,7 +4,7 @@ import { useDispatch, useSelector, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import {
   getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
-  setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
+  setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation, isToolDataChange,
 } from '../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
@@ -33,7 +33,7 @@ function TabToolCost(props) {
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(IsToolCostApplicable);
   const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
 
-  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData,RMCCTabData,SurfaceTabData,OverheadProfitTabData,DiscountCostData,PackageAndFreightTabData,getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData,RMCCTabData,SurfaceTabData,OverheadProfitTabData,DiscountCostData,PackageAndFreightTabData,getAssemBOPCharge,checkIsToolTabChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -215,34 +215,41 @@ function TabToolCost(props) {
   * @description SAVE COSTING
   */
   const saveCosting = (formData) => {
-    const tabData = RMCCTabData[0]
-    const surfaceTabData= SurfaceTabData[0]
-    const overHeadAndProfitTabData=OverheadProfitTabData[0]
-    const discountAndOtherTabData =DiscountCostData[0]
-    const data = {
-      "IsToolCostProcessWise": false,
-      "CostingId": costData.CostingId,
-      "PartId": costData.PartId,
-      "LoggedInUserId": loggedInUserId(),
-      "EffectiveDate": CostingEffectiveDate,
-      "CostingNumber": costData.CostingNumber,
-      "ToolCost": ToolTabData.TotalToolCost,
-      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
-      "TotalCost": netPOPrice,
-    }
-    if(costData.IsAssemblyPart === true){
+    if(checkIsToolTabChange){
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,5)
-    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
-    }
-
-    dispatch(saveToolTab(data, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
-        dispatch(setComponentToolItemData({}, () => { }))
-        InjectDiscountAPICall()
+      const tabData = RMCCTabData[0]
+      const surfaceTabData= SurfaceTabData[0]
+      const overHeadAndProfitTabData=OverheadProfitTabData[0]
+      const discountAndOtherTabData =DiscountCostData[0]
+      const data = {
+        "IsToolCostProcessWise": false,
+        "CostingId": costData.CostingId,
+        "PartId": costData.PartId,
+        "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
+        "CostingNumber": costData.CostingNumber,
+        "ToolCost": ToolTabData.TotalToolCost,
+        "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails,
+        "TotalCost": netPOPrice,
       }
-    }))
+      if(costData.IsAssemblyPart === true){
+
+      if(!CostingViewMode){
+        let assemblyRequestedData = createToprowObjAndSave(tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,5)
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+      }
+      }
+  
+      dispatch(saveToolTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentToolItemData({}, () => { }))
+          dispatch(isToolDataChange(false))
+          InjectDiscountAPICall()
+
+        }
+      }))
+    }
 
   }
 
@@ -391,7 +398,7 @@ function TabToolCost(props) {
                     <Col>
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}
                       <div className="ag-grid-react">
-                        <div className="ag-grid-wrapper height-width-wrapper">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${ToolsDataList && ToolsDataList?.length <=0 ?"overlay-contain": ""}`}>
                           <div className="ag-grid-header">
                             {/* <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} /> */}
                           </div>

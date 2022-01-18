@@ -10,6 +10,7 @@ import { ADDITIONAL_MASTERS, FUEL_AND_POWER } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
+import ScrollToTop from '../../common/ScrollToTop';
 
 class FuelMaster extends Component {
     constructor(props) {
@@ -120,8 +121,9 @@ class FuelMaster extends Component {
 
         return (
             <>
-                <div className="container-fluid">
+                <div className="container-fluid" id='go-to-top'>
                     {/* {this.props.loading && <Loader/>} */}
+                    <ScrollToTop pointProp='go-to-top' />
                     <Row>
                         <Col sm="4">
                             <h1>{`Fuel & Power Master`}</h1>
@@ -157,6 +159,7 @@ class FuelMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                ViewAccessibility={this.state.ViewAccessibility}
                                             />
                                         </TabPane>}
 
@@ -170,6 +173,7 @@ class FuelMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                ViewAccessibility={this.state.ViewAccessibility}
                                             />
                                         </TabPane>}
 

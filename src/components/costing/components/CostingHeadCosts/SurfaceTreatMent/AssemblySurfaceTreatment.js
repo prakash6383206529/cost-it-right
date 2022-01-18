@@ -97,9 +97,10 @@ function AssemblySurfaceTreatment(props) {
   return (
     <>
       <tr>
-        <div className="accordian-row" style={{ display: 'contents' }} onClick={() => {
-          toggle(item.BOMLevel, item.PartNumber, true)
-        }}>
+        <div className="accordian-row" style={{ display: 'contents' }} 
+        // onClick={() => {          toggle(item.BOMLevel, item.PartNumber, true)        }} // UNCOMMENT IT WHEN CHILD PART SURFACE TREATMENT START
+        >
+
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
               {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
@@ -145,7 +146,7 @@ function AssemblySurfaceTreatment(props) {
                 // DrawerToggle()
               }}
             >
-              <div className={'plus'}></div>Add Surface Treatment</button>)
+              <div className={'plus'}></div>Surface T.</button>)
           }
         </td>
       </tr>

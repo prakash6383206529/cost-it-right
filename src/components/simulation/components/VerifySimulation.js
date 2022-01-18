@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE } from '../../../config/constants';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
-import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getVerifyBoughtOutPartSimulationList, getVerifyMachineRateSimulationList, getVerifyOverheadProfitSimulationList, getVerifyProfitSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
@@ -25,7 +25,7 @@ import { debounce } from 'lodash'
 const gridOptions = {};
 
 function VerifySimulation(props) {
-    const { cancelVerifyPage, isSurfaceTreatment } = props
+    const { cancelVerifyPage } = props
     const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -50,6 +50,7 @@ function VerifySimulation(props) {
     const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
     const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
+    const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(BOPIMPORT));
 
     // const isAssemblyCosting = true
     const dispatch = useDispatch()
@@ -190,6 +191,42 @@ function VerifySimulation(props) {
                     }
                 }))
                 break;
+            // case Number(BOPIMPORT):
+
+            // dispatch(getVerifyOverheadSimulationList(props.token, (res) => {
+            //     if (res.data.Result) {
+            //         const data = res.data.Data
+            //         if (data.SimulationOverheadImpactedCostings.length === 0) {           //   for condition
+            //             Toaster.warning('No approved costing exist for this bought out part.')
+            //             setHideRunButton(true)
+            //             return false
+            //         }
+            //         setTokenNo(data.TokenNumber)
+            //         setSimualtionId(data.SimulationId)
+            //         // setMasterId(data.SimulationtechnologyId)
+            //         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+            //         setHideRunButton(false)
+            //     }
+            // }))
+            // break;
+            // case Number(BOPIMPORT):
+
+            //     dispatch(getVerifyProfitSimulationList(props.token, (res) => {
+            //         if (res.data.Result) {
+            //             const data = res.data.Data
+            //             if (data.SimulationProfitImpactedCostings.length === 0) {           //   for condition
+            //                 Toaster.warning('No approved costing exist for this bought out part.')
+            //                 setHideRunButton(true)
+            //                 return false
+            //             }
+            //             setTokenNo(data.TokenNumber)
+            //             setSimualtionId(data.SimulationId)
+            //             // setMasterId(data.SimulationtechnologyId)
+            //             // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+            //             setHideRunButton(false)
+            //         }
+            //     }))
+            //     break;
             default:
                 break;
         }
@@ -264,7 +301,6 @@ function VerifySimulation(props) {
         if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
         var selected = gridApi.getSelectedNodes()
         setSelectedRowData(selectedRows)
-        console.log(selectedRows, 'ROW')
 
     }
 
@@ -409,7 +445,7 @@ function VerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className="ag-grid-wrapper height-width-wrapper">
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <=0 ?"overlay-contain": ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -417,11 +453,8 @@ function VerifySimulation(props) {
                                             </button>
                                         </div>
                                         <div
-                                            className="ag-theme-material"
-
-                                        >
+                                            className="ag-theme-material">
                                             <AgGridReact
-                                                style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
@@ -463,21 +496,21 @@ function VerifySimulation(props) {
                                                     </>
                                                 }
 
-                                                {isBOPDomesticOrImport === true &&
+                                                {/* {isBOPDomesticOrImport === true &&
                                                     <>
                                                         <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
                                                         <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
                                                     </>
-                                                }
+                                                } */}
 
                                                 {isBOPDomesticOrImport === true &&
                                                     <>
-                                                        <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="ModelType" headerName="Model Type"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="OverheadApplicabilityType" headerName="Overhead Applicability Type"></AgGridColumn>
+                                                        {/* <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn> */}
                                                     </>
                                                 }
                                                 {isMachineRate &&
@@ -500,6 +533,11 @@ function VerifySimulation(props) {
                                                     </>
                                                 }
 
+                                                {isOverHeadProfit === true &&
+                                                    <>
+                                                        <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>
+                                                    </>
+                                                }
 
                                             </AgGridReact>
 
@@ -518,7 +556,7 @@ function VerifySimulation(props) {
 
                         </Col>
                     </Row>
-                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                             <button type={"button"} className="mr15 cancel-btn" onClick={cancelVerifyPage}>
                                 <div className={"cancel-icon"}></div>
@@ -544,7 +582,7 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation simulationId={simulationId} isSurfaceTreatment={isSurfaceTreatment} />
+                <CostingSimulation simulationId={simulationId} master={selectedMasterForSimulation.value} />
             }
             {
                 simulationDrawer &&
@@ -562,7 +600,7 @@ function VerifySimulation(props) {
             {/* {   // REJECTED ASSEMBLY
                 showAssemblyPage &&
 
-                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} isSurfaceTreatment={false} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
+                <AssemblySimulation selectedRowDataFromVerify={selectedRowData} token={tokenNo} cancelAssemblyPage={cancelAssemblyPage} />
 
             } */}
         </>

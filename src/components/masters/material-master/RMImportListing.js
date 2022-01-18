@@ -1,92 +1,61 @@
-import React, { Component } from 'react';
-import { useForm, Controller } from 'react-hook-form'
+import React from 'react';
+import { useForm } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
-  getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList, setFilterForRM, masterFinalLevelUser, getVendorListByVendorType
+  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList,
+  getRawMaterialFilterSelectList
+  , getVendorListByVendorType
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
-import { INR, ZBC, RmImport, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
-import { costingHeadObjs, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { INR, ZBC, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
+import { RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, loggedInUserId, userDepartmetList, userDetails } from '../../../helper';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { CheckApprovalApplicableMaster, getFilteredRMData, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { setSelectedRowCountForSimulationMessage } from '../../simulation/actions/Simulation';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-var filterParams = {
-  comparator: function (filterLocalDateAtMidnight, cellValue) {
-    var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-    if (dateAsString == null) return -1;
-    var dateParts = dateAsString.split('/');
-    var cellDate = new Date(
-      Number(dateParts[2]),
-      Number(dateParts[1]) - 1,
-      Number(dateParts[0])
-    );
-    if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-      return 0;
-    }
-    if (cellDate < filterLocalDateAtMidnight) {
-      return -1;
-    }
-    if (cellDate > filterLocalDateAtMidnight) {
-      return 1;
-    }
-  },
-  browserDatePicker: true,
-  minValidYear: 2000,
-};
+
 
 function RMImportListing(props) {
   const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation } = props;
-  const [tableData, settableData] = useState([]);
-  const [RawMaterial, setRawMaterial] = useState([]);
-  const [RMGrade, setRMGrade] = useState([]);
-  const [vendorName, setvendorName] = useState([]);
-  const [costingHead, setcostingHead] = useState([]);
-  const [plant, setplant] = useState([]);
+
+
   const [value, setvalue] = useState({ min: 0, max: 0 });
   const [maxRange, setmaxRange] = useState(0);
   const [isBulkUpload, setisBulkUpload] = useState(false);
   const [shown, setshown] = useState(isSimulation ? true : false);
-  const [technology, settechnology] = useState([]);
-  const [gridApi, setgridApi] = useState(null);
-  const [gridColumnApi, setgridColumnApi] = useState(null);
+
+  const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+  const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+
   const [loader, setloader] = useState(true);
-  const [statusId, setstatusId] = useState(0);
-  const [count, setCount] = useState(0)
-  const [selectedRowData, setSelectedRowData] = useState([]);
+
   const dispatch = useDispatch();
 
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
-  const filterRMSelectList = useSelector((state) => state.material.filterRMSelectList);
-  const { plantSelectList, technologySelectList } = useSelector((state) => state.comman)
+
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
@@ -94,16 +63,6 @@ function RMImportListing(props) {
 
 
 
-  /**
-  * @method FIRST RNDER COMPONENT
-  * @description Called after rendering the component
-  */
-
-  //////////
-  // useEffect(() => {
-  //     // callFilterApi()
-  //     getDataList()
-  // }, [])
 
   const callFilterApi = () => {
     if (isSimulation || shown) {
@@ -120,20 +79,12 @@ function RMImportListing(props) {
     callFilterApi()
   }, [shown])
 
-  // const handleFilterButton = ()=>{
-  //     setshown(!shown)
-  //     callFilterApi()
-  // }
+
 
   useEffect(() => {
 
     if (isSimulation) {
-      setcostingHead(filteredRMData && filteredRMData.costingHeadTemp && filteredRMData.costingHeadTemp.value ? { label: filteredRMData.costingHeadTemp.label, value: filteredRMData.costingHeadTemp.value } : []);
-      setplant(filteredRMData && filteredRMData.plantId && filteredRMData.plantId.value ? { label: filteredRMData.plantId.label, value: filteredRMData.plantId.value } : []);
-      setRawMaterial(filteredRMData && filteredRMData.RMid && filteredRMData.RMid.value ? { label: filteredRMData.RMid.label, value: filteredRMData.RMid.value } : []);
-      setRMGrade(filteredRMData && filteredRMData.RMGradeid && filteredRMData.RMGradeid.value ? { label: filteredRMData.RMGradeid.label, value: filteredRMData.RMGradeid.value } : []);
-      setvendorName(filteredRMData && filteredRMData.Vendorid && filteredRMData.Vendorid.value ? { label: filteredRMData.Vendorid.label, value: filteredRMData.Vendorid.value } : []);
-      setstatusId(CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0);
+
       setvalue({ min: 0, max: 0 });
     }
     getDataList()
@@ -144,43 +95,10 @@ function RMImportListing(props) {
     if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
       return getFilteredRMData(rmImportDataList)
     } else {
+
       return rmImportDataList
     }
   }
-
-  /**
-  * @method getInitialRange
-  * @description GET INTIAL RANGE OF MIN AND MAX VALUES FOR SLIDER
-  */
-  const getInitialRange = () => {
-    // const { value } = this.state;
-
-    // this.props.setFilterForRM({ costingHeadTemp: costingHeadTemp, plantId: plantId, RMid: RMid, RMGradeid: RMGradeid, Vendorid: Vendorid })
-    // const filterData = {
-    //     costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : null,
-    //     plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : null,
-    //     material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : null,
-    //     grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : null,
-    //     vendor_id: isSimulation && filteredRMData && filteredRMData.Vendorid ? filteredRMData.Vendorid.value : null,
-    //     // technologyId: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp :null,
-    //     technologyId: isSimulation ? props.technology : 0,
-    //     net_landed_min_range: value.min,
-    //     net_landed_max_range: value.max,
-    //     statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
-    // }
-
-    // //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
-    // if (!props.isMasterSummaryDrawer) {
-    //     dispatch(getRMDomesticDataList(filterData, (res) => {
-    //         if (res && res.status === 200) {
-    //             let DynamicData = res.data.DynamicData;
-    //             setvalue({ min: 0, max: DynamicData.MaxRange });
-    //         }
-    //         setloader(false);
-    //     }))
-    // }
-  }
-
 
 
 
@@ -208,21 +126,18 @@ function RMImportListing(props) {
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           let DynamicData = res.data.DynamicData;
-          settableData(Data);
           setmaxRange(DynamicData.MaxRange);
           setloader(false);
-          if (isSimulation) {
-            props.apply(Data)
-          }
+          // if (isSimulation) {
+          //   props.apply(Data)
+          // }
 
 
         } else if (res && res.response && res.response.status === 412) {
-          settableData([]);
           setmaxRange(0);
           setloader(false);
 
         } else {
-          settableData([]);
           setmaxRange(0);
           setloader(false);
         }
@@ -234,9 +149,10 @@ function RMImportListing(props) {
   * @method editItemDetails
   * @description edit material type
   */
-  const editItemDetails = (Id, rowData = {}) => {
+  const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
     let data = {
       isEditFlag: true,
+      isViewFlag: isViewMode,
       Id: Id,
       IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
     }
@@ -299,7 +215,8 @@ function RMImportListing(props) {
     }
     return (
       <>
-        {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
+        <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+        {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
         {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
@@ -334,9 +251,12 @@ function RMImportListing(props) {
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
   }
 
+  /**
+  * @method hyphenFormatter
+  */
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
-    return cellValue != null ? cellValue : '-';
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
   /**
@@ -378,11 +298,10 @@ function RMImportListing(props) {
   const closeBulkUploadDrawer = () => {
     setisBulkUpload(false);
 
-    const fun = () => {
-      getInitialRange()
+    const getDataMethod = () => {
       getDataList(null, null, null)
     }
-    fun();
+    getDataMethod();
   }
 
   /**
@@ -393,16 +312,6 @@ function RMImportListing(props) {
     setShowPopupBulk(true)
   }
 
-
-
-  /**
-  * @method confirmDensity
-  * @description confirm density popup.
-  */
-  const confirmDensity = () => {
-    props.toggle('4')
-    setShowPopupBulk(false)
-  }
 
   /**
   * @method onSubmit
@@ -427,8 +336,12 @@ function RMImportListing(props) {
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
         item.CostingHead = 'Vendor Based'
+        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
       } else if (item.CostingHead === false) {
         item.CostingHead = 'Zero Based'
+        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+      } else {
+        item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
       }
       return item
     })
@@ -443,10 +356,14 @@ function RMImportListing(props) {
 
   const onBtExport = () => {
     let tempArr = []
-    const data = gridApi && gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
+    if (isSimulation === true) {
+      const data = gridApi && gridApi.getModel().rowsToDisplay
+      data && data.map((item => {
+        tempArr.push(item.data)
+      }))
+    } else {
+      tempArr = getFilterRMData()
+    }
     return returnExcelColumn(RMIMPORT_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -459,17 +376,7 @@ function RMImportListing(props) {
     gridOptions.api.setFilterModel(null);
   }
 
-  /**
-  * @method render
-  * @description Renders the component
-  */
 
-
-  //const { isBulkUpload, } = this.state;
-
-
-
-  //const { isBulkUpload, } = this.state;
   const isFirstColumn = (params) => {
     if (isSimulation) {
 
@@ -485,19 +392,13 @@ function RMImportListing(props) {
   const onRowSelect = () => {
 
     var selectedRows = gridApi.getSelectedRows();
-    // if (JSON.stringify(selectedRows) === JSON.stringify(selectedIds)) return false
-    setSelectedRowData(selectedRows)
     if (isSimulation) {
-      let len = gridApi.getSelectedRows().length
-      dispatch(setSelectedRowCountForSimulationMessage(len))
-      props.apply(selectedRows)
+      let length = gridApi.getSelectedRows().length
+      props.apply(selectedRows, length)
 
     }
   }
 
-  const onFloatingFilterChanged = (p) => {
-    gridApi.deselectAll()
-  }
 
   const defaultColDef = {
     resizable: true,
@@ -526,7 +427,7 @@ function RMImportListing(props) {
 
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-      {/* { this.props.loading && <Loader />} */}
+
       < form onSubmit={handleSubmit(onSubmit)} noValidate >
         <Row className="filter-row-large pt-4 ">
 
@@ -582,7 +483,6 @@ function RMImportListing(props) {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -598,7 +498,7 @@ function RMImportListing(props) {
       <Row>
         <Col>
           {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-          <div className="ag-grid-wrapper height-width-wrapper">
+          <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <=0 ?"overlay-contain": ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
@@ -611,13 +511,11 @@ function RMImportListing(props) {
                 floatingFilter={true}
 
                 domLayout='autoHeight'
-                // columnDefs={c}
                 rowData={getFilterRMData()}
                 pagination={true}
                 paginationPageSize={10}
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
-                // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,
@@ -626,9 +524,8 @@ function RMImportListing(props) {
                 frameworkComponents={frameworkComponents}
                 rowSelection={'multiple'}
                 onSelectionChanged={onRowSelect}
-                onFilterModified={onFloatingFilterChanged}
               >
-                <AgGridColumn field="CostingHead" headerName='Head'></AgGridColumn>
+                <AgGridColumn field="CostingHead" headerName='Costing Head'></AgGridColumn>
                 <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                 <AgGridColumn field="RawMaterial" ></AgGridColumn>
                 <AgGridColumn field="RMGrade"></AgGridColumn>
@@ -636,14 +533,17 @@ function RMImportListing(props) {
                 <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                 <AgGridColumn field="Category"></AgGridColumn>
                 <AgGridColumn field="MaterialType"></AgGridColumn>
-                <AgGridColumn field="Plant"></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
                 <AgGridColumn field="UOM"></AgGridColumn>
+                <AgGridColumn field="Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate"></AgGridColumn>
                 <AgGridColumn field="ScrapRate"></AgGridColumn>
-                <AgGridColumn field="RMFreightCost" cellRenderer='freightCostFormatter'></AgGridColumn>
-                <AgGridColumn field="RMShearingCost" cellRenderer='shearingCostFormatter'></AgGridColumn>
-                <AgGridColumn field="NetLandedCost" cellRenderer='costFormatter'></AgGridColumn>
+                <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='freightCostFormatter'></AgGridColumn>
+                <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
+                <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
+
                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>

@@ -488,7 +488,7 @@ function ApprovalListing(props) {
           <Row>
             <Col>
               <div className={`ag-grid-react`}>
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
                   <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                   </div>
@@ -510,7 +510,7 @@ function ApprovalListing(props) {
                       noRowsOverlayComponent={'customNoRowsOverlay'}
                       noRowsOverlayComponentParams={{
                         title: EMPTY_DATA,
-                        imagClass:"imagClass"
+                        imagClass: "imagClass"
                       }}
                       frameworkComponents={frameworkComponents}
                       suppressRowClickSelection={true}
@@ -544,8 +544,8 @@ function ApprovalListing(props) {
                         <option value="100">100</option>
                       </select>
                     </div>
-                    <div className="text-right pb-3 warning-section">
-                         <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
+                    <div className="text-right pb-3">
+                      <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                     </div>
                   </div>
                 </div>

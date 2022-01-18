@@ -6,8 +6,6 @@ import { required, maxLength5, minValue1, positiveAndDecimalNumber, } from "../.
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { BOUGHTOUTPART } from '../../../config/constants';
-import saveImg from '../../../assests/images/check.png'
-import cancelImg from '../../../assests/images/times.png'
 
 class AddBOPForm extends Component {
   constructor(props) {
@@ -17,8 +15,7 @@ class AddBOPForm extends Component {
       parentPart: [],
       BOPPart: [],
       isAddMore: false,
-      selectedParts: [],
-      titleObj:{}
+      titleObj: {}
     }
   }
 
@@ -27,19 +24,9 @@ class AddBOPForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-    const { BOMViewerData } = this.props;
-    let tempArr = [];
 
     this.props.getBoughtOutPartSelectList(() => { })
 
-    BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === BOUGHTOUTPART) {
-        tempArr.push(el.PartId)
-      }
-      return null;
-    })
-
-    this.setState({ selectedParts: tempArr })
   }
 
   checkRadio = (radioType) => {
@@ -80,12 +67,21 @@ class AddBOPForm extends Component {
   */
   renderListing = (label) => {
     const { boughtOutPartSelectList } = this.props;
-    const { selectedParts } = this.state;
     const temp = [];
+    const { BOMViewerData } = this.props;                    //UPDATING BOMVIEWER DATA ON EVERY RENDERING OF DROPDOWN
+    let tempArr = [];
+
+    BOMViewerData && BOMViewerData.map(el => {
+      if (el.PartType === BOUGHTOUTPART) {                           //UPDATING BOUGHT OUT PART IN TEMPARR
+        tempArr.push(el.PartId)
+      }
+      return null;
+    })
+
 
     if (label === 'BOPPart') {
       boughtOutPartSelectList && boughtOutPartSelectList.map(item => {
-        if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });

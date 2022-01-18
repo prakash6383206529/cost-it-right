@@ -13,7 +13,6 @@ import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AssemblyPart } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -22,6 +21,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -82,13 +82,16 @@ class AssemblyPartListing extends Component {
     * @method editItemDetails
     * @description confirm edit item
     */
-    editItemDetails = (Id) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         let requestData = {
             isEditFlag: true,
             Id: Id,
+            isViewMode: isViewMode,
         }
         this.props.getDetails(requestData)
     }
+
+
 
     /**
     * @method deleteItem
@@ -181,10 +184,11 @@ class AssemblyPartListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -194,15 +198,8 @@ class AssemblyPartListing extends Component {
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        let data;
-        if (cellValue === '' || cellValue === null) {
-            data = '-'
-        }
-        else {
-            data = cellValue
-        }
-        return data;
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -292,35 +289,19 @@ class AssemblyPartListing extends Component {
 
     onBtExport = () => {
         let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, this.props.partsListing)
+        tempArr = this.props.partsListing && this.props.partsListing
+        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData && TempData.map((item) => {
-            if (item.ECNNumber === null) {
-                item.ECNNumber = ' '
-            } else if (item.RevisionNumber === null) {
-                item.RevisionNumber = ' '
-            } else if (item.DrawingNumber === null) {
-                item.DrawingNumber = ' '
-            } else if (item.Technology === '-') {
+            if (item.Technology === '-') {
                 item.Technology = ' '
-            } else {
-                return false
             }
-
             if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
-
-
-
             return item
         })
         return (
@@ -367,7 +348,6 @@ class AssemblyPartListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
 
                 <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
@@ -409,7 +389,6 @@ class AssemblyPartListing extends Component {
 
                                     </>
 
-                                    //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                                 }
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -422,7 +401,7 @@ class AssemblyPartListing extends Component {
                 </Row>
 
 
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -434,7 +413,6 @@ class AssemblyPartListing extends Component {
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
                             domLayout='autoHeight'
-                            // columnDefs={c}
                             rowData={this.props.partsListing}
                             pagination={true}
                             paginationPageSize={10}
@@ -447,7 +425,7 @@ class AssemblyPartListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="BOMNumber" headerName="BOM NO."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
@@ -456,9 +434,9 @@ class AssemblyPartListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={120} headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={160} headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

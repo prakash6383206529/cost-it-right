@@ -173,10 +173,11 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
+    console.log('overheadObj: ', overheadObj);
 
-    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
+    let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
+      checkForNull(overheadObj.OverheadBOPTotalCost) +
+      checkForNull(overheadObj.OverheadCCTotalCost);
 
     if (overheadObj.IsOverheadFixedApplicable === true) {
       OverheadCost = overheadObj.OverheadFixedTotalCost;
@@ -186,9 +187,9 @@ function TabOverheadProfit(props) {
       OverheadCost = overheadObj.OverheadCombinedTotalCost;
     }
 
-    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
+    let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
+      checkForNull(profitObj.ProfitBOPTotalCost) +
+      checkForNull(profitObj.ProfitCCTotalCost);
 
     if (profitObj.IsProfitFixedApplicable === true) {
       ProfitCost = profitObj.ProfitFixedTotalCost;
@@ -260,13 +261,13 @@ function TabOverheadProfit(props) {
 
     const { overheadObj, profitObj } = data;
 
-    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
+    let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
+      checkForNull(overheadObj.OverheadBOPTotalCost) +
+      checkForNull(overheadObj.OverheadCCTotalCost);
 
-    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
-      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
+    let ProfitCost = checkForNull(profitObj.ProfitRMTotalCost) +
+      checkForNull(profitObj.ProfitBOPTotalCost) +
+      checkForNull(profitObj.ProfitCCTotalCost);
 
     let tempArr = [];
     try {
@@ -449,7 +450,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
-            IsPaymentTerms: PaymentTermObj ? true : false,
+          IsPaymentTerms: PaymentTermObj &&PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
           // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
@@ -466,7 +467,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
-            IsPaymentTerms: PaymentTermObj ? true : false,
+          IsPaymentTerms: PaymentTermObj &&PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
           // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +

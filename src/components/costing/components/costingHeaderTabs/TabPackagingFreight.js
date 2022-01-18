@@ -25,7 +25,7 @@ function TabPackagingFreight(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
-  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData,RMCCTabData,SurfaceTabData,OverheadProfitTabData,DiscountCostData,ToolTabData,getAssemBOPCharge } = useSelector(state => state.costing)
+  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData,RMCCTabData,SurfaceTabData,OverheadProfitTabData,DiscountCostData,ToolTabData,getAssemBOPCharge,checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -149,37 +149,46 @@ function TabPackagingFreight(props) {
   * @description SAVE COSTING
   */
   const saveCosting = () => {
-    const tabData = RMCCTabData[0]
-    const surfaceTabData= SurfaceTabData[0]
-    const overHeadAndProfitTabData=OverheadProfitTabData[0]
-    const discountAndOtherTabData =DiscountCostData[0]
-    const data = {
-      "CostingId": costData.CostingId,
-      "PartId": costData.PartId,
-      "PartNumber": costData.PartNumber,
-      "NetPOPrice": netPOPrice,
-      "LoggedInUserId": loggedInUserId(),
-      "EffectiveDate": CostingEffectiveDate,
-      "TotalCost": netPOPrice,
-      "CostingNumber": costData.CostingNumber,
-      //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
-      "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
-    }
-if(costData.IsAssemblyPart === true){
-  let assemblyRequestedData = createToprowObjAndSave(tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,4)
-console.log(assemblyRequestedData,"assemblyRequestedData");
-dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
-    }
 
-    dispatch(saveCostingPackageFreightTab(data, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
-        dispatch(setComponentPackageFreightItemData({}, () => { }))
-        InjectDiscountAPICall()
+    if(checkIsFreightPackageChange){
+
+      const tabData = RMCCTabData[0]
+      const surfaceTabData= SurfaceTabData[0]
+      const overHeadAndProfitTabData=OverheadProfitTabData[0]
+      const discountAndOtherTabData =DiscountCostData[0]
+      const data = {
+        "CostingId": costData.CostingId,
+        "PartId": costData.PartId,
+        "PartNumber": costData.PartNumber,
+        "NetPOPrice": netPOPrice,
+        "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
+        "TotalCost": netPOPrice,
+        "CostingNumber": costData.CostingNumber,
+        //"NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
+        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
       }
-    }))
+      if(costData.IsAssemblyPart === true){
+  
+ 
+  
+    if(!CostingViewMode){
+  
+      let assemblyRequestedData = createToprowObjAndSave(tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,4)
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{      }))
+    
+      }
+      dispatch(saveCostingPackageFreightTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentPackageFreightItemData({}, () => { }))
+          InjectDiscountAPICall()
+        }
+      }))
+    }
 
   }
+}
 
 
   const InjectDiscountAPICall = () => {
@@ -251,7 +260,7 @@ dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData,res =>{    
                     </Table>
                   </Col>
                 </Row>
-                <div className="col-sm-12 text-right bluefooter-butn">
+                <div className="col-sm-12 text-right bluefooter-butn sticky-btn-footer packaging-freight-btn-save">
                   {!CostingViewMode &&  <Link  to="costing-header" spy={true} smooth={true} offset={-350} delay={100}> <button
                     type={"button"}
                     className="submit-button mr5 save-btn"

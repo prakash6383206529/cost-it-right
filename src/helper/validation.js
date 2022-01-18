@@ -1,5 +1,7 @@
 import DayTime from '../components/common/DayTimeWrapper';
 import Toaster from '../components/common/Toaster';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import _ from 'lodash'
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -40,7 +42,8 @@ export const maxLength26 = maxLength(25);
 export const maxLength30 = maxLength(30);
 export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
-export const maxLength70 = maxLength(71);
+export const maxLength70 = maxLength(70);
+export const maxLength71 = maxLength(71);
 export const maxLength85 = maxLength(85);
 export const maxLength100 = maxLength(100);
 export const maxLength200 = maxLength(200);
@@ -304,7 +307,13 @@ export const trimDecimalPlace = (floatValue, Number) => {
 }
 
 export const checkForDecimalAndNull = (floatValue, Number) => {
-    return checkForNull(trimDecimalPlace(floatValue, Number))
+    const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    if(localStorage.IsRoundingVisible){
+        return checkForNull(_.round(floatValue,Number))
+    }else{
+
+        return checkForNull(trimDecimalPlace(floatValue, Number))
+    }
 }
 
 export const Numeric = value => {

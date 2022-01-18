@@ -75,7 +75,6 @@ function OperationCost(props) {
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
         const OperationCost = WithLaboutCost + WithOutLabourCost;
-        console.log('OperationCost: ', OperationCost);
 
         return {
           IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
@@ -93,7 +92,6 @@ function OperationCost(props) {
         }
       })
       let tempArr = [...GridArray, ...rowArray]
-      console.log('tempArr: ', tempArr);
       setGridData(tempArr)
       selectedIds(tempArr)
       dispatch(gridDataAdded(true))
@@ -237,7 +235,7 @@ function OperationCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OPERATION</button>}
+                <div className={'plus'}></div>OPER</button>}
             </Col>
           </Row>
           <Row>

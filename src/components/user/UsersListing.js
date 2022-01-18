@@ -188,6 +188,7 @@ class UsersListing extends Component {
 	* @description confirm edit item
 	*/
 	editItemDetails = (Id, passwordFlag = false) => {
+
 		let data = {
 			isEditFlag: true,
 			UserId: Id,
@@ -285,9 +286,8 @@ class UsersListing extends Component {
 	* @method hyphenFormatter
 	*/
 	hyphenFormatter = (props) => {
-		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-		return cellValue != null ? cellValue : '-';
+		const cellValue = props?.value;
+		return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
 	}
 
 	handleChange = (cell, row) => {
@@ -637,7 +637,7 @@ class UsersListing extends Component {
 							</Col>
 						</Row>
 					</form>
-					<div className="ag-grid-wrapper height-width-wrapper">
+					<div className={`ag-grid-wrapper height-width-wrapper ${this.props.userDataList && this.props.userDataList?.length <=0 ?"overlay-contain": ""}`}>
 						<div className="ag-grid-header">
 							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 						</div>

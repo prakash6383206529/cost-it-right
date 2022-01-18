@@ -28,11 +28,21 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
+import ReactExport from 'react-export-excel';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
+import { SimulationUtils } from '../SimulationUtils'
+import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
+import ViewAssembly from './ViewAssembly';
+import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
+import _ from 'lodash'
+
 const gridOptions = {};
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
@@ -60,7 +70,6 @@ function SimulationApprovalSummary(props) {
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
     const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
-
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
     const [compareCostingObj, setCompareCostingObj] = useState([])
@@ -71,7 +80,14 @@ function SimulationApprovalSummary(props) {
     const [initialFiles, setInitialFiles] = useState([]);
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
-    const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState({});
+    const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState([]);
+    const [textFilterSearch, setTextFilterSearch] = useState('')
+
+    const [showViewAssemblyDrawer, setShowViewAssemblyDrawer] = useState(false)
+    const [dataForAssemblyImpact, setDataForAssemblyImpact] = useState({})
+    const [dataForDownload, setDataForDownload] = useState([])
+    const [count, setCount] = useState(0);
+    const [assemblyImpactButtonTrue, setAssemblyImpactButtonTrue] = useState(true);
 
     const dispatch = useDispatch()
 
@@ -81,7 +97,7 @@ function SimulationApprovalSummary(props) {
     const { technologySelectList, plantSelectList } = useSelector(state => state.comman)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
 
-    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(false)
+    const [lastRevisionDataAccordian, setLastRevisionDataAccordian] = useState(impactedMasterDataListForLastRevisionData.length >= 0 ? false : true)
     const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
     const headerNameAssembly = ['Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance/Assembly', '', '', '', 'Assembly Number']
 
@@ -89,7 +105,7 @@ function SimulationApprovalSummary(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-    
+
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => { }))
@@ -103,8 +119,15 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,DepartmentId } = res.data.Data
-            setCostingList(SimulatedCostingList)
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId } = res.data.Data
+
+            let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                return o.CostingId;
+            });
+
+
+            setCostingList(uniqueArr)
+            setDataForDownload(SimulatedCostingList)
             setOldCostingList(SimulatedCostingList)
             setApprovalLevelStep(SimulationSteps)
             setEffectiveDate(res.data.Data.EffectiveDate)
@@ -113,7 +136,7 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements,DepartmentId:DepartmentId
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
 
             })
             setFiles(Attachements)
@@ -126,15 +149,15 @@ function SimulationApprovalSummary(props) {
                 setLoader(false)
             }, 500);
 
-            const valueTemp = {
-                CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
-                impactPartNumber: SimulatedCostingList[0].PartNo,
-                plantCode: SimulatedCostingList[0].PlantCode,
-                vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
-                delta: SimulatedCostingList[0].Variance,
-                quantity: 1
-            }
-            setdataForAssemblyImpactForFg(valueTemp)
+            // const valueTemp = {
+            //     CostingHead: SimulatedCostingList[0].CostingHead === 'VBC' ? 1 : 0,
+            //     impactPartNumber: SimulatedCostingList[0].PartNo,
+            //     plantCode: SimulatedCostingList[0].PlantCode,
+            //     vendorId: SimulatedCostingList[0].CostingHead === 'VBC' ? SimulatedCostingList[0].VendorId : EMPTY_GUID,
+            //     delta: SimulatedCostingList[0].Variance,
+            //     quantity: 1
+            // }
+            setdataForAssemblyImpactForFg(SimulatedCostingList)
         }))
 
     }, [])
@@ -162,6 +185,22 @@ function SimulationApprovalSummary(props) {
         }
 
     }, [effectiveDate, costingList, simulationDetail.SimulationId])
+
+    useEffect(() => {
+        let count = 0
+        DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map((item) => {
+
+            if (item.IsAssemblyExist === true) {
+                count++
+            }
+
+        })
+        if (count !== 0) {
+            setAssemblyImpactButtonTrue(true)
+        } else {
+            setAssemblyImpactButtonTrue(false)
+        }
+    }, [DataForAssemblyImpactForFg])
 
     useEffect(() => {
         if (impactedMasterData) {
@@ -318,6 +357,25 @@ function SimulationApprovalSummary(props) {
 
     }
 
+
+    const renderColumn = () => {
+
+        return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOAD, dataForDownload.length > 0 ? dataForDownload : [])
+    }
+
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+
+        let temp = []
+        temp = SimulationUtils(TempData)    // common function 
+
+
+        return (<ExcelSheet data={temp} name={'Costing Summary'}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
+    }
+
     const VerifyImpact = () => {
         setIsVerifyImpactDrawer(true)
     }
@@ -357,15 +415,15 @@ function SimulationApprovalSummary(props) {
     const oldRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewRMPrice > row.OldRMPrice) ? 'red-value form-control' : (row.NewRMPrice < row.OldRMPrice) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell,  getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const oldPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -402,14 +460,37 @@ function SimulationApprovalSummary(props) {
 
     const varianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) {
-            return checkForDecimalAndNull(row.OldRMPrice - row.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        } else if (String(SimulationTechnologyId) === EXCHNAGERATE) {
-            return checkForDecimalAndNull(row.OldExchangeRate - row.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
-
-        }
+        return checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
     }
 
+    const POVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
+    const viewAssembly = (cell, row, rowIndex) => {
+        const data = row
+        setDataForAssemblyImpact(data)
+        setShowViewAssemblyDrawer(true)
+    }
+
+    const closeAssemblyDrawer = () => {
+        // setAssemblyWiseAcc(false)
+        // if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg).length !== 0 || DataForAssemblyImpactForFg.length > 0) && count === 0) {
+        //     let requestData = []
+        //     DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map(item => {
+        //         requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+        //         return null
+        //     })
+        //     setCount(1)
+        //     dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => { }))
+        //     setCount(0)
+        // }
+        setShowViewAssemblyDrawer(false)
+        // setTimeout(() => {
+        // setAssemblyWiseAcc(true)
+        // }, 350);
+    }
 
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -417,11 +498,10 @@ function SimulationApprovalSummary(props) {
         return (
             <>
                 <Link to="campare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
+                {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
             </>
         )
     }
-
-
 
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -503,15 +583,20 @@ function SimulationApprovalSummary(props) {
 
 
     const onPageSizeChanged = (newPageSize) => {
-        var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+
+        // var value = document.getElementById('page-size').value;
+        gridApi.paginationSetPageSize(Number(newPageSize));
+
     };
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e.target.value)
     }
 
-    const resetState = () => {
+    const resetState = (e) => {
+        gridApi.setQuickFilter('');
+        setTextFilterSearch('')
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
@@ -541,7 +626,8 @@ function SimulationApprovalSummary(props) {
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
-        newPOCurrencyFormatter: newPOCurrencyFormatter
+        newPOCurrencyFormatter: newPOCurrencyFormatter,
+        POVarianceFormatter: POVarianceFormatter
     };
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -567,10 +653,10 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                    <div className="container-fluid  smh-approval-summary-page" id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         {/* <Errorbox customClass="" errorText="There is some error in your page" /> */}
                         <h2 className="heading-main">Approval Summary</h2>
-                        <ScrollToTop pointProp={"go-to-top"}/>
+                        <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
                             <Col md="8">
                                 <div className="left-border">
@@ -629,6 +715,10 @@ function SimulationApprovalSummary(props) {
                                                 <span className="d-block grey-text">{`Parts Supplied:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.PartsSupplied}</span>
                                             </th>
+                                            <th className="align-top">
+                                                <span className="d-block grey-text">{`Department Code:`}</span>
+                                                <span className="d-block">{simulationDetail && simulationDetail.DepartmentCode}</span>
+                                            </th>
                                             {
                                                 String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                 (<th className="align-top">
@@ -672,8 +762,8 @@ function SimulationApprovalSummary(props) {
                         </Row>
                         {/* } */}
 
-                        <Row>
-                            <Col md="6"><div className="left-border">{'Impacted Master Data:'}</div></Col>
+                        <Row className='reset-btn-container'>
+                            <Col md="6"><div className="left-border ">{'Impacted Master Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
                                     <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setshowImpactedData(!showImpactedData) }}>
@@ -700,7 +790,7 @@ function SimulationApprovalSummary(props) {
                         </Row>
 
                         {/* FG wise Impact section start */}
-                        <Row >
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'FG wise Impact:'}</div>
                             </Col>
@@ -716,47 +806,24 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {fgWiseDataAcc && 
-                         <Fgwiseimactdata
-                         DisplayCompareCosting={DisplayCompareCosting}
-                         SimulationId={simulationDetail.SimulationId}
-                         headerName={headerName}
-                         impactType={'FgWise'}
-                     />
+                        {fgWiseDataAcc &&
+                            <Fgwiseimactdata
+                                DisplayCompareCosting={DisplayCompareCosting}
+                                SimulationId={simulationDetail.SimulationId}
+                                headerName={headerName}
+                                impactType={'FgWise'}
+                            />
                         }
-                       
-                        <Row className="mt-4">
-                            <Col md="10">
-                                <div className="left-border">{'Assembly wise Impact:'}</div>
-                            </Col>
-                            <Col md="2" className="text-right">
-                                <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
-                                        {assemblyWiseAcc ? (
-                                            <i className="fa fa-minus" ></i>
-                                        ) : (
-                                            <i className="fa fa-plus"></i>
-                                        )}
-                                    </button>
-                                </div>
-                            </Col>
-                        </Row>
-                        
-                        {assemblyWiseAcc && <AssemblyWiseImpact
-                            headerName={headerNameAssembly}
-                            dataForAssemblyImpact={DataForAssemblyImpactForFg}
-                            vendorIdState={costingList[0]?.VendorId}
-                            impactType={'AssemblySummary'}
-                        />}
+
                         {/* FG wise Impact section end */}
 
-                        <Row>
+                        <Row className='mt-2'>
                             <Col md="10">
                                 <div className="left-border">{'Summary:'}</div>
                             </Col>
                             <Col md="2" className="text-right">
                                 <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCostingSummary(!costingSummary) }}>
+                                    <button className="btn btn-small-primary-circle ml-1" type="button" value={textFilterSearch} onClick={() => { setCostingSummary(!costingSummary) }}>
                                         {costingSummary ? (
                                             <i className="fa fa-minus" ></i>
                                         ) : (
@@ -770,21 +837,24 @@ function SimulationApprovalSummary(props) {
                         {costingSummary &&
                             <>
                                 <div className={`ag-grid-react`}>
+                                    { }
                                     <Row className="pb-2">
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className="ag-grid-wrapper height-width-wrapper">
-                                                        <div className="ag-grid-header">
-                                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <=0 ?"overlay-contain": ""}`}>
+                                                        <div className="ag-grid-header d-flex">
+
+                                                            <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                                            <button type="button" className="user-btn float-right mr5" title="Reset Grid" onClick={() => resetState()}>
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
+                                                            <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
+                                                                {renderColumn()}
+                                                            </ExcelFile>
                                                         </div>
-                                                        <div
-                                                            className="ag-theme-material"
-
-                                                        >
+                                                        <div className="ag-theme-material">
                                                             <AgGridReact
                                                                 style={{ height: '100%', width: '100%' }}
                                                                 defaultColDef={defaultColDef}
@@ -815,32 +885,39 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
 
-                                                                {
-                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
+                                                                {String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
                                                                 <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'PO Price' : "Old PO Price"}></AgGridColumn>
                                                                 {
-                                                                    (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
+                                                                    String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="New PO Price"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OldRMPrice" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewRMPrice" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
+                                                                {
+                                                                    (String(SimulationTechnologyId) === RMDOMESTIC || String(SimulationTechnologyId) === RMIMPORT) &&
+                                                                    <>
 
+                                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" cellRenderer='oldRMFormatter' headerName="Old RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="New RMC/pc" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="RMVariance" headerName="RM Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {
 
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="New PO Price (in Currency)"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="POVariance" headerName="PO Variance" cellRenderer='POVarianceFormatter' ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
-                                                                <AgGridColumn width={140} field="Variance" headerName="Variance"></AgGridColumn>
-                                                                <AgGridColumn width={130} field="SimulationCostingId" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
+                                                                <AgGridColumn width={130} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
                                                                 {/* <AgGridColumn field="Status" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>
                                                                 <AgGridColumn field="SimulationId" headerName='Actions'   type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn> */}
 
@@ -862,8 +939,33 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </>
                         }
-
-                        <Row className="mt-3">
+                        {assemblyImpactButtonTrue && <>
+                            <Row className='mt-2'>
+                                <Col md="10">
+                                    <div className="left-border">{'Assembly wise Impact:'}</div>
+                                </Col>
+                                <Col md="2" className="text-right">
+                                    <div className="right-border">
+                                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAssemblyWiseAcc(!assemblyWiseAcc) }}>
+                                            {assemblyWiseAcc ? (
+                                                <i className="fa fa-minus" ></i>
+                                            ) : (
+                                                <i className="fa fa-plus"></i>
+                                            )}
+                                        </button>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <div>
+                                {assemblyWiseAcc && <AssemblyWiseImpactSummary
+                                    dataForAssemblyImpact={DataForAssemblyImpactForFg}
+                                    vendorIdState={costingList[0]?.VendorId}
+                                    impactType={'AssemblySummary'}
+                                    isPartImpactAssembly={false}
+                                />}
+                            </div>
+                        </>}
+                        <Row className="mt-2">
                             <Col md="10">
                                 <div id="campare-costing" className="left-border">{'Compare Costing:'}</div>
                             </Col>
@@ -876,12 +978,12 @@ function SimulationApprovalSummary(props) {
                             </Col>
                         </Row>
 
-                        <Row className="mb-4">
+                        <Row>
                             <Col md="12" className="costing-summary-row">
                                 {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} />}
                             </Col>
                         </Row>
-                        <Row>
+                        <Row className='mt-2'>
                             <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
                             {false && <Col md="12" className="px-4">
                                 <label>Upload Attachment (upload up to 2 files)</label>
@@ -951,14 +1053,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </div>
                         </Row>
-                        {/* Costing Summary page here */}
-                        {/* page starts */}
-
-
-
-
-
-                        <Row className="mb-4">
+                        <Row className="mb-4 reset-btn-container">
                             <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
                             <Col md="6" className="text-right">
                                 <div className={'right-details'}>
@@ -977,6 +1072,18 @@ function SimulationApprovalSummary(props) {
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} />}
 
                                 </div>
+                            }
+                            {showViewAssemblyDrawer &&
+                                <ViewAssembly
+                                    isOpen={showViewAssemblyDrawer}
+                                    closeDrawer={closeAssemblyDrawer}
+                                    // approvalData={approvalData}
+                                    anchor={'bottom'}
+                                    dataForAssemblyImpact={dataForAssemblyImpact}
+                                    vendorIdState={costingList[0]?.VendorId}
+                                    isPartImpactAssembly={true}
+                                    impactType={'AssemblySummary'}
+                                />
                             }
                             {/* {lastRevisionDataAccordian &&
                                 <div className="accordian-content w-100">

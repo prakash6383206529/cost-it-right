@@ -39,7 +39,7 @@ import AuthMiddleware from '../AuthMiddleware'
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR, SIMULATION_APPROVAL_SUM,
-  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, APPROVAL_APP,
+  REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_DETAILS_REPORT, SIMULATION_INSIGNTS, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload, API,
   config, DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, PRODUCT, OperationMaster, SHEET_METAL
 } from '../config/constants'
@@ -59,7 +59,7 @@ import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
 import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
 import ToasterBoXWrapper from './common/ToasterBoXWrapper'
-
+import SimulationInsights from './report/components/SimulationInsights'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -379,7 +379,9 @@ class Main extends Component {
 
 
                     <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
-                    <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
+                    <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} /> 
+                    {/*  NEED TO ADD PATH FROM BACKEND */}
+                    <Route path="/simulation-insights" component={SimulationInsights} /> 
 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 

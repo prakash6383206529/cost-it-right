@@ -58,7 +58,7 @@ function ForgingCalculator(props) {
 
       <Row>
         <Col>
-          <Nav tabs className="subtabs">
+          <Nav tabs className="subtabs cr-subtabs-head forging-tabs  nav nav-tabs">
             <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === '1' })}

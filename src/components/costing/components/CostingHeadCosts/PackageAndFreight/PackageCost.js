@@ -7,7 +7,7 @@ import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
-import { gridDataAdded } from '../../../actions/Costing';
+import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
 
 function PackageCost(props) {
 
@@ -25,6 +25,9 @@ function PackageCost(props) {
 
   useEffect(() => {
     props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
+      dispatch(isPackageAndFreightDataChange(true))
+    }
   }, [gridData]);
 
   /**
@@ -105,7 +108,7 @@ function PackageCost(props) {
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD PACKAGING</button>}
+                <div className={'plus'}></div>PACKAGING</button>}
             </Col>
           </Row>
           <Row>

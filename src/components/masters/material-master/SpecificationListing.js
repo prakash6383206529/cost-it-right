@@ -48,9 +48,9 @@ class SpecificationListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-            showPopup:false,
-            showPopup2:false,
-            deletedId:''
+            showPopup: false,
+            showPopup2: false,
+            deletedId: ''
 
         }
     }
@@ -139,7 +139,7 @@ class SpecificationListing extends Component {
     * @description confirm delete RM Specification
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -155,15 +155,15 @@ class SpecificationListing extends Component {
                 Toaster.success(MESSAGES.DELETE_SPECIFICATION_SUCCESS);
                 this.getSpecificationListData('', '');
             }
-            this.setState({showPopup:false})
+            this.setState({ showPopup: false })
         });
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDelete(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method renderPaginationShowsTotal
     * @description Pagination
@@ -235,7 +235,7 @@ class SpecificationListing extends Component {
     * @description confirm Redirection to Material tab.
     */
     densityAlert = () => {
-        this.setState({showPopup2:true})
+        this.setState({ showPopup2: true })
     }
 
     /**
@@ -245,12 +245,12 @@ class SpecificationListing extends Component {
     confirmDensity = () => {
         this.props.toggle('4')
     }
-    onPopupConfirm2 =() => {
+    onPopupConfirm2 = () => {
         this.confirmDensity(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup2:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup2: false })
+    }
     /**
     * @name onSubmit
     * @param values
@@ -273,30 +273,23 @@ class SpecificationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, this.props.rmSpecificationList)
+        let tempArr = this.props.rmSpecificationList && this.props.rmSpecificationList
+        return this.returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        TempData && TempData.map((item) => {
+        temp = TempData && TempData.map((item) => {
             if (item.RMName === '-') {
                 item.RMName = ' '
             } else if (item.RMGrade === '-') {
                 item.RMGrade = ' '
-            } else {
-                return false
             }
             return item
         })
         return (
 
-            <ExcelSheet data={TempData} name={RmSpecification}>
+            <ExcelSheet data={temp} name={RmSpecification}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -312,7 +305,7 @@ class SpecificationListing extends Component {
     }
     hyphenFormatter = (props) => {
         const cellValue = props?.value;
-        return cellValue != null ? cellValue : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     /**
     * @method render
@@ -401,7 +394,7 @@ class SpecificationListing extends Component {
 
                 <Row>
                     <Col>
-                        <div className="ag-grid-wrapper height-width-wrapper">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rmSpecificationList && this.props.rmSpecificationList?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -463,11 +456,11 @@ class SpecificationListing extends Component {
                     anchor={'right'}
                 />}
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.SPECIFICATION_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.SPECIFICATION_DELETE_ALERT}`} />
+                }
                 {
-            this.state.showPopup2 && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`Recently Created Material Density is not created, Do you want to create?`}  />
-         }
+                    this.state.showPopup2 && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`Recently Created Material Density is not created, Do you want to create?`} />
+                }
             </div>
         );
     }

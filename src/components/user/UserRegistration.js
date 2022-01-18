@@ -5,8 +5,8 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6,minLength10, maxLength11, maxLength12, required, email, alphabetsOnlyForName, minLength7, maxLength18,
+  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength25 , postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
@@ -24,7 +24,6 @@ import { EMPTY_DATA } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
-import ConfirmComponent from "../../helper/ConfirmComponent";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 
@@ -67,7 +66,6 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
-      isLoader: false,
       simulationHeads: [],
       simualtionLevel: [],
       HeadLevelGrid: [],
@@ -339,7 +337,7 @@ class UserRegistration extends Component {
           let Data = res.data.Data;
 
           setTimeout(() => {
-            const { roleList, cityList, departmentList } = this.props;
+            const { roleList, departmentList } = this.props;
             let DepartmentObj = {}
             const depatArr = []
             const RoleObj = roleList && roleList.find(item => item.RoleId === Data.RoleId)
@@ -349,7 +347,6 @@ class UserRegistration extends Component {
               DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
             }
             // const DepartmentObj = departmentList && departmentList.find(item => item.DepartmentId === Data.DepartmentId)
-            const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
 
             this.setState({
               isEditFlag: true,
@@ -357,8 +354,7 @@ class UserRegistration extends Component {
               IsShowAdditionalPermission: Data.IsAdditionalAccess,
               department: (getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ Text: DepartmentObj.DepartmentName, Value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [],
               role: RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [],
-              city: CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-              // TechnologyLevelGrid:
+              city: { label: this.props.registerUserData.CityName, value: this.props.registerUserData.CityId }
             })
 
             if (Data.IsAdditionalAccess) {
@@ -1239,7 +1235,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[required, minLength3,alphabetsOnlyForName, maxLength25, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1253,7 +1249,7 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[minLength3, maxLength25, alphabetsOnlyForName, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                           component={renderText}
                           required={false}
                           // maxLength={26}
@@ -1268,7 +1264,7 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                          validate={[postiveNumber,minLength10, maxLength10, checkWhiteSpaces]}
                           required={false}
                           // maxLength={10}
                           customClassName={'withBorder'}
@@ -1276,13 +1272,13 @@ class UserRegistration extends Component {
                       </div>
                       <div className="col-md-3">
                         <div className="row form-group">
-                          <div className="Phone phoneNumber col-md-8 input-withouticon">
+                          <div className="Phone phoneNumber col-md-8">
                             <Field
                               label="Phone Number"
                               name={"PhoneNumber"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[postiveNumber, maxLength10]}
+                              validate={[postiveNumber,vlidatePhoneNumber, maxLength10]}
                               component={renderText}
                               //required={true}
                               maxLength={10}
@@ -1333,7 +1329,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required, minLength3, checkWhiteSpaces]}
+                            validate={[required, alphaNumeric , minLength3, maxLength25, checkWhiteSpaces]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}

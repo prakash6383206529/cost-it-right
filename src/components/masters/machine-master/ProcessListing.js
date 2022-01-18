@@ -333,18 +333,7 @@ class ProcessListing extends Component {
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    temp = TempData.map((item) => {
-      if (item.IsVendor === true) {
-        item.IsVendor = 'Vendor Based'
-      } else if (item.IsVendor === false) {
-        item.IsVendor = 'Zero Based'
-      } else if (item.VendorName === '-') {
-        item.VendorName = ' '
-      } else {
-        return false
-      }
-      return item
-    })
+    temp = TempData
 
     return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
       {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
@@ -364,11 +353,7 @@ class ProcessListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
+    let tempArr = this.props.processList && this.props.processList
     return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
@@ -415,7 +400,6 @@ class ProcessListing extends Component {
       costingHeadRenderer: this.costingHeadFormatter,
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      hyphenFormatter: this.hyphenFormatter
     };
 
     return (
@@ -462,7 +446,7 @@ class ProcessListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className="ag-grid-wrapper height-width-wrapper">
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.processList && this.props.processList?.length <=0 ?"overlay-contain": ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>

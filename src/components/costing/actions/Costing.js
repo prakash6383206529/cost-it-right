@@ -18,6 +18,10 @@ import {
   SET_ASSEM_BOP_CHARGE,
   SET_ARRAY_FOR_COSTING,
   CHECK_IS_DATA_CHANGE,
+  CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
+  CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
+  CHECK_IS_TOOL_DATA_CHANGE,
+  CHECK_IS_DISCOUNT_DATA_CHANGE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -274,7 +278,7 @@ export function getZBCCostingByCostingId(CostingId, callback) {
       })
       const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
       request.then((response) => {
-        console.log('response: ', response);
+        
         if (response.data.Result) {
           dispatch({
             type: GET_COSTING_DATA_BY_COSTINGID,
@@ -1088,11 +1092,11 @@ export function getInventoryDataByHeads(data, callback) {
  * @description GET PAYMENT TERM DETAIL BY COSTING HEADS
  */
 export function getPaymentTermsDataByHeads(data, callback) {
-  console.log('data: ', data);
+  
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}`, headers,)
-    console.log('request: ', request);
+    
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -2280,3 +2284,63 @@ export function isDataChange(isDataChange) {
     })
   }
 }
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isOverheadProfitDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isPackageAndFreightDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+
+
+
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isToolDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_TOOL_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+
+
+/**
+ * @method isDataChange
+ * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
+*/
+
+export function isDiscountDataChange(isDataChange) {
+  return (dispatch) => {
+    dispatch({
+      type: CHECK_IS_DISCOUNT_DATA_CHANGE,
+      payload: isDataChange
+    })
+  }
+}
+
+
+

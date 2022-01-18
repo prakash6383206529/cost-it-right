@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, } from 'reactstrap';
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer';
@@ -7,17 +7,21 @@ import { ViewCostingContext } from '../CostingDetails';
 import { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { useDispatch } from 'react-redux';
-import { saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation } from '../../actions/Costing';
+import { isDataChange, saveAssemblyBOPHandlingCharge } from '../../actions/Costing';
 import { NetPOPriceContext } from '../CostingDetailStepTwo';
 
 function AddBOPHandling(props) {
   const CostingViewMode = useContext(ViewCostingContext);
-  const { RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData } = useSelector(state => state.costing)
+  const { RMCCTabData, getAssemBOPCharge } = useSelector(state => state.costing)
   const dispatch = useDispatch()
-  const netPOPrice = useContext(NetPOPriceContext);
+
+  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  })
 
 
   useEffect(() => {
@@ -37,7 +41,6 @@ function AddBOPHandling(props) {
       }
     })
     setValue('BOPCost', BOPSum)
-
     if (RMCCTabData[0].CostingPartDetails.IsApplyBOPHandlingCharges) {
       setValue('BOPHandlingPercentage', RMCCTabData[0].CostingPartDetails.BOPHandlingPercentage)
       setValue('BOPHandlingCharges', RMCCTabData[0].CostingPartDetails.BOPHandlingCharges)
@@ -49,10 +52,7 @@ function AddBOPHandling(props) {
 
   }, [])
 
-  const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  })
+ 
 
 
   const handleBOPPercentageChange = (value) => {
@@ -63,6 +63,7 @@ function AddBOPHandling(props) {
         setValue('BOPHandlingCharges', 0)
         return false;
       }
+      dispatch(isDataChange(true))
       setValue('BOPHandlingCharges', checkForDecimalAndNull(getValues('BOPCost') * calculatePercentage(value), getConfigurationKey().NoOfDecimalForPrice))
 
     } else {
@@ -104,10 +105,7 @@ function AddBOPHandling(props) {
   }
 
   const saveHandleCharge = () => {
-    const tabData = RMCCTabData[0]
-    const surfaceTabData = SurfaceTabData[0]
-    const overHeadAndProfitTabData = OverheadProfitTabData[0]
-    const discountAndOtherTabData = DiscountCostData
+  
 
     let obj = {
       IsApplyBOPHandlingCharges: true,
@@ -115,71 +113,7 @@ function AddBOPHandling(props) {
       BOPHandlingCharges: getValues('BOPHandlingCharges')
     }
     dispatch(saveAssemblyBOPHandlingCharge(obj))
-    let assemblyWorkingRow = []
-    tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
-      if(item.PartType === 'Sub Assembly'){
-
-        let subAssemblyObj = {
-          "CostingId": item.CostingId,
-          "CostingNumber": "", // Need to find out how to get it.
-          "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-          "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
-          "TotalConversionCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalConversionCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalConversionCostWithQuantity,
-          "TotalCalculatedRMBOPCCCostPerPC": item.CostingPartDetails?.TotalRawMaterialsCost + item.CostingPartDetails?.TotalBoughtOutPartCost + item.CostingPartDetails?.TotalConversionCost,
-          "TotalCalculatedRMBOPCCCostPerAssembly": item.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-          "TotalOperationCostPerAssembly": checkForNull(item.CostingPartDetails?.TotalOperationCostPerAssembly),
-          "TotalOperationCostSubAssembly":checkForNull(item.CostingPartDetails?.TotalOperationCostSubAssembly),
-          "TotalOperationCostComponent": item.CostingPartDetails.TotalOperationCostComponent,
-          "SurfaceTreatmentCostPerAssembly": 0,
-          "TransportationCostPerAssembly": 0,
-          "TotalSurfaceTreatmentCostPerAssembly": 0,
-          "TotalCostINR": netPOPrice
-        }
-        assemblyWorkingRow.push(subAssemblyObj)
-        return assemblyWorkingRow
-      }
-    })
-    let assemblyRequestedData = {
-
-      "TopRow": {
-        "CostingId": tabData.CostingId,
-        "CostingNumber": tabData.CostingNumber,
-        "TotalRawMaterialsCostWithQuantity": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "TotalBoughtOutPartCostWithQuantity": getBOPTotalCost(tabData),
-        "TotalConversionCostWithQuantity": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerPC": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity + tabData.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity + tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "TotalCalculatedRMBOPCCCostPerAssembly": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
-        "NetRMCostPerAssembly": tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
-        "NetBOPCostAssembly": getBOPTotalCost(tabData),
-        "NetConversionCostPerAssembly": tabData.CostingPartDetails?.TotalConversionCostWithQuantity,
-        "NetRMBOPCCCost": tabData.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity + getValues('BOPHandlingCharges'),
-        "TotalOperationCostPerAssembly": tabData.CostingPartDetails.TotalOperationCostPerAssembly,
-        "TotalOperationCostSubAssembly": checkForNull(tabData.CostingPartDetails?.TotalOperationCostSubAssembly),
-        "TotalOperationCostComponent": checkForNull(tabData.CostingPartDetails?.TotalOperationCostComponent),
-        "SurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.SurfaceTreatmentCost,
-        "TransportationCostPerAssembly": surfaceTabData.CostingPartDetails?.TransportationCost,
-        "TotalSurfaceTreatmentCostPerAssembly": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "NetSurfaceTreatmentCost": surfaceTabData.CostingPartDetails?.NetSurfaceTreatmentCost,
-        "NetOverheadAndProfits": overHeadAndProfitTabData.CostingPartDetails ? (checkForNull(overHeadAndProfitTabData.CostingPartDetails.OverheadCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ProfitCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.RejectionCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.ICCCost) + checkForNull(overHeadAndProfitTabData.CostingPartDetails.PaymentTermCost)) : 0,
-        "NetPackagingAndFreightCost": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost,
-        "NetToolCost": ToolTabData[0]?.CostingPartDetails?.TotalToolCost,
-        "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
-        "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
-        "TotalCostINR": netPOPrice + getValues('BOPHandlingCharges'),
-        "TabId": 1
-      },
-      "WorkingRows": assemblyWorkingRow,
-      "BOPHandlingCharges": {
-        "AssemblyCostingId": tabData.CostingId,
-        "IsApplyBOPHandlingCharges": true,
-        "BOPHandlingPercentage": getValues('BOPHandlingPercentage'),
-        "BOPHandlingCharges": getValues('BOPHandlingCharges')
-      },
-      "LoggedInUserId": loggedInUserId()
-
-    }
-
-    dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+  
     setTimeout(() => {
       props.closeDrawer('')
     }, 500);

@@ -7,7 +7,7 @@ import {
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData, saveAssemblyPartRowCostingCalculation,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
-import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
@@ -39,6 +39,7 @@ function TabDiscountOther(props) {
   const [GoToNext, setGoToNext] = useState(false);
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
+  
 
   const dispatch = useDispatch()
   let history = useHistory();
@@ -46,16 +47,22 @@ function TabDiscountOther(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const headerCosts = useContext(netHeadCostContext);
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData,getAssemBOPCharge } = useSelector(state => state.costing)
-
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData,CostingDataList,getAssemBOPCharge } = useSelector(state => state.costing)
+  const [totalCost,setTotalCost] = useState(0)
+  const [discountObj,setDiscountObj] = useState({})
+  const [otherCostApplicability,setOtherCostApplicability] = useState([])
+  const [discountCostApplicability,setDiscountCostApplicability] = useState([])
+  const costingHead = useSelector(state => state.comman.costingHead)
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
+        console.log(DiscountCostData,"DiscountCostData");
         setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', DiscountCostData !== undefined && DiscountCostData.HundiOrDiscountPercentage !== null ? DiscountCostData.HundiOrDiscountPercentage : '')
         setValue('HundiOrDiscountValue', DiscountCostData !== undefined && DiscountCostData.DiscountCostType === 'Percentage' ? DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)) : DiscountCostData?.HundiOrDiscountValue)
@@ -68,18 +75,31 @@ function TabDiscountOther(props) {
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
           DiscountCostType: checkForNull(DiscountCostData !== undefined && DiscountCostData.DiscountCostType),
           HundiOrDiscountValue: DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue !== null ? DiscountCostData.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
+        
         }
-        props.setHeaderCost(topHeaderData)
+        props.setHeaderCost(topHeaderData,headerCosts,costData)
       }
     }
   }, [netPOPrice])
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
+
   }, [])
+
+
+  useEffect(()=>{
+    if(CostingDataList && CostingDataList.length >0){
+      let dataList =CostingDataList[0]
+      const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost)
+      setTotalCost(total)
+    }
+
+  },[CostingDataList])
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
+    console.log("COMING IN DISCOUNT COST DATA");
     setTimeout(() => {
 
       let updatedFiles = files.map((file) => {
@@ -104,18 +124,18 @@ function TabDiscountOther(props) {
           "IsOpen": true,
           "IsPrimary": true,
           "Sequence": 0,
-          "NetDiscountsCost": getValues('HundiOrDiscountValue'),
-          "TotalCost": getValues('NetPOPriceINR'),
-          "NetOtherCost": getValues('AnyOtherCost'),
+          "NetDiscountsCost":  DiscountCostData?.HundiOrDiscountValue,
+          "TotalCost": netPOPrice,
+          "NetOtherCost": DiscountCostData?.AnyOtherCost,
           "OtherCostDetails": {
             "OtherCostDetailId": '',
             "HundiOrDiscountPercentage": getValues('HundiOrDiscountPercentage'),
-            "HundiOrDiscountValue": getValues('HundiOrDiscountValue'),
-            "AnyOtherCost": getValues('AnyOtherCost'),
+            "HundiOrDiscountValue":  DiscountCostData?.HundiOrDiscountValue,
+            "AnyOtherCost": DiscountCostData?.AnyOtherCost,
             "TotalOtherCost": getValues('TotalOtherCost'),
-            "TotalDiscount": getValues('HundiOrDiscountValue'),
+            "TotalDiscount":  DiscountCostData?.HundiOrDiscountValue,
             "IsChangeCurrency": IsCurrencyChange,
-            "NetPOPriceINR": getValues('NetPOPriceINR'),
+            "NetPOPriceINR": netPOPrice,
             "NetPOPriceOtherCurrency": getValues('NetPOPriceOtherCurrency'),
             "CurrencyId": currency.value,
             "Currency": currency.label,
@@ -126,7 +146,11 @@ function TabDiscountOther(props) {
             "OtherCostPercentage": '',
             "PercentageOtherCost": getValues('PercentageOtherCost'),
             "OtherCostType": otherCostType.value,
-            "DiscountCostType": hundiscountType.value
+            "DiscountCostType": hundiscountType.value,
+            "OtherCostApplicabilityId": otherCostApplicability.value,
+            "OtherCostApplicability": otherCostApplicability.label,
+            "DiscountApplicbilityId": discountCostApplicability.value,
+            "DiscountApplicability": discountCostApplicability.label
           }
         },
         "Attachements": updatedFiles,
@@ -147,7 +171,7 @@ function TabDiscountOther(props) {
           let Data = res.data.DataList[0];
           if (Data && Data.CostingPartDetails && Data.CostingPartDetails.GrandTotalCost !== null) {
             let OtherCostDetails = Data.CostingPartDetails.OtherCostDetails;
-
+            setDiscountObj(OtherCostDetails)
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
@@ -168,28 +192,36 @@ function TabDiscountOther(props) {
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
-
+            setOtherCostApplicability({label:OtherCostDetails.OtherCostApplicability,value:OtherCostDetails.OtherCostApplicabilityId})
+            setDiscountCostApplicability({label:OtherCostDetails.DiscountApplicability,value:OtherCostDetails.DiscountApplicbilityId})
+            setValue('OtherCostApplicability',{label:OtherCostDetails.OtherCostApplicability,value:OtherCostDetails.OtherCostApplicabilityId})
+            setValue('DiscountCostApplicability',{label:OtherCostDetails.DiscountApplicability,value:OtherCostDetails.DiscountApplicbilityId})
+            
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
-              NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', initialConfiguration.NoOfDecimalForPrice),
-              HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
-              AnyOtherCost: checkForDecimalAndNull(OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '', initialConfiguration.NoOfDecimalForPrice),
-              HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '',
-              DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : ''
+              NetPOPriceINR: OtherCostDetails.NetPOPriceINR !== null ? checkForNull(OtherCostDetails.NetPOPriceINR) : '',
+              HundiOrDiscountValue: OtherCostDetails.HundiOrDiscountValue !== null ? checkForNull(OtherCostDetails.HundiOrDiscountValue) : '',
+              AnyOtherCost: OtherCostDetails.AnyOtherCost !== null ? checkForNull(OtherCostDetails.AnyOtherCost) : '',
+              HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? checkForNull(OtherCostDetails.HundiOrDiscountPercentage) : '',
+              DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
+              OtherCostApplicability:OtherCostDetails.OtherCostApplicability,
+              DiscountCostApplicability:OtherCostDetails.DiscountCostApplicability
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
             setTimeout(() => {
               let topHeaderData = {
-                DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
+                DiscountsAndOtherCost: checkForNull(OtherCostDetails.HundiOrDiscountValue),
                 HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
                 AnyOtherCost: checkForNull(OtherCostDetails.AnyOtherCost),
                 OtherCostType: OtherCostDetails.OtherCostType,
                 PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
-                HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
-                DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : ''
+                HundiOrDiscountValue: checkForNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : ''),
+                DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
+                OtherCostApplicability:OtherCostDetails.OtherCostApplicability,
+                DiscountCostApplicability:OtherCostDetails.DiscountCostApplicability
               }
-              props.setHeaderCost(topHeaderData)
+              props.setHeaderCost(topHeaderData,headerCosts,costData)
               // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
               let files = Data.Attachements && Data.Attachements.map((item) => {
                 item.meta = {}
@@ -210,18 +242,22 @@ function TabDiscountOther(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     if (!CostingViewMode) {
+      
       setValue('NetPOPriceINR', DiscountCostData && checkForDecimalAndNull(netPOPrice, initialConfiguration.NoOfDecimalForPrice))
-      setValue('HundiOrDiscountValue', DiscountCostData && DiscountCostData.HundiOrDiscountValue)
+
+      // setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue,initialConfiguration.NoOfDecimalForPrice))
       if (otherCostType.value === 'Percentage') {
-        setValue('AnyOtherCost', DiscountCostData !== undefined ? DiscountCostData.AnyOtherCost : 0)
+        setValue('AnyOtherCost', DiscountCostData !== undefined ? checkForDecimalAndNull(DiscountCostData.AnyOtherCost,initialConfiguration.NoOfDecimalForPrice) : 0)
       }
       if (hundiscountType.value === 'Percentage') {
-        setValue('HundiOrDiscountPercentage', DiscountCostData && DiscountCostData.HundiOrDiscountPercentage)
+        setValue('HundiOrDiscountValue', DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue,initialConfiguration.NoOfDecimalForPrice))
       }
 
       if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
       }
+
+      
       // setValue('HundiDiscountType', DiscountCostData.DiscountCostType !== null ? { label: DiscountCostData.DiscountCostType, value: DiscountCostData.DiscountCostType } : '')
     }
   }, [props]);
@@ -234,19 +270,48 @@ function TabDiscountOther(props) {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
 
-        let topHeaderData = {
-          DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration.NoOfDecimalForPrice),
-          HundiOrDiscountPercentage: checkForNull(event.target.value),
-          AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          DiscountCostType: hundiscountType.value
-        }
-        props.setHeaderCost(topHeaderData)
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration.NoOfDecimalForPrice),
+        //   HundiOrDiscountPercentage: checkForNull(event.target.value),
+        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+        //   DiscountCostType: hundiscountType.value
+        // }
+        // props.setHeaderCost(topHeaderData)
+
+        setDiscountObj({
+          ...discountObj,
+          HundiOrDiscountPercentage:checkForNull(event.target.value)
+        })
 
       } else {
         Toaster.warning('Please enter valid number.')
       }
     }
   }
+
+
+  const setValueForTopHeader = () =>{
+
+    let topHeaderData = {
+      DiscountsAndOtherCost: checkForNull(discountObj?.HundiOrDiscountValue),
+      HundiOrDiscountPercentage: checkForNull(discountObj?.HundiOrDiscountPercentage),
+      AnyOtherCost: checkForNull(discountObj?.AnyOtherCost),
+      OtherCostType: otherCostType?.value,
+      PercentageOtherCost: checkForNull(discountObj?.OtherCostPercentage),
+      DiscountCostType: hundiscountType.value,
+      OtherCostApplicability:discountObj.OtherCostApplicability,
+      DiscountCostApplicability:discountObj.DiscountCostApplicability
+    }
+    props.setHeaderCost(topHeaderData,headerCosts,costData)
+
+  }
+
+  useEffect(()=>{
+    setValueForTopHeader()
+    },[discountObj])
+
+
+
 
   /**
   * @method handleAnyOtherCostChange
@@ -256,12 +321,16 @@ function TabDiscountOther(props) {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
 
-        let topHeaderData = {
-          DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-          HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-          AnyOtherCost: checkForNull(event.target.value),
-        }
-        props.setHeaderCost(topHeaderData)
+        setDiscountObj({
+          ...discountObj,
+          AnyOtherCost:event.target.value
+        })
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        //   AnyOtherCost: checkForNull(event.target.value),
+        // }
+        // props.setHeaderCost(topHeaderData)
 
       } else {
         Toaster.warning('Please enter valid number.')
@@ -273,16 +342,48 @@ function TabDiscountOther(props) {
   * @description HANDLE ANY OTHER COST CHANGE
   */
   const handleDiscountCostChange = (event) => {
-    console.log("COMING IN discount", event.target.value);
+    
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
-        let topHeaderData = {
-          DiscountsAndOtherCost: checkForNull(event.target.value),
-          HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-          AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          DiscountCostType: hundiscountType.value
-        }
-        props.setHeaderCost(topHeaderData)
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForNull(event.target.value),
+        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+        //   DiscountCostType: hundiscountType.value
+        // }
+        // props.setHeaderCost(topHeaderData)
+
+        setDiscountObj({
+          ...discountObj,
+          HundiOrDiscountValue:checkForNull(event.target.value)
+        })
+
+      } else {
+        Toaster.warning('Please enter valid number.')
+      }
+    }
+  }
+
+  /**
+  * @method handleAnyOtherCostChange
+  * @description HANDLE ANY OTHER COST CHANGE
+  */
+  const handleDiscountPercenatgeCostChange = (event) => {
+    
+    if (!CostingViewMode) {
+      if (!isNaN(event.target.value)) {
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForNull(event.target.value),
+        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+        //   DiscountCostType: hundiscountType.value
+        // }
+        // props.setHeaderCost(topHeaderData)
+
+        setDiscountObj({
+          ...discountObj,
+          HundiOrDiscountPercentage:checkForNull(event.target.value)
+        })
 
       } else {
         Toaster.warning('Please enter valid number.')
@@ -300,14 +401,19 @@ function TabDiscountOther(props) {
         setOtherCostType(newValue)
         setValue('AnyOtherCost', 0)
         setValue('PercentageOtherCost', 0)
-        let topHeaderData = {
-          DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-          HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-          AnyOtherCost: 0,
-          OtherCostType: newValue.value,
-          PercentageOtherCost: 0,
-        }
-        props.setHeaderCost(topHeaderData)
+        setDiscountObj({
+          ...discountObj,
+          AnyOtherCost:0,
+          OtherCostPercentage:0
+        })
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        //   AnyOtherCost: 0,
+        //   OtherCostType: newValue.value,
+        //   PercentageOtherCost: 0,
+        // }
+        // props.setHeaderCost(topHeaderData)
       } else {
         setOtherCostType([])
       }
@@ -324,15 +430,19 @@ function TabDiscountOther(props) {
         setValue('HundiOrDiscountValue', 0)
         setValue('HundiOrDiscountPercentage', 0)
         setValue('HundiDiscountType', newValue.value)
-        let topHeaderData = {
-          DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-          HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-          AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
-          OtherCostType: otherCostType.value,
-          PercentageOtherCost: checkForNull(getValues('PercentageOtherCost')),
-          DiscountCostType: newValue.value
-        }
-        props.setHeaderCost(topHeaderData)
+        setDiscountObj({
+          ...discountObj,
+          DiscountCostType:newValue.value
+        })
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        //   AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+        //   OtherCostType: otherCostType.value,
+        //   PercentageOtherCost: checkForNull(getValues('PercentageOtherCost')),
+        //   DiscountCostType: newValue.value
+        // }
+        // props.setHeaderCost(topHeaderData)
       } else {
         setHundiDiscountType([])
       }
@@ -347,14 +457,18 @@ function TabDiscountOther(props) {
     if (!CostingViewMode) {
       if (!isNaN(event.target.value)) {
 
-        let topHeaderData = {
-          DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
-          HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
-          AnyOtherCost: checkForNull(event.target.value),
-          OtherCostType: Object.keys(otherCostType).length > 0 ? otherCostType.value : '',
-          PercentageOtherCost: checkForNull(event.target.value),
-        }
-        props.setHeaderCost(topHeaderData)
+        setDiscountObj({
+          ...discountObj,
+          OtherCostPercentage: checkForNull(event.target.value)
+        })
+        // let topHeaderData = {
+        //   DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        //   HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        //   AnyOtherCost: checkForNull(event.target.value),
+        //   OtherCostType: Object.keys(otherCostType).length > 0 ? otherCostType.value : '',
+        //   PercentageOtherCost: checkForNull(event.target.value),
+        // }
+        // props.setHeaderCost(topHeaderData)
 
       } else {
         Toaster.warning('Please enter valid number.')
@@ -369,6 +483,7 @@ function TabDiscountOther(props) {
   const onPressChangeCurrency = () => {
     setCurrency([])
     setIsCurrencyChange(!IsCurrencyChange)
+    setCurrencyExchangeRate('')
   }
 
   /**
@@ -435,6 +550,14 @@ function TabDiscountOther(props) {
         { label: 'Percentage', value: 'Percentage' },
       ];
     }
+    if (label === 'Applicability') {
+      costingHead && costingHead.map(item => {
+          if (item.Value === '0') return false;
+          temp.push({ label: item.Text, value: item.Value })
+          return null;
+      });
+      return temp;
+  }
 
   }
 
@@ -476,7 +599,7 @@ function TabDiscountOther(props) {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
       dropzone.current.files.pop()
-      Toaster.warning("File size greater than 5mb not allowed")
+      Toaster.warning("File size greater than 20 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
@@ -549,18 +672,18 @@ function TabDiscountOther(props) {
         "IsOpen": true,
         "IsPrimary": true,
         "Sequence": '0',
-        "NetDiscountsCost": values.HundiOrDiscountValue,
-        "TotalCost": values.NetPOPriceINR,
-        "NetOtherCost": values.AnyOtherCost,
+        "NetDiscountsCost": DiscountCostData.HundiOrDiscountValue,
+        "TotalCost": netPOPrice,
+        "NetOtherCost": DiscountCostData.AnyOtherCost,
         "OtherCostDetails": {
           "OtherCostDetailId": '',
           "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
-          "HundiOrDiscountValue": values.HundiOrDiscountValue,
-          "AnyOtherCost": values.AnyOtherCost,
+          "HundiOrDiscountValue": DiscountCostData.HundiOrDiscountValue,
+          "AnyOtherCost": DiscountCostData.AnyOtherCost,
           "TotalOtherCost": values.TotalOtherCost,
-          "TotalDiscount": values.HundiOrDiscountValue,
+          "TotalDiscount": DiscountCostData.HundiOrDiscountValue,
           "IsChangeCurrency": IsCurrencyChange,
-          "NetPOPriceINR": values.NetPOPriceINR,
+          "NetPOPriceINR": netPOPrice,
           "NetPOPriceOtherCurrency": values.NetPOPriceOtherCurrency,
           "CurrencyId": currency.value,
           "Currency": currency.label,
@@ -571,7 +694,11 @@ function TabDiscountOther(props) {
           "OtherCostPercentage": '',
           "PercentageOtherCost": values.PercentageOtherCost,
           "OtherCostType": otherCostType.value,
-          "DiscountCostType": hundiscountType.value
+          "DiscountCostType": hundiscountType.value,
+          "OtherCostApplicabilityId": otherCostApplicability.value,
+          "OtherCostApplicability": otherCostApplicability.label,
+          "DiscountApplicbilityId": discountCostApplicability.value,
+          "DiscountApplicability": discountCostApplicability.label
         }
       },
       "Attachements": updatedFiles
@@ -581,20 +708,53 @@ function TabDiscountOther(props) {
 
   
 
-      dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-    }
+      if(!CostingViewMode){
 
-    dispatch(saveDiscountOtherCostTab(data, res => {
-      if (res.data.Result) {
-        Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-        dispatch(setComponentDiscountOtherItemData({}, () => { }))
-        if (GoToNext) {
-          props.toggle('2')
-          history.push('/costing-summary')
-        }
+        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
-    }))
+    }
+    if(!CostingViewMode){
+
+      dispatch(saveDiscountOtherCostTab(data, res => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentDiscountOtherItemData({}, () => { }))
+          if (GoToNext) {
+            props.toggle('2')
+            history.push('/costing-summary')
+          }
+        }
+      }))
+    }
   }
+
+  const handleOherCostApplicabilityChange = (value)=>{
+    setOtherCostApplicability(value)
+    setValue('AnyOtherCost', 0)
+    setValue('PercentageOtherCost', 0)
+    setDiscountObj({
+      ...discountObj,
+      AnyOtherCost:0,
+      OtherCostPercentage:0,
+      OtherCostApplicability:value.label
+    })
+  }
+
+  const handleDiscountApplicabilityChange = (value) =>{
+    setDiscountCostApplicability(value)
+    setValue('HundiOrDiscountValue', 0)
+    setValue('HundiOrDiscountPercentage', 0)
+    setDiscountObj({
+      ...discountObj,
+      HundiOrDiscountPercentage:0,
+      HundiOrDiscountValue:0,
+      DiscountCostApplicability:value.label
+    })
+  }
+
+
+
+
   return (
     <>
       <div className="login-container signup-form">
@@ -608,10 +768,10 @@ function TabDiscountOther(props) {
                     <Table className="table cr-brdr-main cr-bg-tbl mt-1" size="sm" >
                       <thead>
                         <tr>
-                          <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%.33" }}>{``}</th>
+                          <th className="fs1 font-weight-500 py-3" className="width33">{``}</th>
+                          <th className="fs1 font-weight-500 py-3" className="width33">{``}</th>
                           {/* <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountCostData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th> */}
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountCostData && DiscountCostData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(getValues('NetPOPriceINR'), initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
@@ -642,7 +802,27 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     {
-                      <Col md="2" >
+                      otherCostType.value === 'Percentage' && 
+                      <Col md="2">
+                      <SearchableSelectHookForm
+                          label={'Other Cost Applicability'}
+                          name={'OtherCostApplicability'}
+                          placeholder={'-Select-'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: false }}
+                          register={register}
+                          defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
+                          options={renderListing('Applicability')}
+                          mandatory={false}
+                          disabled={CostingViewMode ? true : false}
+                          handleChange={handleOherCostApplicabilityChange}
+                          errors={errors.OtherCostApplicability}
+                      />
+                  </Col>
+                    }
+                    {
+                      <Col className={`${otherCostType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <NumberFieldHookForm
                           label="Percentage(%)"
                           name={"PercentageOtherCost"}
@@ -691,7 +871,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode ? true : false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="2">
                       <NumberFieldHookForm
                         label="Other Cost"
                         name={"AnyOtherCost"}
@@ -737,9 +917,27 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     {
-
-
-                      <Col md="2" >
+                      hundiscountType.value === 'Percentage' &&
+                      <Col md="2">
+                      <SearchableSelectHookForm
+                          label={'Discount Applicability'}
+                          name={'DiscountCostApplicability'}
+                          placeholder={'-Select-'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: false }}
+                          register={register}
+                          defaultValue={discountCostApplicability.length !== 0 ? discountCostApplicability : ''}
+                          options={renderListing('Applicability')}
+                          mandatory={false}
+                          disabled={CostingViewMode ? true : false}
+                          handleChange={handleDiscountApplicabilityChange}
+                          errors={errors.DiscountCostApplicability}
+                      />
+                  </Col>
+                    }
+                    {
+                      <Col className={`${hundiscountType.value === 'Percentage' ? 'col-md-2' : 'col-md-4'}`}>
                         <TextFieldHookForm
                           label="Discount(%)"
                           name={"HundiOrDiscountPercentage"}
@@ -750,7 +948,7 @@ function TabDiscountOther(props) {
                           rules={{
                             required: false,
                             pattern: {
-                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              value:/^\d*\.?\d*$/,
                               message: 'Invalid Number.'
                             },
                             max: {
@@ -760,7 +958,7 @@ function TabDiscountOther(props) {
                           }}
                           handleChange={(e) => {
                             e.preventDefault();
-                            handleDiscountChange(e);
+                            handleDiscountPercenatgeCostChange(e);
                           }}
                           defaultValue={""}
                           className=""
@@ -770,6 +968,7 @@ function TabDiscountOther(props) {
                         />
                       </Col>
                     }
+                   
                     <Col md="4" >
                       <TextFieldHookForm
                         label="Hundi/Discount Value"
@@ -795,7 +994,7 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode || hundiscountType.value === 'Percentage' || Object.keys(hundiscountType).length === 0 ? true : false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="2">
                       <TextFieldHookForm
                         label="Net PO Price (INR)"
                         name={'NetPOPriceINR'}
@@ -955,19 +1154,22 @@ function TabDiscountOther(props) {
                                 <a href={fileURL} target="_blank" rel="noreferrer">
                                   {f.OriginalFileName}
                                 </a>
+                                {
+                                  !CostingViewMode && 
                                 <img
                                   alt={""}
                                   className="float-right"
                                   onClick={() => deleteFile(f.FileId, f.FileName)}
                                   src={redcrossImg}
                                 ></img>
+                                }
                               </div>
                             );
                           })}
                       </div>
                     </Col>
                   </Row>
-                  <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
+                  <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button

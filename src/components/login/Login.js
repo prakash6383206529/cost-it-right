@@ -15,6 +15,8 @@ import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.svg'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
+import { VERSION } from '../../config/constants'
+import LoaderCustom from "../common/LoaderCustom";
 
 class Login extends Component {
   constructor(props) {
@@ -23,7 +25,8 @@ class Login extends Component {
       isLoader: false,
       isSubmitted: false,
       isRedirect: false,
-      flag: false
+      flag: false,
+      inputLoader:false
     };
   }
 
@@ -54,19 +57,30 @@ class Login extends Component {
       password: values.Password,
       grant_type: 'password',
     }
+    this.setState({inputLoader:true})
     // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
+     
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
+        
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
+        setTimeout(() => {
+          this.setState({inputLoader:false})
+        }, 1500)
         this.props.logUserIn();
+       
         // this.setState({ isRedirect: true })
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
       }
+      setTimeout(() => {
+        this.setState({inputLoader:false})
+      }, 1500)
     })
+   
     // });
   }
 
@@ -140,8 +154,9 @@ class Login extends Component {
                       maxLength={26}
                     />
                   </div>
-
-                  <div className="text-center ">
+                  
+                  <div className="text-center p-relative">
+                  {this.state.inputLoader && <LoaderCustom customClass="input-loader login-loader"/>}
                     <input
                       type="submit"
                       disabled={isSubmitted ? true : false}
@@ -169,6 +184,7 @@ class Login extends Component {
             </div>
           </div>
         </div >
+        <p className="login-version">{VERSION}</p>
       </div>
     );
   }

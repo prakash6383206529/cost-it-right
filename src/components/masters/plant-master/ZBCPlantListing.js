@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, deletePlantAPI, getFilteredPlantList } from '../actions/Plant';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, } from '../../../actions/Common';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
+import { focusOnError, } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -41,20 +41,21 @@ class ZBCPlantListing extends Component {
             city: [],
             country: [],
             state: [],
-            showPopup:false,
-            deletedId:'',
-           
-            cellData:{},
-            cellValue:'',
-            showPopupToggle:false
+            showPopup: false,
+            deletedId: '',
+
+            cellData: {},
+            cellValue: '',
+            showPopupToggle: false,
+            isViewMode: false
         }
     }
 
     componentDidMount() {
-        // this.getTableListData();
+
         this.props.fetchCountryDataAPI(() => { })
         this.filterList()
-        //this.props.onRef(this)
+
     }
 
     /**
@@ -79,6 +80,17 @@ class ZBCPlantListing extends Component {
             isOpenVendor: true,
             isEditFlag: true,
             ID: Id,
+            isViewMode: false,
+        })
+
+    }
+
+    viewOrEditItemDetails = (Id, isViewMode) => {
+        this.setState({
+            isOpenVendor: true,
+            isEditFlag: true,
+            ID: Id,
+            isViewMode: isViewMode
         })
 
     }
@@ -88,7 +100,7 @@ class ZBCPlantListing extends Component {
     * @description confirm delete part
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -100,21 +112,21 @@ class ZBCPlantListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.filterList()
-                //this.getTableListData();
+
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {        
-            this.confirmDeleteItem(this.state.deletedId);         
+    onPopupConfirm = () => {
+        this.confirmDeleteItem(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-        this.setState({showPopupToggle:false})
-      }
-      onPopupConfirmToggle =() => {        
-        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)      
-     }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+        this.setState({ showPopupToggle: false })
+    }
+    onPopupConfirmToggle = () => {
+        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
+    }
     /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -123,10 +135,11 @@ class ZBCPlantListing extends Component {
         const cellValue = props?.value;
         const rowData = props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -137,7 +150,7 @@ class ZBCPlantListing extends Component {
             ModifiedBy: loggedInUserId(),
             IsActive: !cell, //Status of the user.
         }
-        this.setState({showPopupToggle:true, cellData:data, cellValue:cell})
+        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
         const toastrConfirmOptions = {
             onOk: () => {
                 this.confirmDeactivateItem(data, cell)
@@ -145,11 +158,7 @@ class ZBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-// this.setState({isTogglePopup:true})
-    //     return (
-    //     //     Toaster.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
-    //  <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${cell?MESSAGES.PLANT_DEACTIVE_ALERT:MESSAGES.PLANT_ACTIVE_ALERT}`}  />
-    //     )
+
     }
 
     confirmDeactivateItem = (data, cell) => {
@@ -164,7 +173,7 @@ class ZBCPlantListing extends Component {
                 this.filterList()
             }
         })
-        this.setState({showPopupToggle:false})
+        this.setState({ showPopupToggle: false })
     }
 
     /**
@@ -261,7 +270,7 @@ class ZBCPlantListing extends Component {
 
 
     formToggle = () => {
-        this.setState({ isOpenVendor: true })
+        this.setState({ isOpenVendor: true, isViewMode: false })
     }
 
     closeVendorDrawer = (e = '') => {
@@ -286,7 +295,7 @@ class ZBCPlantListing extends Component {
 
     onGridReady = (params) => {
         this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
+        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
     };
@@ -297,13 +306,8 @@ class ZBCPlantListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = []
-        const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-        data && data.map((item => {
-            tempArr.push(item.data)
-        }))
-
-        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, this.props.plantDataList)
+        let tempArr = this.props.plantDataList && this.props.plantDataList
+        return this.returnExcelColumn(ZBCPLANT_DOWNLOAD_EXCEl, tempArr)
     };
 
     returnExcelColumn = (data = [], TempData) => {
@@ -333,7 +337,7 @@ class ZBCPlantListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration, DownloadAccessibility } = this.props;
 
-        const { isEditFlag, isOpenVendor,isDeletePopoup,isTogglePopup } = this.state;
+        const { isEditFlag, isOpenVendor, isDeletePopoup, isTogglePopup } = this.state;
         const options = {
             clearSearch: true,
             noDataText: (this.props.plantDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
@@ -358,7 +362,6 @@ class ZBCPlantListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
             statusButtonFormatter: this.statusButtonFormatter
         };
 
@@ -409,7 +412,7 @@ class ZBCPlantListing extends Component {
                 </form>
 
 
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.plantDataList && this.props.plantDataList?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -435,14 +438,14 @@ class ZBCPlantListing extends Component {
                             }}
                             frameworkComponents={frameworkComponents}
                         >
-                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
+                            <AgGridColumn  field="PlantName" headerName="Plant Name"></AgGridColumn>
                             <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                             <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" headerName="Action"  type="rightAligned" width={"150px"} floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="paging-container d-inline-block float-right">
                             <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
@@ -459,18 +462,19 @@ class ZBCPlantListing extends Component {
                         isOpen={isOpenVendor}
                         closeDrawer={this.closeVendorDrawer}
                         isEditFlag={isEditFlag}
+                        isViewMode={this.state.isViewMode}
                         ID={this.state.ID}
                         anchor={"right"}
                     />
                 )}
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`}  />
-            
-            // `${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`
-        }
-        {
-            this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`}  />
-        }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
+
+
+                }
+                {
+                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
+                }
             </div>
         );
     }

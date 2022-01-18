@@ -68,7 +68,11 @@ import {
   SET_PLASTIC_ARR,
   SET_ASSEM_BOP_CHARGE,
   CHECK_IS_DATA_CHANGE,
-  SET_ARRAY_FOR_COSTING
+  SET_ARRAY_FOR_COSTING,
+  CHECK_IS_DISCOUNT_DATA_CHANGE,
+  CHECK_IS_TOOL_DATA_CHANGE,
+  CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
+  CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE
 } from '../../../config/constants';
 
 const initialState = {
@@ -88,7 +92,12 @@ const initialState = {
   SurfaceCostData: {},
   RMCCutOffObj: { IsCutOffApplicable: false, CutOffRMC: '' },
   getAssemBOPCharge:{},
-  setArrayForCosting:[]
+  setArrayForCosting:[],
+  checkIsOverheadProfitChange:false,
+  checkIsFreightPackageChange:false,
+  checkIsToolTabChange:false,
+  
+
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -573,6 +582,32 @@ export default function costingReducer(state = initialState, action) {
         loading:false,
         setArrayForCosting:tempArray
       }
+    case CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE:
+      return{
+        ...state,
+        loading:false,
+        checkIsOverheadProfitChange:action.payload
+      }
+    case CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE:
+      return{
+        ...state,
+        loading:false,
+        checkIsFreightPackageChange:action.payload
+      }
+    case CHECK_IS_TOOL_DATA_CHANGE:
+      return{
+        ...state,
+        loading:false,
+        checkIsToolTabChange:action.payload
+      }
+    case CHECK_IS_DISCOUNT_DATA_CHANGE:
+      return{
+        ...state,
+        loading:false,
+        checkIsDiscountChange:action.payload
+      }
+  
+    
     default:
       return state
   }

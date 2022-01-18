@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -19,7 +18,6 @@ import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -27,6 +25,8 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -135,12 +135,12 @@ class LabourListing extends Component {
 
 
   /**
-   * @method editItemDetails
-   * @description confirm edit item
+   * @method viewOrEditItemDetails
+   * @description confirm edit or view item
    */
-  editItemDetails = (Id) => {
+  viewOrEditItemDetails = (Id, isViewMode) => {
     this.setState({
-      data: { isEditFlag: true, ID: Id },
+      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
       toggleForm: true,
     })
   }
@@ -187,10 +187,11 @@ class LabourListing extends Component {
     const cellValue = props?.value;
     const rowData = props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.state;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -202,16 +203,7 @@ class LabourListing extends Component {
       ModifiedBy: loggedInUserId(),
       IsActive: !cell, //Status of the user.
     }
-    // this.props.activeInactiveVendorStatus(data, res => {
-    //     if (res && res.data && res.data.Result) {
-    //         if (cell == true) {
-    //             Toaster.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-    //         } else {
-    //             Toaster.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-    //         }
-    //         this.getTableListData(null, null, null, null)
-    //     }
-    // })
+
   }
 
 
@@ -273,6 +265,14 @@ class LabourListing extends Component {
   }
 
   /**
+  * @method hyphenFormatter
+  */
+  hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+  }
+
+  /**
    * @method dashFormatter
    * @description Renders Costing head
    */
@@ -286,10 +286,8 @@ class LabourListing extends Component {
   */
   effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
-
-
 
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
@@ -374,18 +372,13 @@ class LabourListing extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.length > 0 && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, this.props.labourDataList)
+    let tempArr = this.props.labourDataList && this.props.labourDataList
+    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
     let temp = []
-    TempData && TempData.map((item) => {
+    temp = TempData && TempData.map((item) => {
       if (item.Specification === null) {
         item.Specification = ' '
       } else if (item.IsContractBase === true) {
@@ -396,14 +389,12 @@ class LabourListing extends Component {
         item.Vendor = ' '
       } else if (item.Plant === '-') {
         item.Plant = ' '
-      } else {
-        return false
       }
       return item
     })
     return (
 
-      <ExcelSheet data={TempData} name={LabourMaster}>
+      <ExcelSheet data={temp} name={LabourMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -439,9 +430,6 @@ class LabourListing extends Component {
     const options = {
       clearSearch: true,
       noDataText: (this.props.labourDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      // onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -461,14 +449,15 @@ class LabourListing extends Component {
       customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       costingHeadFormatter: this.costingHeadFormatter,
-      effectiveDateRenderer: this.effectiveDateFormatter
+      effectiveDateRenderer: this.effectiveDateFormatter,
+      hyphenFormatter: this.hyphenFormatter
     };
 
     return (
       <>
         {/* {this.state.isLoader && <LoaderCustom />} */}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+          <ScrollToTop pointProp="go-to-top" />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
             noValidate
@@ -525,7 +514,7 @@ class LabourListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
+
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -538,7 +527,7 @@ class LabourListing extends Component {
             </Row>
           </form>
 
-          <div className="ag-grid-wrapper height-width-wrapper">
+          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.labourDataList && this.props.labourDataList?.length <=0 ?"overlay-contain": ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
@@ -549,7 +538,6 @@ class LabourListing extends Component {
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout='autoHeight'
-                // columnDefs={c}
                 rowData={this.props.labourDataList}
                 pagination={true}
                 paginationPageSize={10}
@@ -564,14 +552,14 @@ class LabourListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="Vendor" headerName="Vendor Name"></AgGridColumn>
-                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                <AgGridColumn field="Vendor" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
                 <AgGridColumn width={205} field="LabourRate" headerName="Rate Per Person/Annum"></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               <div className="paging-container d-inline-block float-right">
                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

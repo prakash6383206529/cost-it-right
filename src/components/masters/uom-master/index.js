@@ -20,6 +20,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import ScrollToTop from '../../common/ScrollToTop';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,8 +47,8 @@ class UOMMaster extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      showPopup:false,
-      deletedId:''
+      showPopup: false,
+      deletedId: ''
 
     }
   }
@@ -137,13 +138,13 @@ class UOMMaster extends Component {
   * @description confirm delete UOM
   */
   deleteItem = (Id) => {
-    this.setState({showPopup:true, deletedId:Id })
+    this.setState({ showPopup: true, deletedId: Id })
   }
-  onPopupConfirm =() => {
+  onPopupConfirm = () => {
     this.confirmDeleteUOM(this.state.deletedId);
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
    * @method confirmDeleteUOM
@@ -156,7 +157,7 @@ class UOMMaster extends Component {
         this.getUOMDataList()
       }
     });
-    this.setState({showPopup:false})
+    this.setState({ showPopup: false })
   }
 
   renderPaginationShowsTotal(start, to, total) {
@@ -256,13 +257,8 @@ class UOMMaster extends Component {
   };
 
   onBtExport = () => {
-    let tempArr = []
-    const data = this.state.gridApi && this.state.gridApi.getModel().rowsToDisplay
-    data && data.map((item => {
-      tempArr.push(item.data)
-    }))
-
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, this.state.dataList)
+    let tempArr = this.state.dataList && this.state.dataList
+    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
 
   returnExcelColumn = (data = [], TempData) => {
@@ -311,13 +307,13 @@ class UOMMaster extends Component {
       totalValueRenderer: this.buttonFormatter,
       // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
-      hyphenFormatter: this.hyphenFormatter,
     };
 
     return (
       <>
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           {/* {this.props.loading && <Loader />} */}
+          <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}>
               <h1 className="mb-0">{`Unit of Measurement Master`}</h1>
@@ -360,7 +356,7 @@ class UOMMaster extends Component {
           <Row>
             <Col>
 
-              <div className="ag-grid-wrapper height-width-wrapper">
+              <div className={`ag-grid-wrapper height-width-wrapper  ${this.state.dataList && this.state.dataList?.length <=0 ?"overlay-contain": ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
@@ -410,9 +406,9 @@ class UOMMaster extends Component {
               anchor={"right"}
             />
           )}
-            {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete UOM?`}  />
-                }
+          {
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete UOM?`} />
+          }
         </div>
       </>
     );

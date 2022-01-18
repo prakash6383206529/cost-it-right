@@ -174,7 +174,10 @@ function ERSimulation(props) {
         var selectedRows = gridApi.getSelectedRows();
         setSelectedRowData(selectedRows)
     }
-
+    const resetState = () => {
+        gridOptions.columnApi.resetColumnState();
+        gridOptions.api.setFilterModel(null);
+    }
     const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
 
@@ -222,10 +225,13 @@ function ERSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className="ag-grid-wrapper height-width-wrapper">
-                                    <div className="ag-grid-header">
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                    <div className="ag-grid-header d-flex ">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                          <div className="refresh mr-0"></div></button>
                                     </div>
+                                   
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
                                             floatingFilter={true}

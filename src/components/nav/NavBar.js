@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import Toaster from "../common/Toaster";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -11,7 +10,6 @@ import {
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
-import ConfirmComponent from "../../helper/ConfirmComponent"
 import masterImage from '../../assests/images/list.svg'
 import masterActive from '../../assests/images/masters-active.svg'
 import additionalMaster from '../../assests/images/list-add.png'
@@ -31,9 +29,8 @@ import Logo from '../../assests/images/logo/company-logo.svg'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
-import { toastr } from "react-redux-toastr";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-
+import { VERSION } from '../../config/constants';
 
 class SideBar extends Component {
   constructor(props) {
@@ -46,8 +43,8 @@ class SideBar extends Component {
       isLoader: false,
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {}
     };
   }
 
@@ -118,17 +115,17 @@ class SideBar extends Component {
       AccessToken: userData.Token,
       UserId: userData.LoggedInUserId,
     };
-    this.setState({showPopup:true, updatedObj:requestData})
-    
+    this.setState({ showPopup: true, updatedObj: requestData })
+
   };
- 
-  onPopupConfirm = (e)=> {
-    const {updatedObj} = this.state
+
+  onPopupConfirm = (e) => {
+    const { updatedObj } = this.state
     e.preventDefault()
     this.props.logoutUserAPI(updatedObj, () => this.props.logUserOut());
   }
-  closePopUp= () =>{
-    this.setState({showPopup:false})
+  closePopUp = () => {
+    this.setState({ showPopup: false })
   }
   /**
    * @method user toggle
@@ -688,6 +685,9 @@ class SideBar extends Component {
               </button>
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
+                  <li className="nav-item d-xl-inline-block version">
+                    {VERSION}
+                  </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
                       <Nav className="ml-auto top-menu logout d-inline-flex">
@@ -751,7 +751,7 @@ class SideBar extends Component {
 
         </div>
         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message= {`Are you sure do you want to logout?`} />
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
       </nav>
     )

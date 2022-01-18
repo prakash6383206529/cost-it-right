@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
 import DayTime from '../../common/DayTimeWrapper'
-import {
-  getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
+import {   getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
@@ -14,7 +13,9 @@ import { formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
-import TooltipCustom from '../../common/Tooltip'
+import TooltipCustom from '../../common/Tooltip';
+import LoaderCustom from '../../common/LoaderCustom';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CostingSummary(props) {
 
@@ -43,10 +44,12 @@ function CostingSummary(props) {
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const [titleObj, setTitleObj] = useState({})
+    //dropdown loader 
+    const [inputLoader, setInputLoader] = useState(false)
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
-    if (Object.keys(costingData).length > 0) {
+    if (Object.keys(costingData).length > 0 && reactLocalStorage.get('location') === '/costing-summary') {
       dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
         if (res.data.Data) {
           let dataFromAPI = res.data.Data
@@ -62,15 +65,17 @@ function CostingSummary(props) {
 
 
   useEffect(() => {
-    dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-    dispatch(getAllPartSelectList(() => { }))
-    dispatch(getPartInfo('', () => { }))
-    dispatch(getPartSelectListByTechnology('', () => { }))
+    
+    if (reactLocalStorage.get('location') === '/costing-summary'){
+        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+        dispatch(getPartInfo('', () => { }))
+        dispatch(getPartSelectListByTechnology('', () => { }))
+      }  
   }, [])
 
   /*************USED FOR SETTING DEFAULT VALUE IN SUMMARY AFTER SELECTING COSTING FROM DETAIL*****************/
   useEffect(() => {
-    if (Object.keys(costingData).length > 0) {
+    if (Object.keys(costingData).length > 0 && reactLocalStorage.get('location') === '/costing-summary') {
       setTimeout(() => {
         setValue('Technology', costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
         setTechnology(costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
@@ -150,7 +155,10 @@ function CostingSummary(props) {
   const handleTechnologyChange = (newValue) => {
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
-      dispatch(getPartSelectListByTechnology(newValue.value, () => { }))
+      setInputLoader(true)
+      dispatch(getPartSelectListByTechnology(newValue.value, () => {
+        setInputLoader(false)
+       }))
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
@@ -393,7 +401,7 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-
+                      {inputLoader  && <LoaderCustom customClass="input-loader"/>}
                         {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
@@ -607,4 +615,4 @@ function CostingSummary(props) {
   )
 }
 
-export default CostingSummary
+export default React.memo(CostingSummary)
