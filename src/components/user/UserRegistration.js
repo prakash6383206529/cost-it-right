@@ -5,8 +5,8 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6,minLength10, maxLength11, maxLength12, required, email, alphabetsOnlyForName, minLength7, maxLength18,
+  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength25 , postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
@@ -1235,7 +1235,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[required, minLength3,alphabetsOnlyForName, maxLength25, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1249,7 +1249,7 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[minLength3, maxLength25, alphabetsOnlyForName, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                           component={renderText}
                           required={false}
                           // maxLength={26}
@@ -1264,7 +1264,7 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                          validate={[postiveNumber,minLength10, maxLength10, checkWhiteSpaces]}
                           required={false}
                           // maxLength={10}
                           customClassName={'withBorder'}
@@ -1278,7 +1278,7 @@ class UserRegistration extends Component {
                               name={"PhoneNumber"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[postiveNumber, maxLength10]}
+                              validate={[postiveNumber,vlidatePhoneNumber, maxLength10]}
                               component={renderText}
                               //required={true}
                               maxLength={10}
@@ -1329,7 +1329,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required, minLength3, checkWhiteSpaces]}
+                            validate={[required, alphaNumeric , minLength3, maxLength25, checkWhiteSpaces]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}
