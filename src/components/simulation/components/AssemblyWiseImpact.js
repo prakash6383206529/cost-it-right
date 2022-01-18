@@ -68,6 +68,7 @@ function AssemblyWiseImpact(props) {
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+        
     }
 
     /**
@@ -81,10 +82,10 @@ function AssemblyWiseImpact(props) {
     const onGridReady = (params) => {
         setgridApi(params.api);
 
-        window.screen.width >= 1366 && params.api.sizeColumnsToFit()
+        window.screen.width >= 1366 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
-    };
+    }
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
