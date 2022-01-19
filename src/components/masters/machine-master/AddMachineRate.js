@@ -31,6 +31,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import attachClose from '../../../assests/images/red-cross.png'
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 const selector = formValueSelector('AddMachineRate');
 
 
@@ -78,7 +79,9 @@ class AddMachineRate extends Component {
       effectiveDate: '',
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
 
     }
   }
@@ -730,11 +733,22 @@ class AddMachineRate extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false })
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -746,6 +760,7 @@ class AddMachineRate extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadMachine(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -754,13 +769,16 @@ class AddMachineRate extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -818,7 +836,7 @@ class AddMachineRate extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements } = this.state;
 
@@ -843,12 +861,13 @@ class AddMachineRate extends Component {
       // if (DropdownChange) {
 
       // }
+      this.setState({ setDisable: true })
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
-        this.props.reset()
         this.props.updateMachineDetails(detailedRequestData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
             this.cancel();
           }
@@ -882,6 +901,7 @@ class AddMachineRate extends Component {
             this.cancel();
             return false
           }
+          this.setState({ setDisable: true })
           this.setState({ showPopup: true, updatedObj: requestData })
         }
 
@@ -890,6 +910,7 @@ class AddMachineRate extends Component {
     } else {
 
       // EXECUTED WHEN:- NEW MACHINE WITH BASIC DETAILS
+      this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
         VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -925,28 +946,30 @@ class AddMachineRate extends Component {
       //   })
       // }
 
-      this.props.reset()
+
       this.props.createMachine(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS);
           this.cancel();
         }
       });
 
     }
-  }
-  onPopupConfirm = () => {
-    this.props.reset()
+  }, 500)
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateMachine(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
         this.cancel()
 
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
 
   /**
@@ -1020,7 +1043,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag, isViewMode, setDisable, disablePopup } = this.state;
 
 
     return (
@@ -1042,7 +1065,6 @@ class AddMachineRate extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div class="add-min-height">
                       <Row>
@@ -1451,7 +1473,6 @@ class AddMachineRate extends Component {
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
-                              //onSubmit={this.handleSubmit}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -1509,7 +1530,9 @@ class AddMachineRate extends Component {
                               <button
                                 type={'button'}
                                 className=" mr15 cancel-btn"
-                                onClick={this.cancel} >
+                                onClick={this.cancel}
+                                disabled={setDisable}
+                              >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
 
@@ -1529,7 +1552,7 @@ class AddMachineRate extends Component {
                                 <button
                                   type="submit"
                                   className="user-btn mr5 save-btn"
-                                  disabled={isViewMode}
+                                  disabled={isViewMode || setDisable}
                                 >
                                   <div className={"save-icon"}></div>
                                   {isEditFlag ? "Update" : "Save"}
@@ -1541,7 +1564,9 @@ class AddMachineRate extends Component {
                             :
                             <button
                               type="submit"
-                              className="submit-button mr5 save-btn" >
+                              className="submit-button mr5 save-btn"
+                              disabled={setDisable}
+                            >
                               <div className={'save-icon'}></div>
                               {'Exit'}
                               {/* Need to change name of button for view flag */}
@@ -1589,7 +1614,7 @@ class AddMachineRate extends Component {
           )
         }
         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
         }
       </>
     );
