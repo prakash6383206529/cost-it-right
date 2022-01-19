@@ -19,6 +19,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { EMPTY_DATA } from '../../../config/constants'
+import { debounce } from 'lodash'
 
 const gridOptions = {};
 
@@ -115,6 +116,7 @@ class AddVolume extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      setDisable: false
     }
   }
 
@@ -485,7 +487,7 @@ class AddVolume extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const {
       IsVendor, selectedPlants, vendorName, part, year, tableData, VolumeId, destinationPlant } = this.state
     const userDetail = userDetails()
@@ -553,15 +555,17 @@ class AddVolume extends Component {
         this.cancel()
         return false
       }
+      this.setState({ setDisable: true })
       let updateData = {
         VolumeId: VolumeId,
         LoggedInUserId: loggedInUserId(),
         VolumeApprovedDetails: updateApproveArray,
         VolumeBudgetedDetails: updateBudgetArray,
       }
-      this.props.reset()
+
       this.props.updateVolume(updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
           this.cancel()
         }
@@ -569,6 +573,7 @@ class AddVolume extends Component {
     } else {
       /** Add new detail for creating supplier master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         IsVendor: IsVendor,
         VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -593,15 +598,16 @@ class AddVolume extends Component {
         DestinationPlantId: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '',
         DestinationPlant: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : ''
       }
-      this.props.reset()
+
       this.props.createVolume(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_ADD_SUCCESS)
           this.cancel()
         }
       })
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -639,7 +645,7 @@ class AddVolume extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isOpenVendor, edit } = this.state;
+    const { isEditFlag, isOpenVendor, edit, setDisable } = this.state;
 
     const cellEditProp = {
       mode: 'click',
@@ -688,7 +694,6 @@ class AddVolume extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -891,6 +896,7 @@ class AddVolume extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>{" "}
                             {"Cancel"}
@@ -898,6 +904,7 @@ class AddVolume extends Component {
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
+                            disabled={setDisable}
                           >
                             <div className={"save-icon"}> </div>
                             {isEditFlag ? "Update" : "Save"}

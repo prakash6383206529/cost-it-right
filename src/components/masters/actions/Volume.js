@@ -29,6 +29,7 @@ export function createVolume(data, callback) {
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error);
       })
   }
 }
@@ -48,6 +49,7 @@ export function updateVolume(requestData, callback) {
       .catch((error) => {
         apiErrors(error)
         dispatch({ type: API_FAILURE })
+        callback(error);
       })
   }
 }
