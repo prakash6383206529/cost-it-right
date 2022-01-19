@@ -174,8 +174,7 @@ class OverheadListing extends Component {
     * @description Renders buttons
     */
     effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
-
-        let value = cell.value != null ? (cell.value) : '';
+        let value = cell.value != null ? DayTime(cell.value).format('DD/MM/YYYY') : '';
         return value
     }
 
@@ -214,7 +213,6 @@ class OverheadListing extends Component {
         return (
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
-                    {/* <span>Switch with default style</span> */}
                     <Switch
                         onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
                         checked={cell}
@@ -331,19 +329,9 @@ class OverheadListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-        const { isEditFlag, } = this.state;
 
-        const options = {
-            clearSearch: true,
-            noDataText: (this.props.overheadProfitList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            exportCSVBtn: this.createCustomExportCSVButton,
-            prePage: <span className="prev-page-pg"></span>, // Previous page button text
-            nextPage: <span className="next-page-pg"></span>, // Next page button text
-            firstPage: <span className="first-page-pg"></span>, // First page button text
-            lastPage: <span className="last-page-pg"></span>,
 
-        };
+
         const onRowSelect = () => {
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (this.props.isSimulation) {
@@ -354,9 +342,7 @@ class OverheadListing extends Component {
             this.setState({ selectedRowData: selectedRows })
 
         }
-        // const onFloatingFilterChanged = (p) => {
-        //     this.gridApi.deselectAll()
-        // }
+
         const isFirstColumn = (params) => {
             if (this.props.isSimulation) {
 
@@ -393,7 +379,7 @@ class OverheadListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 ">
 
@@ -447,7 +433,7 @@ class OverheadListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className="ag-grid-wrapper height-width-wrapper">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.overheadProfitList && this.props.overheadProfitList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -458,7 +444,6 @@ class OverheadListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    // columnDefs={c}
                                     rowData={this.props.overheadProfitList}
                                     pagination={true}
                                     paginationPageSize={10}
@@ -484,7 +469,7 @@ class OverheadListing extends Component {
                                     <AgGridColumn field="OverheadRMPercentage" headerName="Overhead on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="OverheadId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

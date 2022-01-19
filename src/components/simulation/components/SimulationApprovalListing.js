@@ -56,6 +56,7 @@ function SimulationApprovalListing(props) {
     const [simulationDetail, setSimulationDetail] = useState([])
     const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
+    const colRow =[{field:'ApprovalNumber'}]
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -469,7 +470,6 @@ function SimulationApprovalListing(props) {
         conditionFormatter: conditionFormatter
     };
 
-
     return (
         <Fragment>
             {
@@ -503,7 +503,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className="ag-grid-wrapper height-width-wrapper min-height-auto ">
+                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${simualtionApprovalList && simualtionApprovalList?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -517,6 +517,7 @@ function SimulationApprovalListing(props) {
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={simualtionApprovalList}
+                                    // columnDefs={colRow}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
@@ -534,6 +535,7 @@ function SimulationApprovalListing(props) {
 
 
                                 >
+                                    
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
@@ -552,10 +554,6 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter'></AgGridColumn>
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approval' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter'></AgGridColumn>
-
-
-                                  
-
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
                                     <AgGridColumn width={105} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>

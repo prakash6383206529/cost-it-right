@@ -3033,21 +3033,20 @@ body {
 .ag-overlay-loading-center {
   display: none;
 }
-.graph-box  {
   .ag-grid-react {
-    .ag-center-cols-clipper {
-      min-height: 180px;
+    .overlay-contain {
+      .ag-center-cols-clipper {
+        min-height: 150px !important;
+      }
     }
   }
-}
 .select-all-label {
   padding-left: 13px;
 }
 .impacted-min-height {
   .add-min-height.sm-edit-page {
   .ag-grid-wrapper {
-   
-    // height: calc(100vh - 500px);
+    height: calc(100vh - 500px);
   }
 }
 }
@@ -3057,10 +3056,12 @@ body {
   height: auto !important;
 }
 .add-min-height .ag-layout-auto-height .ag-center-cols-clipper {
-  min-height: 60px;
+  min-height: 10px;
 }
 }
-
+.ag-theme-material .ag-layout-auto-height .ag-center-cols-clipper {
+  min-height: 45px;
+}
 .delete-btn {
   background-color: #FC5774;
   border: 1px solid #FC5774;
@@ -3165,4 +3166,3 @@ body {
   width: 100%;
 }
 // <-------------END toaster style--------------->
-//#fe002d  1 color

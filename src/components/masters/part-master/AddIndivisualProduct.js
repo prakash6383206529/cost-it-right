@@ -430,12 +430,12 @@ class AddIndivisualProduct extends Component {
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={""}
-                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
+                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                                                     component={renderText}
                                                                     onChange={
                                                                         this.ProductGroupCodeUpdate
                                                                     }
-                                                                    required={true}
+                                                                    required={false}
                                                                     className=""
                                                                     customClassName={"withBorder"}
                                                                     disabled={isViewMode}
