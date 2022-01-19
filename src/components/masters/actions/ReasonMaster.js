@@ -36,6 +36,7 @@ export function createReasonAPI(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -125,6 +126,7 @@ export function updateReasonAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }
