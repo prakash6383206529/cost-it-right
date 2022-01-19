@@ -26,7 +26,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getFilteredRMData } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
-import { ColumnController } from 'ag-grid-community';
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -37,7 +37,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
 
 
 
@@ -54,10 +54,11 @@ function RMDomesticListing(props) {
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
+    const {  handleSubmit } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
 
@@ -243,8 +244,8 @@ function RMDomesticListing(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const { initialConfiguration } = props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+        let value=  cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''; 
+        return value
     }
 
     /**
