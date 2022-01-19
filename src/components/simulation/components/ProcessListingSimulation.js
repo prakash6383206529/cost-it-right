@@ -221,7 +221,7 @@ export function ProcessListingSimulation(props) {
                 <Col>
 
 
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className={`ag-grid-wrapper height-width-wrapper  ${processCostingList && processCostingList?.length <=0 ?"overlay-contain": ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
