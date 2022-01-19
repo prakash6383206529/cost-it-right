@@ -29,9 +29,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+
 
 class AssemblyPartListing extends Component {
     constructor(props) {
@@ -415,6 +413,7 @@ class AssemblyPartListing extends Component {
                             defaultColDef={defaultColDef}
                             domLayout='autoHeight'
                             rowData={this.props.partsListing}
+                            floatingFilter={true}
                             pagination={true}
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
