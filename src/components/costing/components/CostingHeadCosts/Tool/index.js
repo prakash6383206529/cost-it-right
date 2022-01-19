@@ -633,7 +633,7 @@ calculateNetToolCost()
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
-                            errors={errors.maintanencePercentage}
+                            //errors={errors.maintanencePercentage}
                             disabled={CostingViewMode ? true : false}
                         />}
                 </Col>
