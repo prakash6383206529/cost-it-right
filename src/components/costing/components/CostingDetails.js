@@ -2093,8 +2093,8 @@ const nccDrawerToggle=()=>{
 
                                   return (
                                     <tr key={index}>
-                                      <td>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
+                                      <td  className='break-word'>{`${item.VendorName}(${item.VendorCode})`}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td  className='break-word'>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <NumberFieldHookForm
                                           label=""
