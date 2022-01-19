@@ -24,6 +24,7 @@ import { getRandomSixDigit } from '../../../helper/util';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 
 const selector = formValueSelector('AddAssemblyPart')
 
@@ -59,6 +60,8 @@ class AddAssemblyPart extends Component {
       showPopupDraft: false,
       updatedObj: {},
       updatedObjDraft: {},
+      setDisable: false,
+      disablePopup: false
 
     }
   }
@@ -359,10 +362,21 @@ class AddAssemblyPart extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
-
+    this.setState({ setDisable: true })
     if (status === 'removed') {
       const removedFileName = file.name;
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
@@ -373,6 +387,7 @@ class AddAssemblyPart extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadPart(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -381,13 +396,16 @@ class AddAssemblyPart extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -490,7 +508,7 @@ class AddAssemblyPart extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, BOMChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
     const { initialConfiguration } = this.props;
@@ -536,6 +554,7 @@ class AddAssemblyPart extends Component {
         this.cancel()
         return false;
       }
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -575,6 +594,7 @@ class AddAssemblyPart extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       let formData = {
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
@@ -596,35 +616,36 @@ class AddAssemblyPart extends Component {
         GroupCodeList: productArray
       }
 
-      this.props.reset()
       this.props.createAssemblyPart(formData, (res) => {
-        if (res.data.Result === true) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
           this.cancel()
         }
       });
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
     }
   };
-  onPopupConfirm = () => {
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateAssemblyPart(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOM_SUCCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   onPopupConfirmDraft = () => {
     this.confirmDraftItem(this.state.updatedObjDraft)
   }
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
     this.setState({ showPopupDraft: false })
   }
   /**
@@ -633,8 +654,7 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode } = this.state;
-    console.log('this.dropzone?.current?.files: ', this.dropzone?.current?.files);
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -658,7 +678,6 @@ class AddAssemblyPart extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>
@@ -949,6 +968,7 @@ class AddAssemblyPart extends Component {
                           type={"button"}
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
+                          disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
@@ -956,7 +976,7 @@ class AddAssemblyPart extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
-                          disabled={isViewMode}
+                          disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
@@ -995,7 +1015,7 @@ class AddAssemblyPart extends Component {
             />
           )}
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
           {
             this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
