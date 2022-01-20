@@ -21,6 +21,7 @@ import DayTime from "../../common/DayTimeWrapper"
 import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
+import { debounce } from "lodash";
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
   constructor(props) {
@@ -46,7 +47,8 @@ class AddFreight extends Component {
       DataToChange: [],
       AddUpdate: true,
       DeleteChanged: true,
-      HandleChanged: true
+      HandleChanged: true,
+      setDisable: false
     };
   }
   /**
@@ -466,7 +468,7 @@ class AddFreight extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const {
       IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
@@ -486,6 +488,7 @@ class AddFreight extends Component {
         this.cancel()
         return false
       }
+      this.setState({ setDisable: true })
       let requestData = {
         FreightId: FreightID,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
@@ -496,15 +499,17 @@ class AddFreight extends Component {
         LoggedInUserId: loggedInUserId(),
       };
 
-      this.props.reset()
+
       this.props.updateFright(requestData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
           this.cancel();
         }
       });
       this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
     } else {
+      this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
         Mode: TransPortMood.label,
@@ -518,15 +523,16 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
       };
-      this.props.reset()
+
       this.props.createFreight(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);
           this.cancel();
         }
       });
     }
-  };
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -540,7 +546,7 @@ class AddFreight extends Component {
    */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isOpenVendor, isEditFlag, isViewMode } = this.state;
+    const { isOpenVendor, isEditFlag, isViewMode, setDisable } = this.state;
 
     return (
       <>
@@ -566,7 +572,6 @@ class AddFreight extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -928,13 +933,14 @@ class AddFreight extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
                             type="submit"
-                            disabled={isViewMode}
+                            disabled={isViewMode || setDisable}
                             className="user-btn mr5 save-btn"
                           >
                             <div className={"save-icon"}></div>

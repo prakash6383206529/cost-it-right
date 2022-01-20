@@ -15,6 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
@@ -35,7 +36,9 @@ class AddInterestRate extends Component {
       Data: [],
       DropdownChanged: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
     }
   }
   /**
@@ -224,24 +227,24 @@ class AddInterestRate extends Component {
   };
 
 
-  onPopupConfirm = () => {
-
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateInterestRate(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
         this.setState({ showPopup: false })
         this.cancel()
       }
     });
-  }
+  }, 500)
 
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
 
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
 
     const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
@@ -260,7 +263,7 @@ class AddInterestRate extends Component {
       else {
 
       }
-
+      this.setState({ setDisable: true })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -288,6 +291,7 @@ class AddInterestRate extends Component {
 
     } else {/** Add new detail for creating operation master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         Isvendor: IsVendor,
         VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -301,11 +305,11 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId()
       }
-      this.props.reset()
+
       this.props.createInterestRate(formData, (res) => {
-
-        if (res.data.Result) {
-
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          // toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
           Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS)
           this.cancel();
 
@@ -313,10 +317,10 @@ class AddInterestRate extends Component {
       });
     }
 
-  }
+  }, 500)
 
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
 
   /**
@@ -332,7 +336,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isViewMode } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -355,7 +359,6 @@ class AddInterestRate extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>
@@ -440,21 +443,21 @@ class AddInterestRate extends Component {
                       {
                         this.state.ICCApplicability.label !== 'Fixed' &&
 
-                      <Col md="3">
-                        <Field
-                          label={`Annual ICC (%)`}
-                          name={"ICCPercent"}
-                          type="text"
-                          placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
-                          max={100}
-                          component={renderText}
-                          required={true}
-                          disabled={isViewMode}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Annual ICC (%)`}
+                            name={"ICCPercent"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
+                            max={100}
+                            component={renderText}
+                            required={true}
+                            disabled={isViewMode}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
                       }
                     </Row>
 
@@ -488,39 +491,39 @@ class AddInterestRate extends Component {
                         />
                       </Col>
                       {
-                        this.state.PaymentTermsApplicability.label !=='Fixed' &&
-<>
+                        this.state.PaymentTermsApplicability.label !== 'Fixed' &&
+                        <>
 
-                      <Col md="3">
-                        <Field
-                          label={`Repayment Period (Days)`}
-                          name={"RepaymentPeriod"}
-                          type="text"
-                          placeholder={"Enter"}
-                          validate={[postiveNumber, maxLength10]}
-                          component={renderText}
-                          required={false}
-                          disabled={isViewMode}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          label={`Payment Term (%)`}
-                          name={"PaymentTermPercent"}
-                          type="text"
-                          placeholder={"Enter"}
-                          validate={[positiveAndDecimalNumber, decimalLengthThree]}
-                          component={renderText}
-                          max={100}
-                          required={false}
-                          disabled={isViewMode}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
-</>
+                          <Col md="3">
+                            <Field
+                              label={`Repayment Period (Days)`}
+                              name={"RepaymentPeriod"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[postiveNumber, maxLength10]}
+                              component={renderText}
+                              required={false}
+                              disabled={isViewMode}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="3">
+                            <Field
+                              label={`Payment Term (%)`}
+                              name={"PaymentTermPercent"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[positiveAndDecimalNumber, decimalLengthThree]}
+                              component={renderText}
+                              max={100}
+                              required={false}
+                              disabled={isViewMode}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                        </>
                       }
                       <Col md="3">
                         <div className="form-group">
@@ -559,13 +562,14 @@ class AddInterestRate extends Component {
                         type={"button"}
                         className=" mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
                       <button
                         type="submit"
-                        disabled={isViewMode}
+                        disabled={isViewMode || setDisable}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
@@ -578,7 +582,7 @@ class AddInterestRate extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
 

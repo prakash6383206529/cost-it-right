@@ -19,6 +19,7 @@ import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { AcceptableFuelUOM } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -44,7 +45,8 @@ class AddFuel extends Component {
       AddUpdate: true,
       DeleteChanged: true,
       HandleChanged: true,
-      RateChange: []
+      RateChange: [],
+      setDisable: false
     }
   }
 
@@ -378,7 +380,7 @@ class AddFuel extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
@@ -419,9 +421,7 @@ class AddFuel extends Component {
         return false
       }
 
-
-
-
+      this.setState({ setDisable: true })
       let requestData = {
         FuelDetailId: FuelDetailId,
         LoggedInUserId: loggedInUserId(),
@@ -430,9 +430,9 @@ class AddFuel extends Component {
         FuelDetatils: fuelDetailArray,
       }
 
-      this.props.reset()
       this.props.updateFuelDetail(requestData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
           this.cancel();
         }
@@ -440,6 +440,7 @@ class AddFuel extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       const formData = {
         LoggedInUserId: loggedInUserId(),
         FuelId: fuel.value,
@@ -447,15 +448,15 @@ class AddFuel extends Component {
         FuelDetatils: fuelDetailArray,
       }
 
-      this.props.reset()
       this.props.createFuelDetail(formData, (res) => {
-        if (res && res.data && res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res && res?.data && res?.data?.Result) {
           Toaster.success(MESSAGES.FUEL_ADD_SUCCESS);
           this.cancel();
         }
       });
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -469,7 +470,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, isViewMode } = this.state;
+    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable } = this.state;
 
     return (
       <>
@@ -704,6 +705,7 @@ class AddFuel extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
@@ -711,7 +713,7 @@ class AddFuel extends Component {
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={isViewMode}
+                            disabled={isViewMode || setDisable}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}

@@ -11,6 +11,7 @@ import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
+import { debounce } from 'lodash';
 
 class AddMaterialType extends Component {
   constructor(props) {
@@ -19,7 +20,8 @@ class AddMaterialType extends Component {
       isEditFlag: false,
       isShowForm: false,
       MaterialTypeId: '',
-      DataToChange: []
+      DataToChange: [],
+      setDisable: false
     }
   }
 
@@ -58,7 +60,7 @@ class AddMaterialType extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { reset, ID, isEditFlag, DataToChange, initialValues } = this.props;
 
     if (isEditFlag) {
@@ -69,6 +71,7 @@ class AddMaterialType extends Component {
         this.cancel()
         return false
       }
+      this.setState({ setDisable: true })
       let updateData = {
         MaterialTypeId: ID,
         ModifiedBy: loggedInUserId(),
@@ -77,9 +80,10 @@ class AddMaterialType extends Component {
         CalculatedDensityValue: values.CalculatedDensityValue,
         IsActive: true
       }
-      this.props.reset()
+
       this.props.updateMaterialtypeAPI(updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
@@ -88,16 +92,17 @@ class AddMaterialType extends Component {
       })
 
     } else {
-
+      this.setState({ setDisable: true })
       let formData = {
         MaterialType: values.MaterialType,
         CalculatedDensityValue: values.CalculatedDensityValue,
         CreatedBy: loggedInUserId(),
         IsActive: true
       }
-      this.props.reset()
+
       this.props.createMaterialTypeAPI(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
@@ -106,7 +111,7 @@ class AddMaterialType extends Component {
       });
     }
 
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -120,6 +125,7 @@ class AddMaterialType extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag } = this.props;
+    const { setDisable } = this.state
     return (
       <div>
         <Drawer
@@ -200,14 +206,16 @@ class AddMaterialType extends Component {
                         type="submit"
                         value="CANCEL"
                         className="mr15 cancel-btn"
+                        disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
-                            CANCEL
-                          </button>
+                        CANCEL
+                      </button>
                       <button
                         type="submit"
                         // disabled={isSubmitted ? true : false}
                         className="user-btn save-btn"
+                        disabled={setDisable}
                       >
                         {" "}
                         <div className={"save-icon"}></div>

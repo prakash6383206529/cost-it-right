@@ -100,7 +100,9 @@ class AddRMDomestic extends Component {
       uploadAttachements: true,
       isFinalApprovar: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
     }
   }
   /**
@@ -618,7 +620,7 @@ class AddRMDomestic extends Component {
     })
   }
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false })
+    this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
       this.clearForm()
       this.cancel()
@@ -832,11 +834,22 @@ class AddRMDomestic extends Component {
     return { url: 'https://httpbin.org/post' }
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files } = this.state
 
-    this.setState({ uploadAttachements: false })
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name
@@ -851,6 +864,7 @@ class AddRMDomestic extends Component {
       data.append('file', file)
 
       this.props.fileUploadRMDomestic(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state
         files.push(Data)
@@ -859,13 +873,16 @@ class AddRMDomestic extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -937,7 +954,7 @@ class AddRMDomestic extends Component {
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
     const { initialConfiguration } = this.props
-
+    this.setState({ setDisable: true })
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -978,9 +995,9 @@ class AddRMDomestic extends Component {
     if (isEditFlag && this.state.isFinalApprovar) {
       this.setState({ updatedObj: requestData })
       if (isSourceChange) {
-        this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
 
@@ -989,9 +1006,9 @@ class AddRMDomestic extends Component {
         })
       }
       if (isDateChange) {
-        this.props.reset()
         this.props.updateRMDomesticAPI(requestData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
 
@@ -1062,12 +1079,13 @@ class AddRMDomestic extends Component {
           this.setState({ approveDrawer: true, approvalObj: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
         }
         else {
+          this.setState({ setDisable: false })
           Toaster.warning('Please update the effective date')
         }
       } else {
-        this.props.reset()
         this.props.createRMDomestic(formData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
             this.clearForm()
             this.cancel()
@@ -1078,9 +1096,10 @@ class AddRMDomestic extends Component {
     }
   }
   onPopupConfirm = () => {
-    this.props.reset()
+    this.setState({ disablePopup: true })
     this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
         this.clearForm()
         // this.cancel()
@@ -1088,7 +1107,7 @@ class AddRMDomestic extends Component {
     })
   }
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1113,7 +1132,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, data } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
 
     return (
       <>
@@ -1602,7 +1621,7 @@ class AddRMDomestic extends Component {
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
                               validate={[maxLength512]}
-                              //required={true}
+                              required={true}
                               component={renderTextAreaField}
                               maxLength="512"
                               rows="6"
@@ -1691,6 +1710,7 @@ class AddRMDomestic extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
@@ -1700,7 +1720,7 @@ class AddRMDomestic extends Component {
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 onClick={() => scroll.scrollToTop()}
-                                disabled={isViewFlag}
+                                disabled={isViewFlag || setDisable}
 
                               >
                                 <div className="send-for-approval"></div>
@@ -1817,7 +1837,7 @@ class AddRMDomestic extends Component {
             )
           }
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
 
         </div>
