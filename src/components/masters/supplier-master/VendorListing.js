@@ -715,7 +715,7 @@ class VendorListing extends Component {
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
 
-                                    <button title="filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="save-icon mr-0"></div></button>
+                                    <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)}><div class="filter mr-0"></div></button>
                                     {AddAccessibility && (
                                         <button
                                             type="button"
