@@ -753,7 +753,7 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
-              <button className="CalculatorIcon cr-cl-icon global-cal" type="buton" onClick={this.showCalculor}></button>
+              <button className="CalculatorIcon cr-cl-icon global-cal" type="buton" title="Calculator" onClick={this.showCalculor}></button>
               {this.state.isShowCal && <InlineCal />}
         </div>
         {

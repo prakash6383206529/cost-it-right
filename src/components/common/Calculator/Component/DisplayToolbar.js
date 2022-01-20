@@ -1,6 +1,5 @@
 import React from 'react';
 import './DisplayToolbar.scss';
-import Backspace from '../../../../assests/images/backspace.svg';
 
 export default class DisplayToolbar extends React.Component {
   constructor(props) {
