@@ -21,6 +21,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -61,7 +62,9 @@ class AddOverhead extends Component {
       effectiveDate: '',
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
 
     }
   }
@@ -203,7 +206,7 @@ class AddOverhead extends Component {
 
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
-        if (item.Value === '0' || item.Text ==='Net Cost') return false;
+        if (item.Value === '0' || item.Text === 'Net Cost') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -437,12 +440,23 @@ class AddOverhead extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file, remove }, status) => {
 
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false })
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       this.deleteFile(
@@ -474,6 +488,8 @@ class AddOverhead extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadOverHead(data, (res) => {
+        this.setDisableFalseFunction()
+
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -483,13 +499,16 @@ class AddOverhead extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -581,7 +600,7 @@ class AddOverhead extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
       isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
@@ -611,6 +630,7 @@ class AddOverhead extends Component {
         this.cancel()
         return false
       }
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OverheadID }
       })
@@ -647,6 +667,7 @@ class AddOverhead extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       const formData = {
         EAttachementEntityName: 0,
         IsVendor: IsVendor,
@@ -668,26 +689,27 @@ class AddOverhead extends Component {
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       }
 
-      this.props.reset()
       this.props.createOverhead(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.OVERHEAD_ADDED_SUCCESS);
           this.cancel();
         }
       });
     }
-  }
+  }, 500)
   onPopupConfirm = () => {
-    this.props.reset()
+    this.setState({ disablePopup: true })
     this.props.updateOverhead(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
         this.cancel()
       }
     });
   }
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -702,7 +724,7 @@ class AddOverhead extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode } = this.state;
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
 
     return (
       <>
@@ -1067,6 +1089,7 @@ class AddOverhead extends Component {
                           type={"button"}
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
+                          disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
@@ -1075,7 +1098,7 @@ class AddOverhead extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
-                          disabled={isViewMode}
+                          disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
@@ -1088,7 +1111,7 @@ class AddOverhead extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>

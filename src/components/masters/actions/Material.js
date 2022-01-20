@@ -341,6 +341,7 @@ export function createRMSpecificationAPI(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -360,6 +361,7 @@ export function createAssociation(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -431,6 +433,7 @@ export function updateRMSpecificationAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -619,6 +622,7 @@ export function createMaterialTypeAPI(data, callback) {
                 type: API_FAILURE
             });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -684,6 +688,7 @@ export function updateMaterialtypeAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -731,6 +736,7 @@ export function createRMDomestic(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -804,6 +810,7 @@ export function updateRMDomesticAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -1123,6 +1130,7 @@ export function updateRMImportAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }

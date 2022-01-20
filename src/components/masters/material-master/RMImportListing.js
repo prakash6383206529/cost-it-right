@@ -22,7 +22,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -38,7 +38,7 @@ const gridOptions = {};
 
 
 function RMImportListing(props) {
-  const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation } = props;
+  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation } = props;
 
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
@@ -56,10 +56,11 @@ function RMImportListing(props) {
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
+  
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
   const [showPopupBulk, setShowPopupBulk] = useState(false)
+  
 
 
 
@@ -237,9 +238,9 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-    const { initialConfiguration } = props
+    
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+    return cellValue !== INR ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '';
   }
 
   /**
@@ -265,7 +266,7 @@ function RMImportListing(props) {
 */
   const shearingCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? cell : '-';
+    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
   }
 
   const statusFormatter = (props) => {
@@ -281,7 +282,7 @@ function RMImportListing(props) {
   */
   const freightCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cell != null ? cell : '-';
+    return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
   }
 
 
@@ -298,10 +299,7 @@ function RMImportListing(props) {
   const closeBulkUploadDrawer = () => {
     setisBulkUpload(false);
 
-    const getDataMethod = () => {
-      getDataList(null, null, null)
-    }
-    getDataMethod();
+      getDataList(null, null, null)   
   }
 
   /**
@@ -312,12 +310,6 @@ function RMImportListing(props) {
     setShowPopupBulk(true)
   }
 
-
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => { }
 
   const onGridReady = (params) => {
     setgridApi(params.api);
@@ -428,7 +420,6 @@ function RMImportListing(props) {
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
 
-      < form onSubmit={handleSubmit(onSubmit)} noValidate >
         <Row className="filter-row-large pt-4 ">
 
           {
@@ -494,7 +485,7 @@ function RMImportListing(props) {
             </Col>
           }
         </Row>
-      </form >
+
       <Row>
         <Col>
           {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}

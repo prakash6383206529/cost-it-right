@@ -49,6 +49,7 @@ export function createSupplierAPI(data, callback) {
                 type: API_FAILURE
             });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -149,6 +150,7 @@ export function updateSupplierAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }

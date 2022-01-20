@@ -42,6 +42,7 @@ export function createPlantAPI(data, callback) {
                 type: API_FAILURE
             });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -129,6 +130,7 @@ export function updatePlantAPI(plantId, request, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }

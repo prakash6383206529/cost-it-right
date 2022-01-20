@@ -18,6 +18,7 @@ import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
+import { debounce } from 'lodash'
 
 const selector = formValueSelector('AddLabour')
 
@@ -45,7 +46,8 @@ class AddLabour extends Component {
       isOpenMachineType: false,
 
       isDisable: false,
-      DropdownChanged: true
+      DropdownChanged: true,
+      setDisable: false
     }
   }
 
@@ -527,7 +529,7 @@ class AddLabour extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
     const userDetail = userDetails()
 
@@ -544,7 +546,7 @@ class AddLabour extends Component {
         return false
       }
 
-
+      this.setState({ setDisable: true })
       let updateData = {
         LabourId: LabourId,
         IsContractBase: IsEmployeContractual,
@@ -558,9 +560,9 @@ class AddLabour extends Component {
         ],
       }
 
-      this.props.reset()
       this.props.updateLabour(updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
           this.cancel()
         }
@@ -569,6 +571,7 @@ class AddLabour extends Component {
     } else {
       /** Add new detail for creating operation master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
@@ -581,15 +584,15 @@ class AddLabour extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
-      this.props.reset()
       this.props.createLabour(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.LABOUR_ADDED_SUCCESS)
           this.cancel()
         }
       })
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -603,7 +606,7 @@ class AddLabour extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, isDisable, isViewMode } = this.state;
+    const { isEditFlag, isOpenMachineType, isDisable, isViewMode, setDisable } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -626,7 +629,6 @@ class AddLabour extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>
@@ -893,6 +895,7 @@ class AddLabour extends Component {
                         type={"button"}
                         className="reset mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
@@ -900,7 +903,7 @@ class AddLabour extends Component {
                       <button
                         type="submit"
                         className="submit-button mr5 save-btn"
-                        disabled={isViewMode}
+                        disabled={isViewMode || setDisable}
                       >
                         <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}

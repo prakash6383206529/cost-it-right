@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 class AddReason extends Component {
   constructor(props) {
@@ -18,7 +19,8 @@ class AddReason extends Component {
     this.state = {
       IsActive: true,
       ReasonId: '',
-      DataToCheck: []
+      DataToCheck: [],
+      setDisable: false
     }
   }
 
@@ -89,7 +91,7 @@ class AddReason extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { ReasonId, DataToCheck } = this.state;
     const { isEditFlag } = this.props;
 
@@ -100,35 +102,36 @@ class AddReason extends Component {
         this.toggleDrawer('')
         return false
       }
+      this.setState({ setDisable: true })
       let formData = {
         ReasonId: ReasonId,
         Reason: values.Reason,
         IsActive: this.state.IsActive,
         LoggedInUserId: loggedInUserId(),
       }
-      this.props.reset()
       this.props.updateReasonAPI(formData, (res) => {
+        this.setState({ setDisable: false })
         Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
         this.cancel()
       });
     } else {
 
+      this.setState({ setDisable: true })
       /** Add detail for creating new UOM  */
       //values.IsActive = this.state.IsActive;
       values.IsActive = true;
       values.LoggedInUserId = loggedInUserId();
 
-
-      this.props.reset()
       this.props.createReasonAPI(values, (res) => {
-        if (res.data.Result === true) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.REASON_ADD_SUCCESS);
           this.cancel()
         }
       });
     }
 
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -142,6 +145,7 @@ class AddReason extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag, } = this.props;
+    const { setDisable } = this.state
     return (
       <Drawer
         anchor={this.props.anchor}
@@ -155,7 +159,6 @@ class AddReason extends Component {
               noValidate
               className="form"
               onSubmit={handleSubmit(this.onSubmit.bind(this))}
-              onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
             >
               <Row className="drawer-heading">
                 <Col>
@@ -211,6 +214,7 @@ class AddReason extends Component {
                     type={"button"}
                     className=" mr15 cancel-btn"
                     onClick={this.cancel}
+                    disabled={setDisable}
                   >
                     <div className={"cancel-icon"}></div>
                     {"Cancel"}
@@ -218,6 +222,7 @@ class AddReason extends Component {
                   <button
                     type="submit"
                     className="user-btn save-btn"
+                    disabled={setDisable}
                   >
                     <div className={"save-icon"}></div>
                     {isEditFlag ? "Update" : "Save"}

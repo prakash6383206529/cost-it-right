@@ -33,6 +33,7 @@ import WarningMessage from '../../common/WarningMessage'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -79,7 +80,11 @@ class AddBOPImport extends Component {
       showWarning: false,
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
+
+
     }
   }
 
@@ -504,11 +509,23 @@ class AddBOPImport extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
 
-    this.setState({ uploadAttachements: false })
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -520,6 +537,7 @@ class AddBOPImport extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadBOPDomestic(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -528,13 +546,16 @@ class AddBOPImport extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -610,7 +631,7 @@ class AddBOPImport extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { IsVendor, BOPCategory, selectedPlants, vendorName, currency,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements } = this.state;
 
@@ -637,6 +658,7 @@ class AddBOPImport extends Component {
           return false;
         }
       }
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -663,6 +685,7 @@ class AddBOPImport extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       const formData = {
         Currency: currency.label,
         IsVendor: IsVendor,
@@ -706,9 +729,9 @@ class AddBOPImport extends Component {
 
 
 
-      this.props.reset()
       this.props.createBOPImport(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
           this.cancel();
         }
@@ -717,19 +740,20 @@ class AddBOPImport extends Component {
     }
 
 
-  }
+  }, 500)
 
-  onPopupConfirm = () => {
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateBOPImport(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -743,7 +767,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
 
     return (
       <>
@@ -767,7 +791,6 @@ class AddBOPImport extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -1141,7 +1164,6 @@ class AddBOPImport extends Component {
                                 getUploadParams={this.getUploadParams}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
-                                //onSubmit={this.handleSubmit}
                                 accept="*"
                                 disabled={isViewMode}
                                 initialFiles={this.state.initialFiles}
@@ -1215,6 +1237,7 @@ class AddBOPImport extends Component {
                             type={"button"}
                             className=" mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
@@ -1234,15 +1257,12 @@ class AddBOPImport extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode}
+                              disabled={isViewMode || setDisable}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
                             </button>
                           }
-
-
-
                         </div>
                       </Row>
                     </form>
@@ -1293,7 +1313,7 @@ class AddBOPImport extends Component {
             )
           }
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>
