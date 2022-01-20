@@ -31,6 +31,7 @@ import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { VERSION } from '../../config/constants';
+import InlineCal from "../common/Calculator/Component/Calculator";
 
 class SideBar extends Component {
   constructor(props) {
@@ -44,7 +45,8 @@ class SideBar extends Component {
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      isShowCal:false
     };
   }
 
@@ -135,7 +137,9 @@ class SideBar extends Component {
       dropdownOpen: !prevState.dropdownOpen,
     }));
   };
-
+  showCalculor =()=> {
+    this.setState({ isShowCal: !this.state.isShowCal })
+  }
   /**
    * @method mobile menu open
    */
@@ -383,6 +387,7 @@ class SideBar extends Component {
                   </ul>
                 </div>
               </li>
+             
             </>
           );
         }
@@ -748,11 +753,13 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
-
+              <button className="CalculatorIcon cr-cl-icon global-cal" type="buton" onClick={this.showCalculor}></button>
+              {this.state.isShowCal && <InlineCal />}
         </div>
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
+      
       </nav>
     )
   }
