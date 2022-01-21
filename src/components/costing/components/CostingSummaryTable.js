@@ -1026,11 +1026,12 @@ const generatorPDF = () => {
 
                     <tr class="background-light-blue">
                       <th>Net Surface Treatment Cost</th>
+                      {console.log(viewCostingData,"viewcostingdata")}
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nSurfaceTCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nsTreamnt, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
                                 (data.CostingHeading !== VARIANCE && icons )  &&
                                 <button
