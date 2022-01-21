@@ -190,9 +190,9 @@ export const API = {
   getAllMasterApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-department`,
   getAllMasterApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-users-level-filter-by-department`,
   masterSendToApprover: `${BASE_URL}/masters-approval-raw-material/master-send-to-approver-by-sender`,
-  approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
+  approveMasterByApprover: `${BASE_URL}/app-approval-system/approved-master-by-approver`,
   rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
-  getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
+  getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
   masterFinalLeveluser: `${BASE_URL}/app-approval-system/is-this-user-final-master-approver`,
 
   //RAW MATERIAL IMPORT
