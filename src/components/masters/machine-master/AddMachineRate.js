@@ -1065,6 +1065,7 @@ class AddMachineRate extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div class="add-min-height">
                       <Row>
