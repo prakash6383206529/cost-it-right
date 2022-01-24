@@ -162,10 +162,6 @@ function SimulationApprovalSummary(props) {
 
     }, [])
 
-    useEffect((item) => {
-        gridApi?.redrawRows()
-    }, [simulationDetail])
-
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
