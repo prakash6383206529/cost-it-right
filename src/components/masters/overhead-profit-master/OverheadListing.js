@@ -43,7 +43,8 @@ class OverheadListing extends Component {
             overheadAppli: [],
             showPopup: false,
             deletedId: '',
-            selectedRowData: []
+            selectedRowData: [],
+            isLoader:false
         }
     }
 
@@ -71,8 +72,9 @@ class OverheadListing extends Component {
             overhead_applicability_type_id: overhead,
             model_type_id: modelType,
         }
+        this.setState({isLoader:true})
         this.props.getOverheadDataList(filterData, (res) => {
-
+            this.setState({isLoader:false})
         })
     }
 
@@ -368,8 +370,6 @@ class OverheadListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
@@ -379,7 +379,7 @@ class OverheadListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+               {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 ">
 
@@ -415,11 +415,7 @@ class OverheadListing extends Component {
 
                                                 {this.onBtExport()}
                                             </ExcelFile>
-
                                         </>
-
-
-
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -449,7 +445,6 @@ class OverheadListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,

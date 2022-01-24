@@ -54,7 +54,7 @@ class IndivisualPartListing extends Component {
             warningMessage: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
-            loader: true,
+            isLoader: false,
             showPopup: false,
             deletedId: ''
         }
@@ -64,10 +64,10 @@ class IndivisualPartListing extends Component {
 
 
     ApiActionCreator(skip, take, obj, isPagination) {
-
+      this.setState({isLoader:true})
 
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
-
+            this.setState({isLoader:false})
 
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
@@ -90,7 +90,6 @@ class IndivisualPartListing extends Component {
             } else {
 
             }
-            this.setState({ loader: false })
         })
 
     }
@@ -187,7 +186,7 @@ class IndivisualPartListing extends Component {
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState({ loader: true }, () => {
+        this.setState( () => {
             this.getTableListData()
         })
     }
@@ -197,7 +196,9 @@ class IndivisualPartListing extends Component {
     * @description Get DATA LIST
     */
     getTableListData = () => {
+        this.setState({isLoader:true})
         this.props.getPartDataList((res) => {
+            this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -208,7 +209,6 @@ class IndivisualPartListing extends Component {
             } else {
 
             }
-            this.setState({ loader: false })
         })
     }
 
@@ -477,7 +477,6 @@ class IndivisualPartListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter
@@ -485,8 +484,7 @@ class IndivisualPartListing extends Component {
         return (
             <>
                 <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                    {/* {this.props.loading && <Loader />} */}
-
+                  {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-3 no-filter-row">
                         <Col md="8">
                             <div className="warning-message mt-1">
@@ -529,8 +527,6 @@ class IndivisualPartListing extends Component {
                                             </ExcelFile>
 
                                         </>
-
-
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
                                         <div className="refresh mr-0"></div>
@@ -540,11 +536,6 @@ class IndivisualPartListing extends Component {
                             </div>
                         </Col>
                     </Row>
-                    {this.state.loader && <LoaderCustom />}
-
-
-
-
                     <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header mt-4 pt-1">
 

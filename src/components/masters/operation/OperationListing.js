@@ -57,7 +57,8 @@ class OperationListing extends Component {
             DownloadAccessibility: false,
             selectedRowData: [],
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
         }
     }
 
@@ -110,6 +111,7 @@ class OperationListing extends Component {
     * @description Get user list data
     */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null) => {
+        this.setState({isLoader:true})
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
@@ -117,6 +119,7 @@ class OperationListing extends Component {
             vendor_id: vendor_id,
         }
         this.props.getOperationsDataList(filterData, res => {
+            this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -537,7 +540,6 @@ class OperationListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             costingHeadFormatter: this.costingHeadFormatter,
             renderPlantFormatter: this.renderPlantFormatter,
@@ -550,7 +552,7 @@ class OperationListing extends Component {
 
         return (
             <div className="container-fluid">
-                {/* {this.props.loading && <Loader />} */}
+                {this.state.isLoader && <LoaderCustom />}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
@@ -632,7 +634,6 @@ class OperationListing extends Component {
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,
