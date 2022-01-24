@@ -56,7 +56,6 @@ class FuelListing extends Component {
     componentDidMount() {
         this.setState({isLoader:true})
         setTimeout(() => {
-             
             this.getDataList(0, 0)
             this.props.getFuelComboData(() => { })
         }, 500);
@@ -72,10 +71,10 @@ class FuelListing extends Component {
             stateName: stateName,
         }
         this.props.getFuelDetailDataList(true, filterData, (res) => {
-
+            this.setState({isLoader:false})
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data }, ()=> this.setState({isLoader:false}))
+                this.setState({ tableData: Data })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {

@@ -123,11 +123,12 @@ class LabourListing extends Component {
     }
 
     this.props.getLabourDataList(true, filterData, (res) => {
+      this.setState({isLoader:false})
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data, }, () => { this.setState({ isLoader: false }) })
+        this.setState({ tableData: Data, })
       } else {
       }
     })
@@ -447,7 +448,6 @@ class LabourListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       costingHeadFormatter: this.costingHeadFormatter,
       effectiveDateRenderer: this.effectiveDateFormatter,

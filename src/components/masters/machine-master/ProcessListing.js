@@ -45,7 +45,7 @@ class ProcessListing extends Component {
       rowData: null,
       showPopup: false,
       deletedId: '',
-      isLoader:true
+      isLoader:false
     }
   }
 
@@ -399,7 +399,6 @@ class ProcessListing extends Component {
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       costingHeadRenderer: this.costingHeadFormatter,
-      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
     };
 

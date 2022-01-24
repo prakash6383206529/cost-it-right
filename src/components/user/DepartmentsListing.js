@@ -6,12 +6,10 @@ import {
 import { getAllDepartmentAPI, deleteDepartmentAPI, getLeftMenu } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { Loader } from '../common/Loader';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
@@ -19,6 +17,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
+import LoaderCustom from '../common/LoaderCustom';
 
 const gridOptions = {};
 
@@ -226,7 +225,7 @@ closePopUp= () =>{
     return (
       <div className={"ag-grid-react"}>
         <>
-          {this.state.isLoader && <Loader />}
+          {this.state.isLoader && <LoaderCustom />}
           <Row className="pt-4 no-filter-row">
             <Col md="6" className="filter-block"></Col>
             <Col md="6" className="text-right search-user-block pr-0">

@@ -64,6 +64,7 @@ class RMListing extends Component {
     * @description  used to cancel filter form
     */
     closeDrawer = (e = '') => {
+        this.setState({isLoader:true})
         this.setState({ isOpen: false }, () => {
             this.getListData()
         })

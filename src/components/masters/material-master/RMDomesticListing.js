@@ -49,7 +49,7 @@ function RMDomesticListing(props) {
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
 
-    const [loader, setloader] = useState(true);
+    const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
@@ -124,6 +124,7 @@ function RMDomesticListing(props) {
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+        setloader(true)
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, (res) => {
                 if (res && res.status === 200) {
@@ -301,6 +302,7 @@ function RMDomesticListing(props) {
     }
 
     const closeBulkUploadDrawer = () => {
+
         setisBulkUpload(false);
         getDataList(null, null, null)
 
