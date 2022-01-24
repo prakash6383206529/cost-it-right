@@ -44,7 +44,8 @@ class SOBListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      isLoader:false
 
     }
   }
@@ -70,10 +71,11 @@ class SOBListing extends Component {
       bought_out_part_id: bought_out_part_id,
       plant_id: plant_id
     }
+    this.setState({isLoader:true})
     this.props.getManageBOPSOBDataList(filterData, (res) => {
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data })
+        this.setState({ tableData: Data, isLoader:false })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [] })
       } else {
@@ -327,7 +329,7 @@ class SOBListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
+      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
       costingHeadFormatter: this.costingHeadFormatter,
@@ -336,7 +338,7 @@ class SOBListing extends Component {
 
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
 
@@ -391,7 +393,7 @@ class SOBListing extends Component {
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
-                  loadingOverlayComponent={'customLoadingOverlay'}
+                  // loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,

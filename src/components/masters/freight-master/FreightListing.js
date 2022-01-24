@@ -40,7 +40,7 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
-      isLoader: true,
+      isLoader: false,
       showPopup: false,
       deletedId: ''
     }
@@ -51,9 +51,8 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-
+this.setState({isLoader: true})
     setTimeout(() => {
-
       this.props.getVendorWithVendorCodeSelectList()
       this.props.fetchSupplierCityDataAPI(res => { });
       this.getDataList()

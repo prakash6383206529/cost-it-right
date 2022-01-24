@@ -45,6 +45,7 @@ class DepartmentsListing extends Component {
   }
 
   componentDidMount() {
+    this.setState({isLoader:true})
     const { topAndLeftMenuData } = this.props;
     if (topAndLeftMenuData !== undefined) {
       const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
@@ -66,7 +67,6 @@ class DepartmentsListing extends Component {
   }
 
   getDepartmentListData = () => {
-    this.setState({ isLoader: true })
     this.props.getAllDepartmentAPI(res => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;

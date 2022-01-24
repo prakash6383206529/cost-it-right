@@ -57,7 +57,7 @@ class LabourListing extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
-      isLoader: true,
+      isLoader: false,
       showPopup: false,
       deletedId: ''
     }
@@ -65,6 +65,7 @@ class LabourListing extends Component {
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
+    this.setState({isLoader:true})
     setTimeout(() => {
       this.props.getZBCPlantList(() => { })
       this.props.getStateSelectList(() => { })
@@ -455,8 +456,8 @@ class LabourListing extends Component {
 
     return (
       <>
-        {/* {this.state.isLoader && <LoaderCustom />} */}
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+        {this.state.isLoader && <LoaderCustom />}
           <ScrollToTop pointProp="go-to-top" />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -543,7 +544,6 @@ class LabourListing extends Component {
                 paginationPageSize={10}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
-                loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,

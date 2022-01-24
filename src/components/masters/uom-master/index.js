@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
+import LoaderCustom from '../../common/LoaderCustom';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,7 +49,8 @@ class UOMMaster extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      isLoader:false
 
     }
   }
@@ -63,7 +65,9 @@ class UOMMaster extends Component {
   }
 
   getUOMDataList = () => {
+    this.setState({isLoader:true})
     this.props.getUnitOfMeasurementAPI(res => {
+      this.setState({isLoader:false})
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
         this.setState({ dataList: Data })
@@ -312,7 +316,7 @@ class UOMMaster extends Component {
     return (
       <>
         <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-          {/* {this.props.loading && <Loader />} */}
+          {this.state.isLoader && <LoaderCustom />}
           <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}>
