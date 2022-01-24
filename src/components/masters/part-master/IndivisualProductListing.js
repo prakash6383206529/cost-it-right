@@ -41,7 +41,8 @@ class IndivisualProductListing extends Component {
             isBulkUpload: false,
             ActivateAccessibility: true,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
         }
     }
 
@@ -60,15 +61,16 @@ class IndivisualProductListing extends Component {
     * @description Get DATA LIST
     */
     getTableListData = () => {
+        this.setState({isLoader:true})
         this.props.getProductDataList((res) => {
-
+            this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
 
                 let Data = res.data.DataList;
                 this.setState({
-                    tableData: Data,
+                    tableData: Data
                 })
             } else {
 
@@ -355,7 +357,6 @@ class IndivisualProductListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
@@ -364,7 +365,7 @@ class IndivisualProductListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+             {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
@@ -436,7 +437,6 @@ class IndivisualProductListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,

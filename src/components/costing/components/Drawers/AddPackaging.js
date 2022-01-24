@@ -290,9 +290,9 @@ function AddPackaging(props) {
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
               <>
                 <Row className="ml-0">
-                  <Col md="12" className="switch">
+                  {/* <Col md="12" className="switch">
                     <label className={'left-title'}>{'Packaging Type'}</label>
-                  </Col>
+                  </Col> */}
                   {/* <Col md="12" className="switch mb15">
                     <label className="switch-level">
                       <div className={'left-title'}>{'Fixed'}</div>

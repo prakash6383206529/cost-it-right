@@ -49,7 +49,7 @@ function RMDomesticListing(props) {
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
 
-    const [loader, setloader] = useState(true);
+    const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
@@ -124,6 +124,7 @@ function RMDomesticListing(props) {
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+        setloader(true)
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, (res) => {
                 if (res && res.status === 200) {
@@ -301,6 +302,7 @@ function RMDomesticListing(props) {
     }
 
     const closeBulkUploadDrawer = () => {
+
         setisBulkUpload(false);
         getDataList(null, null, null)
 
@@ -432,7 +434,7 @@ function RMDomesticListing(props) {
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadRenderer: costingHeadFormatter,
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         costFormatter: costFormatter,
         freightCostFormatter: freightCostFormatter,
@@ -444,10 +446,8 @@ function RMDomesticListing(props) {
 
     return (
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
-            
+             {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}    
                 <Row className="filter-row-large pt-4 ">
-
                     {
                         // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                         (!isSimulation && !props.isMasterSummaryDrawer) &&
@@ -488,19 +488,13 @@ function RMDomesticListing(props) {
                                         {
                                             DownloadAccessibility &&
                                             <>
-
                                                 <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                                                     <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                         {/* DOWNLOAD */}
                                                     </button>}>
-
                                                     {onBtExport()}
                                                 </ExcelFile>
-
-
                                             </>
-
-
                                         }
                                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
@@ -511,10 +505,8 @@ function RMDomesticListing(props) {
                         </Col>
                     }
                 </Row>
-            
             <Row>
                 <Col>
-                    {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
                     <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <=0 ?"overlay-contain": ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -558,14 +550,9 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
-
-
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
-
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -601,9 +588,6 @@ function RMDomesticListing(props) {
         </div >
     );
 }
-
-
-
 
 export default RMDomesticListing;
 
