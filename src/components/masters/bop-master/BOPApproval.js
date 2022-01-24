@@ -157,8 +157,8 @@ function BOPApproval(props) {
 
     return (
         <div>
+             {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
-
                 <Col md="6" lg="6" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
                         <div>
@@ -177,7 +177,7 @@ function BOPApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    {loader && <LoaderCustom />}
+                    
                     <div className={`ag-grid-react`}>
                         <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">

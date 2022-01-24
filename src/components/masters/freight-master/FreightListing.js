@@ -40,7 +40,7 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
-      isLoader: true,
+      isLoader: false,
       showPopup: false,
       deletedId: ''
     }
@@ -51,9 +51,8 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-
+this.setState({isLoader: true})
     setTimeout(() => {
-
       this.props.getVendorWithVendorCodeSelectList()
       this.props.fetchSupplierCityDataAPI(res => { });
       this.getDataList()
@@ -65,7 +64,6 @@ class FreightListing extends Component {
   * @description GET DETAILS OF BOP DOMESTIC
   */
   getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
-    this.setState({ isLoader: true })
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
@@ -73,9 +71,10 @@ class FreightListing extends Component {
       destination_city_id: destination_city_id,
     }
     this.props.getFreightDataList(filterData, (res) => {
+      this.setState({isLoader:false})
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
+        this.setState({ tableData: Data })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [] })
       } else {

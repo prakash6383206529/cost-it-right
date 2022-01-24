@@ -75,6 +75,7 @@ class MachineRateListing extends Component {
             process_id: process_id,
             plant_id: plant_id,
         }
+        this.setState({isLoader:true})
         this.props.getMachineDataList(filterData, (res) => {
             this.setState({ isLoader: false })
 
@@ -353,7 +354,6 @@ class MachineRateListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
             costingHeadRenderer: this.costingHeadFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             renderPlantFormatter: this.renderPlantFormatter
@@ -371,9 +371,8 @@ class MachineRateListing extends Component {
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                 {this.state.isLoader && <LoaderCustom />}
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-
-
                         <Col md="6" lg="6" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -433,8 +432,6 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        {isLoader && <LoaderCustom />}
-
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.machineDatalist && this.props.machineDatalist?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
@@ -451,7 +448,6 @@ class MachineRateListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
