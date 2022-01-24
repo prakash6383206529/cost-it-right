@@ -116,16 +116,29 @@ export default function BOPReducer(state = initialState, action) {
                 BOPVendorDataList: action.payload
             };
         case GET_BOP_DOMESTIC_DATA_LIST:
+
+            let arr = []
+            arr = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
+                el.EffectiveDateNew = el.EffectiveDate                                 //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
+                return true
+            })
             return {
                 ...state,
                 loading: false,
-                bopDomesticList: action.payload
+                bopDomesticList: arr
             }
         case GET_BOP_IMPORT_DATA_LIST:
+
+            let arrImport = []
+            arrImport = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
+                el.EffectiveDateNew = el.EffectiveDate                                 //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
+                return true
+            })
+
             return {
                 ...state,
                 loading: false,
-                bopImportList: action.payload
+                bopImportList: arrImport
             }
         case GET_SOB_LISTING:
             return {
