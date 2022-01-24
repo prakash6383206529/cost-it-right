@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -68,9 +68,9 @@ class OperationListing extends Component {
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
-        if (Number(this.props.isOperationST) === 7) {
+        if (Number(this.props.isOperationST) === SURFACETREATMENT) {
             this.setState({ tableData: this.props.operationSurfaceTreatmentList })
-        } else if (Number(this.props.isOperationST) === 6) {
+        } else if (Number(this.props.isOperationST) === OPERATIONS) {
             this.setState({ tableData: this.props.operationIndividualList })
         } else {
             this.setState({ tableData: this.props.operationList })
@@ -453,7 +453,7 @@ class OperationListing extends Component {
     };
 
     onBtExport = () => {
-        let tempArr = this.props.operationList && this.props.operationList
+        let tempArr = this.state.tableData && this.state.tableData
         return this.returnExcelColumn(OPERATION_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -496,7 +496,7 @@ class OperationListing extends Component {
     */
     render() {
         const { handleSubmit, isSimulation } = this.props;
-        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
+        const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, tableData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
         if (toggleForm) {
@@ -624,7 +624,7 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.operationList && this.props.operationList?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
@@ -636,7 +636,7 @@ class OperationListing extends Component {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                rowData={this.props.operationList}
+                                rowData={tableData}
                                 pagination={true}
 
                                 paginationPageSize={10}
