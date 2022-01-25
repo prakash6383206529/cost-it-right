@@ -10,10 +10,11 @@ import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaFie
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
+import {masterFinalLevelUser} from '../actions/Material'
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId,userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -102,6 +103,22 @@ class AddBOPDomestic extends Component {
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
+
+
+    let obj = {
+      MasterId: BOP_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
+
+
   }
 
   componentDidUpdate(prevProps) {
@@ -148,7 +165,7 @@ class AddBOPDomestic extends Component {
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false })
     if (type === 'submit') {
-      this.clearForm()
+    
       this.cancel()
     }
   }
@@ -563,6 +580,8 @@ class AddBOPDomestic extends Component {
       UOM: [],
     })
     this.props.hideForm()
+    this.getDetails()
+
   }
 
   /**
@@ -649,27 +668,27 @@ class AddBOPDomestic extends Component {
         Attachements: files,
       }
 
-      this.props.createBOPDomestic(formData, (res) => {
-        this.setState({ setDisable: false })
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+      // this.props.createBOPDomestic(formData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
 
-      // if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-      //   this.setState({ approveDrawer: true, approvalObj: formData })
-      // } else {
-      //   this.props.reset()
-      //   this.props.createBOPDomestic(formData, (res) => {
-      //     if (res.data.Result) {
-      //       Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
-      //       //this.clearForm()
-      //       this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
-      //     }
-      //   })
-      // }
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createBOPDomestic(formData, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
+            //this.clearForm()
+            this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+          }
+        })
+      }
 
 
 
@@ -1177,15 +1196,15 @@ class AddBOPDomestic extends Component {
                           </button>
 
                           {
-                            // (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                            //   <button type="submit"
-                            //     class="user-btn approval-btn save-btn mr5"
-                            //     disabled={isViewMode}
-                            //   >
-                            //     <div className="send-for-approval"></div>
-                            //     {'Send For Approval'}
-                            //   </button>
-                            //   :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+                            (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                disabled={isViewMode}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
 
                             <button
                               type="submit"
@@ -1315,7 +1334,8 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getCityByCountry,
-  getAllCity
+  getAllCity,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
