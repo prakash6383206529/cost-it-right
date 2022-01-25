@@ -894,6 +894,7 @@ const generatorPDF = () => {
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
+                          console.log('data: ', checkForDecimalAndNull(data.netRM,initialConfiguration.NoOfDecimalForPrice));
                           return (
                             <td>
                               <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>

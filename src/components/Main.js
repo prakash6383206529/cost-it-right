@@ -60,6 +60,7 @@ import RMApproval from './masters/material-master/RMApproval'
 import OperationsMaster from './masters/operation/index'
 import CostingBenchmarkReport from './report/components/CostingBenchmarkReport'
 import ToasterBoXWrapper from './common/ToasterBoXWrapper'
+import SimulationInsights from './report/components/SimulationInsights'
 
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
@@ -381,6 +382,8 @@ class Main extends Component {
                     <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
                     <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
 
+{/*  NEED TO ADD PATH FROM BACKEND */}
+<Route path="/simulation-insights" component={SimulationInsights} /> 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}

@@ -6,7 +6,7 @@ import commanReducer from './Common';
 import CostingReducer from '../components/costing/MainReducer';
 import MastersReducer from '../components/masters/MainReducer';
 import SimulationReducers from '../components/simulation/MainReducer'
-import ReportListingReducers from '../components/report/reducers/ReportListing'
+import ReportReducer from '../components/report/MainReducer'
 
 const rootReducer = (state, action) => {
    if (action.type === 'RESET_APP') {
@@ -24,7 +24,7 @@ const allReducers = combineReducers({
    ...CostingReducer,
    ...MastersReducer,
    ...SimulationReducers,
-   report: ReportListingReducers,
+   ...ReportReducer,
 });
 
 export default rootReducer;
