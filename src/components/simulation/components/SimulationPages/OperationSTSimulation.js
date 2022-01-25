@@ -337,7 +337,7 @@ function OperationSTSimulation(props) {
                                                 <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {!isImpactedMaster && <>
-                                                    <AgGridColumn field="DestinationPlant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                    <AgGridColumn field="Plants" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>

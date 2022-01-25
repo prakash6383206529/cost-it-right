@@ -68,13 +68,7 @@ class OperationListing extends Component {
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
-        if (Number(this.props.isOperationST) === SURFACETREATMENT) {
-            this.setState({ tableData: this.props.operationSurfaceTreatmentList })
-        } else if (Number(this.props.isOperationST) === OPERATIONS) {
-            this.setState({ tableData: this.props.operationIndividualList })
-        } else {
-            this.setState({ tableData: this.props.operationList })
-        }
+     
     }
 
 
@@ -125,15 +119,32 @@ class OperationListing extends Component {
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
         }
-        this.props.getOperationsDataList(filterData, res => {
+        this.props.getOperationsDataList(filterData,this.props.isOperationST, res => {
             this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
+                    let surfaceTreatmentOperationData = []
+                    Data && Data.map(item => {
+                        if (item.IsSurfaceTreatmentOperation === true) {
+                            surfaceTreatmentOperationData.push(item)
+                        }
+                    })
+                    this.setState({ tableData: surfaceTreatmentOperationData })
+                } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
+                    let OperationData = []
+                    Data && Data.map(item => {
+                        if (item.IsSurfaceTreatmentOperation === false) {
+                            OperationData.push(item)
+                        }
+                    })
+                    this.setState({ tableData: OperationData })
+                } else {
+                    this.setState({ tableData: Data })
+                }
+                
                 // if (this.props.isSimulation) {
                 //     this.props.apply(Data)
                 // }
@@ -656,7 +667,7 @@ class OperationListing extends Component {
                                 {!isSimulation && <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>}
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plant(Code)"  ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
