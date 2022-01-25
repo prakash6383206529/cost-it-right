@@ -13,7 +13,7 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
@@ -34,7 +34,7 @@ import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import { SimulationUtils } from '../SimulationUtils'
-import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
+import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import _ from 'lodash'
@@ -161,7 +161,6 @@ function SimulationApprovalSummary(props) {
         }))
 
     }, [])
-
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
@@ -359,8 +358,16 @@ function SimulationApprovalSummary(props) {
 
 
     const renderColumn = () => {
+        switch (String(SimulationTechnologyId)) {
+            case RMDOMESTIC:
+            case RMIMPORT:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
+            case SURFACETREATMENT:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
 
-        return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOAD, dataForDownload.length > 0 ? dataForDownload : [])
+            default:
+                break;
+        }
     }
 
 
@@ -423,7 +430,7 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell,  getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const oldPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -554,12 +561,23 @@ function SimulationApprovalSummary(props) {
         return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
-
-
     const rawMaterailFormat = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? `${cell}- ${row.RMGrade}` : '-';
+        const temp = row.IsMultiple === true ? 'Multiple RM' : `${cell}- ${row.RMGrade}`
+        return cell != null ? temp : '-';
+    }
+
+    const operationNameFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        if (String(SimulationTechnologyId) !== SURFACETREATMENT) {
+            temp = row.IsMultiple === true ? 'Multiple Surface Treatment' : row.OperationName
+        } else if (String(SimulationTechnologyId) !== OPERATIONS) {
+            temp = row.IsMultiple === true ? 'Multiple Operation' : row.OperationName
+        }
+        return cell != null ? temp : '-';
     }
 
     if (showListing === true) {
@@ -627,7 +645,8 @@ function SimulationApprovalSummary(props) {
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
-        POVarianceFormatter: POVarianceFormatter
+        POVarianceFormatter: POVarianceFormatter,
+        operationNameFormatter: operationNameFormatter,
     };
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -842,7 +861,7 @@ function SimulationApprovalSummary(props) {
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <=0 ?"overlay-contain": ""}`}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
                                                         <div className="ag-grid-header d-flex">
 
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -873,6 +892,7 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
+                                                                <AgGridColumn field="IsMultiple" editable='false' headerName="IsMultiple" minWidth={190}></AgGridColumn>
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                                                                 {
@@ -884,7 +904,13 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
-
+                                                                {
+                                                                    (String(SimulationTechnologyId) !== SURFACETREATMENT || String(SimulationTechnologyId) !== OPERATIONS) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }

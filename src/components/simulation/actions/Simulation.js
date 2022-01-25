@@ -649,7 +649,7 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_VERIFY_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                    payload: response.data.Data.SimulationSurfaceTreatmentAndOperationImpactedCosting
                 })
                 callback(response)
             }
@@ -672,6 +672,24 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatrialId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostingSurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
 }
 
 export function runVerifyMachineRateSimulation(data, callback) {
