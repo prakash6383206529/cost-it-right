@@ -49,7 +49,7 @@ function RMImportListing(props) {
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
 
-  const [loader, setloader] = useState(true);
+  const [loader, setloader] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -121,6 +121,7 @@ function RMImportListing(props) {
       net_landed_max_range: value.max,
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
+    setloader(true)
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
       dispatch(getRMImportDataList(filterData, (res) => {
@@ -407,7 +408,6 @@ function RMImportListing(props) {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
     costingHeadRenderer: costingHeadFormatter,
-    customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
     costFormatter: costFormatter,
     freightCostFormatter: freightCostFormatter,
@@ -419,9 +419,8 @@ function RMImportListing(props) {
 
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+      {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
         <Row className="filter-row-large pt-4 ">
-
           {
             // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
             (!isSimulation && !props.isMasterSummaryDrawer) &&
@@ -462,19 +461,13 @@ function RMImportListing(props) {
                     {
                       DownloadAccessibility &&
                       <>
-
                         <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
                           <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                             {/* DOWNLOAD */}
                           </button>}>
-
                           {onBtExport()}
                         </ExcelFile>
-
-
                       </>
-
-
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                       <div className="refresh mr-0"></div>
@@ -485,10 +478,8 @@ function RMImportListing(props) {
             </Col>
           }
         </Row>
-
       <Row>
         <Col>
-          {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
           <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <=0 ?"overlay-contain": ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />

@@ -22,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,7 +49,8 @@ class BOPDomesticListing extends Component {
             sideBar: { toolPanels: ['columns'] },
             showData: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
 
         }
     }
@@ -75,7 +77,9 @@ class BOPDomesticListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
         }
+        this.setState({isLoader :true})
         this.props.getBOPDomesticDataList(filterData, (res) => {
+            this.setState({isLoader:false})
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -109,6 +113,7 @@ class BOPDomesticListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
+        
     }
 
     /**
@@ -195,8 +200,7 @@ class BOPDomesticListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cellValue
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -300,7 +304,6 @@ class BOPDomesticListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
@@ -324,7 +327,7 @@ class BOPDomesticListing extends Component {
         return (
 
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+                {this.state.isLoader && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
 
@@ -403,7 +406,6 @@ class BOPDomesticListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
@@ -426,7 +428,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn width={205} field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

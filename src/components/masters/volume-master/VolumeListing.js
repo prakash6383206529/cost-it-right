@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
-import { focusOnError, searchableSelect } from '../../layout/FormInputs'
-import { required } from '../../../helper/validation'
+import { focusOnError } from '../../layout/FormInputs'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { EMPTY_DATA } from '../../../config/constants'
@@ -11,13 +10,12 @@ import NoContentFound from '../../common/NoContentFound'
 import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
 import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
-import { costingHeadObjs, Months, VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
+import { VOLUME_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS, VOLUME, VolumeMaster, ZBC } from '../../../config/constants'
 import { checkPermission } from '../../../helper/util'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
-import ConfirmComponent from '../../../helper/ConfirmComponent'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -133,7 +131,8 @@ class VolumeListing extends Component {
       sideBar: { toolPanels: ['columns'] },
       showData: false,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      isLoader:false
 
     }
   }
@@ -182,6 +181,7 @@ class VolumeListing extends Component {
    * @description Get user list data
    */
   getTableListData = (year = '', month = '', vendor_id = '', plant_id = '', costing_head = '') => {
+    this.setState({isLoader:true})
     let filterData = {
       year: year,
       month: month,
@@ -190,6 +190,7 @@ class VolumeListing extends Component {
       costing_head: costing_head
     }
     this.props.getVolumeDataList(filterData, (res) => {
+      this.setState({isLoader:false})
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
@@ -443,7 +444,6 @@ class VolumeListing extends Component {
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       costingHeadRenderer: this.costingHeadFormatter,
-      customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
 
@@ -461,9 +461,9 @@ class VolumeListing extends Component {
 
     return (
       <>
-        {/* {this.props.loading && <Loader />} */}
         <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp="go-to-top" />
+        {this.state.isLoader && <LoaderCustom />}
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -558,7 +558,6 @@ class VolumeListing extends Component {
                 paginationPageSize={10}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
-                loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,

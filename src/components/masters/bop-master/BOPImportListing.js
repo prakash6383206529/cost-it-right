@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
@@ -23,6 +22,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -48,7 +48,7 @@ class BOPImportListing extends Component {
             rowData: null,
             sideBar: { toolPanels: ['columns'] },
             showData: false,
-            loader: true,
+            isLoader: false,
             showPopup: false,
             deletedId: ''
 
@@ -79,10 +79,12 @@ class BOPImportListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
         }
+        this.setState({isLoader:true})
         this.props.getBOPImportDataList(filterData, (res) => {
+            this.setState({isLoader:false})
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data, loader: false })
+                this.setState({ tableData: Data })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {
@@ -195,8 +197,7 @@ class BOPImportListing extends Component {
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        return cellValue
-        //!= null ? moment(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue!= null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     plantFormatter = (props) => {
 
@@ -321,7 +322,6 @@ class BOPImportListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
@@ -343,7 +343,7 @@ class BOPImportListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.props.loading && <Loader />}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
 
@@ -414,7 +414,6 @@ class BOPImportListing extends Component {
                             <div
                                 className="ag-theme-material"
                             >
-                                {this.state.loader && <LoaderCustom />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
 
@@ -427,7 +426,6 @@ class BOPImportListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    // loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
@@ -452,7 +450,7 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)"></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
