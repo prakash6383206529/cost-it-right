@@ -30,7 +30,7 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import { CheckApprovalApplicableMaster } from '../../../helper'   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { debounce } from 'lodash';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -72,7 +72,9 @@ class AddBOPDomestic extends Component {
       DropdownChanged: true,
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
     }
   }
 
@@ -104,6 +106,10 @@ class AddBOPDomestic extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.handleCalculation()
     }
+
+
+
+
   }
 
   /**
@@ -435,10 +441,21 @@ class AddBOPDomestic extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
-
     const { files, } = this.state;
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -450,6 +467,7 @@ class AddBOPDomestic extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadBOPDomestic(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -458,13 +476,16 @@ class AddBOPDomestic extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -541,7 +562,8 @@ class AddBOPDomestic extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
+
     const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, uploadAttachements } = this.state;
@@ -570,6 +592,7 @@ class AddBOPDomestic extends Component {
           return false;
         }
       }
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -595,6 +618,7 @@ class AddBOPDomestic extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
@@ -618,9 +642,9 @@ class AddBOPDomestic extends Component {
         Attachements: files,
       }
 
-      this.props.reset()
       this.props.createBOPDomestic(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
           this.cancel();
         }
@@ -645,19 +669,21 @@ class AddBOPDomestic extends Component {
 
      
     }
-  }
-  onPopupConfirm = () => {
-    this.props.reset()
+  }, 500)
+
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateBOPDomestic(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
         this.cancel();
       }
     })
 
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
 
   handleKeyDown = function (e) {
@@ -672,8 +698,7 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode } = this.state;
-
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -697,7 +722,6 @@ class AddBOPDomestic extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -1059,7 +1083,6 @@ class AddBOPDomestic extends Component {
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 disabled={isViewMode}
-                                //onSubmit={this.handleSubmit}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
@@ -1140,6 +1163,7 @@ class AddBOPDomestic extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
@@ -1159,7 +1183,7 @@ class AddBOPDomestic extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode}
+                              disabled={isViewMode || setDisable}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1218,7 +1242,7 @@ class AddBOPDomestic extends Component {
             )
           }
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>

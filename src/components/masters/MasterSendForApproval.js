@@ -614,6 +614,7 @@ function MasterSendForApproval(props) {
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
                                         onClick={toggleDrawer}
+                                        disabled={isDisable}
                                     >
                                         <div className={'cancel-icon'}></div>
                                         {'Cancel'}
