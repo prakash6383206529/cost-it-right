@@ -70,7 +70,7 @@ class SOBListing extends Component {
     }
     this.setState({isLoader:true})
     this.props.getManageBOPSOBDataList(filterData, (res) => {
-      this.setState({isLoader:true})
+      this.setState({isLoader:false})
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         this.setState({ tableData: Data })
