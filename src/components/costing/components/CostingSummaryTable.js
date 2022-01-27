@@ -167,8 +167,27 @@ const CostingSummaryTable = (props) => {
       let netTransportationCostView = viewCostingData[index].netTransportationCostView
       let surfaceTreatmentDetails = viewCostingData[index].surfaceTreatmentDetails
       let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
-      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting })
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting,isSurfaceTreatmentCost:false })
     }
+  }
+
+
+    /**
+   * @method viewSurfaceTreatmentCostData
+   * @description SET SURFACE TREATMENT DATA FOR DRAWER  :REUSED CONVERSION COST DRAWER
+   */
+  const viewSurfaceTreatmentCost = (index) => {
+
+    setIsViewConversionCost(true)
+    setViewBOP(false)
+    if (index !== -1) {
+      let data = viewCostingData[index].netConversionCostView
+      let netTransportationCostView = viewCostingData[index].netTransportationCostView
+      let surfaceTreatmentDetails = viewCostingData[index].surfaceTreatmentDetails
+      let IsAssemblyCosting = viewCostingData[index].IsAssemblyCosting
+      setViewConversionCostData({ conversionData: data, netTransportationCostView: netTransportationCostView, surfaceTreatmentDetails: surfaceTreatmentDetails, IsAssemblyCosting: IsAssemblyCosting,isSurfaceTreatmentCost:true })
+    }
+
   }
 
   /**
@@ -938,14 +957,7 @@ const generatorPDF = () => {
                       <td>
                         <span class="d-block small-grey-text">Process Cost</span>
                         <span class="d-block small-grey-text">Operation Cost</span>
-                        <span class="d-block small-grey-text">Other Operation Cost</span>
-
-                        <span class="d-block small-grey-text">
-                          Surface Treatment
-                        </span>
-                        <span class="d-block small-grey-text">
-                          Extra Surface Treatment Cost
-                        </span>
+                        <span class="d-block small-grey-text">Other Operation Cost</span>                  
                       </td>
                       {viewCostingData &&
                         viewCostingData.map((data) => {
@@ -959,12 +971,6 @@ const generatorPDF = () => {
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? (data.IsAssemblyCosting === true ? "Multiple Other Operation" : checkForDecimalAndNull(data.netOtherOperationCost, initialConfiguration.NoOfDecimalForPrice)) : ''}
-                              </span>
-                              <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}
-                              </span>
-                              <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.tCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                               </span>
                             </td>
                           )
@@ -991,6 +997,56 @@ const generatorPDF = () => {
                           )
                         })}
                     </tr>
+
+
+                    <tr>
+                      <td>
+                        <span class="d-block small-grey-text">
+                          Surface Treatment
+                        </span>
+                        <span class="d-block small-grey-text">
+                          Extra Surface Treatment Cost
+                        </span>
+                      </td>
+                      {viewCostingData &&
+                        viewCostingData.map((data) => {
+                          return (
+                            <td>
+                         
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice) : ''}
+                              </span>
+                              <span class="d-block small-grey-text">
+                                {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.tCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                              </span>
+                            </td>
+                          )
+                        })}
+                    </tr>
+
+
+                    <tr class="background-light-blue">
+                      <th>Net Surface Treatment Cost</th>
+                      {console.log(viewCostingData,"viewcostingdata")}
+                      {viewCostingData &&
+                        viewCostingData.map((data, index) => {
+                          return (
+                            <td>
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nsTreamnt, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                              {
+                                (data.CostingHeading !== VARIANCE && icons )  &&
+                                <button
+                                  type="button"
+                                  class="float-right mb-0 View "
+                                  onClick={() => viewSurfaceTreatmentCost(index)}
+                                >
+                                </button>
+                              }
+                            </td>
+                          )
+                        })}
+                    </tr>
+
 
                     <tr>
                       <td>
@@ -1225,7 +1281,7 @@ const generatorPDF = () => {
                         </span>
                         <span class="d-block small-grey-text"></span>
                       </td>
-                    {console.log(viewCostingData,"viewcostingdata")}
+                    {}
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
@@ -1240,9 +1296,9 @@ const generatorPDF = () => {
                               </div>
                               <div className="d-flex">
                                 <span className="d-inline-block w-50 small-grey-text">
-                                  {data.CostingHeading !== VARIANCE ? (data.otherDiscountValue.discountPercentValue===0||data.otherDiscountValue.discountPercentValue===""?"Fixed":"Percentage") : ''}
+                                  {data.CostingHeading !== VARIANCE ? data.otherDiscountValue.dicountType : ''}
                                 </span>
-                                <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? data.otherDiscountValue.discountApplicablity : ''}</span>
+                                <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue!==0 ? data.otherDiscountValue.discountApplicablity : '-'}</span>
                                 <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue!==0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                                 <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
@@ -1258,7 +1314,6 @@ const generatorPDF = () => {
                           return( 
 
 
-
                           <td>
                           <div className="d-flex">
                            
@@ -1269,19 +1324,13 @@ const generatorPDF = () => {
                           </div>
                           <div className="d-flex">
                             <span className="d-inline-block w-50 small-grey-text">
-                              {data.CostingHeading !== VARIANCE ? (data.otherDiscountValue.discountPercentValue===0||data.otherDiscountValue.discountPercentValue===""?"Fixed":"Percentage") : ''}
+                              {data.CostingHeading !== VARIANCE ? data.anyOtherCostType : ''}
                             </span>
-                            <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? data.anyOtherCostApplicablity : ''}</span>
-                            <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue!==0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                            <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent!==0 ? data.anyOtherCostApplicablity : '-'}</span>
+                            <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent!==0 ? checkForDecimalAndNull(data.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                             <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                           </div>
                         </td>
-
-
-
-
-
-
 
 
                           )
