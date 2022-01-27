@@ -216,6 +216,7 @@ class BOPMaster extends Component {
                       ViewAccessibility={this.state.ViewAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
+                      isMasterSummaryDrawer={false}
                     />
                   </TabPane>
                 )}

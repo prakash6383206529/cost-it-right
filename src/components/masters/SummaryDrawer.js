@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ApprovalWorkFlow from '../costing/components/approval/ApprovalWorkFlow';
 import RMDomesticListing from './material-master/RMDomesticListing';
+import BOPDomesticListing from './bop-master/BOPDomesticListing';
 import Drawer from '@material-ui/core/Drawer';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
@@ -37,27 +38,39 @@ function SummaryDrawer(props) {
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [rejectDrawer, setRejectDrawer] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [isRMApproval, setIsRMApproval] = useState(false)
+    const [isBOPApproval, setIsBOPApproval] = useState(false)
 
 
     useEffect(() => {
-        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, res => {
+        dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId,props.masterId, res => {
             
             const Data = res.data.Data
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
         }))
+
+        if(Number(props.masterId)===1){
+            setIsRMApproval(true)
+        }
+        else if(Number(props.masterId)===2){
+            setIsBOPApproval(true)
+        }
+
+        
     }, [])
     // const [approvalData, setApprovalData] = useState('')
 
     const closeApproveRejectDrawer = (e, type) => {
+        
         setApprovalDrawer(false)
         setRejectDrawer(false)
         if (type === 'submit') {
             cancel()
         }
     }
-
+    
     return (
         <div>
             <Drawer className="bottom-drawer" anchor={props.anchor} open={props.isOpen}>
@@ -79,7 +92,11 @@ function SummaryDrawer(props) {
                             <Col>
                                 <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
 
-                                <RMDomesticListing isMasterSummaryDrawer={true} />
+
+                                {isRMApproval &&
+                                <RMDomesticListing isMasterSummaryDrawer={true} />}
+                                {isBOPApproval &&
+                                <BOPDomesticListing isMasterSummaryDrawer={true} />}
 
 
                             </Col>

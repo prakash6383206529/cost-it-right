@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA,BOP_MASTER_ID } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
@@ -15,7 +15,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey,CheckApprovalApplicableMaster } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -60,6 +60,8 @@ class BOPDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        
+
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
@@ -78,6 +80,11 @@ class BOPDomesticListing extends Component {
             plant_id: plantId,
         }
         this.setState({isLoader :true})
+       const {isMasterSummaryDrawer}= this.props
+       
+
+        if (  isMasterSummaryDrawer!==undefined && !isMasterSummaryDrawer ) {
+            
         this.props.getBOPDomesticDataList(filterData, (res) => {
             this.setState({isLoader:false})
             if (res && res.status === 200) {
@@ -89,6 +96,7 @@ class BOPDomesticListing extends Component {
                 this.setState({ tableData: [] })
             }
         })
+    }
     }
 
     /**
@@ -172,8 +180,11 @@ class BOPDomesticListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
+
+        const rowData = props.data
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue
+        return rowData.CostingHead?rowData.CostingHead:cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        
     }
 
     plantFormatter = (props) => {
@@ -327,7 +338,8 @@ class BOPDomesticListing extends Component {
         return (
 
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.state.isLoader && <LoaderCustom />}
+                {/* {this.state.isLoader && <LoaderCustom />} */}
+                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
 
@@ -386,7 +398,8 @@ class BOPDomesticListing extends Component {
                         </Col>
                     </Row>
 
-                </form >
+                </form > 
+
                 <Row>
                     <Col>
 
@@ -416,7 +429,7 @@ class BOPDomesticListing extends Component {
                                     onSelectionChanged={onRowSelect}
                                 >
 
-                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
@@ -429,7 +442,7 @@ class BOPDomesticListing extends Component {
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

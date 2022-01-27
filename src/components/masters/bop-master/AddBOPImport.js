@@ -14,14 +14,15 @@ import {
 } from '../actions/BoughtOutParts';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
+import {masterFinalLevelUser} from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId ,userDetails} from "../../../helper/auth";
 import Switch from "react-switch";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, INR } from '../../../config/constants';
+import { FILE_URL, ZBC, INR,BOP_MASTER_ID } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -107,6 +108,22 @@ class AddBOPImport extends Component {
     this.props.getVendorTypeBOPSelectList(() => { })
     this.props.getCurrencySelectList(() => { })
     this.getDetails()
+
+    let obj = {
+      MasterId: BOP_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
+
+
+
   }
 
   componentDidUpdate(prevProps) {
@@ -146,6 +163,16 @@ class AddBOPImport extends Component {
       this.setState({ BOPCategory: [], });
     }
   }
+
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      //this.clearForm()
+      this.cancel()
+    }
+  }
+
 
   /**
   * @method getDetails
@@ -613,6 +640,7 @@ class AddBOPImport extends Component {
       UOM: [],
     })
     this.props.getBOPImportById('', res => { })
+    this.getDetails()
     this.props.hideForm()
   }
 
@@ -704,28 +732,29 @@ class AddBOPImport extends Component {
 
 
 
-      // if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-      //   this.setState({ approveDrawer: true, approvalObj: formData })
-      // } else {
-      //   this.props.reset()
-      //   this.props.createBOPImport(formData, (res) => {
-      //     if (res.data.Result) {
-      //        Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
-      //       //this.clearForm()
-      //       this.cancel()
-      //     }
-      //   })
-      // }
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createBOPImport(formData, (res) => {
+          if (res.data.Result) {
+             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
+            //this.clearForm()
+            this.cancel()
+          }
+        })
+      }
 
 
 
-      this.props.createBOPImport(formData, (res) => {
-        this.setState({ setDisable: false })
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+      // this.props.createBOPImport(formData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
+
     }
 
 
@@ -1235,15 +1264,15 @@ class AddBOPImport extends Component {
 
 
                           {
-                            // (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                            //   <button type="submit"
-                            //     class="user-btn approval-btn save-btn mr5"
-                            //     disabled={this.state.isFinalApprovar}
-                            //   >
-                            //     <div className="send-for-approval"></div>
-                            //     {'Send For Approval'}
-                            //   </button>
-                            //   :
+                            (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                disabled={this.state.isFinalApprovar}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
@@ -1369,7 +1398,8 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
-  getExchangeRateByCurrency
+  getExchangeRateByCurrency,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPImport',
   enableReinitialize: true,
