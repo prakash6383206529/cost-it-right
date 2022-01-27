@@ -24,6 +24,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { calculatePercentageValue } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 const selector = formValueSelector('AddPower');
 
 class AddPower extends Component {
@@ -69,7 +70,8 @@ class AddPower extends Component {
       ind: '',
       DeleteChanged: true,
       handleChange: true,
-      AddChanged: true
+      AddChanged: true,
+      setDisable: false
     }
   }
 
@@ -1018,7 +1020,7 @@ class AddPower extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
       handleChange, DeleteChanged, AddChanged } = this.state;
@@ -1046,7 +1048,7 @@ class AddPower extends Component {
           this.cancel()
           return false
         }
-
+        this.setState({ setDisable: true })
         let vendorDetailData = {
           PowerDetailId: PowerDetailID,
           VendorId: vendorName.value,
@@ -1059,9 +1061,10 @@ class AddPower extends Component {
           CreatedDate: '',
           LoggedInUserId: loggedInUserId(),
         }
-        this.props.reset()
+
         this.props.updateVendorPowerDetail(vendorDetailData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
             this.cancel();
           }
@@ -1093,6 +1096,7 @@ class AddPower extends Component {
           return false
         }
 
+        this.setState({ setDisable: true })
         let requestData = {
           PowerId: PowerDetailID,
           IsVendor: IsVendor,
@@ -1121,9 +1125,10 @@ class AddPower extends Component {
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
         }
-        this.props.reset()
+
         this.props.updatePowerDetail(requestData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
             this.cancel();
           }
@@ -1134,6 +1139,7 @@ class AddPower extends Component {
 
       if (IsVendor) {
 
+        this.setState({ setDisable: true })
         const vendorPowerData = {
           VendorId: vendorName.value,
           VendorPlants: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
@@ -1142,7 +1148,8 @@ class AddPower extends Component {
           LoggedInUserId: loggedInUserId(),
         }
         this.props.createVendorPowerDetail(vendorPowerData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
             this.cancel();
           }
@@ -1150,6 +1157,7 @@ class AddPower extends Component {
 
       } else {
 
+        this.setState({ setDisable: true })
         const formData = {
           IsVendor: IsVendor,
           Plants: plantArray,
@@ -1177,14 +1185,15 @@ class AddPower extends Component {
         }
 
         this.props.createPowerDetail(formData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.POWER_DETAIL_ADD_SUCCESS);
             this.cancel();
           }
         });
       }
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1199,7 +1208,7 @@ class AddPower extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
-      checkPowerContribution, netContributionValue, isViewMode } = this.state;
+      checkPowerContribution, netContributionValue, isViewMode, setDisable } = this.state;
     let tempp = 0
     return (
       <>
@@ -1220,7 +1229,6 @@ class AddPower extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>
@@ -1874,12 +1882,14 @@ class AddPower extends Component {
                         <button
                           type={'button'}
                           className="mr15 cancel-btn"
-                          onClick={this.cancel} >
+                          onClick={this.cancel}
+                          disabled={setDisable}
+                        >
                           <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
                         <button
                           type="submit"
-                          disabled={isViewMode}
+                          disabled={isViewMode || setDisable}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
