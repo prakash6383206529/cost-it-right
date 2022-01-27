@@ -976,7 +976,7 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
-                                                                <AgGridColumn field="IsMultiple" editable='false' headerName="IsMultiple" minWidth={190}></AgGridColumn>
+                                                               
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                                                                 {
