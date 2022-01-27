@@ -236,7 +236,6 @@ class CostingTab extends Component {
   renderAction = (actions, parentIndex) => {
     const { actionSelectList } = this.state;
 
-
     return actionSelectList && actionSelectList.map((el, i) => {
       if (el.Value == 0) return false;
       return actions && actions.map((item, index) => {
@@ -245,7 +244,8 @@ class CostingTab extends Component {
         if (item.ActionName == 'Reject') {
 
           return (
-            <td colSpan='8' className="text-right">
+            <>
+             <td className="text-center">
               {
                 <label htmlFor="normal-switch" className="normal-switch">
                   <Switch
@@ -264,12 +264,15 @@ class CostingTab extends Component {
                 </label>
               }
             </td>
+            </>
           )
 
         } if (item.ActionName == 'Bulk Upload') {
 
           return (
-            <td colSpan='6' className="text-right">
+            <>
+            <td colSpan='7'></td>
+              <td  className="text-center">
               {
                 <label htmlFor="normal-switch" className="normal-switch">
                   <Switch
@@ -288,11 +291,9 @@ class CostingTab extends Component {
                 </label>
               }
             </td>
+            </>
           )
-
         }
-
-
 
         return (
           <td className="text-center">
