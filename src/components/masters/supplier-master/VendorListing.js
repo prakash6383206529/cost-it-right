@@ -616,7 +616,6 @@ class VendorListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            // customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             indexFormatter: this.indexFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
