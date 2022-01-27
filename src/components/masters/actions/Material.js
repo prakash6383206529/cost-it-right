@@ -1690,12 +1690,12 @@ export function masterApprovalRequestBySender(data, callback) {
 
 
 /**
- * @method approvalRequestByApprove
- * @description approving the request by approve
+ * @method approvalOrRejectRequestByMasterApprove
+ * @description approving or rejecting the request by approve or reject
  */
-export function approvalRequestByMasterApprove(data, callback) {
+export function approvalOrRejectRequestByMasterApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.approveMasterByApprover, data, headers)
+        const request = axios.post(API.approveOrRejectMasterByApprover, data, headers)
         request
             .then((response) => {
                 if (response.data.Result) {
@@ -1711,31 +1711,6 @@ export function approvalRequestByMasterApprove(data, callback) {
                 dispatch({ type: API_FAILURE })
                 apiErrors(error)
                 callback(error)
-            })
-    }
-}
-
-/**
- * @method rejectRequestByApprove
- * @description rejecting approval Request
- */
-export function rejectRequestByMasterApprove(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.rejectMasterByApprover, data, headers)
-        request
-            .then((response) => {
-                if (response.data.Result) {
-                    callback(response)
-                } else {
-                    dispatch({ type: API_FAILURE })
-                    if (response.data.Message) {
-                        Toaster.error(response.data.Message)
-                    }
-                }
-            })
-            .catch((error) => {
-                dispatch({ type: API_FAILURE })
-                apiErrors(error)
             })
     }
 }

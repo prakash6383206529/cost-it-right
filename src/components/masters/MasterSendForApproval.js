@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
-import { approvalRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender, rejectRequestByMasterApprove } from './actions/Material';
+import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
@@ -225,7 +225,7 @@ function MasterSendForApproval(props) {
             obj.IsFinalApprovalProcess = false
             if (type === 'Approve') {
                 reset()
-                dispatch(approvalRequestByMasterApprove(obj, res => {
+                dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
                     setIsDisable(false)
                     if (res?.data?.Result) {
                         if (IsPushDrawer) {
@@ -239,7 +239,7 @@ function MasterSendForApproval(props) {
                 }))
             } else {
                 // REJECT CONDITION
-                dispatch(rejectRequestByMasterApprove(obj, res => {
+                dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
                     if (res.data.Result) {
                         Toaster.success('Token Rejected')
                         props.closeDrawer('', 'submit')
