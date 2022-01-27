@@ -737,13 +737,14 @@ function CostingSimulation(props) {
     const renderColumn = () => {
         let arrayOFCorrectObjIndividual = []
         let tempArr = []
-        // ********** EXTRACT PART NO. FROM SELECTED ROWS IN AN ARRAY  ********** */
+        // ********** EXTRACT PART NO. FROM SELECTED ROWS IN AN ARRAY ********** */
         selectedRowData.map((item) => {
             tempArr.push(item?.CostingId)
             return null
         })
 
         //********** APPLY MAP ON PART NO ARRAY | COMPARE WITH REDUCER'S ALL PART NO. ONE BY ONE | CONDITION - TRUE -> PUSH IN ARRAY  ********** */
+        //********** TO GET OTHER RECOED IN LIST WHICH WERE FILTERED TO SHOW UNIQUE IN LISTING  ********** */
         tempArr && tempArr.map((itemOut) => {
             let temp = []
             costingList && costingList.map((item) => {
