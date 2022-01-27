@@ -15,6 +15,7 @@ import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -38,7 +39,8 @@ class AddVendorDrawer extends Component {
             vendor: '',
             DataToCheck: [],
             DropdownChanged: true,
-            isViewMode: this.props?.isViewMode ? true : false
+            isViewMode: this.props?.isViewMode ? true : false,
+            setDisable: false
         }
     }
 
@@ -337,7 +339,7 @@ class AddVendorDrawer extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
+    onSubmit = debounce((values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
         const { supplierData, vendorPlantSelectList } = this.props;
 
@@ -393,6 +395,7 @@ class AddVendorDrawer extends Component {
                 return false
             }
 
+            this.setState({ setDisable: true })
             let formData = {
                 VendorId: VendorId,
                 VendorCode: values.VendorCode,
@@ -409,14 +412,15 @@ class AddVendorDrawer extends Component {
                 RemoveVendorPlants: removedVendorPlants,
                 VendorTypes: vendorArray,
             }
-            this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
-                if (res.data.Result) {
+                this.setState({ setDisable: false })
+                if (res?.data?.Result) {
                     Toaster.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
                     this.cancel(formData)
                 }
             });
         } else {/** Add new detail for creating supplier master **/
+            this.setState({ setDisable: true })
             let formData = {
                 VendorName: values.VendorName,
                 VendorCode: values.VendorCode,
@@ -434,16 +438,16 @@ class AddVendorDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
             }
-            this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
-                if (res.data.Result) {
+                this.setState({ setDisable: false })
+                if (res?.data?.Result) {
                     Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
                     this.cancel(formData);
                 }
             });
         }
 
-    }
+    }, 500)
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
@@ -455,7 +459,7 @@ class AddVendorDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, isVisible } = this.props;
-        const { country, isOpenVendorPlant, isViewMode } = this.state;
+        const { country, isOpenVendorPlant, isViewMode, setDisable } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -467,7 +471,6 @@ class AddVendorDrawer extends Component {
                                 noValidate
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                             >
                                 <Row className="drawer-heading">
                                     <Col>
@@ -697,15 +700,15 @@ class AddVendorDrawer extends Component {
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
                                     <div className="col-sm-12 text-right px-3">
                                         <button
-                                            disabled={this.state.isLoader}
                                             type={'button'}
+                                            disabled={this.state.isLoader || setDisable}
                                             className=" mr15 cancel-btn"
                                             onClick={this.cancel} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type="submit"
-                                            disabled={this.state.isLoader || isViewMode ? true : false}
+                                            disabled={this.state.isLoader || isViewMode || setDisable ? true : false}
                                             className="user-btn save-btn">
                                             <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Save'}
