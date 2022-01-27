@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { EXCHNAGERATE, RAW_MATERIAL, RMDOMESTIC } from '../../../config/constants';
+import { EXCHNAGERATE, RAW_MATERIAL, RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 
 
 
@@ -119,7 +119,7 @@ function CostingDetailSimulationDrawer(props) {
                                                 </>
                                         }
                                         {
-                                            Number(master) === Number(RMDOMESTIC) &&
+                                            (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) &&
                                             <>
                                                 <Col md="3">
                                                     <label>RM Cost Old</label>
