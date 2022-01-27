@@ -947,7 +947,7 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
-                                                                <AgGridColumn field="IsMultiple" editable='false' headerName="IsMultiple" minWidth={190}></AgGridColumn>
+                                                               
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                                                                 {
@@ -1046,6 +1046,7 @@ function SimulationApprovalSummary(props) {
                                     vendorIdState={costingList[0]?.VendorId}
                                     impactType={'AssemblySummary'}
                                     isPartImpactAssembly={false}
+                                    isImpactDrawer={false}
                                 />}
                             </div>
                         </>}
@@ -1167,6 +1168,7 @@ function SimulationApprovalSummary(props) {
                                     vendorIdState={costingList[0]?.VendorId}
                                     isPartImpactAssembly={true}
                                     impactType={'AssemblySummary'}
+                                    isImpactDrawer={false}
                                 />
                             }
                             {/* {lastRevisionDataAccordian &&

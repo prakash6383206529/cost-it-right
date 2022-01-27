@@ -8,6 +8,7 @@ import { Fgwiseimactdata } from './FgWiseImactData'
 import DayTime from '../../common/DayTimeWrapper'
 import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
 import AssemblyWiseImpact from './AssemblyWiseImpact';
+import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
 
 function VerifyImpactDrawer(props) {
@@ -155,11 +156,12 @@ function VerifyImpactDrawer(props) {
                       </div>
                     </Col>
                     {showAssemblyWise && <div className="accordian-content w-100 px-3 impacted-min-height">
-                      <AssemblyWiseImpact
+                      <AssemblyWiseImpactSummary
                         dataForAssemblyImpact={dataForAssemblyImpactInVerifyImpact}
                         impactType={'AssemblySummary'}
                         isPartImpactAssembly={false}
                         customClass="verify-drawer"
+                        isImpactDrawer={true}
                       />
                     </div>
                     }

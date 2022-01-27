@@ -64,6 +64,7 @@ function ViewAssembly(props) {
                             dataForAssemblyImpact={props.dataForAssemblyImpact}
                             impactType={'Assembly'}
                             isPartImpactAssembly={props.isPartImpactAssembly}
+                            isImpactDrawer={props.isImpactDrawer}
                         />
                     </div>
                 </div>

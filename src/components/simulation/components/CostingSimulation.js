@@ -1111,6 +1111,7 @@ function CostingSimulation(props) {
                     dataForAssemblyImpact={dataForAssemblyImpact}
                     vendorIdState={vendorIdState}
                     isPartImpactAssembly={true}
+                    isImpactDrawer={true}
                 />
             }
         </>
