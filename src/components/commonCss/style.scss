@@ -6841,3 +6841,16 @@ left: 17rem;
     min-height: calc(100vh - 288px) !important;
   }
 }
+// <----Overhead and profit css----->
+.tooltip-container {
+  position: relative;
+  .tooltip_custom_right {
+    position:absolute;
+    top: 5px;
+    right: -17px;
+    .tooltiptext {
+      text-align: center;
+    }
+  }
+}
+// <----Overhead and profit css----->
