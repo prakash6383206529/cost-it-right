@@ -223,7 +223,7 @@ class VendorListing extends Component {
         }
         this.setState({isLoader:true})
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
-
+            this.setState({isLoader:false})
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
                 this.setState({ totalRecordCount: 0 })
@@ -238,7 +238,6 @@ class VendorListing extends Component {
                 this.setState({
                     tableData: Data,
                     totalRecordCount: Data[0].TotalRecordCount,
-                    isLoader:false
                 })
 
             } else {

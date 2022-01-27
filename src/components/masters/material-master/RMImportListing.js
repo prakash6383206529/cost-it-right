@@ -49,7 +49,7 @@ function RMImportListing(props) {
   const [gridApi, setgridApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApi, setgridColumnApi] = useState(null);   // DONT DELETE THIS STATE , IT IS USED BY AG GRID
 
-  const [loader, setloader] = useState(true);
+  const [loader, setloader] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -121,6 +121,7 @@ function RMImportListing(props) {
       net_landed_max_range: value.max,
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
     }
+    setloader(true)
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
       dispatch(getRMImportDataList(filterData, (res) => {
@@ -405,7 +406,6 @@ function RMImportListing(props) {
     totalValueRenderer: buttonFormatter,
     effectiveDateRenderer: effectiveDateFormatter,
     costingHeadRenderer: costingHeadFormatter,
-    // customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
     costFormatter: costFormatter,
     freightCostFormatter: freightCostFormatter,

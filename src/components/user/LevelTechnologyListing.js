@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import ConfirmComponent from '../../helper/ConfirmComponent';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -28,7 +27,8 @@ class LevelTechnologyListing extends Component {
 			sideBar: { toolPanels: ['columns'] },
 			showData: false,
 			showPopup:false,
-            deletedId:''
+            deletedId:'',
+			isLoder:false
 
 		}
 	}
@@ -41,7 +41,9 @@ class LevelTechnologyListing extends Component {
 	}
 
 	getLevelsListData = () => {
+		this.setState({isLoader:true})
 		this.props.getAllLevelMappingAPI(res => {
+			this.setState({isLoader:false})
 			if (res.status == 204 && res.data == '') {
 				this.setState({ tableData: [], })
 			} else if (res && res.data && res.data.DataList) {
@@ -56,10 +58,16 @@ class LevelTechnologyListing extends Component {
 	}
 
 	getSimulationDataList = () => {
-		this.props.getSimulationLevelDataList(res => { })
+		this.setState({isLoader:true})
+		this.props.getSimulationLevelDataList(res => {
+			this.setState({isLoader:false}) 
+		})
 	}
 	getMasterDataList = () => {
-		this.props.getMasterLevelDataList(res => { })
+		this.setState({isLoader:true})
+		this.props.getMasterLevelDataList(res => {
+			this.setState({isLoader:false})
+		 })
 	}
 
 	/**
@@ -232,7 +240,6 @@ class LevelTechnologyListing extends Component {
 
 		const frameworkComponents = {
 			totalValueRenderer: this.buttonFormatter,
-			customLoadingOverlay: LoaderCustom,
 			customNoRowsOverlay: NoContentFound,
 			simulationButtonFormatter: this.simulationButtonFormatter,
 			masterButtonFormatter: this.masterButtonFormatter
@@ -240,6 +247,8 @@ class LevelTechnologyListing extends Component {
 
 		return (
 			<>
+			<div className='p-relative'>
+				{this.state.isLoader && <LoaderCustom />}
 				<Row className="levellisting-page">
 					<Col md="12">
 						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
@@ -301,11 +310,11 @@ class LevelTechnologyListing extends Component {
 								</div>
 							</div>
 						</div>
-
-
 					</Col>
-				</Row>
-
+			 	</Row>
+             </div>
+			 <div className='p-relative'>
+				{this.state.isLoader && <LoaderCustom />}
 				<Row className="levellisting-page mt20">
 					<Col md="12">
 						<h2 className="manage-level-heading">{`Simulation Level Mapping`}</h2>
@@ -365,9 +374,12 @@ class LevelTechnologyListing extends Component {
 
 					</Col>
 				</Row>
+			</div>
 				{
 					getConfigurationKey().IsMasterApprovalAppliedConfigure &&
 					<>
+					<div className='p-relative'>
+			        	{this.state.isLoader && <LoaderCustom />}
 						<Row className="levellisting-page mt20">
 							<Col md="12">
 								<h2 className="manage-level-heading">{`Master Level Mapping`}</h2>
@@ -429,6 +441,7 @@ class LevelTechnologyListing extends Component {
                 }
 							</Col>
 						</Row>
+					</div>
 					</>
 				}
 			</>

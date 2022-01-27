@@ -52,7 +52,8 @@ class LevelsListing extends Component {
             deletedId:'',
 			cellData:{},
             cellValue:'',
-            showPopupToggle:false
+            showPopupToggle:false,
+			isLoader:false
 
 		}
 	}
@@ -391,8 +392,8 @@ class LevelsListing extends Component {
 			<div className={"levellisting-page-main"}>
 				<div className={"ag-grid-react"}>
 					<>
+						{this.state.isLoader && <LoaderCustom />}
 						<form className="levellisting-page">
-							{this.state.isLoader && <LoaderCustom />}
 							<Row className="pt-4">
 								<Col md="12">
 									<LevelTechnologyListing

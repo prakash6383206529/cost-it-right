@@ -63,7 +63,6 @@ class ClientListing extends Component {
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
             this.getTableListData(null, null)
-            // this.setState({isLoader:false})
         }, 500);
     }
 
