@@ -21,6 +21,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 
 const selector = formValueSelector('AddOperation');
 
@@ -57,7 +58,9 @@ class AddOperation extends Component {
       uploadAttachements: true,
       isDisableCode: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
     }
   }
 
@@ -370,9 +373,22 @@ class AddOperation extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -384,6 +400,7 @@ class AddOperation extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadOperation(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -392,13 +409,16 @@ class AddOperation extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -481,7 +501,7 @@ class AddOperation extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
       UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange } = this.state;
     const { initialConfiguration } = this.props;
@@ -527,10 +547,11 @@ class AddOperation extends Component {
         }
         this.setState({ showPopup: true, updatedObj: updateData })
       }
-
+      this.setState({ setDisable: true })
 
     } else {/** Add new detail for creating operation master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         IsVendor: IsVendor,
         OperationName: values.OperationName,
@@ -568,10 +589,9 @@ class AddOperation extends Component {
       //   })
       // }
 
-
-      this.props.reset()
       this.props.createOperationsAPI(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
           this.cancel();
         }
@@ -580,19 +600,20 @@ class AddOperation extends Component {
 
     }
 
-  }
+  }, 500)
 
-  onPopupConfirm = () => {
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateOperationAPI(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   /**
   * @method render
@@ -600,7 +621,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -1011,6 +1032,7 @@ class AddOperation extends Component {
                         type={"button"}
                         className="mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
@@ -1029,6 +1051,7 @@ class AddOperation extends Component {
                       <button
                         type="submit"
                         className="user-btn mr5 save-btn"
+                        disabled={isViewMode || setDisable}
                       >
                         <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}
@@ -1079,7 +1102,7 @@ class AddOperation extends Component {
           )
         }
         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
         }
       </div>
     );

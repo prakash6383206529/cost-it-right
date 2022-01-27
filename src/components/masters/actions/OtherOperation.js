@@ -292,6 +292,7 @@ export function createOperationsAPI(data, callback) {
         }).catch((error) => {
             dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -339,6 +340,7 @@ export function updateOperationAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }
