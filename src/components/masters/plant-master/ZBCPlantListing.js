@@ -43,11 +43,11 @@ class ZBCPlantListing extends Component {
             state: [],
             showPopup: false,
             deletedId: '',
-
             cellData: {},
             cellValue: '',
             showPopupToggle: false,
-            isViewMode: false
+            isViewMode: false,
+            isLoader:false
         }
     }
 
@@ -66,7 +66,7 @@ class ZBCPlantListing extends Component {
         this.props.getPlantDataAPI(false, (res) => {
             if (res && res.data && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data })
+                this.setState({ tableData: Data, isLoader:false })
             }
         })
     }
@@ -325,7 +325,9 @@ class ZBCPlantListing extends Component {
     * @description FILTER DATALIST
     */
     filterList = () => {
+
         const { country, state, city, } = this.state;
+        this.setState({isLoader:true})
         let filterData = {
             country: country && country.hasOwnProperty('value') ? country.value : '',
             state: state && state.hasOwnProperty('value') ? state.value : '',
@@ -333,6 +335,7 @@ class ZBCPlantListing extends Component {
             is_vendor: false,
         }
         this.props.getFilteredPlantList(filterData, (res) => {
+         this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -463,14 +466,13 @@ class ZBCPlantListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             statusButtonFormatter: this.statusButtonFormatter
         };
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
 
@@ -532,7 +534,6 @@ class ZBCPlantListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,

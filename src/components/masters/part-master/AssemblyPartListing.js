@@ -46,7 +46,8 @@ class AssemblyPartListing extends Component {
             BOMId: '',
             isBulkUpload: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
         }
     }
 
@@ -64,13 +65,14 @@ class AssemblyPartListing extends Component {
     * @description Get user list data
     */
     getTableListData = () => {
+        this.setState({isLoader: true})
         this.props.getAssemblyPartDataList((res) => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
-                    tableData: Data,
+                    tableData: Data, isLoader:false
                 })
             } else {
 
@@ -339,7 +341,7 @@ class AssemblyPartListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
+            // customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             visualAdFormatter: this.visualAdFormatter,
@@ -347,8 +349,8 @@ class AssemblyPartListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+            <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+               {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
@@ -417,7 +419,7 @@ class AssemblyPartListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
+                            // loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,

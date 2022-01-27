@@ -14,7 +14,6 @@ import Switch from "react-switch";
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { GridTotalFormate } from '../common/TableGridFunctions';
 import ConfirmComponent from "../../helper/ConfirmComponent";
 import LoaderCustom from '../common/LoaderCustom';
@@ -55,7 +54,8 @@ class UsersListing extends Component {
 			showPopup2: false,
 			deletedId: '',
 			cell: [],
-			row: []
+			row: [],
+			isLoader:false
 		}
 	}
 
@@ -126,7 +126,9 @@ class UsersListing extends Component {
 			DepartmentId: departmentId,
 			RoleId: roleId,
 		}
+		this.setState({isLoader:true})
 		this.props.getAllUserDataAPI(data, res => {
+			this.setState({isLoader:false})
 			if (res.status === 204 && res.data === '') {
 				this.setState({ userData: [], })
 			} else if (res && res.data && res.data.DataList) {
@@ -537,7 +539,6 @@ class UsersListing extends Component {
 
 		const frameworkComponents = {
 			totalValueRenderer: this.buttonFormatter,
-			customLoadingOverlay: LoaderCustom,
 			customNoRowsOverlay: NoContentFound,
 			statusButtonFormatter: this.statusButtonFormatter,
 			hyphenFormatter: this.hyphenFormatter,
@@ -549,7 +550,7 @@ class UsersListing extends Component {
 			<div className={"ag-grid-react"}>
 				<>
 					{" "}
-					{/* {this.props.loading && <Loader />} */}
+					{this.state.isLoader && <LoaderCustom />}
 					<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 						<Row className="pt-4">
 							{this.state.shown &&
@@ -657,7 +658,6 @@ class UsersListing extends Component {
 								paginationPageSize={10}
 								onGridReady={this.onGridReady}
 								gridOptions={gridOptions}
-								loadingOverlayComponent={'customLoadingOverlay'}
 								noRowsOverlayComponent={'customNoRowsOverlay'}
 								noRowsOverlayComponentParams={{
 									title: EMPTY_DATA,
