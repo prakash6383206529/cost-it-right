@@ -18,6 +18,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -41,7 +42,9 @@ class AddIndivisualPart extends Component {
       DropdownChanged: true,
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
 
     }
   }
@@ -164,9 +167,22 @@ class AddIndivisualPart extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -178,6 +194,7 @@ class AddIndivisualPart extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadPart(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -186,13 +203,16 @@ class AddIndivisualPart extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -262,7 +282,7 @@ class AddIndivisualPart extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged, ProductGroup, oldProductGroup, uploadAttachements } = this.state;
     const { initialConfiguration } = this.props;
 
@@ -279,6 +299,7 @@ class AddIndivisualPart extends Component {
         this.cancel()
         return false;
       }
+      this.setState({ setDisable: true })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -307,6 +328,7 @@ class AddIndivisualPart extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       let formData = {
         LoggedInUserId: loggedInUserId(),
         BOMLevel: 0,
@@ -324,26 +346,27 @@ class AddIndivisualPart extends Component {
         GroupCodeList: productArray
       }
 
-      this.props.reset()
       this.props.createPart(formData, (res) => {
-        if (res.data.Result === true) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PART_ADD_SUCCESS);
           this.cancel()
         }
       });
     }
-  }
-  onPopupConfirm = () => {
-    this.props.reset()
+  }, 500)
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updatePart(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_PART_SUCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -357,7 +380,8 @@ class AddIndivisualPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isViewMode } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -382,7 +406,6 @@ class AddIndivisualPart extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -648,14 +671,15 @@ class AddIndivisualPart extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
                           <button
-                            disabled={isViewMode}
                             type="submit"
                             className="user-btn mr5 save-btn"
+                            disabled={isViewMode || setDisable}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
@@ -669,7 +693,7 @@ class AddIndivisualPart extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>
