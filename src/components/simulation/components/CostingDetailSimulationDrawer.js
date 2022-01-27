@@ -107,21 +107,21 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(master) === Number(EXCHNAGERATE) ?
                                                 <>
                                                     <Col md="3">
-                                                        <label>PO Price Old(in Currency)</label>
+                                                        <label>Old PO Price(in Currency)</label>
                                                         <label className={`${pricesDetail.OldNetPOPriceOtherCurrency > pricesDetail.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                     <Col md="3">
-                                                        <label>PO Price New(in Currency)</label>
+                                                        <label>New PO Price(in Currency)</label>
                                                         <label className={`${pricesDetail.OldNetPOPriceOtherCurrency > pricesDetail.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                 </> :
                                                 <>
                                                     <Col md="3">
-                                                        <label>PO Price Old</label>
+                                                        <label>Old PO Price</label>
                                                         <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                     <Col md="3">
-                                                        <label>PO Price New</label>
+                                                        <label>New PO Price</label>
                                                         <label className={`${pricesDetail.OldPOPrice > pricesDetail.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                 </>
@@ -183,6 +183,32 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(master) === Number(OPERATIONS) &&
                                             <>
                                                 <Col md="3">
+                                                    <label>Old Exchange Rate</label>
+                                                    <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                                <Col md="3">
+                                                    <label>New Exchange Rate</label>
+                                                    <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                            </>
+                                        }
+                                        {
+                                            Number(master) === Number(SURFACETREATMENT) &&
+                                            <>
+                                                <Col md="3">
+                                                    <label>Old Surface Treatment</label>
+                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                                <Col md="3">
+                                                    <label>New Surface Treatment</label>
+                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                            </>
+                                        }
+                                        {
+                                            Number(master) === Number(OPERATIONS) &&
+                                            <>
+                                                <Col md="3">
                                                     <label>Old Oper Rate</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
@@ -192,7 +218,7 @@ function CostingDetailSimulationDrawer(props) {
                                                 </Col>
                                             </>
                                         }
-                                </Row>
+                                    </Row>
                                 }
                                 <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} simulationDrawer={true} />
 

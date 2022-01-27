@@ -14,14 +14,13 @@ import { EMPTY_GUID, EXCHNAGERATE, COMBINED_PROCESS, ZBC } from '../../../config
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { COMBINEDPROCESSSIMULATION, EXCHANGESIMULATIONDOWNLOAD } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
+import { COMBINEDPROCESSSIMULATION, EXCHANGESIMULATIONDOWNLOAD } from '../../../config/masterData';
+import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
+import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 const gridOptions = {};
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -647,7 +646,7 @@ function OtherCostingSimulation(props) {
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData?.length <=0 ?"overlay-contain": ""}`}>
+                                        <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
                                             <div className="ag-grid-header">
                                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             </div>

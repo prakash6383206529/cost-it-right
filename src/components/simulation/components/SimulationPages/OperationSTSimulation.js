@@ -44,7 +44,7 @@ function OperationSTSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const cancelVerifyPage = () => {
         setShowVerifyPage(false)
@@ -70,7 +70,7 @@ function OperationSTSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldNetCC) :
+                        Number(row.OldOperationRate) :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
                 }
 
@@ -86,7 +86,7 @@ function OperationSTSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewRate :
+                        row.NewOperationRate :
                         <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
@@ -202,13 +202,13 @@ function OperationSTSimulation(props) {
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
 
-        let ccCount = 0
+        let Count = 0
         let tempData = list
         let arr = []
         tempData && tempData.map((li, index) => {
 
             if (Number(li.Rate) === Number(li.NewRate) || li?.NewRate === undefined) {
-                ccCount = ccCount + 1
+                Count = Count + 1
             } else {
 
                 li.NewTotal = Number(li.NewRate ? li.NewRate : li.Rate) + checkForNull(li.RemainingTotal)
@@ -217,7 +217,7 @@ function OperationSTSimulation(props) {
             }
             return null;
         })
-        if (ccCount === tempData.length) {
+        if (Count === tempData.length) {
             Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
@@ -225,22 +225,20 @@ function OperationSTSimulation(props) {
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
         obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
-        obj.TechnologyId = list[0].TechnologyId
-        obj.TechnologyName = list[0].TechnologyName
+        obj.TechnologyId = selectedTechnologyForSimulation.value
+        obj.TechnologyName = selectedTechnologyForSimulation.label
 
         let tempArr = []
         arr && arr.map(item => {
             let tempObj = {}
-            tempObj.CostingId = item.CostingId
-            tempObj.OldNetCC = item.ConversionCost
-            tempObj.NewNetCC = item.NewRate
-            tempObj.RemainingTotal = item.RemainingTotal
-            tempObj.OldTotalCost = item.TotalCost
-            tempObj.NewTotalCost = item.NewTotal
+            tempObj.OperationId = item.OperationId
+            tempObj.OldOperationRate = Number(item.Rate)
+            tempObj.NewOperationRate = Number(item.NewRate)
+
             tempArr.push(tempObj)
             return null
         })
-        obj.SimulationCombinedProcess = tempArr
+        obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             if (res.data.Result) {
                 setToken(res.data.Identity)
@@ -305,7 +303,7 @@ function OperationSTSimulation(props) {
 
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         </div>
@@ -332,34 +330,20 @@ function OperationSTSimulation(props) {
                                                 // frameworkComponents={frameworkComponents}
                                                 onSelectionChanged={onRowSelect}
                                             >
-                                                <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
-                                                <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
+                                                {!isImpactedMaster && <>
+                                                    <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>
+                                                    <AgGridColumn field="VendorName" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>
+                                                </>}
                                                 <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
-                                                {isImpactedMaster && <AgGridColumn field="PartNo" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
-                                                {
-                                                    !isImpactedMaster &&
-                                                    <>
-                                                        <AgGridColumn field="DestinationPlant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
-
-                                                    </>
-                                                }
+                                                <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
+                                                {!isImpactedMaster && <>
+                                                    <AgGridColumn field="DestinationPlant" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {/* {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>} */}
-                                                {/* {
-                                                    !isImpactedMaster &&
-                                                    <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
-                                                        <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
-                                                        <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewRate + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
-                                                    </AgGridColumn>
-                                                } */}
-
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
-                                                {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}
-
-                                                {/* <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn> */}
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact>

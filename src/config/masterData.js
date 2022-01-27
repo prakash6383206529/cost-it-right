@@ -1747,12 +1747,12 @@ export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area'
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
 export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
-export const MULTIPLERMTECHNOLOGY=[4,5,7,8,14,16,17,6,9,10,2,15]
+export const MULTIPLERMTECHNOLOGY = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15]
 
 export function isMultipleRMAllow(technology) {
-    const allowedMultipleRM =[4,5,7,8,14,16,17,6,9,10,2,15]
+    const allowedMultipleRM = [4, 5, 7, 8, 14, 16, 17, 6, 9, 10, 2, 15]
     return allowedMultipleRM.includes(technology);
-  }
+}
 
 
 
@@ -1774,9 +1774,9 @@ export const FABRICATION = 15
 export const CORRUGATEDBOX = 20
 export const WIRING_HARNESS = 16
 export const ELECTRONICS = 17
-export const HARDWARE=18
-export const RIVET=19
-export const PLATING=21
+export const HARDWARE = 18
+export const RIVET = 19
+export const PLATING = 21
 
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
@@ -2391,7 +2391,7 @@ export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '6', '7', '9']
 
 
-export const CostingSimulationDownload = [
+export const CostingSimulationDownloadRM = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
     { label: "Vendor Name", value: "VendorName" },
@@ -2491,8 +2491,91 @@ export const COMBINEDPROCESSSIMULATION = [
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+export const CostingSimulationDownloadST = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+    { label: "OldSurfaceTreatmentRate", value: "OldSurfaceTreatmentRate" },
+    { label: "NewSurfaceTreatmentRate", value: "NewSurfaceTreatmentRate" },
+    { label: "OldSurfaceTreatmentCost", value: "OldSurfaceTreatmentCost" },
+    { label: "NewSurfaceTreatmentCost", value: "NewSurfaceTreatmentCost" },
+    { label: "OldTranspotationCost", value: "OldTranspotationCost" },
+    { label: "OldNetSurfaceTreatmentCost", value: "OldNetSurfaceTreatmentCost" },
+    { label: "NewNetSurfaceTreatmentCost", value: "NewNetSurfaceTreatmentCost" },
+    { label: "STVariance", value: "STVariance" },
 
-export const SIMULATIONAPPROVALSUMMARYDOWNLOAD = [
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const CostingSimulationDownloadOperation = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+
+    { label: "OldOperationRate", value: "OldOperationRate" },
+    { label: "NewOperationRate", value: "NewOperationRate" },
+    { label: "OldOperationCost", value: "OldOperationCost" },
+    { label: "NewOperationCost", value: "NewOperationCost" },
+    { label: "OperationVariance", value: "OperationVariance" },
+
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
 
     { label: "Costing Id", value: "CostingNumber" },
     { label: "RawMaterial Grade", value: "RMGrade" },
