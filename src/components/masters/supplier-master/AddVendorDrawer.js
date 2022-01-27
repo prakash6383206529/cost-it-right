@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
-    required, upper, email, minLength7, maxLength70, maxLength80, maxLength71 , maxLength3, alphaNumeric , acceptAllExceptSingleSpecialCharacter,
+    required, upper, email, minLength7, maxLength70, maxLength80, maxLength71, maxLength3, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
@@ -471,6 +471,7 @@ class AddVendorDrawer extends Component {
                                 noValidate
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                             >
                                 <Row className="drawer-heading">
                                     <Col>
@@ -522,7 +523,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required,alphaNumeric, maxLength71, checkWhiteSpaces]}
+                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             normalize={upper}

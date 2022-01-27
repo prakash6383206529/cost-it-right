@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { required, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
+import { renderText } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
 import AsyncSelect from 'react-select/async';
@@ -84,9 +84,7 @@ class AddComponentForm extends Component {
   */
   renderListing = (label) => {
     const { componentPartSelectList } = this.props;
-    //const { selectedParts } = this.state;
-
-
+  
     const { BOMViewerData } = this.props;
     let tempArr = [];
     BOMViewerData && BOMViewerData.map(el => {
@@ -183,13 +181,13 @@ class AddComponentForm extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, componentPartSelectList } = this.props;
+    const { handleSubmit, isEditFlag } = this.props;
 
     const filterList = (inputValue) => {
       let tempArr = []
 
       tempArr = this.renderListing("part").filter(i =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -221,23 +219,7 @@ class AddComponentForm extends Component {
               <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the part numbers" />
               <AsyncSelect name="PartNumber" ref={this.myRef} key={this.state.updateAsyncDropdown} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handlePartChange(e)} />
               {this.state.isPartNoNotSelected && <div className='text-help'>This field is required.</div>}
-              {/* <Field
-                name="PartNumber"
-                type="text"
-                label={"Part No."}
-                component={searchableSelect}
-                placeholder={"--Select Part--"}
-                options={this.renderListing("part")}
-                //onKeyUp={(e) => this.changeItemDesc(e)}
-                validate={
-                  this.state.part == null || this.state.part.length === 0
-                    ? [required]
-                    : []
-                }
-                required={true}
-                handleChangeDescription={this.handlePartChange}
-                valueDescription={this.state.part}
-              /> */}
+     
             </Col>
             <Col md="6">
               <Field
@@ -247,7 +229,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[acceptAllExceptSingleSpecialCharacter]}
                 component={renderText}
-                //required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -262,7 +243,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[acceptAllExceptSingleSpecialCharacter]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -276,7 +256,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -291,7 +270,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -305,7 +283,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -320,7 +297,6 @@ class AddComponentForm extends Component {
                 placeholder={""}
                 validate={[]}
                 component={renderText}
-                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
