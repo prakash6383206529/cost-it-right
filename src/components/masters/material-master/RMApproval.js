@@ -395,6 +395,7 @@ function RMApproval(props) {
                     closeDrawer={closeDrawer}
                     approvalData={approvalData}
                     anchor={'bottom'}
+                    masterId={RM_MASTER_ID}
                 />
             }
             {

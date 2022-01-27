@@ -6,7 +6,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { EMPTY_DATA } from '../../../config/constants';
-import { DRAFT } from '../../../config/constants';
+import { DRAFT,BOP_MASTER_ID } from '../../../config/constants';
 import { getBOPApprovalList } from '../actions/BoughtOutParts'
 import DayTime from '../../common/DayTimeWrapper'
 import SummaryDrawer from '../SummaryDrawer';
@@ -256,6 +256,7 @@ function BOPApproval(props) {
                     closeDrawer={closeDrawer}
                     approvalData={approvalData}
                     anchor={'bottom'}
+                    masterId={BOP_MASTER_ID}
                 />
             }
 
