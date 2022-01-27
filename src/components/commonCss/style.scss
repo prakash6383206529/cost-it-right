@@ -6834,9 +6834,10 @@ left: 17rem;
     width: 400px;
   }
 }
+// <-------------START Hover and 2 row clip css----------->
 .drawer-wrapper {
   .text-overflow {
-    max-width: 140px;
+    max-width: 130px;
     height: 61px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -6849,15 +6850,36 @@ left: 17rem;
   table tr:first-child td{
     border-top: none;
   }
-  .text-overflow2 {
-    max-width: 140px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
   .conversion-cost {
     .text-overflow {
       max-width: 100%;
     }
   }
 }
+// <-------------END Hover and 2 row clip css----------->
+
+// <-------START simulation-label-container css-------->
+.simulation-label-container {
+  div {
+    align-items: center;
+    label {
+      margin-bottom: 3px !important;
+    }
+    p {
+      white-space: nowrap;
+      padding: 5px 10px;
+      background: #e6e6e6;
+      border-radius: 4px;
+      color: #616366;
+      font-size: 15px;
+      min-width: 183px;
+      max-width: 183px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      &.technology {
+        min-width: 140px;
+      }
+    }
+  }
+}
+// <-------END simulation-label-container css-------->
