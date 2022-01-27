@@ -29,9 +29,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+
 
 class AssemblyPartListing extends Component {
     constructor(props) {
@@ -102,6 +100,7 @@ class AssemblyPartListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
+        
     }
 
     /**
@@ -129,13 +128,10 @@ class AssemblyPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        if (cellValue.includes("T")) {
+        
+    
             return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-        }
-        else {
-            return cellValue ? cellValue : ''
-        }
+   
     }
 
     renderEffectiveDate = () => {
@@ -434,7 +430,7 @@ class AssemblyPartListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                            <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="PartId" width={120} headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" width={160} headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmmendentStatus,getImpactedMasterData,getLastSimulationData,uploadSimulationAttachment } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,FILE_URL } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,FILE_URL,SURFACETREATMENT, OPERATIONS  } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
@@ -35,7 +35,7 @@ import AssemblyWiseImpact from './AssemblyWiseImpact';
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import { SimulationUtils } from '../SimulationUtils'
-import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
+import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import _ from 'lodash'
@@ -190,6 +190,9 @@ function SimulationApprovalSummary(props) {
 
     }
 
+    useEffect((item) => {
+        gridApi?.redrawRows()
+    }, [simulationDetail])
 
     useEffect(() => {
         // if (costingList.length > 0 && effectiveDate) {
@@ -399,8 +402,16 @@ function SimulationApprovalSummary(props) {
 
 
     const renderColumn = () => {
+        switch (String(SimulationTechnologyId)) {
+            case RMDOMESTIC:
+            case RMIMPORT:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
+            case SURFACETREATMENT:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
 
-        return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOAD, dataForDownload.length > 0 ? dataForDownload : [])
+            default:
+                break;
+        }
     }
 
 
@@ -463,7 +474,7 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell,  getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const oldPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -595,9 +606,6 @@ function SimulationApprovalSummary(props) {
     }
 
 
-    const renderEffectiveDate = () => {
-        return <>Effective <br /> Date</>
-    }
     const handleApproveAndPushButton = () => {
         setShowPushDrawer(true)
         setApproveDrawer(true)
@@ -606,7 +614,20 @@ function SimulationApprovalSummary(props) {
     const rawMaterailFormat = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? `${cell}- ${row.RMGrade}` : '-';
+        const temp = row.IsMultiple === true ? 'Multiple RM' : `${cell}- ${row.RMGrade}`
+        return cell != null ? temp : '-';
+    }
+
+    const operationNameFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        if (String(SimulationTechnologyId) !== SURFACETREATMENT) {
+            temp = row.IsMultiple === true ? 'Multiple Surface Treatment' : row.OperationName
+        } else if (String(SimulationTechnologyId) !== OPERATIONS) {
+            temp = row.IsMultiple === true ? 'Multiple Operation' : row.OperationName
+        }
+        return cell != null ? temp : '-';
     }
 
     if (showListing === true) {
@@ -673,7 +694,8 @@ function SimulationApprovalSummary(props) {
         oldERFormatter: oldERFormatter,
         oldPOCurrencyFormatter: oldPOCurrencyFormatter,
         newPOCurrencyFormatter: newPOCurrencyFormatter,
-        POVarianceFormatter: POVarianceFormatter
+        POVarianceFormatter: POVarianceFormatter,
+        operationNameFormatter: operationNameFormatter,
     };
 
     const errorBoxClass = () => {
@@ -898,7 +920,7 @@ function SimulationApprovalSummary(props) {
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <=0 ?"overlay-contain": ""}`}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
                                                         <div className="ag-grid-header d-flex">
 
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -929,6 +951,7 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
+                                                                <AgGridColumn field="IsMultiple" editable='false' headerName="IsMultiple" minWidth={190}></AgGridColumn>
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                                                                 {
@@ -943,6 +966,13 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>
                                                                 <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>
 
+                                                                {
+                                                                    (String(SimulationTechnologyId) !== SURFACETREATMENT || String(SimulationTechnologyId) !== OPERATIONS) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }

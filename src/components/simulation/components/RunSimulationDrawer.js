@@ -160,9 +160,9 @@ function RunSimulationDrawer(props) {
     const IsAvailable = (id) => { }
 
     const checkForResponse = (res) => {
+        setRunSimulationDisable(false)
         if ('response' in res) {
             if (res && res?.response?.data?.Result === false) {
-                setRunSimulationDisable(false)
             }
         }
         if (res?.data?.Result) {
@@ -223,7 +223,6 @@ function RunSimulationDrawer(props) {
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
-                runSimulationCosting()
                 break;
             case Number(OPERATIONS):
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {

@@ -24,7 +24,7 @@ import { debounce } from 'lodash'
 const gridOptions = {};
 
 function VerifySimulation(props) {
-    const { cancelVerifyPage } = props
+    const { cancelVerifyPage, token } = props
     const [shown, setshown] = useState(false);
     const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -55,10 +55,12 @@ function VerifySimulation(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        verifyCostingList()
+        if (token) {
+            verifyCostingList()
+        }
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
-    }, [])
+    }, [token])
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
@@ -105,8 +107,8 @@ function VerifySimulation(props) {
                 dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
-                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                            Toaster.warning('No approved costing exist for this exchange rate.')
+                        if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this surface treatment.')
                             setHideRunButton(true)
                             return false
                         }
@@ -123,8 +125,8 @@ function VerifySimulation(props) {
                 dispatch(getVerifySurfaceTreatmentSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
-                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
-                            Toaster.warning('No approved costing exist for this exchange rate.')
+                        if (data.SimulationSurfaceTreatmentAndOperationImpactedCosting.length === 0) {           //   for condition
+                            Toaster.warning('No approved costing exist for this surface treatment.')
                             setHideRunButton(true)
                             return false
                         }
@@ -332,14 +334,33 @@ function VerifySimulation(props) {
         obj.SimulationId = simulationId
         obj.LoggedInUserId = loggedInUserId()
         let tempArr = []
+        switch (Number(selectedMasterForSimulation.value)) {
+            case Number(RMDOMESTIC):
+            case Number(RMIMPORT):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.RawMaterialId = item.RawMaterialId
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+                break;
 
-        selectedRowData && selectedRowData.map(item => {
-            let tempObj = {}
-            tempObj.RawMaterialId = item.RawMaterialId
-            tempObj.CostingId = item.CostingId
-            tempArr.push(tempObj)
-            return null;
-        })
+            case Number(SURFACETREATMENT):
+            case Number(OPERATIONS):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.OperationId = item.OperationId
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+                break;
+
+            default:
+                break;
+        }
+
 
         obj.RunSimualtionCostingInfo = tempArr
         setObj(obj)
@@ -443,7 +464,7 @@ function VerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <=0 ?"overlay-contain": ""}`}>
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -489,8 +510,8 @@ function VerifySimulation(props) {
                                                     <>
                                                         <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>
                                                         <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="NewRate" headerName="New Rate"></AgGridColumn>
-                                                        <AgGridColumn width={185} field="OldRate" headerName="Old Rate"></AgGridColumn>
+                                                        <AgGridColumn width={185} field="NewOperationRate" headerName="New Rate"></AgGridColumn>
+                                                        <AgGridColumn width={185} field="OldOperationRate" headerName="Old Rate"></AgGridColumn>
                                                     </>
                                                 }
 

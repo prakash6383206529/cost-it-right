@@ -68,6 +68,13 @@ class OperationListing extends Component {
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
+        if (Number(this.props.isOperationST) === 7) {
+            this.setState({ tableData: this.props.operationSurfaceTreatmentList })
+        } else if (Number(this.props.isOperationST) === 6) {
+            this.setState({ tableData: this.props.operationIndividualList })
+        } else {
+            this.setState({ tableData: this.props.operationList })
+        }
     }
 
 
@@ -118,7 +125,7 @@ class OperationListing extends Component {
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
         }
-        this.props.getOperationsDataList(filterData, res => {
+        this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
             this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
@@ -485,7 +492,7 @@ class OperationListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, } = this.props;
+        const { handleSubmit, isSimulation} = this.props;
         const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.state;
 
         if (toggleForm) {
@@ -537,66 +544,68 @@ class OperationListing extends Component {
                     <form>
 
                         <Row className="pt-4 filter-row-large blue-before">
+                            {(!isSimulation) &&
 
-                            <Col md="6" lg="6" className="search-user-block mb-3">
-                                <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        {this.state.shown ?
-                                            <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                <div className="cancel-icon-white"></div>
+                                <Col md="6" lg="6" className="search-user-block mb-3">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        <div>
+                                            {this.state.shown ?
+                                                <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <div className="cancel-icon-white"></div>
+                                                </button>
+                                                :
+                                                ""
+                                            }
+                                            {AddAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.formToggle}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
+                                                </button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
+
+                                                    <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
+                                                        <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                            {/* DOWNLOAD */}
+                                                        </button>}>
+
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+
+                                                </>
+
+
+                                            }
+                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                                <div className="refresh mr-0"></div>
                                             </button>
-                                            :
-                                            ""
-                                        }
-                                        {AddAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={this.formToggle}
-                                                title="Add"
-                                            >
-                                                <div className={"plus mr-0"}></div>
-                                                {/* ADD */}
-                                            </button>
-                                        )}
-                                        {BulkUploadAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={this.bulkToggle}
-                                                title="Bulk Upload"
-                                            >
-                                                <div className={"upload mr-0"}></div>
-                                                {/* Bulk Upload */}
-                                            </button>
-                                        )}
-                                        {
-                                            DownloadAccessibility &&
-                                            <>
 
-                                                <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                        {/* DOWNLOAD */}
-                                                    </button>}>
-
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-
-                                            </>
-
-
-                                        }
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
-
+                                        </div>
                                     </div>
-                                </div>
-                            </Col>
+                                </Col>
+                            }
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.operationList && this.props.operationList?.length <=0 ?"overlay-contain": ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.operationList && this.props.operationList?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
@@ -666,9 +675,9 @@ class OperationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ otherOperation, auth }) {
-    const { loading, filterOperation, operationList } = otherOperation;
+    const { loading, filterOperation, operationList, operationSurfaceTreatmentList, operationIndividualList } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
-    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData };
+    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList };
 }
 
 /**

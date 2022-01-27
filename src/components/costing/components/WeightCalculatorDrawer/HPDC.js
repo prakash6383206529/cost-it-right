@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react'
-import { Row, Col, Container } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
-import { useDispatch, useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { useDispatch } from 'react-redux'
+import {  TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
@@ -49,7 +49,7 @@ function HPDC(props) {
 
 
 
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
+    const { register, control, setValue, getValues, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
@@ -60,10 +60,7 @@ function HPDC(props) {
         name: ['shotWeight', 'burningPercent', 'cavity', 'finishedWeight', 'recovery', 'castingWeight'],
     })
 
-    // const fieldValues1 = useWatch({
-    //     control,
-    //     name: ['finishWeight','cavity']
-    // })
+ 
     const dropDown = [
         {
             label: 'Processing Allowance',
@@ -85,9 +82,7 @@ function HPDC(props) {
         calculateRemainingCalculation(lostWeight)
     }, [fieldValues])
 
-    // useEffect(() => {
-    //     calculateRemainingCalculation(lostWeight)
-    // }, [fieldValues1])
+   
 
     const handlGrossWeight = () => {
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostWeight
@@ -120,7 +115,7 @@ function HPDC(props) {
         }
 
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
-        // const scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight)
+        
         const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) //FINAL GROSS WEIGHT - RMRATE
         const scrapCost = checkForNull(checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate) * recovery)
         const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
@@ -134,10 +129,7 @@ function HPDC(props) {
         updatedValue.materialCost = materialCost
 
         setDataToSend(updatedValue)
-        // setTimeout(() => {
-        //     setDataToSend({ ...dataToSend, grossWeight: grossWeight, scrapWeight: scrapWeight, rmCost: rmCost, scrapCost: scrapCost, materialCost: materialCost })
-        // }, 400);
-
+    
         setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -205,7 +197,7 @@ function HPDC(props) {
                 props.toggleDrawer('', obj)
             }
         }))
-        // props.toggleDrawer('', obj)
+       
     }
 
     const tableData = (value = []) => {
@@ -220,7 +212,7 @@ function HPDC(props) {
             <Row>
 
                 <form noValidate className="form"
-                // onSubmit={handleSubmit(onSubmit)}
+                
                 >
                     <Col md="12">
                         <div className="costing-border px-4">
@@ -244,11 +236,11 @@ function HPDC(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+                                                
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -269,11 +261,11 @@ function HPDC(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+                                                
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -294,11 +286,11 @@ function HPDC(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+                                                
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -316,15 +308,7 @@ function HPDC(props) {
                                         control={control}
                                         register={register}
                                         mandatory={true}
-                                        // rules={{
-                                        //   required: false,
-                                        //   pattern: {
-                                        //     value: /^[0-9\b]+$/i,
-                                        //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //     message: 'Invalid Number.',
-                                        //   },
-                                        //   // maxLength: 4,
-                                        // }}
+                              
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -345,11 +329,11 @@ function HPDC(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+                                              
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+                                          
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -359,60 +343,13 @@ function HPDC(props) {
                                         disabled={props.isEditFlag ? false : true}
                                     />
                                 </Col>
-                                {/* <Col md="2">
-                      <TextFieldHookForm
-                        label={`Bar Cutting Allowance`}
-                        name={'barCutting'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.barCutting}
-                        disabled={true}
-                      />
-                    </Col> */}
-                                {/* <Col md="2">
-                      <TextFieldHookForm
-                        label={`Billet Heating Loss`}
-                        name={'billetLoss'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.billetLoss}
-                        disabled={true}
-                      />
-                    </Col> */}
+         
+
                             </Row>
 
                             <LossStandardTable
                                 dropDownMenu={dropDown}
+                                CostingViewMode={props.CostingViewMode}
                                 calculation={calculateRemainingCalculation}
                                 weightValue={Number(getValues('castingWeight'))}
                                 netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
@@ -432,11 +369,11 @@ function HPDC(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+                                            
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -457,11 +394,11 @@ function HPDC(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+                                                
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+                                            
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -480,15 +417,6 @@ function HPDC(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        // rules={{
-                                        //   required: true,
-                                        //   pattern: {
-                                        //     //value: /^[0-9]*$/i,
-                                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //     message: 'Invalid Number.',
-                                        //   },
-                                        //   // maxLength: 4,
-                                        // }}
                                         handleChange={() => { }}
                                         defaultValue={WeightCalculatorRequest &&
                                             WeightCalculatorRequest.ScrapWeight !== undefined
@@ -511,17 +439,14 @@ function HPDC(props) {
                                         rules={{
                                             required: false,
                                             pattern: {
-                                                //value: /^[0-9]*$/i,
+                                               
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            // maxLength: 4,
+
                                         }}
                                         handleChange={() => { }}
-                                        // defaultValue={WeightCalculatorRequest &&
-                                        //     WeightCalculatorRequest.ScrapWeight !== undefined
-                                        //     ? WeightCalculatorRequest.ScrapWeight
-                                        //     : ''}
+                                   
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.recovery}
@@ -538,15 +463,6 @@ function HPDC(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        // rules={{
-                                        //   required: true,
-                                        //   pattern: {
-                                        //     //value: /^[0-9]*$/i,
-                                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //     message: 'Invalid Number.',
-                                        //   },
-                                        //   // maxLength: 4,
-                                        // }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -563,15 +479,6 @@ function HPDC(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        // rules={{
-                                        //   required: false,
-                                        //   pattern: {
-                                        //     value: /^[0-9\b]+$/i,
-                                        //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //     message: 'Invalid Number.',
-                                        //   },
-                                        //   // maxLength: 4,
-                                        // }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -590,15 +497,6 @@ function HPDC(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        // rules={{
-                                        //   required: false,
-                                        //   pattern: {
-                                        //     //value: /^[0-9]*$/i,
-                                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //     message: 'Invalid Number.',
-                                        //   },
-                                        //   // maxLength: 4,
-                                        // }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -623,7 +521,7 @@ function HPDC(props) {
                         </button>
                         <button
                             type="submit"
-                            // disabled={isSubmitted ? true : false}
+                            disabled={props.CostingViewMode}
                             onClick={onSubmit} className="submit-button save-btn">
                             <div className={'save-icon'}></div>
                             {'SAVE'}

@@ -276,7 +276,7 @@ export function getZBCCostingByCostingId(CostingId, callback) {
       })
       const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
       request.then((response) => {
-        
+
         if (response.data.Result) {
           dispatch({
             type: GET_COSTING_DATA_BY_COSTINGID,
@@ -1090,7 +1090,7 @@ export function getInventoryDataByHeads(data, callback) {
  * @description GET PAYMENT TERM DETAIL BY COSTING HEADS
  */
 export function getPaymentTermsDataByHeads(data, callback) {
-  
+
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}/${data.Plantid}`, headers,)
@@ -1526,6 +1526,7 @@ export function createPartWithSupplier(data, callback) {
           type: API_FAILURE,
         })
         apiErrors(error)
+        callback(error);
       })
   }
 }
