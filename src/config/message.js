@@ -11,6 +11,7 @@ export const MESSAGES = {
   PRODUCT_ADD_SUCCESS: 'Product added successfully',
   ASSEMBLY_PART_ADD_SUCCESS: 'Assembly part added successfully',
   PART_DELETE_SUCCESS: 'Part has been deleted',
+  PRODUCT_DELETE_SUCCESS: 'Product has been deleted',
   UPDATE_PART_SUCESS: 'Part updated successfully',
   UPDATE_PRODUCT_SUCESS: 'Product updated successfully',
   MESSAGE_SENT_EXCEPT_USER: 'Message has been sent except the user',

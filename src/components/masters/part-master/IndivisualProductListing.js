@@ -13,6 +13,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ComponentPart, PRODUCT } from '../../../config/constants';
+import Toaster from '../../common/Toaster';
 import ReactExport from 'react-export-excel';
 import { INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -27,9 +28,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+
 
 class IndivisualProductListing extends Component {
     constructor(props) {
@@ -110,6 +109,11 @@ class IndivisualProductListing extends Component {
             LoggedInUserId: loggedInUserId()
         }
         this.props.deleteProduct(ID, (res) => {
+            if (res.data.Result === true) {
+                Toaster.success(MESSAGES.PRODUCT_DELETE_SUCCESS);
+
+                this.getTableListData();
+            }
 
         });
         this.setState({ showPopup: false })
@@ -335,13 +339,7 @@ class IndivisualProductListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const onExportToCSV = (row) => {
-            // ...
-            let products = []
-            products = this.props.newPartsListing
-            return products; // must return the data which you want to be exported
-        }
-
+      
 
         const defaultColDef = {
             resizable: true,
@@ -415,7 +413,7 @@ class IndivisualProductListing extends Component {
                     </Col>
                 </Row>
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.productDataList && this.props.productDataList?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.productDataList && this.props.productDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
