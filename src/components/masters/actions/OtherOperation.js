@@ -251,21 +251,11 @@ export function deleteCEDotherOperationAPI(Id, callback) {
  * @description get all operation list
  */
 export function getOperationsDataList(filterData, temp, callback) {
+    console.log('temp: ', temp);
 
     return (dispatch) => {
-        dispatch({
-            type: GET_OPERATION_SURFACE_TREATMENT_DATA_LIST,
-            payload: []
-        })
-        dispatch({
-            type: GET_OPERATION_INDIVIDUAL_DATA_LIST,
-            payload: []
-        })
-        dispatch({
-            type: GET_OPERATION_COMBINED_DATA_LIST,
-            payload: []
-        })
-        let payloadSurfaceTreatment, payloadOperation, tempData, payload
+     
+        let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, headers)
@@ -279,36 +269,15 @@ export function getOperationsDataList(filterData, temp, callback) {
                 }
                 else {
                     payload = response?.data?.DataList
-
-                    // tempData && tempData.map(item => {
-                    // if (item.IsSurfaceTreatmentOperation === true) {
-                    //     payloadSurfaceTreatment.push(item)
-                    // } else {
-                    //     payloadOperation.push(item)
-                    // }
-                    // return null
-                    // })
-                    if (Number(temp) === 7) {
-                        dispatch({
-                            type: GET_OPERATION_SURFACE_TREATMENT_DATA_LIST,
-                            payload: payload
-                        })
-                    } else if (Number(temp) === 6) {
-                        dispatch({
-                            type: GET_OPERATION_INDIVIDUAL_DATA_LIST,
-                            payload: payload
-                        })
-                    } else {
-                        dispatch({
-                            type: GET_OPERATION_COMBINED_DATA_LIST,
-                            payload: payload
-                        })
-                    }
+                    dispatch({
+                        type: GET_OPERATION_COMBINED_DATA_LIST,
+                        payload: payload
+                    })
                 }
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: GET_CED_OTHER_OPERATION_FAILURE });
-                callback(error);
+                // callback(error);
                 apiErrors(error);
             });
     };
