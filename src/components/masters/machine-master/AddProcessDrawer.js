@@ -13,6 +13,9 @@ import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
+import saveImg from '../../../assests/images/check.png'
+import cancelImg from '../../../assests/images/times.png'
+import { debounce } from 'lodash'
 const selector = formValueSelector('AddProcessDrawer');
 
 class AddProcessDrawer extends Component {
@@ -23,7 +26,9 @@ class AddProcessDrawer extends Component {
       selectedMachine: [],
       ProcessId: '',
       effectiveDate: '',
-      isLoader: false
+      isLoader: false,
+      setDisable: false,
+
     }
   }
 
@@ -148,7 +153,7 @@ class AddProcessDrawer extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { selectedPlants, selectedMachine, effectiveDate } = this.state
     const { isEditFlag, isMachineShow, ID } = this.props
 
@@ -162,6 +167,7 @@ class AddProcessDrawer extends Component {
         Machine: item.Text, MachineId: item.Value,
       }))
 
+    this.setState({ setDisable: true })
     /** Update existing detail of supplier master **/
     if (isEditFlag) {
       let formData = {
@@ -170,9 +176,10 @@ class AddProcessDrawer extends Component {
         ProcessCode: values.ProcessCode,
         LoggedInUserId: loggedInUserId(),
       }
-      this.props.reset()
+
       this.props.updateProcess(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
           this.toggleDrawer('', formData)
         }
@@ -187,15 +194,15 @@ class AddProcessDrawer extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
-      this.props.reset()
       this.props.createProcess(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROCESS_ADD_SUCCESS)
           this.toggleDrawer('', formData)
         }
       })
     }
-  }
+  }, 500)
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -207,6 +214,7 @@ class AddProcessDrawer extends Component {
    */
   render() {
     const { handleSubmit, isEditFlag, isMachineShow } = this.props
+    const { setDisable } = this.state
     return (
       <div>
 
@@ -329,6 +337,7 @@ class AddProcessDrawer extends Component {
                       type={'button'}
                       className="mr15 cancel-btn"
                       onClick={this.cancel}
+                      disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
                       {'Cancel'}
@@ -336,6 +345,7 @@ class AddProcessDrawer extends Component {
                     <button
                       type="submit"
                       className="user-btn save-btn"
+                      disabled={setDisable}
                     >
                       <div className={"save-icon"}></div>
                       {isEditFlag ? 'Update' : 'Save'}
