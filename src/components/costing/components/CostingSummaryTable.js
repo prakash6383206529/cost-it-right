@@ -1027,7 +1027,7 @@ const generatorPDF = () => {
 
                     <tr class="background-light-blue">
                       <th>Net Surface Treatment Cost</th>
-                      {console.log(viewCostingData,"viewcostingdata")}
+                      {}
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
