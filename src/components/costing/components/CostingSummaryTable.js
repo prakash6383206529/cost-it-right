@@ -1225,19 +1225,25 @@ const generatorPDF = () => {
                         </span>
                         <span class="d-block small-grey-text"></span>
                       </td>
+                    {console.log(viewCostingData,"viewcostingdata")}
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
                             <td>
                               <div className="d-flex">
-                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.discount : ''}</span> &nbsp;{' '}
-                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.value : ''}</span>
+                                {/* <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.discount : ''}</span> &nbsp;{' '}
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.value : ''}</span> */}
+                                <span className="d-inline-block w-50 ">{"Type"}</span> &nbsp;{' '}
+                                <span className="d-inline-block w-50 ">{"Applicablity"}</span>
+                                <span className="d-inline-block w-50 ">{"Value"}</span>
+                                <span className="d-inline-block w-50 ">{"Cost"}</span>
                               </div>
                               <div className="d-flex">
                                 <span className="d-inline-block w-50 small-grey-text">
-                                  {data.CostingHeading !== VARIANCE ? data.otherDiscountValue.discountPercentValue : ''}
-                                </span>{' '}
-                                {' '}
+                                  {data.CostingHeading !== VARIANCE ? (data.otherDiscountValue.discountPercentValue===0||data.otherDiscountValue.discountPercentValue===""?"Fixed":"Percentage") : ''}
+                                </span>
+                                <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? data.otherDiscountValue.discountApplicablity : ''}</span>
+                                <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue!==0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                                 <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
                             </td>
@@ -1249,7 +1255,36 @@ const generatorPDF = () => {
                       <th>Any Other Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
+                          return( 
+
+
+
+                          <td>
+                          <div className="d-flex">
+                           
+                            <span className="d-inline-block w-50 ">{"Type"}</span> &nbsp;{' '}
+                            <span className="d-inline-block w-50 ">{"Applicablity"}</span>
+                            <span className="d-inline-block w-50 ">{"Value"}</span>
+                            <span className="d-inline-block w-50 ">{"Cost"}</span>
+                          </div>
+                          <div className="d-flex">
+                            <span className="d-inline-block w-50 small-grey-text">
+                              {data.CostingHeading !== VARIANCE ? (data.otherDiscountValue.discountPercentValue===0||data.otherDiscountValue.discountPercentValue===""?"Fixed":"Percentage") : ''}
+                            </span>
+                            <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? data.anyOtherCostApplicablity : ''}</span>
+                            <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue!==0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                            <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                          </div>
+                        </td>
+
+
+
+
+
+
+
+
+                          )
                         })}
                     </tr>
                     {

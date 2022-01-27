@@ -241,68 +241,68 @@ function CostingDetailStepTwo(props) {
   }
 
 
-  const findApplicabilityCost = (data,Text,headCostData,costData,percent)=>{
+  const findApplicabilityCost = (data, Text, headCostData, costData, percent) => {
     console.log('data: ', data);
     console.log('headCostData: ', headCostData);
-    if(data && Text && Object.keys(headCostData).length >0){
+    if (data && Text && Object.keys(headCostData).length > 0) {
 
-      console.log(CostingDataList,"CostingDataListCostingDataList",);
+      console.log(CostingDataList, "CostingDataListCostingDataList",);
       const ConversionCostForCalculation = headCostData?.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
-      const RMBOPCC = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost) +ConversionCostForCalculation
+      const RMBOPCC = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
       const RMBOP = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost);
-      const RMCC = checkForNull(headCostData.NetRawMaterialsCost) +ConversionCostForCalculation;
+      const RMCC = checkForNull(headCostData.NetRawMaterialsCost) + ConversionCostForCalculation;
       const BOPCC = checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
-      
-      let dataList =CostingDataList && CostingDataList.length >0 ? CostingDataList[0]:{}
-        const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)+ checkForNull(data.NetPackagingAndFreight) + checkForNull(data.ToolCost)
-  
+
+      let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
+      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(data.NetPackagingAndFreight) + checkForNull(data.ToolCost)
+
       let totalCost = ''
       switch (Text) {
         case 'RM':
           totalCost = headCostData.NetRawMaterialsCost * calculatePercentage(percent)
           break;
-        
-        case  'BOP':
+
+        case 'BOP':
           totalCost = headCostData.NetBoughtOutPartCost * calculatePercentage(percent)
-          console.log("COMING HERE",totalCost);
-        
+          console.log("COMING HERE", totalCost);
+
           break;
-  
+
         case 'RM + CC':
           totalCost = (RMCC) * calculatePercentage(percent)
           break;
-        
-        case 'BOP + CC': 
-            totalCost = BOPCC * calculatePercentage(percent)
-            break;
+
+        case 'BOP + CC':
+          totalCost = BOPCC * calculatePercentage(percent)
+          break;
         case 'CC':
           totalCost = (RMCC) * calculatePercentage(percent)
           break;
-  
+
         case 'RM + CC + BOP':
           totalCost = (RMBOPCC) * calculatePercentage(percent)
           break;
-  
+
         case 'RM + BOP':
           totalCost = (RMBOP) * calculatePercentage(percent)
           break;
         case 'Net Cost':
-            totalCost = (totalTabCost) * calculatePercentage(percent)
-            break;
-  
+          totalCost = (totalTabCost) * calculatePercentage(percent)
+          break;
+
         default:
           break;
       }
       return totalCost
     }
-   
+
   }
 
   /**
    * @method setHeaderDiscountTab
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
-  const setHeaderDiscountTab = (data,headerCostData={},CostingData={}) => {
+  const setHeaderDiscountTab = (data, headerCostData = {}, CostingData = {}) => {
     if (!CostingViewMode) {
       const headerIndex = 0;
 
@@ -322,14 +322,14 @@ function CostingDetailStepTwo(props) {
 
         if (data.OtherCostType === 'Percentage') {
 
-         const cost = checkForNull(findApplicabilityCost(data,data?.OtherCostApplicability,headerCostData,CostingData,data?.PercentageOtherCost))
-         console.log('cost: ', cost);
+          const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
+          console.log('cost: ', cost);
           // data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
           data.AnyOtherCost = cost
         }
 
         // const discountedCost =data.DiscountCostType==='Percentage'? checkForNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage)):data.DiscountsAndOtherCost;
-        const discountedCost =data.DiscountCostType==='Percentage'? checkForNull(findApplicabilityCost(data,data?.OtherCostApplicability,headerCostData,CostingData,data?.HundiOrDiscountPercentage)):data.DiscountsAndOtherCost;
+        const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountCostApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
         const discountValues = {
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),

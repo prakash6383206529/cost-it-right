@@ -1725,7 +1725,7 @@ class AddRMDomestic extends Component {
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn"
-                                disabled={isViewFlag}
+                                disabled={isViewFlag || setDisable}
                               >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}

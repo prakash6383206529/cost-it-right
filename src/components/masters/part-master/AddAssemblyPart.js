@@ -679,6 +679,7 @@ console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditF
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>
