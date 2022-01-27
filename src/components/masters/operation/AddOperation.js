@@ -611,7 +611,13 @@ class AddOperation extends Component {
   }, 500)
   closePopUp = () => {
     this.setState({ showPopup: false, setDisable: false })
+
   }
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
   /**
   * @method render
   * @description Renders the component

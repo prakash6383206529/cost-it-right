@@ -92,10 +92,26 @@ function RawMaterialCost(props) {
       }
       selectedIds(gridData)
 
-      // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
-      if (Object.keys(gridData).length > 0 && gridData[0].IsCutOffApplicable) {
-        dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
+       // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
+       if (Object.keys(gridData).length > 0 ) {
+        let isCutOffApplicableCount=0
+        let totalCutOff=0
+        gridData && gridData.map(item=>{
+          
+          if(item.IsCutOffApplicable){
+            isCutOffApplicableCount = isCutOffApplicableCount +1
+            totalCutOff = totalCutOff + checkForNull(item.CutOffRMC)
+          }
+          else{
+            totalCutOff = totalCutOff +checkForNull(item.NetLandedCost)
+          }
+          
+        })
+        
+        // dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
+        dispatch(setRMCutOff({ IsCutOffApplicable:isCutOffApplicableCount >0 ?true:false, CutOffRMC: totalCutOff }))
       }
+
 
     }, 500)
   }, [gridData]);
