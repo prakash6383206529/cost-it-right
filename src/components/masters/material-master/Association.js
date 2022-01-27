@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import saveImg from '../../../assests/images/check.png'
 import cancelImg from '../../../assests/images/times.png'
+import { debounce } from 'lodash';
 
 class Association extends Component {
     constructor(props) {
@@ -17,7 +18,8 @@ class Association extends Component {
         this.state = {
             RawMaterial: [],
             RMGrade: [],
-            material: []
+            material: [],
+            setDisable: false
         }
 
     }
@@ -104,22 +106,24 @@ class Association extends Component {
  * @method onSubmit
  * @description Used to Submit the form
  */
-    onSubmit = (values) => {
+    onSubmit = debounce((values) => {
         const { RawMaterial, material, RMGrade, } = this.state;
+        this.setState({ setDisable: true })
         let formData = {
             RawMaterialId: RawMaterial.value,
             GradeId: RMGrade.value,
             MaterialId: material.value,
         }
-        this.props.reset()
+
         this.props.createAssociation(formData, (res) => {
-            if (res.data.Result) {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
                 Toaster.success(MESSAGES.ASSOCIATED_ADDED_SUCCESS);
                 this.toggleDrawer('')
             }
         });
 
-    }
+    }, 500)
     toggleDrawer = (event, data) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -129,6 +133,7 @@ class Association extends Component {
 
     render() {
         const { handleSubmit } = this.props;
+        const { setDisable } = this.state
 
         return (
             <div>
@@ -228,6 +233,7 @@ class Association extends Component {
                                                     type={"button"}
                                                     className=" mr15 cancel-btn"
                                                     onClick={this.toggleDrawer}
+                                                    disabled={setDisable}
                                                 >
                                                     <div className={'cancel-icon'}></div>
                                                     {"Cancel"}
@@ -235,6 +241,7 @@ class Association extends Component {
                                                 <button
                                                     type="submit"
                                                     className="user-btn save-btn"
+                                                    disabled={setDisable}
                                                 ><div className={"save-icon"}></div>
                                                     {"Save"}
                                                 </button>
