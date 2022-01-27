@@ -1007,7 +1007,7 @@ class AddRMDomestic extends Component {
       if (isSourceChange) {
         this.props.updateRMDomesticAPI(requestData, (res) => {
           this.setState({ setDisable: false })
-          if (res.data.Result) {
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
 
@@ -1018,7 +1018,7 @@ class AddRMDomestic extends Component {
       if (isDateChange) {
         this.props.updateRMDomesticAPI(requestData, (res) => {
           this.setState({ setDisable: false })
-          if (res.data.Result) {
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
 
@@ -1091,14 +1091,14 @@ class AddRMDomestic extends Component {
           Toaster.warning('Please update the effective date')
         }
       } else {
-        this.props.reset()
-        // this.props.createRMDomestic(formData, (res) => {
-        //   if (res.data.Result) {
-        //     Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
-        //     this.clearForm()
-        //     this.cancel()
-        //   }
-        // })
+        this.props.createRMDomestic(formData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
+            this.clearForm()
+            this.cancel()
+          }
+        })
       }
 
     }
@@ -1106,6 +1106,7 @@ class AddRMDomestic extends Component {
   onPopupConfirm = () => {
     this.setState({ disablePopup: true })
     this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
+      this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
         this.clearForm()
@@ -1203,9 +1204,9 @@ class AddRMDomestic extends Component {
                               component={searchableSelect}
                               placeholder={"Technology"}
                               options={this.renderListing("technology")}
-                              // validate={
-                              //   this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              // required={true}
+                              validate={
+                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
                               handleChangeDescription={
                                 this.handleTechnologyChange
                               }
@@ -1224,9 +1225,9 @@ class AddRMDomestic extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("material")}
-                                  // validate={
-                                  //   this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
-                                  // required={true}
+                                  validate={
+                                    this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
+                                  required={true}
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
 
@@ -1253,8 +1254,8 @@ class AddRMDomestic extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("grade")}
-                                  // validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                                  // required={true}
+                                  validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
+                                  required={true}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
                                   disabled={isEditFlag || isViewFlag}
@@ -1272,9 +1273,9 @@ class AddRMDomestic extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("specification")}
-                                  // validate={
-                                  //   this.state.RMSpec == null || this.state.RMSpec.length === 0 ? [required] : []}
-                                  // required={true}
+                                  validate={
+                                    this.state.RMSpec == null || this.state.RMSpec.length === 0 ? [required] : []}
+                                  required={true}
                                   handleChangeDescription={this.handleSpecChange}
                                   valueDescription={this.state.RMSpec}
                                   disabled={isEditFlag || isViewFlag}
@@ -1291,8 +1292,8 @@ class AddRMDomestic extends Component {
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing("category")}
-                              // validate={this.state.Category == null || this.state.Category.length === 0 ? [required] : []}
-                              // required={true}
+                              validate={this.state.Category == null || this.state.Category.length === 0 ? [required] : []}
+                              required={true}
                               handleChangeDescription={this.handleCategoryChange}
                               valueDescription={this.state.Category}
                               disabled={isEditFlag || isViewFlag}
@@ -1304,9 +1305,9 @@ class AddRMDomestic extends Component {
                               name={'Code'}
                               type="text"
                               placeholder={'Enter'}
-                              // validate={[required]}
+                              validate={[required]}
                               component={renderText}
-                              // required={true}
+                              required={true}
                               className=" "
                               customClassName=" withBorder"
                               disabled={isEditFlag || isViewFlag}
@@ -1323,9 +1324,9 @@ class AddRMDomestic extends Component {
                                   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
                                 selectionChanged={this.handleSourceSupplierPlant}
-                                // validate={
-                                //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                                // required={true}
+                                validate={
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                required={true}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
@@ -1345,8 +1346,8 @@ class AddRMDomestic extends Component {
                                 placeholder={"Select"}
                                 options={this.renderListing("singlePlant")}
                                 handleChangeDescription={this.handleSinglePlant}
-                                // validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
-                                // required={true}
+                                validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                                required={true}
                                 component={searchableSelect}
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
@@ -1394,9 +1395,9 @@ class AddRMDomestic extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("VendorNameList")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  // validate={
-                                  //   this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                  // required={true}
+                                  validate={
+                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
+                                  required={true}
                                   handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}
                                   disabled={isEditFlag || isViewFlag}
@@ -1419,8 +1420,8 @@ class AddRMDomestic extends Component {
                                 selection={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
                                 options={this.renderListing("VendorPlant")}
                                 selectionChanged={this.handleVendorPlant}
-                                // validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                // required={true}
+                                validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
+                                required={true}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
@@ -1483,8 +1484,8 @@ class AddRMDomestic extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("uom")}
-                                  // validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
-                                  // required={true}
+                                  validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                                  required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
                                   disabled={isEditFlag || isViewFlag}
@@ -1501,7 +1502,7 @@ class AddRMDomestic extends Component {
                               placeholder={""}
                               validate={[]}
                               component={renderText}
-                              // required={false}
+                              required={false}
                               disabled={isViewFlag}
                               className=" "
                               customClassName=" withBorder"
@@ -1513,10 +1514,10 @@ class AddRMDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              // validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
+                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               // onChange={this.handleBasicRate}
-                              // required={true}
+                              required={true}
                               disabled={isViewFlag}
 
                               className=" "
@@ -1553,7 +1554,6 @@ class AddRMDomestic extends Component {
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
-                              disabled={isViewFlag}
                               className=""
                               customClassName=" withBorder"
                               maxLength="15"
@@ -1568,7 +1568,6 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
-                              disabled={isViewFlag}
                               required={false}
                               className=""
                               customClassName=" withBorder"
@@ -1617,9 +1616,9 @@ class AddRMDomestic extends Component {
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
-                              // validate={[required]}
+                              validate={[required]}
                               component={renderText}
-                              // required={false}
+                              required={false}
                               disabled={true}
                               isViewFlag={true}
                               className=" "
@@ -1635,9 +1634,8 @@ class AddRMDomestic extends Component {
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 validate={[required]}
-                                disabled={isViewFlag}
                                 autoComplete={'off'}
-                                // required={true}
+                                required={true}
                                 changeHandler={(e) => {
                                 }}
                                 component={renderDatePicker}
@@ -1669,7 +1667,7 @@ class AddRMDomestic extends Component {
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
                               validate={[maxLength512]}
-                              // required={true}
+                              required={true}
                               component={renderTextAreaField}
                               disabled={isViewFlag}
                               maxLength="512"

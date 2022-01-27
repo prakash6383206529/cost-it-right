@@ -1086,9 +1086,9 @@ class AddRMImport extends Component {
   }
 
   onPopupConfirm = () => {
-    this.props.reset()
     this.setState({ disablePopup: true })
     this.props.updateRMImportAPI(this.state.updatedObj, (res) => {
+      this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
         this.clearForm();

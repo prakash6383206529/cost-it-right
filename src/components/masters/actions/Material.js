@@ -736,6 +736,7 @@ export function createRMDomestic(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -809,6 +810,7 @@ export function updateRMDomesticAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -1128,6 +1130,7 @@ export function updateRMImportAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
