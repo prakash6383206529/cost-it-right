@@ -27,7 +27,7 @@ import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } f
 
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
-import { ColumnController } from 'ag-grid-community';
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -38,13 +38,10 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, ViewRMAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
-    const [tableData, settableData] = useState([]);
-    const [RawMaterial, setRawMaterial] = useState([]);
-    const [RMGrade, setRMGrade] = useState([]);
-    const [vendorName, setvendorName] = useState([]);
-    const [costingHead, setcostingHead] = useState([]);
-    const [plant, setplant] = useState([]);
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply,ViewRMAccessibility } = props;
+
+
+
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [maxRange, setmaxRange] = useState(0);
     const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -58,10 +55,11 @@ function RMDomesticListing(props) {
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
+    const {  handleSubmit } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
+    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
 
@@ -249,8 +247,8 @@ function RMDomesticListing(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const { initialConfiguration } = props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+        let value=  cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''; 
+        return value
     }
 
     const companyFormatter = (props) => {

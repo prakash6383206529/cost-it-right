@@ -38,7 +38,7 @@ const gridOptions = {};
 
 
 function RMImportListing(props) {
-  const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility } = props;
+  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation,ViewRMAccessibility } = props;
 
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
@@ -56,10 +56,11 @@ function RMImportListing(props) {
   const rmImportDataList = useSelector((state) => state.material.rmImportDataList);
   const filteredRMData = useSelector((state) => state.material.filteredRMData);
 
-  const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
+  const {  handleSubmit } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
   const [showPopup, setShowPopup] = useState(false)
   const [deletedId, setDeletedId] = useState('')
   const [showPopupBulk, setShowPopupBulk] = useState(false)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
 
 
@@ -238,7 +239,7 @@ function RMImportListing(props) {
 
 
   const costFormatter = (props) => {
-    const { initialConfiguration } = props
+    
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue !== INR ? checkForDecimalAndNull(cellValue, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
   }
