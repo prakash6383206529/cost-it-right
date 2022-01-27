@@ -507,6 +507,9 @@ function ReportListing(props) {
                     <Col md="8" lg="8" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
+                                <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                    <div className="refresh mr-0"></div>
+                                </button>
                                 <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
