@@ -520,7 +520,6 @@ export default connect(mapStateToProps,
 	{
 		getAllLevelAPI,
 		deleteUserLevelAPI,
-		getLeftMenu,
 		getUsersByTechnologyAndLevel
 	})(reduxForm({
 		form: 'LevelsListing',

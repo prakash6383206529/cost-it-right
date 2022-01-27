@@ -287,6 +287,5 @@ export default connect(mapStateToProps,
   {
     getAllRoleAPI,
     deleteRoleAPI,
-    getLeftMenu,
   })(RolesListing);
 
