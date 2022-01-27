@@ -382,8 +382,8 @@ class Main extends Component {
                     <Route path="/costing-detail-report" component={AuthMiddleware(CostingDetailReport, COSTING_DETAILS_REPORT)} />
                     <Route path="/cost-benchmarking-report" component={CostingBenchmarkReport} />
 
-{/*  NEED TO ADD PATH FROM BACKEND */}
-<Route path="/simulation-insights" component={SimulationInsights} /> 
+                    {/*  NEED TO ADD PATH FROM BACKEND */}
+                  <Route path="/simulation-insights" component={SimulationInsights} /> 
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}
