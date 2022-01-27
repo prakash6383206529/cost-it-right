@@ -10,10 +10,11 @@ import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaFie
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
+import {masterFinalLevelUser} from '../actions/Material'
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId,userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -102,6 +103,22 @@ class AddBOPDomestic extends Component {
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
+
+
+    let obj = {
+      MasterId: BOP_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
+
+
   }
 
   componentDidUpdate(prevProps) {
@@ -141,6 +158,15 @@ class AddBOPDomestic extends Component {
     } else {
       this.setState({ BOPCategory: [], });
 
+    }
+  }
+
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+    
+      this.cancel()
     }
   }
 
@@ -554,6 +580,8 @@ class AddBOPDomestic extends Component {
       UOM: [],
     })
     this.props.hideForm()
+    this.getDetails()
+
   }
 
   /**
@@ -640,13 +668,13 @@ class AddBOPDomestic extends Component {
         Attachements: files,
       }
 
-      this.props.createBOPDomestic(formData, (res) => {
-        this.setState({ setDisable: false })
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+      // this.props.createBOPDomestic(formData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
@@ -1307,7 +1335,8 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getCityByCountry,
-  getAllCity
+  getAllCity,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
