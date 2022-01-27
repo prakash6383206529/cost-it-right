@@ -1779,7 +1779,9 @@ export const ATTACHMENTS = 'Attachments'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
-
+export const BOP_MASTER_ID = 2
+export const OPERATIONS_ID = 3
+export const MACHINE_MASTER_ID = 4
 
 //approve reject drawer
 export const provisional = "Provisional"
