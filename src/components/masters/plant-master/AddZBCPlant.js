@@ -14,6 +14,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 class AddZBCPlant extends Component {
   constructor(props) {
@@ -29,7 +30,8 @@ class AddZBCPlant extends Component {
       state: [],
       company: [],
       DropdownChanged: true,
-      DataToCheck: []
+      DataToCheck: [],
+      setDisable: false
     }
   }
 
@@ -219,7 +221,7 @@ class AddZBCPlant extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
@@ -234,7 +236,7 @@ class AddZBCPlant extends Component {
         return false
       }
 
-      this.setState({ isSubmitted: true });
+      this.setState({ isSubmitted: true, setDisable: true });
       let updateData = {
         PlantId: PlantId,
         CreatedDate: '',
@@ -255,9 +257,9 @@ class AddZBCPlant extends Component {
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
         CompanyId: company.value
       }
-      this.props.reset()
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PLANT_SUCESS);
           this.cancel()
         }
@@ -265,6 +267,7 @@ class AddZBCPlant extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       let formData = {
         PlantName: values.PlantName,
         PlantCode: values.PlantCode,
@@ -281,15 +284,15 @@ class AddZBCPlant extends Component {
         CompanyId: company.value
       }
 
-      this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
-        if (res.data.Result === true) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PLANT_ADDED_SUCCESS);
           this.cancel()
         }
       });
     }
-  }
+  }, 500)
 
   handleCompanyChange = (value) => {
     if (value && value !== '') {
@@ -310,7 +313,7 @@ class AddZBCPlant extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag } = this.props;
-    const { country, isViewMode } = this.state;
+    const { country, isViewMode, setDisable } = this.state;
     return (
       <>
         <Drawer
@@ -545,6 +548,7 @@ class AddZBCPlant extends Component {
                       type={"button"}
                       className=" mr15 cancel-btn"
                       onClick={this.cancel}
+                      disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
@@ -552,7 +556,7 @@ class AddZBCPlant extends Component {
                     <button
                       type="submit"
                       className="user-btn save-btn"
-                      disabled={isViewMode}
+                      disabled={isViewMode || setDisable}
                     >
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}
