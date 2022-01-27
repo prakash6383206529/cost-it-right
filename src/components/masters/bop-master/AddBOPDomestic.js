@@ -106,10 +106,6 @@ class AddBOPDomestic extends Component {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.handleCalculation()
     }
-
-
-
-
   }
 
   /**

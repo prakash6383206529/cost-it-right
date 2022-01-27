@@ -4,7 +4,6 @@ import confirmImg from '../../assests/images/confirm.svg';
 
 
 function PopupMsgWrapper(props) {
-  console.log(props, 'props.disablePopupprops.disablePopupprops.disablePopup');
   return (
     <Modal
       fade={false}

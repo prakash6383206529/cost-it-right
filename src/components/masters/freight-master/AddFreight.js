@@ -495,7 +495,7 @@ class AddFreight extends Component {
       };
       this.props.reset()
       this.props.updateFright(requestData, (res) => {
-        this.setState({ setDisable: true })
+        this.setState({ setDisable: false })
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
           this.cancel();

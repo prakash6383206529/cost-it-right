@@ -147,6 +147,17 @@ class AddIndivisualProduct extends Component {
 
     }
 
+    /**
+    * @method setDisableFalseFunction
+    * @description setDisableFalseFunction
+    */
+    setDisableFalseFunction = () => {
+        const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+        if (Number(loop) === 1) {
+            this.setState({ setDisable: false })
+        }
+    }
+
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
         const { files, } = this.state;
@@ -163,11 +174,7 @@ class AddIndivisualProduct extends Component {
             let data = new FormData()
             data.append('file', file)
             this.props.fileUploadProduct(data, (res) => {
-                const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-                if (Number(loop) === 1) {
-                    this.setState({ setDisable: false })
-                }
-
+                this.setDisableFalseFunction()
                 let Data = res.data[0]
                 const { files } = this.state;
                 files.push(Data)
@@ -176,13 +183,16 @@ class AddIndivisualProduct extends Component {
         }
 
         if (status === 'rejected_file_type') {
+            this.setDisableFalseFunction()
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            this.setDisableFalseFunction()
             this.dropzone.current.files.pop()
             Toaster.warning("File size greater than 2 mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
+            this.setDisableFalseFunction()
             this.dropzone.current.files.pop()
             Toaster.warning("Something went wrong")
         }
