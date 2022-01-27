@@ -1306,12 +1306,13 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
-                      <th>Any Other Cost</th>
+                    <tr>
+                      <td>
+                      <span class="d-block small-grey-text"> Any Other Cost</span>
+                       </td>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return( 
-
 
                           <td>
                           <div className="d-flex">
