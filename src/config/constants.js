@@ -191,8 +191,7 @@ export const API = {
   getAllMasterApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-department`,
   getAllMasterApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-users-level-filter-by-department`,
   masterSendToApprover: `${BASE_URL}/masters-approval-raw-material/master-send-to-approver-by-sender`,
-  approveMasterByApprover: `${BASE_URL}/app-approval-system/approve-or-reject-master-by-approver`,
-  rejectMasterByApprover: `${BASE_URL}/app-approval-system/approve-or-reject-master-by-approver`,
+  approveOrRejectMasterByApprover: `${BASE_URL}/app-approval-system/approve-or-reject-master-by-approver`,
   getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
   masterFinalLeveluser: `${BASE_URL}/app-approval-system/is-this-user-final-master-approver`,
 
