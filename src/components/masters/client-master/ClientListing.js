@@ -58,6 +58,7 @@ class ClientListing extends Component {
     }
 
     componentDidMount() {
+        this.setState({isLoader:true})
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
             this.getTableListData(null, null)
@@ -106,7 +107,6 @@ class ClientListing extends Component {
             clientName: clientName,
             companyName: companyName,
         }
-        this.setState({isLoader:true})
         this.props.getClientDataList(filterData, res => {
             this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
