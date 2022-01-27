@@ -186,14 +186,13 @@ export const API = {
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
   //RM APPROVAL API'S
-  getRMApprovalList: `${BASE_URL}/masters-approval-raw-material/get-master-approvals-by-filter`,
-  getAllMasterApprovalDepartment: `${BASE_URL}/masters-approval-raw-material/get-all-master-approval-department`,
-  getAllMasterApprovalUserByDepartment: `${BASE_URL}/masters-approval-raw-material/get-all-master-approval-users-level-filter-by-department`,
+  getRMApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
+  getAllMasterApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-department`,
+  getAllMasterApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-users-level-filter-by-department`,
   masterSendToApprover: `${BASE_URL}/masters-approval-raw-material/master-send-to-approver-by-sender`,
-  approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
-  rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
-  getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
-  masterFinalLeveluser: `${BASE_URL}/masters-approval-raw-material/is-this-user-final-master-approver`,
+  approveOrRejectMasterByApprover: `${BASE_URL}/app-approval-system/approve-or-reject-master-by-approver`,
+  getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
+  masterFinalLeveluser: `${BASE_URL}/app-approval-system/is-this-user-final-master-approver`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -878,9 +877,9 @@ export const API = {
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
-  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment`,
-  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-impacted-simulation-costings`,
-  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-surface-treatment-costing`,
+  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment-and-operation`,
+  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-and-operation-impacted-simulation-costings`,
+  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-selected-surface-treatment-and-operation-costing`,
   draftMachineRateSimulation: `${BASE_URL}/simulation/draft-simulation-machine-rate`,
   runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-machine-rate-costing`,
   draftBoughtOutpartSimulation: `${BASE_URL}/simulation/draft-simulation-bought-out-part`,
@@ -895,6 +894,7 @@ export const API = {
   runSimulationOnSelectedProfitCosting: `${BASE_URL}/simulation/run-simulation-on-profit-costing`,
   draftOverheadSimulation: `${BASE_URL}/simulation/draft-simulation-overhead`,
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
+  getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1142,7 +1142,7 @@ export const CREATE_OTHER_OPERATION_FAILURE = 'CREATE_OTHER_OPERATION_FAILURE'
 export const CREATE_OTHER_OPERATION_SUCCESS = 'CREATE_OTHER_OPERATION_SUCCESS'
 export const GET_OTHER_OPERATION_FORMDATA_SUCCESS = 'GET_OTHER_OPERATION_FORMDATA_SUCCESS'
 export const GET_OTHER_OPERATION_FORMDATA_FAILURE = 'GET_OTHER_OPERATION_FORMDATA_FAILURE'
-export const GET_OPERATION_DATA_LIST = 'GET_OPERATION_DATA_LIST'
+export const GET_OPERATION_COMBINED_DATA_LIST = 'GET_OPERATION_COMBINED_DATA_LIST'
 
 //CED OTHER OPERATION
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS'
@@ -1772,4 +1772,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.104";
+export const VERSION = "V1.1.118";

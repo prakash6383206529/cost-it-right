@@ -129,7 +129,8 @@ function ViewConversionCost(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'View Conversion Cost:'}</h3>
+
+                  <h3>{props.viewConversionCostData.isSurfaceTreatmentCost?`View Surface Treatment Cost:`:`View Conversion Cost:`}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -138,6 +139,7 @@ function ViewConversionCost(props) {
               </Col>
             </Row>
             {loader && <LoaderCustom />}
+
             <div className=" row">
               {IsAssemblyCosting && partNumberList[0] !== null && partNumberList.length > 0 && <Nav tabs className="subtabs cr-subtabs-head view-conversion-header col-md-1">
                 {partNumberList && partNumberList.map((item, index) => {
@@ -152,11 +154,15 @@ function ViewConversionCost(props) {
               </Nav>}
               <TabContent activeTab={activeTab} className={`${IsAssemblyCosting && partNumberList[0] !== null && partNumberList.length > 0 ? 'col-md-11' : 'col-md-12'}  view-conversion-container`}>
                 <TabPane tabId={index}>
+                 {!props.viewConversionCostData.isSurfaceTreatmentCost&&   // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
                   <Row>
                     <Col md="12">
                       <div className="left-border">{'Process Cost:'}</div>
                     </Col>
                   </Row>
+                   }
+
+          {!props.viewConversionCostData.isSurfaceTreatmentCost&&      // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
                   <Row>
                     {/*PROCESS COST GRID */}
                     <Col md="12">
@@ -209,8 +215,13 @@ function ViewConversionCost(props) {
                       </Table>
                     </Col>
                   </Row>
+                  
+                        }
 
-                  <br />
+          {!props.viewConversionCostData.isSurfaceTreatmentCost&&    <br />}
+                 
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost&&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                               
                   <div>
                     <Row>
                       <Col md="8">
@@ -280,8 +291,11 @@ function ViewConversionCost(props) {
                       </Col>
                     </Row>
                   </div>
+                    }
 
-                  <br />
+                   {!props.viewConversionCostData.isSurfaceTreatmentCost&&    <br />} 
+
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost&&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
                   <div>
                     <Row>
                       <Col md="8">
@@ -351,8 +365,9 @@ function ViewConversionCost(props) {
                       </Col>
                     </Row>
                   </div>
+}
 
-                  <br />
+         {!props.viewConversionCostData.isSurfaceTreatmentCost&&    <br />}
                   {isShowToolCost && (
                     <div>
                       <Row>
@@ -405,11 +420,16 @@ function ViewConversionCost(props) {
                       </Row>
                     </div>
                   )}
+
+
+             {props.viewConversionCostData.isSurfaceTreatmentCost&&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                   <Row>
                     <Col md="12">
                       <div className="left-border">{'Surface Treatment Cost:'}</div>
                     </Col>
                   </Row>
+                 }
+                 {props.viewConversionCostData.isSurfaceTreatmentCost&&
                   <Row>
                     {/*PROCESS COST GRID */}
                     <Col md="12">
@@ -450,12 +470,17 @@ function ViewConversionCost(props) {
                       </Table>
                     </Col>
                   </Row>
+}
                   <br />
-                  <Row>
+
+              {props.viewConversionCostData.isSurfaceTreatmentCost&&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
+                 <Row>
                     <Col md="12">
                       <div className="left-border">{'Transportation Cost:'}</div>
                     </Col>
                   </Row>
+              }
+             {props.viewConversionCostData.isSurfaceTreatmentCost&&
                   <Row>
                     {/*TRANSPORTATION COST GRID */}
                     <Col md="12">
@@ -495,6 +520,7 @@ function ViewConversionCost(props) {
                       </Table>
                     </Col>
                   </Row>
+                 }
 
                 </TabPane>
 

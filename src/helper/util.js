@@ -564,11 +564,12 @@ export function formViewData(costingSummary) {
   obj.netBOP = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetBoughtOutPartCost ? dataFromAPI.CostingPartDetails.NetBoughtOutPartCost : 0
   obj.pCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetProcessCost ? dataFromAPI.CostingPartDetails.NetProcessCost : 0
   obj.oCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetOperationCost ? dataFromAPI.CostingPartDetails.NetOperationCost : 0
-  obj.sTreatment = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
+  obj.sTreatment = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.SurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.SurfaceTreatmentCost : 0
  obj.nsTreamnt = dataFromAPI && dataFromAPI.NetSurfaceTreatmentCost !== undefined ? dataFromAPI.NetSurfaceTreatmentCost:0
   obj.tCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetTransportationCost ? dataFromAPI.CostingPartDetails.NetTransportationCost : 0
   obj.nConvCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetConversionCost ? dataFromAPI.CostingPartDetails.NetConversionCost : 0
   obj.nTotalRMBOPCC = dataFromAPI.CostingPartDetails && dataFromAPI.NetTotalRMBOPCC ? dataFromAPI.NetTotalRMBOPCC : 0
+  obj.netSurfaceTreatmentCost =  dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost ? dataFromAPI.CostingPartDetails.NetSurfaceTreatmentCost : 0
   
  
   obj.modelType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.ModelType ? dataFromAPI.CostingPartDetails.ModelType : '-'
@@ -623,8 +624,13 @@ export function formViewData(costingSummary) {
   obj.otherDiscountValue = {
     discountPercentValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountPercentage : 0,
     discountValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue : 0,
+    discountApplicablity:dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.HundiOrDiscountValue !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountApplicability : 0,
+    dicountType : dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountCostType !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.DiscountCostType : '-'
   }
   obj.anyOtherCost = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.AnyOtherCost : 0
+  obj.anyOtherCostType = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostType !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostType : '-'
+  obj.anyOtherCostApplicablity= dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.AnyOtherCost !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostApplicability : 0
+  obj.anyOtherCostPercent = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostPercentage !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.OtherCostPercentage : 0
   obj.remark = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.Remark !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.Remark : '-'
   obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceOtherCurrency !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceOtherCurrency : 0
   obj.currency = {

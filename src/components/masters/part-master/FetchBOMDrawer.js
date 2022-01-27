@@ -27,7 +27,7 @@ const FetchDrawer = (props) => {
     return (
         <>
 
-            <Drawer className="user-detail" open={props.isOpen} anchor={props.anchor}
+            <Drawer className="BOM-Drawer" open={props.isOpen} anchor={props.anchor}
             // onClose={(e) => this.toggleDrawer(e)}
             >
                 <Container>

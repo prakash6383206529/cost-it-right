@@ -678,6 +678,7 @@ class AddAssemblyPart extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>
@@ -1012,9 +1013,9 @@ class AddAssemblyPart extends Component {
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
-          {
+          {/* {
             this.state.showPopupDraft && <PopupMsgWrapper isOpen={this.state.showPopupDraft} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmDraft} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
-          }
+          } */}
         </div>
       </>
     );

@@ -43,7 +43,8 @@ class IndivisualProductListing extends Component {
             isBulkUpload: false,
             ActivateAccessibility: true,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            
         }
     }
 

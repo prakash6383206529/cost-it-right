@@ -1504,7 +1504,7 @@ label for[normal-switch]{
   }
   .blue-before{
     position: relative;
-    z-index: 12;
+    z-index: 5;
     .filter-block {
       position: initial;
       height: 32px!important;
@@ -6840,4 +6840,9 @@ left: 17rem;
   position: fixed;
   bottom: 60px;
   right: 4px;
+}
+.BOM-Drawer {
+  .drawer-wrapper {
+    width: 400px;
+  }
 }

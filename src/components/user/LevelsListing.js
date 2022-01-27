@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAllLevelAPI, deleteUserLevelAPI, getLeftMenu, getUsersByTechnologyAndLevel } from '../../actions/auth/AuthActions';
+import { getAllLevelAPI, deleteUserLevelAPI, getUsersByTechnologyAndLevel } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
-import { Loader } from '../common/Loader';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import { checkPermission } from '../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
-import ConfirmComponent from '../../helper/ConfirmComponent';
 import { renderText } from '../layout/FormInputs';
 import { Field, reduxForm } from 'redux-form';
 import { focusOnError } from "../layout/FormInputs";
@@ -55,7 +52,8 @@ class LevelsListing extends Component {
             deletedId:'',
 			cellData:{},
             cellValue:'',
-            showPopupToggle:false
+            showPopupToggle:false,
+			isLoader:false
 
 		}
 	}
@@ -85,12 +83,14 @@ class LevelsListing extends Component {
 	}
 
 	getLevelsListData = () => {
+		this.setState({isLoader:true})
 		this.props.getAllLevelAPI(res => {
 			if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
 				this.setState({
 					tableData: Data,
-				})
+				},
+				()=>this.setState({isLoader:false}))
 			}
 		});
 	}
@@ -385,7 +385,6 @@ class LevelsListing extends Component {
 
 		const frameworkComponents = {
 			totalValueRenderer: this.buttonFormatter,
-			customLoadingOverlay: LoaderCustom,
 			customNoRowsOverlay: NoContentFound
 		};
 
@@ -393,8 +392,8 @@ class LevelsListing extends Component {
 			<div className={"levellisting-page-main"}>
 				<div className={"ag-grid-react"}>
 					<>
+						{this.state.isLoader && <LoaderCustom />}
 						<form className="levellisting-page">
-							{/* {this.props.loading && <Loader />} */}
 							<Row className="pt-4">
 								<Col md="12">
 									<LevelTechnologyListing
@@ -443,7 +442,6 @@ class LevelsListing extends Component {
 														paginationPageSize={5}
 														onGridReady={this.onGridReady}
 														gridOptions={gridOptions}
-														loadingOverlayComponent={'customLoadingOverlay'}
 														noRowsOverlayComponent={'customNoRowsOverlay'}
 														noRowsOverlayComponentParams={{
 															title: EMPTY_DATA,
