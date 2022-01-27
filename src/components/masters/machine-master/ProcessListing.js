@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
-import { searchableSelect } from '../../layout/FormInputs'
-import { Loader } from '../../common/Loader'
 import { EMPTY_DATA } from '../../../config/constants'
 import {
   getInitialPlantSelectList, getInitialMachineSelectList, deleteProcess,
@@ -16,7 +14,6 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster'
 import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
 import DayTime from '../../common/DayTimeWrapper'
 import { ProcessMaster } from '../../../config/constants'
@@ -41,14 +38,14 @@ class ProcessListing extends Component {
       isEditFlag: false,
       Id: '',
       tableData: [],
-
       plant: [],
       machine: [],
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      isLoader:true
     }
   }
 
@@ -67,7 +64,9 @@ class ProcessListing extends Component {
       plant_id: plant_id,
       machine_id: machine_id,
     }
+    this.setState({isLoader:true})
     this.props.getProcessDataList(filterData, (res) => {
+      this.setState({isLoader:false})
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         this.setState({ tableData: Data })
@@ -143,7 +142,9 @@ class ProcessListing extends Component {
       plant_id: plant_id,
       machine_id: machine_id,
     }
+    this.setState({isLoader:true})
     this.props.getProcessDataList(filterData, (res) => {
+      this.setState({isLoader:false})
       if (res && res.status === 200) {
         let Data = res.data.DataList
         this.setState({ tableData: Data })
@@ -397,13 +398,13 @@ class ProcessListing extends Component {
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
       costingHeadRenderer: this.costingHeadFormatter,
-      customLoadingOverlay: LoaderCustom,
+      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
     };
 
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
 
@@ -463,7 +464,6 @@ class ProcessListing extends Component {
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
-                  loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,

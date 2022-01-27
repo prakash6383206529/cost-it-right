@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import {reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
     getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList, getRawMaterialNameChild,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
 } from '../actions/Material';
-import { searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
-import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -16,7 +13,6 @@ import Toaster from '../../common/Toaster';
 import AddSpecification from './AddSpecification';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { RmSpecification } from '../../../config/constants';
 import { SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -50,7 +46,8 @@ class SpecificationListing extends Component {
             rowData: null,
             showPopup: false,
             showPopup2: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
 
         }
     }
@@ -73,12 +70,13 @@ class SpecificationListing extends Component {
             MaterialId: materialId,
             GradeId: gradeId
         }
+        this.setState({isLoader:true})
         this.props.getRMSpecificationDataList(data, res => {
             if (res.status === 204 && res.data === '') {
                 this.setState({ specificationData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({ specificationData: Data, })
+                this.setState({ specificationData: Data, isLoader:false})
             }
         });
     }
@@ -340,7 +338,7 @@ class SpecificationListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.props.loading && <Loader />}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
 
@@ -411,7 +409,7 @@ class SpecificationListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
+                                    // loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,

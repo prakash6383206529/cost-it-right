@@ -75,7 +75,8 @@ class VendorListing extends Component {
             showData: false,
             showPopup: false,
             deletedId: '',
-            isViewMode: false
+            isViewMode: false,
+            isLoader:false
 
         }
     }
@@ -220,6 +221,7 @@ class VendorListing extends Component {
             vendorName: vendorName,
             country: country,
         }
+        this.setState({isLoader:true})
         this.props.getSupplierDataList(skip, obj, take, isPagination, res => {
 
             if (res.status === 202) {
@@ -236,7 +238,7 @@ class VendorListing extends Component {
                 this.setState({
                     tableData: Data,
                     totalRecordCount: Data[0].TotalRecordCount,
-
+                    isLoader:false
                 })
 
             } else {
@@ -615,7 +617,7 @@ class VendorListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
+            // customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             indexFormatter: this.indexFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
@@ -635,8 +637,8 @@ class VendorListing extends Component {
                         <Col md="12" className="d-flex justify-content-between">
                             <h1 className="mb-0">Vendor Master</h1>
                         </Col>
-
                     </Row>
+                    {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-2 align-items-center">
                         {this.state.shown && (
                             <Col md="12" lg="8" className="filter-block">
@@ -741,7 +743,6 @@ class VendorListing extends Component {
                                     {
                                         DownloadAccessibility &&
                                         <>
-
                                             <ExcelFile filename={'Vendor'} fileExtension={'.xls'} element={
                                                 <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                                                     {/* DOWNLOAD */}
@@ -749,16 +750,11 @@ class VendorListing extends Component {
 
                                                 {this.onBtExport()}
                                             </ExcelFile>
-
                                         </>
-
-
-
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
                                         <div className="refresh mr-0"></div>
                                     </button>
-
                                 </div>
                             </div>
                         </Col>
@@ -777,7 +773,6 @@ class VendorListing extends Component {
                             onFilterModified={this.onFloatingFilterChanged}
                             gridOptions={gridOptions}
                             suppressRowClickSelection={true}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,

@@ -50,7 +50,7 @@ class ReasonListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      isLoader: true,
+      isLoader: false,
       renderState: true,
       showPopup: false,
       deletedId: ''
@@ -63,6 +63,7 @@ class ReasonListing extends Component {
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
+    this.setState({isLoader:true})
     setTimeout(() => {
       this.getTableListData()
     }, 2000);
@@ -346,13 +347,12 @@ class ReasonListing extends Component {
 
     return (
       <>
-
-        {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+        <div className={`ag-grid-react container-fluid p-relative ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>
+          {this.state.isLoader && <LoaderCustom />}
           <Row className="no-filter-row pt-4">
             <Col md={6} className="text-right filter-block"></Col>
             <Col md="6" className="text-right search-user-block pr-0">

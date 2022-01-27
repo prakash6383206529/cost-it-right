@@ -60,7 +60,7 @@ class InterestRateListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      isLoader: true,
+      isLoader: false,
       showPopup: false,
       deletedId: ''
     }
@@ -69,7 +69,7 @@ class InterestRateListing extends Component {
   componentDidMount() {
 
     this.applyPermission(this.props.topAndLeftMenuData)
-
+    this.setState({isLoader:true})
     setTimeout(() => {
       this.props.getVendorWithVendorCodeSelectList()
       this.props.getICCAppliSelectList(() => { })
@@ -430,8 +430,8 @@ class InterestRateListing extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+       
+        <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp='go-to-top' />
           <form
             onSubmit={handleSubmit(this.onSubmit.bind(this))}
@@ -442,6 +442,7 @@ class InterestRateListing extends Component {
                 <h1 className="mb-0">Interest Rate Master</h1>
               </Col>
             </Row>
+            {this.state.isLoader && <LoaderCustom />}
             <Row className="pt-4 filter-row-large blue-before">
 
               <Col md="6" className="search-user-block mb-3">
