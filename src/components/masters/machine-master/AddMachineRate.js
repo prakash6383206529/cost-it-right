@@ -850,7 +850,7 @@ class AddMachineRate extends Component {
       // if (DropdownChange) {
 
       // }
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true , disablePopup:false })
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
@@ -1312,6 +1312,7 @@ class AddMachineRate extends Component {
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
                                 //required={true}
+                                validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                                 handleChangeDescription={this.handleProcessName}
                                 valueDescription={this.state.processName}
                                 disabled={isViewMode}
@@ -1344,7 +1345,7 @@ class AddMachineRate extends Component {
                             name={"MachineRate"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
+                            validate={[positiveAndDecimalNumber, maxLength80]}
                             component={renderText}
                             onChange={this.handleMachineRate}
                             //required={true}

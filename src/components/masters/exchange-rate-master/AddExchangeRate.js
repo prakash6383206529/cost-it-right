@@ -179,7 +179,7 @@ class AddExchangeRate extends Component {
         return false;
       }
 
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true, disablePopup:false })
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,

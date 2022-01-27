@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA, PLASTIC } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
+import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable, maxLength20 } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -93,23 +93,8 @@ function RawMaterialCost(props) {
       selectedIds(gridData)
 
       // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
-      if (Object.keys(gridData).length > 0 ) {
-        let isCutOffApplicableCount=0
-        let totalCutOff=0
-        gridData && gridData.map(item=>{
-          console.log('item: ', item);
-          if(item.IsCutOffApplicable){
-            isCutOffApplicableCount = isCutOffApplicableCount +1
-            totalCutOff = totalCutOff + checkForNull(item.CutOffRMC)
-          }
-          else{
-            totalCutOff = totalCutOff +checkForNull(item.NetLandedCost)
-          }
-          console.log(totalCutOff,"totalCutOfftotalCutOff");
-        })
-        console.log(isCutOffApplicableCount,"isCutOffApplicableCount",totalCutOff);
-        // dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
-        dispatch(setRMCutOff({ IsCutOffApplicable:isCutOffApplicableCount >0 ?true:false, CutOffRMC: totalCutOff }))
+      if (Object.keys(gridData).length > 0 && gridData[0].IsCutOffApplicable) {
+        dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
       }
 
     }, 500)
@@ -648,19 +633,19 @@ function RawMaterialCost(props) {
 
   const onRemarkPopUpClick = (index) => {
 
-    setRemarkPopUpData(getValues('remarkPopUp'))
+    setRemarkPopUpData(getValues(`${rmGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
 
     tempData = {
       ...tempData,
 
-      Remark: getValues(`remarkPopUp${index}`)
+      Remark: getValues(`${rmGridFields}.${index}.remarkPopUp`)
     }
     tempArr = Object.assign([...gridData], { [index]: tempData })
     setGridData(tempArr)
 
-    if (getValues(`remarkPopUp${index}`)) {
+    if (getValues(`${rmGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
 
@@ -1027,17 +1012,26 @@ function RawMaterialCost(props) {
                                 position="top center">
                                 <TextAreaHookForm
                                   label="Remark:"
-                                  name={`remarkPopUp${index}`}
+                                  name={`${rmGridFields}.${index}.remarkPopUp`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  rules={{}}
+                                  rules={{
+
+                                
+                                    maxLength: {
+                                      value: 75,
+                                      message: "Remark should be less than 75 word"
+                                    },
+                                  }}
+                                 
                                   handleChange={(e) => { }}
-                                  defaultValue={item.Remark}
+                                  defaultValue={item.Remark }
                                   className=""
                                   customClassName={"withBorder"}
-                                  errors={errors.MBId}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].remarkPopUp : ''}
+                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                                   disabled={CostingViewMode ? true : false}
                                   hidden={false}
                                 />

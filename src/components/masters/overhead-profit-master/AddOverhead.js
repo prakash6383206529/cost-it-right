@@ -648,7 +648,7 @@ class AddOverhead extends Component {
         this.cancel()
         return false
       }
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true, disablePopup:false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OverheadID }
       })

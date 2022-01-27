@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
@@ -553,7 +553,7 @@ class AddAssemblyPart extends Component {
         this.cancel()
         return false;
       }
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true,  disablePopup:false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -720,7 +720,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartName"}
                             type="text"
                             placeholder={""}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength75]}
                             component={renderText}
                             required={true}
                             className=""

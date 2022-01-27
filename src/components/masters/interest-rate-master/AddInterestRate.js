@@ -286,7 +286,7 @@ class AddInterestRate extends Component {
       else {
 
       }
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true, disablePopup:false })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
