@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength3 } from "../../../helper/validation";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter,maxLength12, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength5 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
@@ -344,7 +344,7 @@ class AddClientDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength12, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
                                                     // maxLength={12}
@@ -359,10 +359,10 @@ class AddClientDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
-                                                    maxLength={3}
+                                                    maxLength={5}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     disabled={isViewMode}

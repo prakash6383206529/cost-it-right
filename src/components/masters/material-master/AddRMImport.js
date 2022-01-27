@@ -99,7 +99,8 @@ class AddRMImport extends Component {
       approveDrawer: false,
       uploadAttachements: true,
       isFinalApprovar: false,
-      disablePopup: false
+      disablePopup: false,
+      setDisable: false
 
     }
   }
@@ -927,7 +928,7 @@ class AddRMImport extends Component {
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state;
 
     const { initialConfiguration } = this.props;
-
+    this.setState({ setDisable: true, disablePopup:false})
     let plantArray = [];
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
@@ -941,9 +942,6 @@ class AddRMImport extends Component {
     })
 
     if (isEditFlag && this.state.isFinalApprovar) {
-
-
-
 
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
@@ -973,9 +971,10 @@ class AddRMImport extends Component {
       if (isEditFlag && this.state.isFinalApprovar) {
 
         if (isSourceChange) {
-          this.props.reset()
+          
           this.props.updateRMImportAPI(requestData, (res) => {
-            if (res.data.Result) {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
               this.clearForm()
 
@@ -983,10 +982,9 @@ class AddRMImport extends Component {
           })
         }
         if (isDateChange) {
-
-          this.props.reset()
           this.props.updateRMImportAPI(requestData, (res) => {
-            if (res.data.Result) {
+            this.setState({ setDisable: false })
+            if (res?.data?.Result) {
               Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
               this.clearForm()
 
@@ -1011,7 +1009,7 @@ class AddRMImport extends Component {
 
 
     } else {
-
+      this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
         RawMaterial: RawMaterial.value,
@@ -1060,9 +1058,10 @@ class AddRMImport extends Component {
         }
 
       } else {
-        this.props.reset()
+       
         this.props.createRMImport(formData, (res) => {
-          if (res.data.Result) {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
             this.clearForm();
           }

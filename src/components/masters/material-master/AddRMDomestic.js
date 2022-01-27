@@ -951,7 +951,7 @@ class AddRMDomestic extends Component {
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state
     const { initialConfiguration } = this.props
-    this.setState({ setDisable: true })
+    this.setState({ setDisable: true, disablePopup:false})
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -1091,7 +1091,7 @@ class AddRMDomestic extends Component {
   onPopupConfirm = () => {
     this.setState({ disablePopup: true })
     this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false })
+      this.setState({ setDisable: false  })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
         this.clearForm()
