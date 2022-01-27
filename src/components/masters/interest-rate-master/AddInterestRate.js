@@ -17,6 +17,7 @@ import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
@@ -36,8 +37,10 @@ class AddInterestRate extends Component {
       Data: [],
       DropdownChanged: true,
       plant: [],
-      showPopup:false,
-      updatedObj:{}
+      showPopup: false,
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
     }
   }
   /**
@@ -247,24 +250,24 @@ class AddInterestRate extends Component {
   };
 
 
-  onPopupConfirm = () => {
-
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateInterestRate(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
         this.setState({ showPopup: false })
         this.cancel()
       }
     });
-  }
+  }, 500)
 
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
 
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
 
     const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged, plant } = this.state;
     const userDetail = userDetails()
@@ -283,7 +286,7 @@ class AddInterestRate extends Component {
       else {
 
       }
-
+      this.setState({ setDisable: true })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -304,6 +307,21 @@ class AddInterestRate extends Component {
       if (this.state.isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
 
+        const toastrConfirmOptions = {
+          onOk: () => {
+
+            this.props.updateInterestRate(updateData, (res) => {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                this.setState({ showPopup: false })
+                this.cancel()
+              }
+            });
+          },
+          onCancel: () => { },
+          component: () => <ConfirmComponent />
+        }
 
 
 
@@ -312,6 +330,7 @@ class AddInterestRate extends Component {
 
     } else {/** Add new detail for creating operation master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         Isvendor: IsVendor,
         VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -326,11 +345,11 @@ class AddInterestRate extends Component {
         CreatedBy: loggedInUserId(),
         PlantId: plant.value
       }
-      this.props.reset()
+
       this.props.createInterestRate(formData, (res) => {
-
-        if (res.data.Result) {
-
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          // toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
           Toaster.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS)
           this.cancel();
 
@@ -338,10 +357,10 @@ class AddInterestRate extends Component {
       });
     }
 
-  }
+  }, 500)
 
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
 
   /**
@@ -357,7 +376,7 @@ class AddInterestRate extends Component {
       pos_drop_down = "top";
     }
     const { handleSubmit, } = this.props;
-    const { isEditFlag, } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -380,7 +399,6 @@ class AddInterestRate extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>
@@ -624,12 +642,14 @@ class AddInterestRate extends Component {
                         type={"button"}
                         className=" mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
                       <button
                         type="submit"
+                        disabled={isViewMode || setDisable}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
@@ -642,7 +662,7 @@ class AddInterestRate extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
 
