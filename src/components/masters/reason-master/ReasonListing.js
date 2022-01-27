@@ -112,11 +112,12 @@ class ReasonListing extends Component {
   getTableListData = () => {
     this.setState({ isLoader: true })
     this.props.getAllReasonAPI(true, (res) => {
+      this.setState({isLoader:false})
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data }, () => this.setState({ isLoader: false, renderState: !this.state.renderState }))
+        this.setState({ tableData: Data }, () => this.setState({ renderState: !this.state.renderState }))
       } else {
         this.setState({ tableData: [] })
       }
@@ -339,7 +340,6 @@ class ReasonListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       statusButtonFormatter: this.statusButtonFormatter
     };
@@ -410,7 +410,6 @@ class ReasonListing extends Component {
                 paginationPageSize={10}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
-                loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,

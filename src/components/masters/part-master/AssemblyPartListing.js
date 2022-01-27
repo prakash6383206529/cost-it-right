@@ -67,12 +67,13 @@ class AssemblyPartListing extends Component {
     getTableListData = () => {
         this.setState({isLoader: true})
         this.props.getAssemblyPartDataList((res) => {
+            this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
-                    tableData: Data, isLoader:false
+                    tableData: Data
                 })
             } else {
 
@@ -341,7 +342,6 @@ class AssemblyPartListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            // customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             visualAdFormatter: this.visualAdFormatter,
@@ -419,7 +419,6 @@ class AssemblyPartListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            // loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,

@@ -11,7 +11,6 @@ import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootst
 import Switch from "react-switch";
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { applySuperScript } from '../../../helper/validation';
@@ -339,7 +338,6 @@ class UOMMaster extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
     };
 
@@ -407,7 +405,6 @@ class UOMMaster extends Component {
                     paginationPageSize={10}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
-                    loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,

@@ -366,7 +366,6 @@ class ProfitListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
@@ -410,11 +409,7 @@ class ProfitListing extends Component {
 
                                                 {this.onBtExport()}
                                             </ExcelFile>
-
                                         </>
-
-
-
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>

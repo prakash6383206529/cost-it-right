@@ -1284,6 +1284,7 @@ const CostingSummaryTable = (props) => {
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
+                            data.CostingHeading!== VARIANCE?
                             <td>
                               <div className="d-flex">
                                 {/* <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.discount : ''}</span> &nbsp;{' '}
@@ -1301,7 +1302,11 @@ const CostingSummaryTable = (props) => {
                                 <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue!==0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                                 <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
+                        
                             </td>
+                            : ""
+                              
+                              
                           )
                         })}
                     </tr>
@@ -1313,7 +1318,8 @@ const CostingSummaryTable = (props) => {
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return( 
-
+                           
+                            data.CostingHeading!== VARIANCE?
                           <td>
                           <div className="d-flex">
                            
@@ -1331,7 +1337,7 @@ const CostingSummaryTable = (props) => {
                             <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                           </div>
                         </td>
-
+                         : ""
 
                           )
                         })}

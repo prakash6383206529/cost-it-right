@@ -462,7 +462,6 @@ class SpecificationListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    // loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,

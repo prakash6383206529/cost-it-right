@@ -8,6 +8,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import { EMPTY_DATA } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import { DRAFT } from '../../../config/constants';
+import { getFinancialYearSelectList } from '../actions/Volume';
 
 
 
@@ -21,7 +22,7 @@ function OperationApproval(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
     const { approvalList } = useSelector((state) => state.material)
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(getFinancialYearSelectList)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -37,6 +38,7 @@ function OperationApproval(props) {
 
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
+        setLoader(true)
         dispatch(getRMApprovalList((res) => {
             setLoader(false)
         }))

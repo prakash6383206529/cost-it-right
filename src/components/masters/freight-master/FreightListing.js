@@ -66,7 +66,6 @@ this.setState({isLoader: true})
   * @description GET DETAILS OF BOP DOMESTIC
   */
   getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
-    this.setState({ isLoader: true })
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
@@ -74,9 +73,10 @@ this.setState({isLoader: true})
       destination_city_id: destination_city_id,
     }
     this.props.getFreightDataList(filterData, (res) => {
+      this.setState({isLoader:false})
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
+        this.setState({ tableData: Data })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [], isLoader: false })
       } else {
