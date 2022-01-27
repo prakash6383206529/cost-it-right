@@ -15,8 +15,7 @@ import { checkForDecimalAndNull } from '../../../helper';
 const gridOptions = {};
 
 function AssemblyWiseImpact(props) {
-    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer} = props;
-    console.log('dataForAssemblyImpact: ', dataForAssemblyImpact);
+    const { impactType, dataForAssemblyImpact, isPartImpactAssembly,isImpactDrawer } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -36,7 +35,7 @@ function AssemblyWiseImpact(props) {
             if (isPartImpactAssembly) {
                 let obj = {
                     CostingId: dataForAssemblyImpact?.CostingId,
-                    delta:isImpactDrawer? dataForAssemblyImpact?.Variance :dataForAssemblyImpact.POVariance,
+                    delta: isImpactDrawer? dataForAssemblyImpact?.Variance :dataForAssemblyImpact.POVariance,
                     IsSinglePartImpact: true
                 }
                 requestData = [obj]
