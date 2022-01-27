@@ -5,8 +5,8 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6,minLength10, maxLength11, maxLength12, required, email, alphabetsOnlyForName, minLength7, maxLength18,
-  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength25 , postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6, minLength5,minLength10, maxLength11, maxLength12, required, email,passwordValidate,validatePassword , noSpace, alphabetsOnlyForName, minLength7, maxLength18,
+  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength25 , postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
@@ -1264,7 +1264,7 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[postiveNumber,minLength10, maxLength10, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength12, checkWhiteSpaces]}
                           required={false}
                           // maxLength={10}
                           customClassName={'withBorder'}
@@ -1278,10 +1278,10 @@ class UserRegistration extends Component {
                               name={"PhoneNumber"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[postiveNumber,vlidatePhoneNumber, maxLength10]}
+                              validate={[postiveNumber,vlidatePhoneNumber, maxLength12 ]}
                               component={renderText}
                               //required={true}
-                              maxLength={10}
+                              maxLength={12}
                               customClassName={'withBorder'}
                             />
                           </div>
@@ -1291,10 +1291,10 @@ class UserRegistration extends Component {
                               name={"Extension"}
                               type="text"
                               placeholder={'Ext'}
-                              validate={[postiveNumber, maxLength3]}
+                              validate={[postiveNumber, maxLength5]}
                               component={renderText}
                               //required={true}
-                              maxLength={3}
+                              maxLength={5}
                               customClassName={'withBorder w100'}
                             />
                           </div>
@@ -1345,7 +1345,8 @@ class UserRegistration extends Component {
                               placeholder="Enter"
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
-                              validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
+                              validate={[required, minLength6, maxLength18, validatePassword ]}
+                             
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}
                               required={true}
@@ -1424,7 +1425,7 @@ class UserRegistration extends Component {
                           name={"ZipCode"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[postiveNumber, maxLength6]}
+                          validate={[postiveNumber, minLength5 , maxLength5]}
                           component={renderText}
                           //required={true}
                           maxLength={6}

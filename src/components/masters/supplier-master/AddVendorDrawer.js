@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
-    required, upper, email, minLength7, maxLength70, maxLength80, maxLength71, maxLength3, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
+    required, upper, email, minLength7, maxLength70, maxLength80, maxLength71 , minLength3, maxLength5, vlidatePhoneNumber,maxLength12, alphaNumeric , acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
@@ -15,7 +15,6 @@ import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { debounce } from 'lodash';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -39,8 +38,7 @@ class AddVendorDrawer extends Component {
             vendor: '',
             DataToCheck: [],
             DropdownChanged: true,
-            isViewMode: this.props?.isViewMode ? true : false,
-            setDisable: false
+            isViewMode: this.props?.isViewMode ? true : false
         }
     }
 
@@ -339,7 +337,7 @@ class AddVendorDrawer extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = debounce((values) => {
+    onSubmit = (values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
         const { supplierData, vendorPlantSelectList } = this.props;
 
@@ -395,7 +393,6 @@ class AddVendorDrawer extends Component {
                 return false
             }
 
-            this.setState({ setDisable: true })
             let formData = {
                 VendorId: VendorId,
                 VendorCode: values.VendorCode,
@@ -412,15 +409,14 @@ class AddVendorDrawer extends Component {
                 RemoveVendorPlants: removedVendorPlants,
                 VendorTypes: vendorArray,
             }
+            this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
-                this.setState({ setDisable: false })
-                if (res?.data?.Result) {
+                if (res.data.Result) {
                     Toaster.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
                     this.cancel(formData)
                 }
             });
         } else {/** Add new detail for creating supplier master **/
-            this.setState({ setDisable: true })
             let formData = {
                 VendorName: values.VendorName,
                 VendorCode: values.VendorCode,
@@ -438,16 +434,16 @@ class AddVendorDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
             }
+            this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
-                this.setState({ setDisable: false })
-                if (res?.data?.Result) {
+                if (res.data.Result) {
                     Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
                     this.cancel(formData);
                 }
             });
         }
 
-    }, 500)
+    }
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
@@ -459,7 +455,7 @@ class AddVendorDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, isVisible } = this.props;
-        const { country, isOpenVendorPlant, isViewMode, setDisable } = this.state;
+        const { country, isOpenVendorPlant, isViewMode } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -504,10 +500,10 @@ class AddVendorDrawer extends Component {
                                     <Col md="6">
                                         <Field
                                             label={`Vendor Name`}
-                                            name={"VendorName"}
+                                            name={"VendorName"}  
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -523,7 +519,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
+                                            validate={[required,alphaNumeric, maxLength71, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             normalize={upper}
@@ -558,7 +554,7 @@ class AddVendorDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                                    validate={[postiveNumber,vlidatePhoneNumber, maxLength12, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
                                                     maxLength={12}
@@ -572,7 +568,7 @@ class AddVendorDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={'Ext'}
-                                                    validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
                                                     // maxLength={5}
@@ -589,7 +585,7 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                            validate={[postiveNumber, vlidatePhoneNumber,maxLength12, checkWhiteSpaces]}
                                             maxLength={12}
                                             customClassName={'withBorder'}
                                             disabled={isViewMode}
@@ -702,14 +698,14 @@ class AddVendorDrawer extends Component {
                                     <div className="col-sm-12 text-right px-3">
                                         <button
                                             type={'button'}
-                                            disabled={this.state.isLoader || setDisable}
+                                            disabled={this.state.isLoader}
                                             className=" mr15 cancel-btn"
                                             onClick={this.cancel} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type="submit"
-                                            disabled={this.state.isLoader || isViewMode || setDisable ? true : false}
+                                            disabled={this.state.isLoader || isViewMode ? true : false}
                                             className="user-btn save-btn">
 
                                             <div className={"save-icon"}></div>

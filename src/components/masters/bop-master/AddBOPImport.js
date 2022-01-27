@@ -677,7 +677,7 @@ class AddBOPImport extends Component {
           return false;
         }
       }
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true , disablePopup:false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
