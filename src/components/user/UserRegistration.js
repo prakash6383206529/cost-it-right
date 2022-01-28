@@ -5,8 +5,8 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, minLength5,minLength10, maxLength11, maxLength12, required, email,passwordValidate,validatePassword , noSpace, alphabetsOnlyForName, minLength7, maxLength18,
-  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength25 , postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6, minLength5, minLength10, maxLength11, maxLength12, required, email, passwordValidate, validatePassword, noSpace, alphabetsOnlyForName, minLength7, maxLength18,
+  maxLength10, maxLength6, vlidatePhoneNumber, checkWhiteSpaces, alphaNumeric, maxLength25, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
@@ -1235,7 +1235,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3,alphabetsOnlyForName, maxLength25, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[required, minLength3, alphabetsOnlyForName, maxLength25, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1278,7 +1278,7 @@ class UserRegistration extends Component {
                               name={"PhoneNumber"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[postiveNumber,vlidatePhoneNumber, maxLength12 ]}
+                              validate={[postiveNumber, vlidatePhoneNumber, maxLength12]}
                               component={renderText}
                               //required={true}
                               maxLength={12}
@@ -1329,7 +1329,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required, alphaNumeric , minLength3, maxLength25, checkWhiteSpaces]}
+                            validate={[required, alphaNumeric, minLength3, maxLength25, checkWhiteSpaces]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}
@@ -1345,8 +1345,8 @@ class UserRegistration extends Component {
                               placeholder="Enter"
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
-                              validate={[required, minLength6, maxLength18, validatePassword ]}
-                             
+                              validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
+
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}
                               required={true}
@@ -1425,7 +1425,7 @@ class UserRegistration extends Component {
                           name={"ZipCode"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[postiveNumber, minLength5 , maxLength5]}
+                          validate={[postiveNumber, minLength5, maxLength5]}
                           component={renderText}
                           //required={true}
                           maxLength={6}
@@ -1513,7 +1513,7 @@ class UserRegistration extends Component {
                           onChange={this.onPressUserPermission}
                         >
                           Grant User Wise Permission
-                        <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                          <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
                           <span
                             className=" before-box"
                             checked={this.state.IsShowAdditionalPermission}
@@ -1893,7 +1893,7 @@ class UserRegistration extends Component {
                         value="CANCEL"
                         className="mr15 cancel-btn">
                         <div className={"cancel-icon"}></div>
-                      CANCEL
+                        CANCEL
                       </button>
 
                       <button
