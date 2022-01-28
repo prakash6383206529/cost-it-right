@@ -6,9 +6,10 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { EMPTY_DATA } from '../../../config/constants';
-import { DRAFT } from '../../../config/constants';
+import { DRAFT,BOP_MASTER_ID } from '../../../config/constants';
 import { getBOPApprovalList } from '../actions/BoughtOutParts'
 import DayTime from '../../common/DayTimeWrapper'
+import SummaryDrawer from '../SummaryDrawer';
 
 
 
@@ -24,6 +25,7 @@ function BOPApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const { BopApprovalList } = useSelector((state) => state.boughtOutparts)
     const [loader, setLoader] = useState(true)
+    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -59,9 +61,16 @@ function BOPApproval(props) {
 
     const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
-
+        setShowApprovalSummary(true)
         // props.closeDashboard()
 
+    }
+
+
+    const closeDrawer = (e = '') => {
+        setShowApprovalSummary(false)
+        setLoader(true)
+        getTableData()
     }
 
     /**
@@ -240,6 +249,16 @@ function BOPApproval(props) {
                     </div>
                 </Col>
             </Row>
+            {
+                showApprovalSumary &&
+                <SummaryDrawer
+                    isOpen={showApprovalSumary}
+                    closeDrawer={closeDrawer}
+                    approvalData={approvalData}
+                    anchor={'bottom'}
+                    masterId={BOP_MASTER_ID}
+                />
+            }
 
         </div>
 
