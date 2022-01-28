@@ -31,7 +31,7 @@ import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { VERSION } from '../../config/constants';
-import InlineCal from "../common/Calculator/Component/Calculator";
+import { Calculator } from 'react-mac-calculator';
 
 class SideBar extends Component {
   constructor(props) {
@@ -753,8 +753,10 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
-              <button className="CalculatorIcon cr-cl-icon global-cal" type="buton" title="Calculator" onClick={this.showCalculor}></button>
-              {this.state.isShowCal && <InlineCal />}
+              <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={this.showCalculor}></button>
+              {this.state.isShowCal && <div className="calculator-wrapper">  
+              <Calculator />
+              </div>}
         </div>
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
