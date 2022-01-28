@@ -1273,7 +1273,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr>
+                    <tr className='border-right'>
                       <td>
                         <span class="d-block small-grey-text">
                           Hundi/Other Discount
@@ -1311,7 +1311,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr>
+                    <tr className='border-right'>
                       <td>
                         <span class="d-block small-grey-text"> Any Other Cost</span>
                       </td>
