@@ -22,6 +22,7 @@ import {
     GET_RM_TYPE_DATALIST_SUCCESS,
     GET_RMTYPE_SELECTLIST_SUCCESS,
     GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
+    GET_BOP_DOMESTIC_DATA_LIST,
     GET_RM_NAME_SELECTLIST,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
     GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
@@ -1113,6 +1114,7 @@ export function createRMImport(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1721,21 +1723,32 @@ export function approvalOrRejectRequestByMasterApprove(data, callback) {
  * @description getting summary of approval by approval id
  */
 
-export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
+export function getMasterApprovalSummary(tokenNo, approvalProcessId,masterId, callback) {
     return (dispatch) => {
         const request = axios.get(
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
         request
             .then((response) => {
                 if (response.data.Result) {
+
+                    if(Number(masterId)===1){
                     dispatch({
                         type: GET_RM_DOMESTIC_LIST,
                         payload: response.data.Data.ImpactedMasterDataList,
                     })
                     callback(response)
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR)
                 }
+                else if(Number(masterId)===2){
+                    dispatch({
+                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.data.Data.ImpactedMasterDataListBOP,
+                    })
+                    callback(response)
+                }
+            }              
+                 else {
+                    Toaster.error(MESSAGES.SOME_ERROR)
+                  }
             })
             .catch((error) => {
                 dispatch({ type: API_FAILURE })

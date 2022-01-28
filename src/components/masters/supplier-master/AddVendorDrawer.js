@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
-    required, upper, email, minLength7, maxLength70, maxLength80, maxLength71, maxLength3, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
+    required, upper, email, minLength7, maxLength70, maxLength80, maxLength71 , minLength3, maxLength5, vlidatePhoneNumber,maxLength12, alphaNumeric , acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
@@ -41,7 +41,7 @@ class AddVendorDrawer extends Component {
             DropdownChanged: true,
             isViewMode: this.props?.isViewMode ? true : false,
             setDisable: false
-        }
+     }
     }
 
     /**
@@ -339,7 +339,7 @@ class AddVendorDrawer extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = debounce((values) => {
+     onSubmit = debounce((values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
         const { supplierData, vendorPlantSelectList } = this.props;
 
@@ -394,7 +394,6 @@ class AddVendorDrawer extends Component {
                 this.toggleDrawer('')
                 return false
             }
-
             this.setState({ setDisable: true })
             let formData = {
                 VendorId: VendorId,
@@ -412,6 +411,7 @@ class AddVendorDrawer extends Component {
                 RemoveVendorPlants: removedVendorPlants,
                 VendorTypes: vendorArray,
             }
+            this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
@@ -438,16 +438,18 @@ class AddVendorDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
             }
+            this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
                 this.setState({ setDisable: false })
                 if (res?.data?.Result) {
                     Toaster.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
                     this.cancel(formData);
                 }
-            });
-        }
+            })
+        } 
+        },500)
 
-    }, 500)
+    
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
@@ -504,10 +506,10 @@ class AddVendorDrawer extends Component {
                                     <Col md="6">
                                         <Field
                                             label={`Vendor Name`}
-                                            name={"VendorName"}
+                                            name={"VendorName"}  
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -523,7 +525,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
+                                            validate={[required,alphaNumeric, maxLength71, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             normalize={upper}
@@ -558,7 +560,7 @@ class AddVendorDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                                    validate={[postiveNumber,vlidatePhoneNumber, maxLength12, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
                                                     maxLength={12}
@@ -572,7 +574,7 @@ class AddVendorDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={'Ext'}
-                                                    validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
                                                     // maxLength={5}
@@ -589,7 +591,7 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                            validate={[postiveNumber, vlidatePhoneNumber,maxLength12, checkWhiteSpaces]}
                                             maxLength={12}
                                             customClassName={'withBorder'}
                                             disabled={isViewMode}

@@ -436,7 +436,7 @@ function MasterSendForApproval(props) {
                                         }
 
                                         {
-                                            !isBulkUpload && String(masterId) === Number('2') &&
+                                            !isBulkUpload && (masterId) === Number('2') &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label>Effective Date<span className="asterisk-required">*</span></label>
