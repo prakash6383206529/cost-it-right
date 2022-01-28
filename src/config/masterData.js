@@ -1851,7 +1851,7 @@ export const OperationSimulation = [
     { label: "CostingHead", value: "IsVendor" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
-    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "DestinationPlant", value: "Plants" },
     { label: "VendorName", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
     { label: "Rate", value: "Rate" },
