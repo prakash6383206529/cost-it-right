@@ -902,7 +902,7 @@ const CostingSummaryTable = (props) => {
                                 {/* {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 0 && data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
+                                {data.CostingHeading !== VARIANCE ? data.netRMCostView && (data.netRMCostView.length > 1 || data.IsAssemblyCosting === true) ? 'Multiple RM' : checkForDecimalAndNull(data.netRMCostView[0]?.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''}
                               </span>
                             </td>
                           )
