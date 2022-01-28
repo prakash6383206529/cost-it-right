@@ -878,7 +878,7 @@ export const API = {
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
   getExchangeCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-exchange-rate-costings`,
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
-  getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`, 
+  getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment-and-operation`,
   getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-and-operation-impacted-simulation-costings`,
   runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-selected-surface-treatment-and-operation-costing`,
@@ -1775,4 +1775,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.119";
+export const VERSION = "V1.1.119.1";
