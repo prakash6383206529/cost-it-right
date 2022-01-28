@@ -78,7 +78,7 @@ function ViewRM(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-
+        className='view-rm-cost'
       >
         <Container>
           <div className={"drawer-wrapper drawer-1500px"}>
@@ -119,7 +119,7 @@ function ViewRM(props) {
                     return (
                       <tr key={index}>
                         {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        <td>{item.RMName}</td>
+                        <td><div className='text-overflow' title={item.RMName}>{item.RMName}</div></td>
                         <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -137,7 +137,8 @@ function ViewRM(props) {
                         <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>
-                          {item?.Remark ? item.Remark : "-"}
+                        <div className='text-overflow' title={item.Remark}>
+                          {item?.Remark ? item.Remark : "-"}</div>
                         </td>
 
                       </tr>

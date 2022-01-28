@@ -206,6 +206,7 @@ function OperationSTSimulation(props) {
 
         let Count = 0
         let tempData = list
+        console.log('list: ', list);
         let arr = []
         tempData && tempData.map((li, index) => {
 
@@ -227,7 +228,7 @@ function OperationSTSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
+        obj.CostingHead = list[0].CostingHead === true ? VBC : ZBC
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
 
