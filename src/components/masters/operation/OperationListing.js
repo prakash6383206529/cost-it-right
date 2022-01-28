@@ -58,7 +58,7 @@ class OperationListing extends Component {
             selectedRowData: [],
             showPopup: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
         }
     }
 
@@ -68,7 +68,7 @@ class OperationListing extends Component {
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
-     
+
     }
 
 
@@ -112,14 +112,14 @@ class OperationListing extends Component {
     * @description Get user list data
     */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null) => {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
         }
-        this.props.getOperationsDataList(filterData,this.props.isOperationST, res => {
+        this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
             this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
@@ -144,7 +144,7 @@ class OperationListing extends Component {
                 } else {
                     this.setState({ tableData: Data })
                 }
-                
+
                 // if (this.props.isSimulation) {
                 //     this.props.apply(Data)
                 // }
@@ -503,7 +503,7 @@ class OperationListing extends Component {
     * @description Renders the component
     */
     render() {
-        const {  isSimulation } = this.props;
+        const { isSimulation } = this.props;
         const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, tableData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
@@ -516,7 +516,7 @@ class OperationListing extends Component {
             )
         }
         const onRowSelect = () => {
-            const {isSimulation} = this.props
+            const { isSimulation } = this.props
             var selectedRows = this.state.gridApi.getSelectedRows();
             if (isSimulation) {
                 let length = this.state.gridApi.getSelectedRows().length
@@ -531,11 +531,26 @@ class OperationListing extends Component {
             this.state.gridApi.deselectAll()
         }
 
+        const isFirstColumn = (params) => {
+            if (isSimulation) {
+
+                var displayedColumns = params.columnApi.getAllDisplayedColumns();
+                var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+                return thisIsFirstColumn;
+            } else {
+                return false
+            }
+
+        }
 
         const defaultColDef = {
             resizable: true,
             filter: true,
             sortable: true,
+            headerCheckboxSelectionFilteredOnly: true,
+            headerCheckboxSelection: isFirstColumn,
+            checkboxSelection: isFirstColumn
 
         };
 
@@ -640,6 +655,9 @@ class OperationListing extends Component {
                                     imagClass: 'imagClass'
                                 }}
                                 frameworkComponents={frameworkComponents}
+                                rowSelection={'multiple'}
+                                onSelectionChanged={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
                             >
 
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
@@ -651,7 +669,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                {!this.props.isSimulation&& <AgGridColumn field="OperationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
