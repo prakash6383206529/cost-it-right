@@ -464,7 +464,7 @@ function RMSimulation(props) {
                                             <div className="refresh mr-0"></div>
                                         </button>
                                         </div>
-                                        {list && list.map( item=> {
+                                        {/* {list && list.map( item=> {
                                             return <>
                                              <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
                                                 <div className='d-flex pl-3'>
@@ -478,7 +478,8 @@ function RMSimulation(props) {
                                              </div>
                                             </>
                                                
-                                        })}
+                                        })} */}
+                                        {/* <------------Don't remove the code it will use in future----> */}
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
