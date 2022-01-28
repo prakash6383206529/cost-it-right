@@ -1346,7 +1346,7 @@ class UserRegistration extends Component {
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
                               validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
-
+                             
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}
                               required={true}
