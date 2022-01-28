@@ -64,7 +64,7 @@ function VerifySimulation(props) {
 
     const verifyCostingList = (plantId = '', rawMatrialId = '') => {
         const plant = filteredRMData.plantId && filteredRMData.plantId.value ? filteredRMData.plantId.value : null
-     
+
         switch (Number(selectedMasterForSimulation.value)) {
             case Number(RMDOMESTIC):
                 dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
@@ -114,6 +114,7 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
                         // setMasterId(data.SimulationtechnologyId)
                         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
@@ -132,6 +133,7 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
                         // setMasterId(data.SimulationtechnologyId)
                         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
