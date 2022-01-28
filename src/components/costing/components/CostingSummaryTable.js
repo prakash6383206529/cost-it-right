@@ -1214,7 +1214,7 @@ const CostingSummaryTable = (props) => {
                               </div>
                               <div className="d-flex">
                                 <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.toolApplicabilityValue.toolTitle : ''}</span> &nbsp;{' '}
-                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.toolApplicabilityValue.toolValue : ''}</span>
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolApplicabilityValue.toolValue,initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}
