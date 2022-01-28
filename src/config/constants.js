@@ -922,7 +922,7 @@ export const API = {
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
-  getSimualtionInsightReport:`${BASE_URL}/reports/get-simulation-insights`
+  getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`
 
 }
 
@@ -1499,7 +1499,7 @@ export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
-export const GET_SIMULATION_INSIGHT_REPORT='GET_SIMULATION_INSIGHT_REPORT'
+export const GET_SIMULATION_INSIGHT_REPORT = 'GET_SIMULATION_INSIGHT_REPORT'
 
 export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 
