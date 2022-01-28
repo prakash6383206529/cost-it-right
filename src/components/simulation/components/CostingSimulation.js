@@ -934,8 +934,6 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {isSurfaceTreatment && <>
-                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentRate" headerName='Old Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentRate" headerName='New Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldTranspotationCost" headerName='Extra Cost' ></AgGridColumn>

@@ -134,10 +134,24 @@ function Simulation(props) {
 
         switch (Number(master.value)) {
             case Number(SURFACETREATMENT):
-                temp = TempData
+                temp = TempData && TempData.map((item) => {
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
                 break;
             case Number(OPERATIONS):
-                temp = TempData
+                temp = TempData && TempData.map((item) => {
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
                 break;
             case Number(MACHINERATE):
                 temp = TempData
