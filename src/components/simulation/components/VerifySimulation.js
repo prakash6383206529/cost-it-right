@@ -114,6 +114,7 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
                         // setMasterId(data.SimulationtechnologyId)
                         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
@@ -132,6 +133,7 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
                         // setMasterId(data.SimulationtechnologyId)
                         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)

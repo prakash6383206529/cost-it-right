@@ -68,13 +68,6 @@ class OperationListing extends Component {
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
-        if (Number(this.props.isOperationST) === SURFACETREATMENT) {
-            this.setState({ tableData: this.props.operationSurfaceTreatmentList })
-        } else if (Number(this.props.isOperationST) === OPERATIONS) {
-            this.setState({ tableData: this.props.operationIndividualList })
-        } else {
-            this.setState({ tableData: this.props.operationList })
-        }
     }
 
 
@@ -131,9 +124,26 @@ class OperationListing extends Component {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
+                    let surfaceTreatmentOperationData = []
+                    Data && Data.map(item => {
+                        if (item.IsSurfaceTreatmentOperation === true) {
+                            surfaceTreatmentOperationData.push(item)
+                        }
+                    })
+                    this.setState({ tableData: surfaceTreatmentOperationData })
+                } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
+                    let OperationData = []
+                    Data && Data.map(item => {
+                        if (item.IsSurfaceTreatmentOperation === false) {
+                            OperationData.push(item)
+                        }
+                    })
+                    this.setState({ tableData: OperationData })
+                } else {
+                    this.setState({ tableData: Data })
+                }
+
                 // if (this.props.isSimulation) {
                 //     this.props.apply(Data)
                 // }
