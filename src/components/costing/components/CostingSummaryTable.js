@@ -548,14 +548,14 @@ const CostingSummaryTable = (props) => {
           obj.revisedPrice = viewCostingData[index].poPrice
           obj.nPOPriceWithCurrency = viewCostingData[index].nPOPriceWithCurrency
           obj.currencyRate = viewCostingData[index].currency.currencyValue
-          obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
+          obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].oldPoPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
           let consumptionQty;
           let remainingQty;
           let annualImpact;
           let yearImpact;
           let date = viewCostingData[index].effectiveDate
           if (viewCostingData[index].effectiveDate) {
-            let variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
+            let variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].oldPoPrice : 0) - Number(viewCostingData[index].poPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
             let month = new Date(date).getMonth()
             let year = ''
             let sequence = SEQUENCE_OF_MONTH[month]
