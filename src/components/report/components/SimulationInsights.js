@@ -1,38 +1,108 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import {  AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import {ReportMaster, EMPTY_DATA } from '../../../config/constants';
+import { ReportMaster, EMPTY_DATA } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getSimulationInsightReport } from '../actions/SimulationInsight';
 import { useDispatch } from 'react-redux';
 
 
 const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationInsights(props) {
-  
+
   const dispatch = useDispatch()
-  const [simulationInsightsReport,setSimulationInsight] = useState([])
-  const [tableHeader,setTableHeader] = useState([])
+  const [simulationInsightsReport, setSimulationInsight] = useState([])
+  const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [loader,setLoader] = useState(false)
+  const [loader, setLoader] = useState(true)
+  const [simulationInsightDownloadExcel, setSimulationInsightDownloadExcel] = useState([])
+  
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoader(true)
-   dispatch(getSimulationInsightReport(res=>{
-     console.log('res: ', res);
-    const data = res.data.DataList
-    console.log('data: ', data);
-    setSimulationInsight(data[0].Data)
-    setTableHeader(data[0].TableHeads)
-    setLoader(false)
-   }))
-  },[])
+    dispatch(getSimulationInsightReport(res => {  
+      const data = res.data.DataList
+      setSimulationInsight(data[0].Data)
+
+      let arr = [];
+      let simulationInsightExcel =[];
+
+      data[0].TableHeads && data[0].TableHeads.map(ele => {
+        if (ele.field === "DisplayStatus") {
+          let obj = {
+            field: "DisplayStatus",
+            headerName: "Display Status",
+            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>
+            //cellStyle: { background: "green" },    // DO NOT DELETE THIS
+            //cellClass: ["Draft"]                       // DO NOT DELETE THIS
+          }
+
+          let obj1 = {
+            label :ele.headerName,
+            value: ele.field 
+          }
+          arr.push(obj)
+          simulationInsightExcel.push(obj1)
+
+        } else if(ele.field==="SimulationStatus") {     
+          let obj = {
+            field: "SimulationStatus",
+            headerName: "Simulation Status",
+            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>
+            //cellStyle: { background: "green" },      // DO NOT DELETE THIS
+            //cellClass: ["Draft"]                     // DO NOT DELETE THIS
+          }
+
+          let obj1 = {
+            label :ele.headerName,
+            value: ele.field 
+          }
+          arr.push(obj) 
+          simulationInsightExcel.push(obj1)
+        }     
+        else {
+          let obj1 = {
+            label :ele.headerName,
+            value: ele.field 
+          }
+          arr.push(ele)
+          simulationInsightExcel.push(obj1)
+
+        }
+        return null;
+      })
+
+      setTableHeaderColumnDefs(arr)
+      setSimulationInsightDownloadExcel(simulationInsightExcel)
+
+      setLoader(false)
+    
+    }))
+  }, [])
+
+
+  const onBtExport = () => {
+    
+    return returnExcelColumn(simulationInsightDownloadExcel, simulationInsightsReport)
+};
+
+
+const returnExcelColumn = (data = [], TempData) => {
+  
+  return (
+
+      <ExcelSheet data={TempData} name={'Simulation Insights'}>
+          {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
+}
 
 
   const onGridReady = (params) => {
@@ -43,6 +113,7 @@ function SimulationInsights(props) {
   };
   const gridOptions = {
     clearSearch: true,
+    enableFilter: true,
     noDataText: (simulationInsightsReport === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
 
   };
@@ -51,11 +122,8 @@ function SimulationInsights(props) {
     resizable: true,
     filter: true,
     sortable: true,
+    floatingFilter: true,
   };
-  const resetState = () => {
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
-}
   const frameworkComponents = {
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
@@ -67,28 +135,26 @@ function SimulationInsights(props) {
 
   const onFilterTextBoxChanged = (e) => {
     gridApi.setQuickFilter(e.target.value);
-}
+  }
 
-    return (
-      // <div>{`hello`}</div>
-        <div className="container-fluid report-listing-page ag-grid-react">
-                <h1 className="mb-0">Report</h1>
-                <Row className="pt-4 blue-before ">
-                    <Col md="6" lg="6" className="search-user-block mb-3">
-                        <div className="d-flex justify-content-end bd-highlight excel-btn w100">
-                            <div>
-                               <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
-                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-                              
-                                </ExcelFile>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-            <div className="ag-grid-react">
-        <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsightsReport && simulationInsightsReport?.length <=0 ?"overlay-contain": ""}`}>
+  return (
+    // <div>{`hello`}</div>
+    <div className="container-fluid report-listing-page ag-grid-react">
+      {loader && <LoaderCustom />}
+      <h1 className="mb-0">Report</h1>
+      <Row className="pt-4 blue-before ">
+        <Col md="6" lg="6" className="search-user-block mb-3">
+          <div className="d-flex justify-content-end bd-highlight excel-btn w100">
+            <div>
+              <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+              {onBtExport()}          
+              </ExcelFile>
+            </div>
+          </div>
+        </Col>
+      </Row>
+      <div className="ag-grid-react">
+        <div className={`ag-grid-wrapper height-width-wrapper ${simulationInsightsReport && simulationInsightsReport?.length <= 0 ? "overlay-contain" : ""}`}>
           <div className="ag-grid-header">
             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
           </div>
@@ -98,8 +164,8 @@ function SimulationInsights(props) {
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout='autoHeight'
-              columnDefs={tableHeader}
-              rowData={simulationInsightsReport}              
+              columnDefs={tableHeaderColumnDefs}
+              rowData={simulationInsightsReport}
               pagination={true}
               paginationPageSize={10}
               onGridReady={onGridReady}
@@ -114,7 +180,7 @@ function SimulationInsights(props) {
               suppressRowClickSelection={true}
               rowSelection={'multiple'}
             >
-           
+
             </AgGridReact>
             <div className="paging-container d-inline-block float-right">
               <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -126,8 +192,8 @@ function SimulationInsights(props) {
           </div>
         </div>
       </div>
-        </div>
-    );
+    </div>
+  );
 }
 
 
