@@ -68,7 +68,7 @@ class OperationListing extends Component {
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
-     
+
     }
 
 
@@ -119,7 +119,7 @@ class OperationListing extends Component {
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
         }
-        this.props.getOperationsDataList(filterData,this.props.isOperationST, res => {
+        this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
             this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
@@ -144,7 +144,7 @@ class OperationListing extends Component {
                 } else {
                     this.setState({ tableData: Data })
                 }
-                
+
                 // if (this.props.isSimulation) {
                 //     this.props.apply(Data)
                 // }

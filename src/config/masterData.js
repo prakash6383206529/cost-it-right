@@ -1836,28 +1836,31 @@ export const RMImportSimulation = [
 
 export const SurfaceTreatmentSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "CostingHead" },
+    { label: "CostingHead", value: "IsVendor" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
-    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "DestinationPlant", value: "Plants" },
     { label: "VendorName", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
     { label: "Rate", value: "Rate" },
     { label: "NewRate", value: "NewRate" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "OperationId", value: "OperationId" },
 ]
 
 export const OperationSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "CostingHead" },
+    { label: "CostingHead", value: "IsVendor" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
-    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "DestinationPlant", value: "Plants" },
     { label: "VendorName", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
     { label: "Rate", value: "Rate" },
     { label: "NewRate", value: "NewRate" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "OperationId", value: "OperationId" },
+
 ]
 
 export const MachineRateSimulation = [

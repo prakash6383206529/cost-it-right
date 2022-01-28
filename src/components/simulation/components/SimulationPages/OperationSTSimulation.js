@@ -34,6 +34,7 @@ function OperationSTSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tableData, setTableData] = useState([])
+    const [isDisable, setIsDisable] = useState(false)
 
 
     const { register, control, setValue, formState: { errors }, } = useForm({
@@ -65,12 +66,13 @@ function OperationSTSimulation(props) {
     const oldCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         const value = beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.OldOperationRate) :
+                        row.OldOperationRate :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
                 }
 
@@ -222,6 +224,7 @@ function OperationSTSimulation(props) {
             Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
             return false
         }
+        setIsDisable(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
@@ -231,6 +234,7 @@ function OperationSTSimulation(props) {
 
         let tempArr = []
         arr && arr.map(item => {
+
             let tempObj = {}
             tempObj.OperationId = item.OperationId
             tempObj.OldOperationRate = Number(item.Rate)
@@ -241,12 +245,12 @@ function OperationSTSimulation(props) {
         })
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
-            if (res.data.Result) {
+            setIsDisable(false)
+            if (res?.data?.Result) {
                 setToken(res.data.Identity)
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)
     }, 500);
 
     return (
@@ -338,7 +342,7 @@ function OperationSTSimulation(props) {
                                                 <AgGridColumn field="OperationName" editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
                                                 {!isImpactedMaster && <>
-                                                    <AgGridColumn field="Plants" editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
+                                                    <AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant" minWidth={190}></AgGridColumn>
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
@@ -365,11 +369,11 @@ function OperationSTSimulation(props) {
                                 !isImpactedMaster &&
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn">
-                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel}>
+                                        <button type={"button"} className="mr15 cancel-btn" onClick={cancel} disabled={isDisable}>
                                             <div className={"cancel-icon"}></div>
                                             {"CANCEL"}
                                         </button>
-                                        <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn">
+                                        <button onClick={verifySimulation} type="button" className="user-btn mr5 save-btn" disabled={isDisable}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"Verify"}
