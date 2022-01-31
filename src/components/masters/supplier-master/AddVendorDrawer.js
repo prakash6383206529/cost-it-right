@@ -560,7 +560,7 @@ class AddVendorDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber,vlidatePhoneNumber, maxLength12, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength12, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
                                                     maxLength={12}
