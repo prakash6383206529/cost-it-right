@@ -9,6 +9,7 @@ import { getUOMSelectList } from '../../../../../actions/Common'
 
 function TransportationCost(props) {
   const { data, item } = props;
+  console.log('data: ', data);
 
   const defaultValues = {
     UOM: data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [],
@@ -20,32 +21,49 @@ function TransportationCost(props) {
   const { register, control, formState: { errors }, setValue, getValues, handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: defaultValues,
+    // defaultValues: defaultValues,
   });
 
-  const [uom, setUOM] = useState(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
+  const [uom, setUOM] = useState([])
   const [Quantity, setQuantity] = useState('')
   const [Rate, setRate] = useState('')
   const [OldTransportObj, setOldTransportObj] = useState(data)
-  const [TransportationType, setTransportationType] = useState(data && data.UOM !== undefined ? data.UOM : '')
+  const [TransportationType, setTransportationType] = useState()
+  const [transportCost,setTransportCost] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
 
-  const fieldValues = useWatch({
-    control,
-    name: ['TransportationCost'],
-  });
+  // const fieldValues = useWatch({
+  //   control,
+  //   name: ['TransportationCost'],
+  // });
+
+  useEffect(()=>{
+    
+    if(props?.data && Object.keys(props.data).length >0){
+console.log(props.data,"DATA");
+     setValue('UOM',data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [])
+     setValue('Quantity',data && data.Quantity !== undefined ? data.Quantity : 0)
+     setValue('Rate', data && data.Rate !== undefined ? data.Rate : 0)
+  setValue('TransportationCost',data && data.TransportationCost !== undefined ? checkForDecimalAndNull(data.TransportationCost,initialConfiguration.NoOfDecimalForPrice) : 0)
+  // setRate(data && data.Rate !== undefined ? data.Rate : 0)
+  // setUOM(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
+  // setQuantity(data && data.Quantity !== undefined ? data.Quantity : 0)
+  setTransportationType(data && data.UOM !== undefined ? data.UOM : '')
+  // setTransportCost(data && data.TransportationCost !== undefined ? data.TransportationCost : 0)
+    }
+  },[props.data])
 
   useEffect(() => {
     let tempObj = {
       TransporationDetailId: '',
-      UOM: uom ? uom.label : '',
-      UOMId: uom ? uom.value : '',
-      Rate: Rate,
-      Quantity: Quantity,
-      TransportationCost: getValues('TransportationCost'),
+      UOM: getValues('UOM') ? getValues('UOM').label : '',
+      UOMId: getValues('UOM') ? getValues('UOM').value: '',
+      Rate: getValues('Rate'),
+      Quantity: getValues('Quantity'),
+      TransportationCost: transportCost,
     }
     const Params = {
       index: props.index,
@@ -59,7 +77,7 @@ function TransportationCost(props) {
       props.setTransportationCost(tempObj, Params)
     }
 
-  }, [uom, Rate, Quantity, fieldValues]);
+  }, [uom, Rate, Quantity,transportCost]);
 
   useEffect(() => {
     dispatch(getUOMSelectList(() => { }))
@@ -73,11 +91,12 @@ function TransportationCost(props) {
   */
   const handleUOMChange = (newValue) => {
     if (newValue && newValue !== '') {
-      setTransportationType(newValue.value)
-      setUOM(newValue)
       setValue('Rate', '')
       setValue('Quantity', '')
       setValue('TransportationCost', '')
+      setTransportCost('')
+      setTransportationType(newValue.value)
+      setUOM(newValue)
     } else {
       setUOM([])
       setTransportationType('')
@@ -87,15 +106,21 @@ function TransportationCost(props) {
   const handleRateChange = (event) => {
     if (!isNaN(event.target.value)) {
       const Quantity = getValues('Quantity')
-      setRate(event.target.value)
+    
       if (TransportationType === 'Percentage') {
+        setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
+        setRate(event.target.value)
       } else {
         if (Quantity !== '') {
           const cost = Quantity * event.target.value;
+          setTransportCost(checkForNull(cost))
           setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
+          setRate(event.target.value)
         } else {
+          setTransportCost(0)
           setValue('TransportationCost', 0)
+          setRate(event.target.value)
         }
       }
     } else {
@@ -106,19 +131,32 @@ function TransportationCost(props) {
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
       const Rate = getValues('Rate')
-      setQuantity(event.target.value);
+   
 
       if (Rate !== '') {
         const cost = Rate * event.target.value;
+        setTransportCost(cost)
         setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
+        setQuantity(event.target.value);
       } else {
+        setTransportCost(0)
         setValue('TransportationCost', 0);
+        setQuantity(event.target.value);
       }
     } else {
       Toaster.warning('Please enter valid number.')
     }
   }
 
+  const handleTransportChange=(event)=>{
+    if(!isNaN(event.target.value)){
+      setTransportCost(event.target.value)
+        setValue('TransportationCost',event.target.value)
+    }
+    else {
+      Toaster.warning('Please enter valid number.')
+    }
+  }
 
   /**
   * @method renderListing
@@ -263,7 +301,7 @@ function TransportationCost(props) {
                   customClassName={'withBorder'}
                   handleChange={(e) => {
                     e.preventDefault()
-                    //handleQuantityChange(e)
+                    handleTransportChange(e)
                   }}
                   errors={errors && errors.TransportationCost}
                   disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') ? true : false}

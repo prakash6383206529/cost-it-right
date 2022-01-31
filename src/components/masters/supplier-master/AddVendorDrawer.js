@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
-    required, upper, email, minLength7, maxLength70, maxLength80, maxLength71 , maxLength7, maxLength5, vlidatePhoneNumber,maxLength12, alphaNumeric , acceptAllExceptSingleSpecialCharacter,
+    required, upper, email, minLength7, maxLength70, maxLength80,minLength10, maxLength71 , maxLength5, maxLength12, alphaNumeric , acceptAllExceptSingleSpecialCharacter,
     maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
@@ -560,7 +560,7 @@ class AddVendorDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber,maxLength7, maxLength12, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
                                                     maxLength={12}
