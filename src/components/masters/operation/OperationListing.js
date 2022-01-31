@@ -527,10 +527,6 @@ class OperationListing extends Component {
 
         }
 
-        const onFloatingFilterChanged = (p) => {
-            this.state.gridApi.deselectAll()
-        }
-
         const isFirstColumn = (params) => {
             if (isSimulation) {
 
@@ -657,7 +653,6 @@ class OperationListing extends Component {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
-                                onFilterModified={onFloatingFilterChanged}
                             >
 
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
