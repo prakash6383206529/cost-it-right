@@ -1369,7 +1369,7 @@ class AddRMImport extends Component {
                                      
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
-                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} disabled={this.state.isEditFlag || isViewFlag} cacheOptions defaultOptions loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} />
+                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                            
                           </Col>
