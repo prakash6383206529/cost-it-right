@@ -224,10 +224,11 @@ function OperationSTSimulation(props) {
             return false
         }
         setIsDisable(true)
+        console.log('list[0].CostingHead: ', list[0].CostingHead);
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
         obj.LoggedInUserId = loggedInUserId()
-        obj.CostingHead = list[0].CostingHead === 'Vendor Based' ? VBC : ZBC
+        obj.CostingHead = list[0].CostingHead === true ? VBC : ZBC
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
 
