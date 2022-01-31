@@ -19,6 +19,8 @@ import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddProfit');
 
@@ -710,7 +712,26 @@ class AddProfit extends Component {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
       isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
-
+      const filterList = (inputValue) => {
+        let tempArr = []
+  
+        tempArr = this.renderListing("VendorNameList").filter(i =>
+          i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        );
+  
+        if (tempArr.length <= 100) {
+          return tempArr
+        } else {
+          return tempArr.slice(0, 100)
+        }
+      };
+  
+      const promiseOptions = inputValue =>
+        new Promise(resolve => {
+          resolve(filterList(inputValue));
+  
+  
+        });
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -807,27 +828,10 @@ class AddProfit extends Component {
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <>
                             <Col md="4">
-                              <Field
-                                name="vendorName"
-                                type="text"
-                                label={"Vendor Name"}
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("VendorNameList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.vendorName == null ||
-                                    this.state.vendorName.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleVendorName
-                                }
-                                valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : false}
-                              />
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </Col>
                             <Col md="4" >
                               <Field

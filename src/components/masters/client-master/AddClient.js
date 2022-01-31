@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter,
+    required, email, minLength7, maxLength70,minLength10, acceptAllExceptSingleSpecialCharacter,
     maxLength80, maxLength20, postiveNumber, maxLength10, maxLength5,maxLength12, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, } from "../../layout/FormInputs";
@@ -335,7 +335,7 @@ class AddClient extends Component {
                                                             name={"PhoneNumber"}
                                                             type="text"
                                                             placeholder={''}
-                                                            validate={[required, postiveNumber, maxLength12, checkWhiteSpaces]}
+                                                            validate={[required, postiveNumber,minLength7, maxLength12, checkWhiteSpaces]}
                                                             component={renderText}
                                                             required={true}
                                                             // maxLength={10}
@@ -370,7 +370,7 @@ class AddClient extends Component {
                                                     placeholder={''}
                                                     component={renderText}
                                                     isDisabled={false}
-                                                    validate={[required, postiveNumber, maxLength12, checkWhiteSpaces]}
+                                                    validate={[required, postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
                                                     required={true}
                                                     // maxLength={10}
                                                     customClassName={'withBorder'}
