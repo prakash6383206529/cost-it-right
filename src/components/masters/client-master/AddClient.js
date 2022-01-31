@@ -336,7 +336,7 @@ class AddClient extends Component {
                                                             name={"PhoneNumber"}
                                                             type="text"
                                                             placeholder={''}
-                                                            validate={[required, postiveNumber,minLength7, maxLength12, checkWhiteSpaces]}
+                                                            validate={[required, postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
                                                             component={renderText}
                                                             required={true}
                                                             // maxLength={10}
