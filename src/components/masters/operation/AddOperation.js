@@ -37,6 +37,7 @@ class AddOperation extends Component {
       IsVendor: false,
       selectedTechnology: [],
       selectedPlants: [],
+      isVendorNameNotSelected:false,
 
       vendorName: [],
       selectedVendorPlants: [],
@@ -192,7 +193,7 @@ class AddOperation extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected:false, selectedVendorPlants: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
@@ -515,6 +516,12 @@ class AddOperation extends Component {
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     let technologyArray = [];
     selectedTechnology && selectedTechnology.map((item) => {
       technologyArray.push({ Technology: item.Text, TechnologyId: item.Value })
@@ -792,7 +799,7 @@ class AddOperation extends Component {
                       )}
                       {this.state.IsVendor && (
                        <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                        <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                        <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                         <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                         {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                          

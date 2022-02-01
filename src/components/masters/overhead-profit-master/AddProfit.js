@@ -39,6 +39,7 @@ class AddProfit extends Component {
       isEditFlag: false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected:false,
 
       ModelType: [],
       vendorName: [],
@@ -240,7 +241,7 @@ class AddProfit extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected:false });
     } else {
       this.setState({ vendorName: [] })
     }
@@ -573,6 +574,12 @@ class AddProfit extends Component {
       isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     if (isEditFlag) {
 
 
@@ -808,7 +815,7 @@ class AddProfit extends Component {
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <Col md="4">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                              <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                              
