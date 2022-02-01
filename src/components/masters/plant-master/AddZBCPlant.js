@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces,alphaNumeric,vlidatePhoneNumber,maxLength71,minLength3,maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces,minLength10,alphaNumeric,vlidatePhoneNumber,maxLength71,maxLength7 ,maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -407,9 +407,9 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber, maxLength12, checkWhiteSpaces]}
+                          validate={[postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
                           component={renderText}
-                          maxLength={10}
+                          maxLength={12}
                           className=""
                           customClassName={"withBorder"}
                           disabled={isViewMode}
