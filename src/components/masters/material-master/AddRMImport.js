@@ -66,6 +66,7 @@ class AddRMImport extends Component {
       VendorCode: '',
       selectedVendorPlants: [],
       vendorLocation: [],
+      isVendorNameNotSelected:false,
 
       HasDifferentSource: false,
       sourceLocation: [],
@@ -250,7 +251,7 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue,isVendorNameNotSelected:false, selectedVendorPlants: [], vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -942,11 +943,21 @@ class AddRMImport extends Component {
 
     const { initialConfiguration } = this.props;
     this.setState({ setDisable: true, disablePopup:false})
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+
+    this.setState({ isVendorNameNotSelected: false })
+
     let plantArray = [];
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
       return plantArray;
     })
+
+
 
     let vendorPlantArray = [];
     selectedVendorPlants && selectedVendorPlants.map((item) => {

@@ -965,6 +965,12 @@ class AddRMDomestic extends Component {
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
     const { initialConfiguration } = this.props
     this.setState({ setDisable: true, disablePopup:false})
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -1441,6 +1447,7 @@ class AddRMDomestic extends Component {
                                 mendatory={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
+                                
                               />
                             </Col>
                           )}
