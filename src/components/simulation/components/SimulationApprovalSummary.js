@@ -7,7 +7,7 @@ import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment } from '../actions/Simulation'
 import Dropzone from 'react-dropzone-uploader';
@@ -363,13 +363,12 @@ function SimulationApprovalSummary(props) {
             case RMIMPORT:
                 return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
             case SURFACETREATMENT:
-                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
-
+            case OPERATIONS:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADST, dataForDownload.length > 0 ? dataForDownload : [])
             default:
                 break;
         }
     }
-
 
     const returnExcelColumn = (data = [], TempData) => {
 
@@ -892,7 +891,6 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
-                                                               
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                                                                 {
@@ -988,7 +986,6 @@ function SimulationApprovalSummary(props) {
                                     vendorIdState={costingList[0]?.VendorId}
                                     impactType={'AssemblySummary'}
                                     isPartImpactAssembly={false}
-                                    isImpactDrawer={false}
                                 />}
                             </div>
                         </>}
@@ -1110,7 +1107,6 @@ function SimulationApprovalSummary(props) {
                                     vendorIdState={costingList[0]?.VendorId}
                                     isPartImpactAssembly={true}
                                     impactType={'AssemblySummary'}
-                                    isImpactDrawer={false}
                                 />
                             }
                             {/* {lastRevisionDataAccordian &&
