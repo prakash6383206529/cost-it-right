@@ -418,7 +418,7 @@ class AddInterestRate extends Component {
                     </Row>
                     <Row>
                       {this.state.IsVendor && (
-                        <Col md="3">
+                        <Col md="3" className='mb-4'>
 
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
