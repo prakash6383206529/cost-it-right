@@ -1044,6 +1044,7 @@ function SimulationApprovalSummary(props) {
                                     vendorIdState={costingList[0]?.VendorId}
                                     impactType={'AssemblySummary'}
                                     isPartImpactAssembly={false}
+                                    isImpactDrawer={false}
                                 />}
                             </div>
                         </>}
@@ -1165,6 +1166,7 @@ function SimulationApprovalSummary(props) {
                                     vendorIdState={costingList[0]?.VendorId}
                                     isPartImpactAssembly={true}
                                     impactType={'AssemblySummary'}
+                                    isImpactDrawer={false}
                                 />
                             }
                             {/* {lastRevisionDataAccordian &&
