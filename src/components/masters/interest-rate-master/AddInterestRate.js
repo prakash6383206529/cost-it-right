@@ -35,6 +35,8 @@ class AddInterestRate extends Component {
       PaymentTermsApplicability: [],
 
       isEditFlag: false,
+      isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected:false,
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
@@ -135,7 +137,7 @@ class AddInterestRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected:false});
     } else {
       this.setState({ vendorName: [], })
     }
@@ -274,6 +276,13 @@ class AddInterestRate extends Component {
 
     const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged, plant } = this.state;
     const userDetail = userDetails()
+
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
