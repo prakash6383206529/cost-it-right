@@ -59,6 +59,7 @@ class AddBOPImport extends Component {
       selectedPlants: [],
 
       isOpenVendor: false,
+      isVendorNameNotSelected:false,
 
       vendorName: [],
       selectedVendorPlants: [],
@@ -392,7 +393,7 @@ class AddBOPImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [], }, () => {
+      this.setState({ vendorName: newValue,  isVendorNameNotSelected:false, selectedVendorPlants: [], }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
@@ -655,6 +656,13 @@ class AddBOPImport extends Component {
   onSubmit = debounce((values) => {
     const { IsVendor, BOPCategory, selectedPlants, vendorName, currency,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements } = this.state;
+
+      if (vendorName.length <= 0) {
+        this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
+      this.setState({ isVendorNameNotSelected: false })
+
 
     let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
