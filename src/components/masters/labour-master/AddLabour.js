@@ -19,6 +19,8 @@ import NoContentFound from '../../common/NoContentFound'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
 import { debounce } from 'lodash'
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddLabour')
 
@@ -30,6 +32,7 @@ class AddLabour extends Component {
       isEditFlag: false,
       LabourDetailId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected:false,
 
       IsEmployeContractual: true,
       IsVendor: false,
@@ -217,7 +220,7 @@ class AddLabour extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [] })
+      this.setState({ vendorName: newValue, selectedVendorPlants: [],isVendorNameNotSelected:false })
     } else {
       this.setState({ vendorName: [], selectedVendorPlants: [] })
     }
@@ -533,6 +536,12 @@ class AddLabour extends Component {
     const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
     const userDetail = userDetails()
 
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     if (gridTable && gridTable.length === 0) {
       Toaster.warning('Labour Rate entry required.')
       return false
@@ -607,6 +616,27 @@ class AddLabour extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenMachineType, isDisable, isViewMode, setDisable } = this.state;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -664,21 +694,11 @@ class AddLabour extends Component {
                       </Col>
                       {this.state.IsEmployeContractual && (
                         <Col md="4">
-                          <div className="form-group">
-                            <Field
-                              name="VendorName"
-                              type="text"
-                              label="Vendor Name"
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("VendorNameList")}
-                              validate={
-                                this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []} required={true}
-                              handleChangeDescription={this.handleVendorName}
-                              valueDescription={this.state.vendorName}
-                              disabled={isEditFlag ? true : isDisable ? true : false}
-                            />
-                          </div>
+                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                           <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : isDisable ? true : false} />
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                          
                         </Col>
                       )}
                       <Col md="4">

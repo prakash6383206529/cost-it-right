@@ -8,7 +8,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, PENDING } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
@@ -268,7 +268,14 @@ function RMApproval(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
+
+        if(props?.isApproval){
+            gridApi.paginationSetPageSize(Number(newPageSize));  // APPLIED THIS IF ELSE CONDITION JUST BECAUSE IN DASHBOARD INCREASING PAGE DROPDOWN WAS NOT WORKING
+
+        }
+        else {
         gridApi.paginationSetPageSize(Number(value));
+        }
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -296,8 +303,13 @@ function RMApproval(props) {
 
     };
 
-    const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === DRAFT : false
-
+    const isRowSelectable = (rowNode) => {
+        if (rowNode?.data?.Status === DRAFT || rowNode?.data?.Status === PENDING) {
+            return true;
+        } else {
+            return false
+        }
+    }
 
     return (
         <div>
@@ -320,7 +332,7 @@ function RMApproval(props) {
             <Row>
                 <Col>
                     <div className={`ag-grid-react`}>
-                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
