@@ -989,7 +989,7 @@ class AddBOPImport extends Component {
                           <Col md="12">
                             <div className="left-border">{"Vendor:"}</div>
                           </Col>
-                          <Col md="3">
+                          <Col md="3" className='mb-4'>
                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                              <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
