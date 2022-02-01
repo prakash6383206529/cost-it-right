@@ -148,7 +148,6 @@ export const specialName = value =>
 
 export const validatePassword = value => {
     
-   
     return (value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[#?!@$%^&*-]).{5,}$/.test(value) === false);
    
 }
