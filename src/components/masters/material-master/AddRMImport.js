@@ -64,6 +64,7 @@ class AddRMImport extends Component {
       VendorCode: '',
       selectedVendorPlants: [],
       vendorLocation: [],
+      isVendorNameNotSelected:false,
 
       HasDifferentSource: false,
       sourceLocation: [],
@@ -242,7 +243,7 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue,isVendorNameNotSelected:false, selectedVendorPlants: [], vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -931,11 +932,21 @@ class AddRMImport extends Component {
 
     const { initialConfiguration } = this.props;
     this.setState({ setDisable: true, disablePopup:false})
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+
+    this.setState({ isVendorNameNotSelected: false })
+
     let plantArray = [];
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
       return plantArray;
     })
+
+
 
     let vendorPlantArray = [];
     selectedVendorPlants && selectedVendorPlants.map((item) => {
@@ -1365,10 +1376,10 @@ class AddRMImport extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="4" className='mb-4'>
                                      
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                            <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                            

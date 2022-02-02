@@ -34,6 +34,7 @@ class AddInterestRate extends Component {
 
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected:false,
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
@@ -123,7 +124,7 @@ class AddInterestRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected:false});
     } else {
       this.setState({ vendorName: [], })
     }
@@ -251,6 +252,13 @@ class AddInterestRate extends Component {
 
     const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
+
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
@@ -410,10 +418,10 @@ class AddInterestRate extends Component {
                     </Row>
                     <Row>
                       {this.state.IsVendor && (
-                        <Col md="3">
+                        <Col md="3" className='mb-4'>
 
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                          <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                           <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           
