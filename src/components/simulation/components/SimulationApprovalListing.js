@@ -79,7 +79,6 @@ function SimulationApprovalListing(props) {
      */
     const getTableData = (partNo = EMPTY_GUID, createdBy = EMPTY_GUID, requestedBy = EMPTY_GUID, status = 0,) => {
 
-        setApproveDrawer(false)
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
