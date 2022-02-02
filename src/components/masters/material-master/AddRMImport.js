@@ -1376,7 +1376,7 @@ class AddRMImport extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4">
+                          <Col md="4" className='mb-4'>
                                      
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
