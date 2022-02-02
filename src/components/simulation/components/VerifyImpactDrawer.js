@@ -119,7 +119,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
-                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />
+                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} lastRevision={false} />
                 </div>
                 }
               </Row>
@@ -177,7 +177,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} />}
+                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
 
                 </div>
               </Row>
