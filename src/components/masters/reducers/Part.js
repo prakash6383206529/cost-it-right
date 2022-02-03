@@ -19,6 +19,7 @@ import {
     GET_PRODUCT_UNIT_DATA,
     PRODUCT_GROUPCODE_SELECTLIST
 } from '../../../config/constants';
+import DayTime from '../../common/DayTimeWrapper';
 
 const initialState = {
 
@@ -85,9 +86,16 @@ export default function partReducer(state = initialState, action) {
             };
         }
         case GET_ALL_NEW_PARTS_SUCCESS: {
+
+            let arrNew = []
+            arrNew = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: 01/03/2021  BUT WE WERE RECEIVING DATE IN '2021-03-01T00:00:00'
+                el.EffectiveDateNew = DayTime(el.EffectiveDate).format("DD/MM/YYYY")                                 //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID FOR PAGINATION IN PART MASTER
+                return true
+            })
+
             return {
                 ...state,
-                newPartsListing: action.payload,
+                newPartsListing: arrNew,        
                 loading: false,
                 error: false
             };
