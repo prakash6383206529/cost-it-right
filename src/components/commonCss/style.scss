@@ -455,7 +455,9 @@ body {
 .mt5 {
   margin-top: 5px;
 }
-
+.mt7 {
+  margin-top: 7px;
+}
 .divider {
   padding: 5px;
   background-color: #f8b2b2;
@@ -2246,6 +2248,7 @@ body {
 }
 .grey-text {
 	color: #5c5e64;
+  font-weight: 500;
 }
 .btn-small-primary-circle {
 	width: 25px;
@@ -6488,7 +6491,9 @@ left: 17rem;
   label {
     width: fit-content;
   }
-  min-width: 14.725rem;
+  min-width: 14.675rem;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 // <--------START costing tooltip css -------->
@@ -6883,3 +6888,19 @@ left: 17rem;
   }
 }
 // <-------END simulation-label-container css-------->
+
+// <--------START impact-drawer header----->
+.impact-drawer-header {
+  margin: 15px;
+  padding: 10px;
+  display: flex;
+
+}
+// <--------END impact-drawer header----->
+
+// <-----START compare costing table--->
+.d-grid {
+  display: grid;
+  grid-template-columns: 25% 35% 20% 20%;
+}
+// <-----END compare costing table--->

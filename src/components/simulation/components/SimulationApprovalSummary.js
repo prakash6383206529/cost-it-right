@@ -758,7 +758,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
 
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Masters:`}</span>
+                                                <span className="d-block grey-text">{`Master:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</span>
                                             </th>
                                             <th className="align-top">
