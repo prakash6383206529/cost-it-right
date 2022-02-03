@@ -67,7 +67,7 @@ function OperationSTSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let valueShow
-        switch (Number(selectedMasterForSimulation.value)) {
+        switch (Number(selectedMasterForSimulation?.value)) {
             case Number(SURFACETREATMENT):
                 valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
                 break;
@@ -96,7 +96,7 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         let valueShow
-        switch (Number(selectedMasterForSimulation.value)) {
+        switch (Number(selectedMasterForSimulation?.value)) {
             case Number(SURFACETREATMENT):
                 valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
                 break;
