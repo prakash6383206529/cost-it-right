@@ -1194,7 +1194,7 @@ const CostingSummaryTable = (props) => {
                     <tr>
                       <td>
 
-                        <span class="d-block small-grey-text mt-2"></span>
+                        <span class="d-block small-grey-text"></span>
                         <span class="d-block small-grey-text">Tool Maintenance Applicability</span>
                         <span class="d-block small-grey-text">Tool Maintenance Cost</span>
                         <span class="d-block small-grey-text">Tool Price</span>
@@ -1205,7 +1205,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data) => {
                           return (
                             <td className="align-table">
-                              <div class="d-flex">
+                              <div class="d-flex mt7">
                                 <span class="d-inline-block w-50">
                                   {data.CostingHeading !== VARIANCE ? data.toolApplicability.applicability : ''}
                                 </span>{' '}
@@ -1275,8 +1275,8 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr>
-                      <td>
+                    <tr className='border-right'>
+                      <td  width={"20%"}>
                         <span class="d-block small-grey-text">
                           Hundi/Other Discount
                         </span>
@@ -1287,22 +1287,22 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data) => {
                           return (
                             data.CostingHeading !== VARIANCE ?
-                              <td>
-                                <div className="d-flex">
+                              <td width={"32%"}>
+                                <div className="d-grid">
                                   {/* <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.discount : ''}</span> &nbsp;{' '}
                                 <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.otherDiscount.value : ''}</span> */}
-                                  <span className="d-inline-block w-50 ">{"Type"}</span> &nbsp;{' '}
-                                  <span className="d-inline-block w-50 ">{"Applicablity"}</span>
-                                  <span className="d-inline-block w-50 ">{"Value"}</span>
-                                  <span className="d-inline-block w-50 ">{"Cost"}</span>
+                                  <span className="d-inline-block ">{"Type"}</span>
+                                  <span className="d-inline-block ">{"Applicability"}</span>
+                                  <span className="d-inline-block ">{"Value"}</span>
+                                  <span className="d-inline-block ">{"Cost"}</span>
                                 </div>
-                                <div className="d-flex">
-                                  <span className="d-inline-block w-50 small-grey-text">
+                                <div className="d-grid">
+                                  <span className="d-inline-block small-grey-text">
                                     {data.CostingHeading !== VARIANCE ? data.otherDiscountValue.dicountType : ''}
                                   </span>
-                                  <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? data.otherDiscountValue.discountApplicablity : '-'}</span>
-                                  <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
-                                  <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? data.otherDiscountValue.discountApplicablity : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
 
                               </td>
@@ -1322,21 +1322,21 @@ const CostingSummaryTable = (props) => {
                           return (
 
                             data.CostingHeading !== VARIANCE ?
-                              <td>
-                                <div className="d-flex">
+                              <td width={"32%"}>
+                                <div className="d-grid">
 
-                                  <span className="d-inline-block w-50 ">{"Type"}</span> &nbsp;{' '}
-                                  <span className="d-inline-block w-50 ">{"Applicablity"}</span>
-                                  <span className="d-inline-block w-50 ">{"Value"}</span>
-                                  <span className="d-inline-block w-50 ">{"Cost"}</span>
+                                  <span className="d-inline-block">{"Type"}</span>
+                                  <span className="d-inline-block">{"Applicability"}</span>
+                                  <span className="d-inline-block">{"Value"}</span>
+                                  <span className="d-inline-block">{"Cost"}</span>
                                 </div>
-                                <div className="d-flex">
-                                  <span className="d-inline-block w-50 small-grey-text">
+                                <div className="d-grid">
+                                  <span className="d-inline-block small-grey-text">
                                     {data.CostingHeading !== VARIANCE ? data.anyOtherCostType : ''}
                                   </span>
-                                  <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? data.anyOtherCostApplicablity : '-'}</span>
-                                  <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? checkForDecimalAndNull(data.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
-                                  <span className="d-inline-block w-50 small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? data.anyOtherCostApplicablity : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? checkForDecimalAndNull(data.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
                               </td>
                               : ""
