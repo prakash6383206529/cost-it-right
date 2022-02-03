@@ -167,7 +167,7 @@ class IndivisualPartListing extends Component {
             if (value.column.colId === 'RevisionNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, RevisionNumber: value.filterInstance.appliedModel.filter } }) }
 
             if (value.column.colId === 'DrawingNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, DrawingNumber: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'EffectiveDate') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDate: DayTime(value.filterInstance.appliedModel.filter).format("YYYY-DD-MMTHH:mm:ss") } }) }
+            if (value.column.colId === 'EffectiveDateNew') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDate: DayTime(value.filterInstance.appliedModel.filter).format("YYYY-DD-MMTHH:mm:ss") } }) }
 
 
         }
@@ -354,7 +354,8 @@ class IndivisualPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        //return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? cellValue : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -564,7 +565,7 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}  ></AgGridColumn>
+                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}  ></AgGridColumn>
                                 <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
