@@ -319,7 +319,6 @@ function ApproveRejectDrawer(props) {
     const reason = getValues('reason')
     const dept = getValues('dept')
     const approver = getValues('approver')
-    console.log('ll');
     if (type === 'Reject') {
       if (remark) {
         setShowError(false)
@@ -363,7 +362,6 @@ function ApproveRejectDrawer(props) {
       })
       if (type === 'Approve') {
         reset()
-        console.log('aaaa');
         dispatch(approvalRequestByApprove(Data, res => {
           if (res?.data?.Result) {
             setIsDisable(false)
