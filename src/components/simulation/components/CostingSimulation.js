@@ -173,12 +173,12 @@ function CostingSimulation(props) {
                             switch (Number(selectedMasterForSimulation.value)) {
                                 case Number(RMIMPORT):
                                 case Number(RMDOMESTIC):
-                            // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                            // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                            // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                            // ********** THIS IS RE SPECIFIC **********
-                            item.RMCVariance = (item.OldRMPrice - item.NewRMPrice)
-                            return item
+                                    // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                                    // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
+                                    // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                                    // ********** THIS IS RE SPECIFIC **********
+                                    item.RMCVariance = (item.OldRMPrice - item.NewRMPrice)
+                                    return item
 
                                 default:
                                     break;
@@ -668,7 +668,7 @@ function CostingSimulation(props) {
     const varianceFormatter = (props) => {
         // ********** THIS IS RE SPECIFIC **********
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cell).toFixed(COSTINGSIMULATIONROUND)
+        return Number(cell)?.toFixed(COSTINGSIMULATIONROUND)
     }
 
     const hideColumn = (props) => {
