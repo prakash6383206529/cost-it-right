@@ -824,7 +824,7 @@ function CostingSimulation(props) {
         newRMCFormatter: newRMCFormatter,
         varianceRMCFormatter: varianceRMCFormatter,
         varianceSTFormatter: varianceSTFormatter,
-        variancePOFormatter:variancePOFormatter
+        variancePOFormatter: variancePOFormatter
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -949,8 +949,6 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
                                                     </>}
                                                     {isOperation && <>
-                                                        <AgGridColumn width={140} field="OldOperationRate" headerName='Old Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewOperationRate" headerName='New Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
