@@ -381,7 +381,7 @@ function ApproveRejectDrawer(props) {
       // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
 
 
-      setSelectedRowsDataEmpty()
+      // setSelectedRowsDataEmpty()
       //lll
       let approverObject = []
       if (isSimulationApprovalListing === true) {
