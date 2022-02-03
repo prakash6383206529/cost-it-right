@@ -296,12 +296,10 @@ function ApproveRejectDrawer(props) {
   }
 
   const onSubmit = debounce(handleSubmit(() => {
-    setSelectedRowsDataEmpty()
     const remark = getValues('remark')
     const reason = getValues('reason')
     const dept = getValues('dept')
     const approver = getValues('approver')
-
     if (type === 'Reject') {
       if (remark) {
         setShowError(false)
@@ -373,6 +371,7 @@ function ApproveRejectDrawer(props) {
       // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
 
 
+      setSelectedRowsDataEmpty()
       //lll
       let approverObject = []
       if (isSimulationApprovalListing === true) {
