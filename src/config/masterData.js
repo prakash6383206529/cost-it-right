@@ -438,7 +438,7 @@ export const VendorTempData = [
         'Extension': '123',
         'MobileNumber': '1234567890',
         'Country': 'India',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'City': 'Indore',
         'ZipCode': '123456',
         'AddressLine1': '123, Area location',
