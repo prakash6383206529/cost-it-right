@@ -137,6 +137,15 @@ function SimulationApprovalListing(props) {
         )
     }
 
+    /**
+    * @method hyphenFormatter
+    */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
+
     const createdOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
@@ -382,9 +391,6 @@ function SimulationApprovalListing(props) {
         setApproveDrawer(false)
         getTableData()
         //setRejectDrawer(false)
-    }
-
-    const setSelectedRowsDataEmpty = () => {
         setSelectedRowData([])
     }
 
@@ -470,7 +476,8 @@ function SimulationApprovalListing(props) {
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
-        conditionFormatter: conditionFormatter
+        conditionFormatter: conditionFormatter,
+        hyphenFormatter: hyphenFormatter
     };
 
     return (
@@ -540,7 +547,7 @@ function SimulationApprovalListing(props) {
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
@@ -586,7 +593,6 @@ function SimulationApprovalListing(props) {
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
                                         IsFinalLevel={selectedRowData[0]?.IsFinalLevelButtonShow}
-                                        setSelectedRowsDataEmpty={setSelectedRowsDataEmpty}
                                     />
                                 }
                             </div>
