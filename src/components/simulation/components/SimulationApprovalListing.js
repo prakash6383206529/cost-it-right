@@ -138,6 +138,15 @@ function SimulationApprovalListing(props) {
         )
     }
 
+    /**
+    * @method hyphenFormatter
+    */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
+
     const createdOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
@@ -385,9 +394,6 @@ function SimulationApprovalListing(props) {
         setIsApprovalDrawer(false)
         getTableData()
         //setRejectDrawer(false)
-    }
-
-    const setSelectedRowsDataEmpty = () => {
         setSelectedRowData([])
     }
 
@@ -473,7 +479,8 @@ function SimulationApprovalListing(props) {
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
-        conditionFormatter: conditionFormatter
+        conditionFormatter: conditionFormatter,
+        hyphenFormatter: hyphenFormatter
     };
 
     return (
@@ -544,7 +551,7 @@ function SimulationApprovalListing(props) {
                                     {/* {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>} */}
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
@@ -591,7 +598,6 @@ function SimulationApprovalListing(props) {
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
                                         IsFinalLevel={selectedRowData[0]?.IsFinalLevelButtonShow}
-                                        setSelectedRowsDataEmpty={setSelectedRowsDataEmpty}
                                     />
                                 }
                             </div>
