@@ -35,7 +35,7 @@ class BulkUpload extends Component {
 
             faildRecords: false,
             failedData: [],
-            costingHead: 'ZBC',
+            costingHead:  props?.fileName==="InterestRate"?'VBC':'ZBC',
             uploadfileName: "",
         }
     }
@@ -363,6 +363,7 @@ class BulkUpload extends Component {
         }
 
         else {
+            
 
         }
 
