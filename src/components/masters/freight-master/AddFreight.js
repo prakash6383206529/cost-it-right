@@ -51,7 +51,8 @@ class AddFreight extends Component {
       AddUpdate: true,
       DeleteChanged: true,
       HandleChanged: true,
-      setDisable: false
+      setDisable: false,
+      isVendorNameNotSelected:false
     };
   }
   /**
@@ -230,7 +231,7 @@ class AddFreight extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ vendorName: newValue });
+      this.setState({ vendorName: newValue,isVendorNameNotSelected:false });
     } else {
       this.setState({ vendorName: [] });
     }
@@ -471,6 +472,14 @@ class AddFreight extends Component {
       IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
     const { fieldsObj } = this.props;
+
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     const userDetail = userDetails();
     if (isEditFlag) {
 
@@ -649,7 +658,7 @@ class AddFreight extends Component {
                           {this.state.IsVendor === true && (
                             <Col md="3">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               

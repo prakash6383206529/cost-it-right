@@ -42,6 +42,7 @@ class AddPower extends Component {
       temp: 0,
       StateName: [],
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected:false,
 
       selectedPlants: [],
       effectiveDate: new Date(),
@@ -400,7 +401,7 @@ class AddPower extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
+      this.setState({ vendorName: newValue,isVendorNameNotSelected:false, selectedVendorPlants: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -1028,6 +1029,15 @@ class AddPower extends Component {
       effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
       handleChange, DeleteChanged, AddChanged } = this.state;
     const { initialConfiguration, fieldsObj } = this.props;
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
+
+
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
     })
@@ -1284,7 +1294,7 @@ class AddPower extends Component {
                             <Col md="4">
 
                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                              <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               

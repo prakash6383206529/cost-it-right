@@ -268,7 +268,14 @@ function RMApproval(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
+
+        if(props?.isApproval){
+            gridApi.paginationSetPageSize(Number(newPageSize));  // APPLIED THIS IF ELSE CONDITION JUST BECAUSE IN DASHBOARD INCREASING PAGE DROPDOWN WAS NOT WORKING
+
+        }
+        else {
         gridApi.paginationSetPageSize(Number(value));
+        }
     };
 
     const onFilterTextBoxChanged = (e) => {
