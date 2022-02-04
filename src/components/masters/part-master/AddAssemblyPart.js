@@ -582,6 +582,7 @@ class AddAssemblyPart extends Component {
 console.log(BOMViewerData,"BOMViewerData",actualBOMTreeData,"isEditFlag",isEditFlag);
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
         if (fieldsObj.ECNNumber === partData.ECNNumber && fieldsObj.RevisionNumber === partData.RevisionNumber) {
+          this.setState({ setDisable: false })
           this.confirmBOMDraft(updateData)
           Toaster.warning("Please edit Revision No or ECN No.")
           return false;
