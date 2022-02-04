@@ -650,6 +650,12 @@ function CostingSimulation(props) {
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         return cell != null ? (roudOffOld - rounfOffNew).toFixed(COSTINGSIMULATIONROUND) : ''
     }
+    const variancePOFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return cell != null ? checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice) : ''
+    }
 
     const varianceSTFormatter = (props) => {
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -825,7 +831,8 @@ function CostingSimulation(props) {
         oldRMCFormatter: oldRMCFormatter,
         newRMCFormatter: newRMCFormatter,
         varianceRMCFormatter: varianceRMCFormatter,
-        varianceSTFormatter: varianceSTFormatter
+        varianceSTFormatter: varianceSTFormatter,
+        variancePOFormatter:variancePOFormatter
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -914,7 +921,7 @@ function CostingSimulation(props) {
                                                     </>}
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='variancePOFormatter' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
                                                         {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>

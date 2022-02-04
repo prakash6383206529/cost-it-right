@@ -406,7 +406,7 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber,vlidatePhoneNumber, maxLength12, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength12, checkWhiteSpaces]}
                           component={renderText}
                           maxLength={10}
                           className=""
