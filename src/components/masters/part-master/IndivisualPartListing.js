@@ -374,19 +374,15 @@ class IndivisualPartListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData()
-        })
+        this.setState({ isBulkUpload: false })
+        this.onSearchExit(this)
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-    }
+
 
 
 
