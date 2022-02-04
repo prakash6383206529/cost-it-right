@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6 } from "../../../helper/validation";
+import { required, number, minLength10, maxLength12, maxLength6 } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, } from '../actions/Plant';
 import {
@@ -302,7 +302,7 @@ class AddVendorPlantDrawer extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[required, number]}
+                          validate={[required, number, minLength10, maxLength12]}
                           component={renderText}
                           required={true}
                           maxLength={12}

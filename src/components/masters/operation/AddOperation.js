@@ -22,6 +22,8 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddOperation');
 
@@ -625,6 +627,27 @@ class AddOperation extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
+
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -759,34 +782,12 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {this.state.IsVendor && (
-                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                name="VendorName"
-                                type="text"
-                                label="Vendor Name"
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("VendorNameList")}
-                                validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleVendorName}
-                                valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </div>
-                            {!isEditFlag && (
-                              <div
-                                onClick={this.vendorToggler}
-                                className={
-                                  "plus-icon-square mt-2 right"
-                                }
-                              ></div>
-                            )}
-                          </div>
-
-                        </Col>
+                       <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                        <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                        <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                        {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                         
+                       </Col>
 
                       )}
                       {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (

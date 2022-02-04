@@ -22,6 +22,9 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
+
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
   constructor(props) {
@@ -542,6 +545,27 @@ class AddFreight extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isOpenVendor, isEditFlag, isViewMode, setDisable } = this.state;
 
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
+
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -624,38 +648,12 @@ class AddFreight extends Component {
                           </Col>
                           {this.state.IsVendor === true && (
                             <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="vendorName"
-                                    type="text"
-                                    label="Vendor Name"
-                                    component={searchableSelect}
-                                    placeholder={"Select"}
-                                    options={this.renderListing("VendorNameList")}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.vendorName == null ||
-                                        this.state.vendorName.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleVendorName
-                                    }
-                                    valueDescription={this.state.vendorName}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.vendorToggler}
-                                    className={"plus-icon-square right"}
-                                  ></div>
-                                )}
-                              </div>
-                            </Col>
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                            <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              
+                           </Col>
                           )}
                           <Col md="3">
                             <Field
