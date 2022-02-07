@@ -113,7 +113,7 @@ const CostingSummaryTable = (props) => {
           // setIsFinalApproverShow(false)
         }
       }))
-    
+
     }
 
   }, [])
@@ -1029,7 +1029,7 @@ const CostingSummaryTable = (props) => {
                     <tr class="background-light-blue">
                       <th>Net Surface Treatment Cost</th>
                       { }
-                      {console.log(viewCostingData,"viewcostingdata")}
+                      { }
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
@@ -1217,7 +1217,7 @@ const CostingSummaryTable = (props) => {
                               </div>
                               <div className="d-flex">
                                 <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? data.toolApplicabilityValue.toolTitle : ''}</span> &nbsp;{' '}
-                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolApplicabilityValue.toolValue,initialConfiguration.NoOfDecimalForPrice) : ''}</span>
+                                <span className="d-inline-block w-50 ">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolApplicabilityValue.toolValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                               </div>
                               <span class="d-block small-grey-text">
                                 {data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''}
@@ -1277,7 +1277,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr className='border-right'>
-                      <td  width={"20%"}>
+                      <td width={"20%"}>
                         <span class="d-block small-grey-text">
                           Hundi/Other Discount
                         </span>
