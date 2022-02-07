@@ -67,7 +67,8 @@ class AddOverhead extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader:false,
 
     }
   }
@@ -79,7 +80,6 @@ class AddOverhead extends Component {
   componentDidMount() {
     this.props.fetchModelTypeAPI('--Model Types--', res => { });
     this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-    this.props.getVendorWithVendorCodeSelectList()
     this.props.getClientSelectList(() => { })
     this.getDetails();
   }
@@ -94,6 +94,10 @@ class AddOverhead extends Component {
       costingHead: costingHeadFlag,
       vendorName: [],
     });
+    if(costingHeadFlag==="vendor") {
+      this.setState({inputLoader:true})
+      this.props.getVendorWithVendorCodeSelectList(()=>{ this.setState({inputLoader:false})})
+    }
   }
 
   /**
@@ -853,6 +857,7 @@ class AddOverhead extends Component {
                           <Col md="4" >
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                             {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
                              <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               

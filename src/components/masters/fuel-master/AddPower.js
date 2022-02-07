@@ -75,7 +75,8 @@ class AddPower extends Component {
       DeleteChanged: true,
       handleChange: true,
       AddChanged: true,
-      setDisable: false
+      setDisable: false,
+      inputLoader:false
     }
   }
 
@@ -89,7 +90,6 @@ class AddPower extends Component {
     this.props.getPowerTypeSelectList(() => { })
     this.props.getFuelComboData(() => { })
     this.props.getUOMSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList();
     this.getDetails();
   }
 
@@ -385,14 +385,14 @@ class AddPower extends Component {
   * @method onPressVendor
   * @description Used for Vendor checked
   */
-  onPressVendor = () => {
+   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
       vendorName: [],
       selectedVendorPlants: [],
-    }, () => {
-      this.props.getVendorWithVendorCodeSelectList()
     });
+      this.setState({inputLoader:true})
+      this.props.getVendorWithVendorCodeSelectList(()=>{ this.setState({inputLoader:false})})
   }
 
   /**
@@ -1295,6 +1295,7 @@ class AddPower extends Component {
 
                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                             {this.state.inputLoader  && <LoaderCustom customClass={`input-loader switch-vendor `}/>}
                              <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               

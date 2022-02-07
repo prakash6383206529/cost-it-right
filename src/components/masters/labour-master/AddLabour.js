@@ -50,7 +50,8 @@ class AddLabour extends Component {
 
       isDisable: false,
       DropdownChanged: true,
-      setDisable: false
+      setDisable: false,
+      inputLoader:false,
     }
   }
 
@@ -59,10 +60,11 @@ class AddLabour extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    this.setState({inputLoader:true})
     this.props.getFuelComboData(() => { })
     this.props.getPlantListByState('', () => { })
     this.props.getMachineTypeSelectList(() => { })
-    this.props.labourTypeVendorSelectList(() => { })
+    this.props.labourTypeVendorSelectList(() => { this.setState({inputLoader:false}) })
     this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     this.getDetail()
   }
@@ -201,6 +203,7 @@ class AddLabour extends Component {
     this.setState({
       IsEmployeContractual: !this.state.IsEmployeContractual,
     })
+    
   }
 
   /**
@@ -696,6 +699,7 @@ class AddLabour extends Component {
                         <Col md="4">
                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
                            <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : isDisable ? true : false} />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           

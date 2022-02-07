@@ -118,7 +118,8 @@ class AddVolume extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
-      setDisable: false
+      setDisable: false,
+      inputLoader:false
     }
   }
 
@@ -136,7 +137,7 @@ class AddVolume extends Component {
 
     this.props.getPlantSelectListByType(ZBC, () => { })
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
+    // this.props.getVendorWithVendorCodeSelectList()
     this.props.getFinancialYearSelectList(() => { })
     this.props.getPartSelectList(() => { })
     this.getDetail()
@@ -213,6 +214,8 @@ class AddVolume extends Component {
    */
   onPressVendor = () => {
     this.setState({ IsVendor: !this.state.IsVendor })
+      this.setState({inputLoader:true})
+      this.props.getVendorWithVendorCodeSelectList(()=>{this.setState({inputLoader:false})})
   }
 
   /**
@@ -769,6 +772,7 @@ class AddVolume extends Component {
                             <Col md="3">
                               <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                             {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
                              <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                              
