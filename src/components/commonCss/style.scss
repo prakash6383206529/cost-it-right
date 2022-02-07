@@ -6737,6 +6737,7 @@ left: 17rem;
     right: 17px;
     top: 30px;
     bottom: 20px;
+    border-radius: 5px;
     align-items: flex-end;
     .loaderinner {
       font-size: 30px;
@@ -6782,6 +6783,21 @@ left: 17rem;
          margin-bottom: -10px;
        }
      }
+    }
+    &.zero-based {
+      left: 16px;
+      bottom: 1px;
+      top: 29px;
+    }
+    &.vendor-based {
+      left: 16px;
+      top: 29px;
+      bottom: 15px;
+    }
+    &.switch-vendor {
+      left: 16px;
+      top: 30px;
+      bottom: 55px;
     }
 }
 // <------END input field loader----->

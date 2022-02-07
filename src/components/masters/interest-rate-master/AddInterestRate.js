@@ -42,7 +42,8 @@ class AddInterestRate extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader:false,
     }
   }
   /**
@@ -60,7 +61,6 @@ class AddInterestRate extends Component {
    */
   componentDidMount() {
     this.props.getICCAppliSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList()
     this.props.getPaymentTermsAppliSelectList(() => { })
     this.getDetail()
   }
@@ -116,6 +116,8 @@ class AddInterestRate extends Component {
   */
   onPressVendor = () => {
     this.setState({ IsVendor: !this.state.IsVendor, });
+    this.setState({inputLoader:true})
+    this.props.getVendorWithVendorCodeSelectList(()=>{  this.setState({inputLoader:false})})
   }
 
   /**
@@ -422,6 +424,7 @@ class AddInterestRate extends Component {
 
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                          {this.state.inputLoader  && <LoaderCustom customClass={`input-loader zero-based `}/>}
                           <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           

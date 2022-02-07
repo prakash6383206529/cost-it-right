@@ -52,7 +52,8 @@ class AddFreight extends Component {
       DeleteChanged: true,
       HandleChanged: true,
       setDisable: false,
-      isVendorNameNotSelected:false
+      isVendorNameNotSelected:false,
+      inputLoader:false
     };
   }
   /**
@@ -60,8 +61,6 @@ class AddFreight extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.getVendorListByVendorType(true, () => { });
-    // this.props.fetchSupplierCityDataAPI((res) => { });  
 
     this.props.getFreightModeSelectList((res) => { });
     this.props.getFreigtFullTruckCapacitySelectList((res) => { });
@@ -80,6 +79,8 @@ class AddFreight extends Component {
       IsVendor: !this.state.IsVendor,
       vendorName: [],
     });
+    this.setState({inputLoader:true})
+    this.props.getVendorListByVendorType(true, () => {this.setState({inputLoader:false}) });
   };
   /**
    * @method handleTransportMoodChange
@@ -659,6 +660,7 @@ class AddFreight extends Component {
                             <Col md="3">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               

@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
+import LoaderCustom from '../../common/LoaderCustom';
 
 const selector = formValueSelector('AddOperation');
 
@@ -67,7 +68,8 @@ class AddOperation extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader:false,
     }
   }
 
@@ -84,9 +86,10 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    
     this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
+   
     this.getDetail()
 
 
@@ -167,8 +170,9 @@ class AddOperation extends Component {
   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
-
     });
+    this.setState({inputLoader:true})
+    this.props.getVendorWithVendorCodeSelectList(()=>{ this.setState({inputLoader:false}) })
   }
 
   /**
@@ -791,6 +795,7 @@ class AddOperation extends Component {
                       {this.state.IsVendor && (
                        <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                         <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                        {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
                         <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                         {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                          
