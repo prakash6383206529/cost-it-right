@@ -107,7 +107,8 @@ class AddRMImport extends Component {
       uploadAttachements: true,
       isFinalApprovar: false,
       disablePopup: false,
-      setDisable: false
+      setDisable: false,
+      inputLoader:false
 
     }
   }
@@ -130,12 +131,13 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
+    this.setState({inputLoader:true})
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
     this.props.getRawMaterialCategory(res => { });
     this.props.fetchSupplierCityDataAPI(res => { });
-    this.props.getVendorListByVendorType(false, () => { })
-    this.props.getTechnologySelectList(() => { })
+    this.props.getVendorListByVendorType(false, () => { this.setState({inputLoader:false}) })
+    this.props.getTechnologySelectList(() => {  this.setState({inputLoader:false})})
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
 
@@ -416,11 +418,11 @@ class AddRMImport extends Component {
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data })
+          this.setState({ DataToChange: Data, inputLoader:true })
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false})})
           } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({inputLoader:false})})
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
@@ -524,11 +526,12 @@ class AddRMImport extends Component {
       vendorLocation: [],
     }, () => {
       const { IsVendor } = this.state;
+      this.setState({inputLoader:true})
       if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { })
+        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false})})
       } else {
 
-        this.props.getVendorListByVendorType(IsVendor, () => { })
+        this.props.getVendorListByVendorType(IsVendor, () => { this.setState({inputLoader:false})})
         this.props.getPlantBySupplier('', () => { })
         this.props.getCityBySupplier(0, () => { })
       }
@@ -1397,12 +1400,13 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                           <Col md="4" className='mb-4'>
-
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
-                            <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
+                                     
+                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
+                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                           
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">

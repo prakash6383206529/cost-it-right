@@ -44,7 +44,8 @@ class AddInterestRate extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader:false,
     }
   }
   /**
@@ -62,7 +63,6 @@ class AddInterestRate extends Component {
    */
   componentDidMount() {
     this.props.getICCAppliSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList()
     this.props.getPaymentTermsAppliSelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.getDetail()
@@ -128,6 +128,8 @@ class AddInterestRate extends Component {
   */
   onPressVendor = () => {
     this.setState({ IsVendor: !this.state.IsVendor, });
+    this.setState({inputLoader:true})
+    this.props.getVendorWithVendorCodeSelectList(()=>{  this.setState({inputLoader:false})})
   }
 
   /**
@@ -459,15 +461,14 @@ class AddInterestRate extends Component {
                     <Row>
                       {this.state.IsVendor && (
                         <>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                              <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
-                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                        <Col md="3" className='mb-4'>
+
+                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                          {this.state.inputLoader  && <LoaderCustom customClass={`input-loader zero-based `}/>}
+                          <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                              </div>
-                            </div>
+                            
                           </Col>
                           <Col md="3" >
                             <Field
