@@ -66,7 +66,7 @@ class AddRMImport extends Component {
       VendorCode: '',
       selectedVendorPlants: [],
       vendorLocation: [],
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
 
       HasDifferentSource: false,
       sourceLocation: [],
@@ -74,6 +74,7 @@ class AddRMImport extends Component {
       UOM: [],
       currency: [],
       effectiveDate: '',
+      minEffectiveDate: '',
       remarks: '',
 
       isShowForm: false,
@@ -251,7 +252,7 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue,isVendorNameNotSelected:false, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -422,6 +423,7 @@ class AddRMImport extends Component {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
 
@@ -942,10 +944,10 @@ class AddRMImport extends Component {
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state;
 
     const { initialConfiguration } = this.props;
-    this.setState({ setDisable: true, disablePopup:false})
+    this.setState({ setDisable: true, disablePopup: false })
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
 
@@ -996,7 +998,7 @@ class AddRMImport extends Component {
       if (isEditFlag && this.state.isFinalApprovar) {
 
         if (isSourceChange) {
-          
+
           this.props.updateRMImportAPI(requestData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
@@ -1086,7 +1088,7 @@ class AddRMImport extends Component {
         }
 
       } else {
-       
+
         this.props.createRMImport(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
@@ -1131,27 +1133,26 @@ class AddRMImport extends Component {
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
       isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
 
+    const filterList = (inputValue) => {
+      let tempArr = []
 
-      const filterList = (inputValue) => {
-        let tempArr = []
-  
-        tempArr = this.renderListing("VendorNameList").filter(i =>
-          i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-        );
-  
-        if (tempArr.length <= 100) {
-          return tempArr
-        } else {
-          return tempArr.slice(0, 100)
-        }
-      };
-  
-      const promiseOptions = inputValue =>
-        new Promise(resolve => {
-          resolve(filterList(inputValue));
-  
-  
-        });
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
 
     return (
       <>
@@ -1395,21 +1396,13 @@ class AddRMImport extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
-                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
-                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                              </div>
-                              {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
-                            </div>
+                          <Col md="4" className='mb-4'>
+
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                            <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
@@ -1523,6 +1516,7 @@ class AddRMImport extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
+                                  minDate={this.state.minEffectiveDate}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {
