@@ -126,20 +126,6 @@ function CostingDetailSimulationDrawer(props) {
                                                     </Col>
                                                 </>
                                         }
-
-                                        {Number(master) === Number(COMBINED_PROCESS) &&
-                                            <>
-                                                <Col md="3">
-                                                    <label>Old CC</label>
-                                                    <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                                </Col>
-                                                <Col md="3">
-                                                    <label>New CC</label>
-                                                    <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                                </Col>
-                                            </>
-                                        }
-
                                         {
                                             (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) &&
                                             <>
@@ -189,6 +175,18 @@ function CostingDetailSimulationDrawer(props) {
                                                 <Col md="3">
                                                     <label>New Oper Rate</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                            </>
+                                        }
+                                        {Number(master) === Number(COMBINED_PROCESS) &&
+                                            <>
+                                                <Col md="3">
+                                                    <label>Old CC</label>
+                                                    <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                                <Col md="3">
+                                                    <label>New CC</label>
+                                                    <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
                                         }
