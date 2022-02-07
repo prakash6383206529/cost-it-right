@@ -91,10 +91,10 @@ export function getReportListing(index, take, isPagination, data, callback) {
 }
 
 /**
- * @method getRMImportDataList
- * @description Used to get RM Import Datalist
+ * @method getCostingReport
+ * @description Used to get Costing Report
  */
-export function getCostingReport(index, take, isPagination, callback) {
+export function getCostingReport(index, take, isPagination, filterData, callback) {
 
     return (dispatch) => {
         if (isPagination === true) {
