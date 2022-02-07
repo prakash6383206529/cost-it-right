@@ -136,8 +136,6 @@ class AddVolume extends Component {
     }, 100)
 
     this.props.getPlantSelectListByType(ZBC, () => { })
-    // this.props.getVendorListByVendorType(true, () => { })
-    // this.props.getVendorWithVendorCodeSelectList()
     this.props.getFinancialYearSelectList(() => { })
     this.props.getPartSelectList(() => { })
     this.getDetail()
