@@ -922,7 +922,8 @@ export const API = {
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
-  getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`
+  getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`,
+  getCostingReport: `${BASE_URL}/reports/get-costing-report`,
 
 }
 
