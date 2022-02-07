@@ -209,7 +209,7 @@ function ReportListing(props) {
         }
         var t0 = performance.now();
 
-        dispatch(getCostingReport(index, take, isPagination, (res) => {
+        dispatch(getCostingReport(index, take, isPagination, filterData, (res) => {
 
         }))
 
@@ -219,11 +219,11 @@ function ReportListing(props) {
     useEffect(() => {
 
         setLoader(true)
-        getTableData(0, 100, true);
+        getTableData(0, 500, true);
 
         return () => {
 
-            getTableData(0, 100, false);
+            getTableData(0, 500, false);
 
 
         }
@@ -243,7 +243,7 @@ function ReportListing(props) {
             if (totalRecordCount === 0) {
                 setTotalRecordCount(reportListingData[0].TotalRecordCount)
 
-                reportListingData[0].TotalRecordCount > 100 ? getTableData(100, reportListingData[0].TotalRecordCount, true) : blank()
+                reportListingData[0].TotalRecordCount > 500 ? getTableData(500, reportListingData[0].TotalRecordCount, true) : blank()
                 setLoader(false)
             }
             if (totalRecordCount !== 0) {
@@ -543,7 +543,7 @@ function ReportListing(props) {
                         rowData={reportListingDataStateArray}
                         pagination={true}
                         //   suppressPaginationPanel={true}
-                        // suppressScrollOnNewData={true}
+                        suppressScrollOnNewData={true}
 
                         paginationPageSize={10}
                         onGridReady={onGridReady}
