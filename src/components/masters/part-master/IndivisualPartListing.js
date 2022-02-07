@@ -56,7 +56,10 @@ class IndivisualPartListing extends Component {
             ActivateAccessibility: true,
             isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            pageSize10: true,
+            pageSize50: false,
+            pageSize100: false,
         }
     }
 
@@ -64,10 +67,10 @@ class IndivisualPartListing extends Component {
 
 
     ApiActionCreator(skip, take, obj, isPagination) {
-      this.setState({isLoader:true})
+        this.setState({ isLoader: true })
 
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
 
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
@@ -186,7 +189,7 @@ class IndivisualPartListing extends Component {
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState( () => {
+        this.setState(() => {
             this.getTableListData()
         })
     }
@@ -196,9 +199,9 @@ class IndivisualPartListing extends Component {
     * @description Get DATA LIST
     */
     getTableListData = () => {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.props.getPartDataList((res) => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -406,6 +409,16 @@ class IndivisualPartListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(value));
+
+        if (Number(newPageSize) === 10) {
+            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 50) {
+            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 100) {
+            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
+        }
     };
 
     onBtExport = () => {
@@ -481,7 +494,7 @@ class IndivisualPartListing extends Component {
         return (
             <>
                 <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                  {this.state.isLoader && <LoaderCustom />}
+                    {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-3 no-filter-row">
                         <Col md="8">
                             <div className="warning-message mt-1">
@@ -575,7 +588,9 @@ class IndivisualPartListing extends Component {
                                 </div>
                                 <div className="d-flex pagination-button-container">
                                     <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                                    <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                                    {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                    {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                    {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                     <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                                 </div>
                             </div>
