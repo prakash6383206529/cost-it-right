@@ -907,6 +907,7 @@ export const API = {
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
+  getCostingReport: `${BASE_URL}/reports/get-costing-report`,
 
 }
 
