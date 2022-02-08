@@ -743,10 +743,17 @@ class AddVolume extends Component {
                           )}
                           {this.state.IsVendor && (
                             <Col md="3">
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                              {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
-                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                             <AsyncSelect 
+                             name="vendorName" 
+                             ref={this.myRef} 
+                             key={this.state.updateAsyncDropdown} 
+                             loadOptions={promiseOptions} 
+                             onChange={(e) => this.handleVendorName(e)} 
+                             value={this.state.vendorName} 
+                             noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                             isDisabled={isEditFlag ? true : false} />
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                              
                             </Col>

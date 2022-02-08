@@ -714,9 +714,16 @@ class AddLabour extends Component {
                       {this.state.IsEmployeContractual && (
                         <Col md="4">
                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
-                           <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : isDisable ? true : false} />
+                           <AsyncSelect 
+                           name="vendorName" 
+                           ref={this.myRef} 
+                           key={this.state.updateAsyncDropdown} 
+                           loadOptions={promiseOptions} 
+                           onChange={(e) => this.handleVendorName(e)} 
+                           value={this.state.vendorName} 
+                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                           isDisabled={isEditFlag ? true : isDisable ? true : false} />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           
                         </Col>

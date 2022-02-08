@@ -418,6 +418,24 @@ function CostingSummary(props) {
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
+                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
+                          disabled={technology.length === 0 ? true : false}
+                        />
+
+
+                        {/* <SearchableSelectHookForm
+                          label={'Assembly No./Part No.'}
+                          name={'Part'}
+                          placeholder={'Select'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={part.length !== 0 ? part : ''}
+                          options={renderDropdownListing('PartList')}
+                          mandatory={true}
+                          handleChange={handlePartChange}
+                          errors={errors.Part}
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
                         /> 
                       </Col>
