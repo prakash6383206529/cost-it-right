@@ -1,12 +1,10 @@
 import { checkForNull, loggedInUserId } from "../../helper"
-
-
-export const createToprowObjAndSave = (tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,tabId)=>{
+export const createToprowObjAndSave = (tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,tabId,setArrayForCosting)=>{
  
-
+ 
     let assemblyWorkingRow = []
 
-    tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
+    setArrayForCosting && setArrayForCosting.map((item) => {
       if(item.PartType === 'Sub Assembly'){
         let subAssemblyObj = {
           "CostingId": item.CostingId,
