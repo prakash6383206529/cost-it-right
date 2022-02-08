@@ -134,10 +134,24 @@ function Simulation(props) {
 
         switch (Number(master.value)) {
             case Number(SURFACETREATMENT):
-                temp = TempData
+                temp = TempData && TempData.map((item) => {
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
                 break;
             case Number(OPERATIONS):
-                temp = TempData
+                temp = TempData && TempData.map((item) => {
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
                 break;
             case Number(MACHINERATE):
                 temp = TempData
@@ -186,9 +200,9 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isOperationST={OPERATIONS} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:

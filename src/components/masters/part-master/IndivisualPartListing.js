@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { filterParams } from '../../common/DateFilter'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -53,9 +54,12 @@ class IndivisualPartListing extends Component {
             warningMessage: false,
             isBulkUpload: false,
             ActivateAccessibility: true,
-            loader: true,
+            isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            pageSize10: true,
+            pageSize50: false,
+            pageSize100: false,
         }
     }
 
@@ -63,10 +67,10 @@ class IndivisualPartListing extends Component {
 
 
     ApiActionCreator(skip, take, obj, isPagination) {
-
+        this.setState({ isLoader: true })
 
         this.props.getPartDataList(skip, take, obj, isPagination, (res) => {
-
+            this.setState({ isLoader: false })
 
             if (res.status === 202) {
                 this.setState({ pageNo: 0 })
@@ -89,7 +93,6 @@ class IndivisualPartListing extends Component {
             } else {
 
             }
-            this.setState({ loader: false })
         })
 
     }
@@ -167,7 +170,7 @@ class IndivisualPartListing extends Component {
             if (value.column.colId === 'RevisionNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, RevisionNumber: value.filterInstance.appliedModel.filter } }) }
 
             if (value.column.colId === 'DrawingNumber') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, DrawingNumber: value.filterInstance.appliedModel.filter } }) }
-            if (value.column.colId === 'EffectiveDate') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDate: value.filterInstance.appliedModel.filter } }) }
+            if (value.column.colId === 'EffectiveDateNew') { this.setState({ floatingFilterData: { ...this.state.floatingFilterData, EffectiveDate: DayTime(value.filterInstance.appliedModel.filter).format("YYYY-DD-MMTHH:mm:ss") } }) }
 
 
         }
@@ -186,7 +189,7 @@ class IndivisualPartListing extends Component {
 
     // Get updated list after any action performed.
     getUpdatedData = () => {
-        this.setState({ loader: true }, () => {
+        this.setState(() => {
             this.getTableListData()
         })
     }
@@ -196,7 +199,9 @@ class IndivisualPartListing extends Component {
     * @description Get DATA LIST
     */
     getTableListData = () => {
+        this.setState({ isLoader: true })
         this.props.getPartDataList((res) => {
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -207,7 +212,6 @@ class IndivisualPartListing extends Component {
             } else {
 
             }
-            this.setState({ loader: false })
         })
     }
 
@@ -353,7 +357,8 @@ class IndivisualPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        //return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? cellValue : '';
     }
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -372,19 +377,15 @@ class IndivisualPartListing extends Component {
     }
 
     closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-            this.getTableListData()
-        })
+        this.setState({ isBulkUpload: false })
+        this.onSearchExit(this)
     }
 
     formToggle = () => {
         this.props.formToggle()
     }
 
-    closeBulkUploadDrawer = () => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-    }
+
 
 
 
@@ -408,6 +409,16 @@ class IndivisualPartListing extends Component {
     onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
         this.state.gridApi.paginationSetPageSize(Number(value));
+
+        if (Number(newPageSize) === 10) {
+            this.setState({ pageSize10: true, pageSize50: false, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 50) {
+            this.setState({ pageSize10: false, pageSize50: true, pageSize100: false })
+        }
+        else if (Number(newPageSize) === 100) {
+            this.setState({ pageSize10: false, pageSize50: false, pageSize100: true })
+        }
     };
 
     onBtExport = () => {
@@ -476,7 +487,6 @@ class IndivisualPartListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter
@@ -484,8 +494,7 @@ class IndivisualPartListing extends Component {
         return (
             <>
                 <div className={`ag-grid-react part-manage-component ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                    {/* {this.props.loading && <Loader />} */}
-
+                    {this.state.isLoader && <LoaderCustom />}
                     <Row className="pt-3 no-filter-row">
                         <Col md="8">
                             <div className="warning-message mt-1">
@@ -528,8 +537,6 @@ class IndivisualPartListing extends Component {
                                             </ExcelFile>
 
                                         </>
-
-
                                     }
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.onSearchExit(this)}>
                                         <div className="refresh mr-0"></div>
@@ -539,11 +546,6 @@ class IndivisualPartListing extends Component {
                             </div>
                         </Col>
                     </Row>
-                    {this.state.loader && <LoaderCustom />}
-
-
-
-
                     <div className={`ag-grid-wrapper height-width-wrapper ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header mt-4 pt-1">
 
@@ -573,7 +575,7 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}></AgGridColumn>
+                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'}  ></AgGridColumn>
                                 <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
@@ -586,7 +588,9 @@ class IndivisualPartListing extends Component {
                                 </div>
                                 <div className="d-flex pagination-button-container">
                                     <p><button className="previous-btn" type="button" disabled={this.state.pageNo === 1 ? true : false} onClick={() => this.onBtPrevious(this)}> </button></p>
-                                    <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>
+                                    {this.state.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                    {this.state.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                    {this.state.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
                                     <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                                 </div>
                             </div>

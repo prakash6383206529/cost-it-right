@@ -18,11 +18,14 @@ import {
     GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     config,
-    GET_OPERATION_DATA_LIST
+    GET_OPERATION_COMBINED_DATA_LIST,
+    GET_OPERATION_INDIVIDUAL_DATA_LIST,
+    GET_OPERATION_SURFACE_TREATMENT_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
+import { setItemData } from '../../costing/actions/Costing';
 
 const headers = config
 
@@ -247,8 +250,11 @@ export function deleteCEDotherOperationAPI(Id, callback) {
  * @method getOperationsDataList
  * @description get all operation list
  */
-export function getOperationsDataList(filterData, callback) {
+export function getOperationsDataList(filterData, temp, callback) {
+    console.log('temp: ', temp);
+
     return (dispatch) => {
+     
         let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
@@ -262,16 +268,16 @@ export function getOperationsDataList(filterData, callback) {
                     payload = []
                 }
                 else {
-                    payload = response.data.DataList
+                    payload = response?.data?.DataList
+                    dispatch({
+                        type: GET_OPERATION_COMBINED_DATA_LIST,
+                        payload: payload
+                    })
                 }
-                dispatch({
-                    type: GET_OPERATION_DATA_LIST,
-                    payload: payload
-                })
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: GET_CED_OTHER_OPERATION_FAILURE });
-                callback(error);
+                // callback(error);
                 apiErrors(error);
             });
     };
@@ -292,6 +298,7 @@ export function createOperationsAPI(data, callback) {
         }).catch((error) => {
             dispatch({ type: CREATE_OTHER_OPERATION_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -339,6 +346,7 @@ export function updateOperationAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }

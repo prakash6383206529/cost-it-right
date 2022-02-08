@@ -42,7 +42,7 @@ class FuelListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-            isLoader: true,
+            isLoader: false,
             showPopup: false,
             deletedId: ''
 
@@ -54,8 +54,8 @@ class FuelListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
+        this.setState({isLoader:true})
         setTimeout(() => {
-
             this.getDataList(0, 0)
             this.props.getFuelComboData(() => { })
         }, 500);
@@ -71,9 +71,10 @@ class FuelListing extends Component {
             stateName: stateName,
         }
         this.props.getFuelDetailDataList(true, filterData, (res) => {
+            this.setState({isLoader:false})
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
-                this.setState({ tableData: Data }, () => { this.setState({ isLoader: false }) })
+                this.setState({ tableData: Data })
             } else if (res && res.response && res.response.status === 412) {
                 this.setState({ tableData: [] })
             } else {
@@ -282,13 +283,12 @@ class FuelListing extends Component {
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
             effectiveDateRenderer: this.effectiveDateFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
         };
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.state.isLoader && <LoaderCustom />} */}
+                {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
 
@@ -368,7 +368,6 @@ class FuelListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,

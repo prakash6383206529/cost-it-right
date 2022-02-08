@@ -22,6 +22,7 @@ import {
     GET_RM_TYPE_DATALIST_SUCCESS,
     GET_RMTYPE_SELECTLIST_SUCCESS,
     GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
+    GET_BOP_DOMESTIC_DATA_LIST,
     GET_RM_NAME_SELECTLIST,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
     GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
@@ -341,6 +342,7 @@ export function createRMSpecificationAPI(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -360,6 +362,7 @@ export function createAssociation(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -431,6 +434,7 @@ export function updateRMSpecificationAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -619,6 +623,7 @@ export function createMaterialTypeAPI(data, callback) {
                 type: API_FAILURE
             });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -684,6 +689,7 @@ export function updateMaterialtypeAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -731,6 +737,7 @@ export function createRMDomestic(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         });
     };
 }
@@ -804,6 +811,7 @@ export function updateRMDomesticAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -1106,6 +1114,7 @@ export function createRMImport(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1123,6 +1132,7 @@ export function updateRMImportAPI(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error)
             });
     };
 }
@@ -1575,7 +1585,7 @@ export function getRMApprovalList(callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}`, headers);
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${1}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //
@@ -1682,12 +1692,12 @@ export function masterApprovalRequestBySender(data, callback) {
 
 
 /**
- * @method approvalRequestByApprove
- * @description approving the request by approve
+ * @method approvalOrRejectRequestByMasterApprove
+ * @description approving or rejecting the request by approve or reject
  */
-export function approvalRequestByMasterApprove(data, callback) {
+export function approvalOrRejectRequestByMasterApprove(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.approveMasterByApprover, data, headers)
+        const request = axios.post(API.approveOrRejectMasterByApprover, data, headers)
         request
             .then((response) => {
                 if (response.data.Result) {
@@ -1707,52 +1717,38 @@ export function approvalRequestByMasterApprove(data, callback) {
     }
 }
 
-/**
- * @method rejectRequestByApprove
- * @description rejecting approval Request
- */
-export function rejectRequestByMasterApprove(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.rejectMasterByApprover, data, headers)
-        request
-            .then((response) => {
-                if (response.data.Result) {
-                    callback(response)
-                } else {
-                    dispatch({ type: API_FAILURE })
-                    if (response.data.Message) {
-                        Toaster.error(response.data.Message)
-                    }
-                }
-            })
-            .catch((error) => {
-                dispatch({ type: API_FAILURE })
-                apiErrors(error)
-            })
-    }
-}
-
 
 /**
  * @method getApprovalSummary
  * @description getting summary of approval by approval id
  */
 
-export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
+export function getMasterApprovalSummary(tokenNo, approvalProcessId,masterId, callback) {
     return (dispatch) => {
         const request = axios.get(
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
         request
             .then((response) => {
                 if (response.data.Result) {
+
+                    if(Number(masterId)===1){
                     dispatch({
                         type: GET_RM_DOMESTIC_LIST,
                         payload: response.data.Data.ImpactedMasterDataList,
                     })
                     callback(response)
-                } else {
-                    Toaster.error(MESSAGES.SOME_ERROR)
                 }
+                else if(Number(masterId)===2){
+                    dispatch({
+                        type: GET_BOP_DOMESTIC_DATA_LIST,
+                        payload: response.data.Data.ImpactedMasterDataListBOP,
+                    })
+                    callback(response)
+                }
+            }              
+                 else {
+                    Toaster.error(MESSAGES.SOME_ERROR)
+                  }
             })
             .catch((error) => {
                 dispatch({ type: API_FAILURE })

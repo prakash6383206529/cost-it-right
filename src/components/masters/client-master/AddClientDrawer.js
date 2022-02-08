@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength3 } from "../../../helper/validation";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter,maxLength12,minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength5 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
@@ -11,6 +11,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 
 
@@ -27,7 +28,8 @@ class AddClientDrawer extends Component {
             state: [],
             showStateCity: true,
             DropdownChanged: true,
-            DataToCheck: []
+            DataToCheck: [],
+            setDisable: false
         }
     }
 
@@ -195,7 +197,7 @@ class AddClientDrawer extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
+    onSubmit = debounce((values) => {
         const { city, country, DataToCheck, DropdownChanged } = this.state;
         const { isEditFlag, ID } = this.props;
 
@@ -209,6 +211,7 @@ class AddClientDrawer extends Component {
                 return false
             }
 
+            this.setState({ setDisable: true })
             let updateData = {
                 ClientId: ID,
                 ClientName: values.ClientName,
@@ -222,9 +225,9 @@ class AddClientDrawer extends Component {
                 LoggedInUserId: loggedInUserId(),
             }
 
-            this.props.reset()
             this.props.updateClient(updateData, (res) => {
-                if (res.data.Result) {
+                this.setState({ setDisable: false })
+                if (res?.data?.Result) {
                     Toaster.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
                     this.cancel();
                 }
@@ -232,6 +235,7 @@ class AddClientDrawer extends Component {
 
         } else {/** Add new detail for creating supplier master **/
 
+            this.setState({ setDisable: true })
             let formData = {
                 ClientName: values.ClientName,
                 CompanyName: values.CompanyName,
@@ -243,16 +247,16 @@ class AddClientDrawer extends Component {
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
             }
-            this.props.reset()
             this.props.createClient(formData, (res) => {
-                if (res.data.Result) {
+                this.setState({ setDisable: false })
+                if (res?.data?.Result) {
                     Toaster.success(MESSAGES.CLIENT_ADD_SUCCESS);
                     this.cancel();
                 }
             });
         }
 
-    }
+    }, 500)
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
@@ -264,7 +268,7 @@ class AddClientDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
-        const { country, isViewMode } = this.state;
+        const { country, isViewMode, setDisable } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -277,7 +281,6 @@ class AddClientDrawer extends Component {
                                 noValidate
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                             >
                                 <Row className="drawer-heading">
                                     <Col>
@@ -341,7 +344,7 @@ class AddClientDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
                                                     // maxLength={12}
@@ -356,10 +359,10 @@ class AddClientDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength5, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
-                                                    maxLength={3}
+                                                    maxLength={5}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                     disabled={isViewMode}
@@ -378,7 +381,7 @@ class AddClientDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             disabled={isViewMode}
-                                            validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                            validate={[postiveNumber, maxLength12,minLength10, checkWhiteSpaces]}
                                             // required={true}
                                             maxLength={10}
                                             customClassName={'withBorder'}
@@ -458,12 +461,14 @@ class AddClientDrawer extends Component {
                                             <button
                                                 type={'button'}
                                                 className="mr15 cancel-btn"
-                                                onClick={this.cancel} >
+                                                onClick={this.cancel}
+                                                disabled={setDisable}
+                                            >
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
                                             </button>
                                             <button
                                                 type="submit"
-                                                disabled={isViewMode}
+                                                disabled={isViewMode || setDisable}
                                                 className="user-btn save-btn" >
                                                 <div className={"save-icon"}></div>
                                                 {this.props.isEditFlag ? 'Update' : 'Save'}

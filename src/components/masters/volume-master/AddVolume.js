@@ -19,6 +19,9 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { EMPTY_DATA } from '../../../config/constants'
+import { debounce } from 'lodash'
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 const gridOptions = {};
 
@@ -115,6 +118,7 @@ class AddVolume extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
+      setDisable: false
     }
   }
 
@@ -485,7 +489,7 @@ class AddVolume extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const {
       IsVendor, selectedPlants, vendorName, part, year, tableData, VolumeId, destinationPlant } = this.state
     const userDetail = userDetails()
@@ -553,15 +557,17 @@ class AddVolume extends Component {
         this.cancel()
         return false
       }
+      this.setState({ setDisable: true })
       let updateData = {
         VolumeId: VolumeId,
         LoggedInUserId: loggedInUserId(),
         VolumeApprovedDetails: updateApproveArray,
         VolumeBudgetedDetails: updateBudgetArray,
       }
-      this.props.reset()
+
       this.props.updateVolume(updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
           this.cancel()
         }
@@ -569,6 +575,7 @@ class AddVolume extends Component {
     } else {
       /** Add new detail for creating supplier master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         IsVendor: IsVendor,
         VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -593,15 +600,16 @@ class AddVolume extends Component {
         DestinationPlantId: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '',
         DestinationPlant: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : ''
       }
-      this.props.reset()
+
       this.props.createVolume(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.VOLUME_ADD_SUCCESS)
           this.cancel()
         }
       })
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -639,8 +647,27 @@ class AddVolume extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isOpenVendor, edit } = this.state;
+    const { isEditFlag, isOpenVendor, edit, setDisable } = this.state;
+    const filterList = (inputValue) => {
+      let tempArr = []
 
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
     const cellEditProp = {
       mode: 'click',
       blurToSave: true,
@@ -740,39 +767,11 @@ class AddVolume extends Component {
                           )}
                           {this.state.IsVendor && (
                             <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="VendorName"
-                                    type="text"
-                                    label="Vendor Name"
-                                    component={searchableSelect}
-                                    placeholder={"Select"}
-                                    options={this.renderListing(
-                                      "VendorNameList"
-                                    )}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.vendorName == null ||
-                                        this.state.vendorName.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleVendorName
-                                    }
-                                    valueDescription={this.state.vendorName}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.vendorToggler}
-                                    className={"plus-icon-square mr15 right"}
-                                  ></div>
-                                )}
-                              </div>
+                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                             
                             </Col>
 
                           )}
@@ -849,7 +848,7 @@ class AddVolume extends Component {
                           </Col>
 
                           <Col>
-                            <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <=0 ?"overlay-contain": ""}`} style={{ width: '100%', height: '100%' }}>
+                            <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                               {/* <Col md="12"> */}
                               <div
                                 className="ag-theme-material"
@@ -891,6 +890,7 @@ class AddVolume extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>{" "}
                             {"Cancel"}
@@ -898,6 +898,7 @@ class AddVolume extends Component {
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
+                            disabled={setDisable}
                           >
                             <div className={"save-icon"}> </div>
                             {isEditFlag ? "Update" : "Save"}

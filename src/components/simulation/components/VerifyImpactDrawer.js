@@ -8,6 +8,7 @@ import { Fgwiseimactdata } from './FgWiseImactData'
 import DayTime from '../../common/DayTimeWrapper'
 import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulation';
 import AssemblyWiseImpact from './AssemblyWiseImpact';
+import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
 
 function VerifyImpactDrawer(props) {
@@ -19,7 +20,8 @@ function VerifyImpactDrawer(props) {
   const [fgWiseAcc, setFgWiseAcc] = useState(false)
   const lastSimulationData = useSelector(state => state.comman.lastSimulationData)
   const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
-  const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(impactedMasterDataListForLastRevisionData <= 0 ? true : false )
+  const [lastRevisionDataAccordial, setLastRevisionDataAccordial] = useState(impactedMasterDataListForLastRevisionData <= 0 ? true : false)
+  const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const headerName = ['Revision No.', 'Name', 'Old Cost/Pc', 'New Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'OldCost', 'NewCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -50,7 +52,9 @@ function VerifyImpactDrawer(props) {
 
   useEffect(() => {
     if (vendorIdState && EffectiveDate && simulationId !== undefined) {
-      dispatch(getLastSimulationData(vendorIdState, EffectiveDate, () => { }))
+      dispatch(getLastSimulationData(vendorIdState, EffectiveDate, (res) => {
+        setMasterIdForLastRevision(res?.data?.Data?.SimulationTechnologyId)
+      }))
       dispatch(getImpactedMasterData(simulationId, () => { }))
     }
 
@@ -78,32 +82,33 @@ function VerifyImpactDrawer(props) {
               </Row>
 
               <Row >
-                <Col md="12" className="mt-3">
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Vendor :</span>
+                <Col md="12">
+                  <div className="border impact-drawer-header">
+                  <span class=" mr-2">
+                    <span class="grey-text d-block">Vendor :</span>
                     <span>{amendmentDetails.Vendor}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Technology:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Technology:</span>
                     <span>{amendmentDetails.Technology}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Master:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Master:</span>
                     <span>{amendmentDetails.SimulationAppliedOn}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Costing Head:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Costing Head:</span>
                     <span>{amendmentDetails.CostingHead}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Effective Date:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Effective Date:</span>
                     <span>{DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                   </span>
-
+                  </div>
                 </Col>
               </Row>
 
@@ -115,7 +120,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
-                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />
+                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} lastRevision={false} />
                 </div>
                 }
               </Row>
@@ -129,7 +134,7 @@ function VerifyImpactDrawer(props) {
                 </Col>
               </Row>
 
-              {fgWiseAcc &&<Row className="mb-3 pr-0 mx-0">
+              {fgWiseAcc && <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
                   <Fgwiseimactdata
                     // DisplayCompareCosting={DisplayCompareCosting}
@@ -152,11 +157,12 @@ function VerifyImpactDrawer(props) {
                       </div>
                     </Col>
                     {showAssemblyWise && <div className="accordian-content w-100 px-3 impacted-min-height">
-                      <AssemblyWiseImpact
+                      <AssemblyWiseImpactSummary
                         dataForAssemblyImpact={dataForAssemblyImpactInVerifyImpact}
                         impactType={'AssemblySummary'}
                         isPartImpactAssembly={false}
                         customClass="verify-drawer"
+                        isImpactDrawer={true}
                       />
                     </div>
                     }
@@ -172,7 +178,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false}/>}
+                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
 
                 </div>
               </Row>

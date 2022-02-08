@@ -310,7 +310,6 @@ function ApproveRejectDrawer(props) {
     const reason = getValues('reason')
     const dept = getValues('dept')
     const approver = getValues('approver')
-
     if (type === 'Reject') {
       if (remark) {
         setShowError(false)

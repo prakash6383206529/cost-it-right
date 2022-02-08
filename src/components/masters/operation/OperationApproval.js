@@ -21,7 +21,7 @@ function OperationApproval(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
     const { approvalList } = useSelector((state) => state.material)
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -37,6 +37,7 @@ function OperationApproval(props) {
 
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
+        setLoader(true)
         dispatch(getRMApprovalList((res) => {
             setLoader(false)
         }))
@@ -141,8 +142,8 @@ function OperationApproval(props) {
 
     return (
         <div>
+              {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
-
                 <Col md="6" lg="6" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
                         <div>
@@ -161,7 +162,6 @@ function OperationApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    {loader && <LoaderCustom />}
                     <div className={`ag-grid-react`}>
                         <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">

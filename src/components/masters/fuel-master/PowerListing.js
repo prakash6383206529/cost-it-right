@@ -49,7 +49,8 @@ class PowerListing extends Component {
       vendorName: [],
       vendorPlant: [],
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      isLoader:false
     }
   }
 
@@ -66,13 +67,14 @@ class PowerListing extends Component {
 
   getDataList = () => {
     const { StateName, plant, vendorName, vendorPlant } = this.state;
+    this.setState({isLoader:true})
     if (!this.state.IsVendor) {
-
       const filterData = {
         plantID: plant ? plant.value : '',
         stateID: StateName ? StateName.value : '',
       }
       this.props.getPowerDetailDataList(filterData, (res) => {
+        this.setState({isLoader:false})
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           this.setState({ tableData: Data })
@@ -350,7 +352,7 @@ class PowerListing extends Component {
     return (
 
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
             <Col md="4" className="switch mb-1">
@@ -447,7 +449,6 @@ class PowerListing extends Component {
                     paginationPageSize={10}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
-                    loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
