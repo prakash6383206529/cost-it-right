@@ -403,7 +403,6 @@ class BulkUpload extends Component {
                                 <Col>
                                     <div className={'header-wrapper left'}>
                                         <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload `}</h3>
-                                        {console.log('messageLabel: ', messageLabel)}
                                     </div>
                                     <div
                                         onClick={(e) => this.toggleDrawer(e)}
