@@ -1027,7 +1027,7 @@ const CostingSummaryTable = (props) => {
 
                     <tr class="background-light-blue">
                       <th>Net Surface Treatment Cost</th>
-                      { }
+
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
