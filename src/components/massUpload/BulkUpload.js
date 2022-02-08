@@ -35,8 +35,9 @@ class BulkUpload extends Component {
 
             faildRecords: false,
             failedData: [],
-            costingHead:  props?.fileName==="InterestRate"?'VBC':'ZBC',
+            costingHead: props?.fileName === "InterestRate" ? 'VBC' : 'ZBC',
             uploadfileName: "",
+            setDisable: false
         }
     }
 
@@ -295,8 +296,9 @@ class BulkUpload extends Component {
             });
 
         } else if (fileName === 'PartComponent') {
-
+            this.setState({ setDisable: true })
             this.props.partComponentBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
@@ -363,7 +365,7 @@ class BulkUpload extends Component {
         }
 
         else {
-            
+
 
         }
 
@@ -375,7 +377,7 @@ class BulkUpload extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
-        const { faildRecords, failedData, costingHead } = this.state;
+        const { faildRecords, failedData, costingHead, setDisable } = this.state;
 
         if (faildRecords) {
             return <Downloadxls
@@ -401,6 +403,7 @@ class BulkUpload extends Component {
                                 <Col>
                                     <div className={'header-wrapper left'}>
                                         <h3>{isEditFlag ? '' : `${messageLabel} Bulk Upload `}</h3>
+                                        {console.log('messageLabel: ', messageLabel)}
                                     </div>
                                     <div
                                         onClick={(e) => this.toggleDrawer(e)}
@@ -473,12 +476,16 @@ class BulkUpload extends Component {
                                     <button
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
-                                        onClick={this.cancel} >
+                                        onClick={this.cancel}
+                                        disabled={setDisable}
+                                    >
                                         <div className={'cancel-icon'}></div> {'Cancel'}
                                     </button>
                                     <button
                                         type="submit"
-                                        className="submit-button save-btn" >
+                                        className="submit-button save-btn"
+                                        disabled={setDisable}
+                                    >
                                         <div className={"save-icon"}></div>
                                         {isEditFlag ? 'Update' : 'Save'}
                                     </button>
