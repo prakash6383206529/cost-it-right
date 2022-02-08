@@ -340,7 +340,7 @@ function RMImportListing(props) {
     })
     return (
 
-      <ExcelSheet data={temp} name={'RM Domestic'}>
+      <ExcelSheet data={temp} name={'RM Import'}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
@@ -459,7 +459,7 @@ function RMImportListing(props) {
                   {
                     DownloadAccessibility &&
                     <>
-                      <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                      <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
                         <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
                           {/* DOWNLOAD */}
                         </button>}>
