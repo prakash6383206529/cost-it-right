@@ -64,7 +64,7 @@ class AddRMDomestic extends Component {
       VendorCode: '',
       selectedVendorPlants: [],
       vendorLocation: [],
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
       updateAsyncDropdown: false,
 
       HasDifferentSource: false,
@@ -72,6 +72,7 @@ class AddRMDomestic extends Component {
 
       UOM: [],
       effectiveDate: '',
+      minEffectiveDate: '',
       remarks: '',
 
       isShowForm: false,
@@ -251,7 +252,7 @@ class AddRMDomestic extends Component {
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState(
-        { vendorName: newValue, isVendorNameNotSelected:false, selectedVendorPlants: [], vendorLocation: [] },
+        { vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] },
         () => {
           const { vendorName } = this.state
           const result =
@@ -441,6 +442,7 @@ class AddRMDomestic extends Component {
                 const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
                 const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
                 this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
+                this.setState({ minEffectiveDate: Data.EffectiveDate })
 
                 this.setState({
                   isEditFlag: true,
@@ -960,9 +962,9 @@ class AddRMDomestic extends Component {
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
     const { initialConfiguration } = this.props
-    this.setState({ setDisable: true, disablePopup:false})
+    this.setState({ setDisable: true, disablePopup: false })
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -1110,7 +1112,7 @@ class AddRMDomestic extends Component {
   onPopupConfirm = () => {
     this.setState({ disablePopup: true })
     this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false  })
+      this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
         this.clearForm()
@@ -1145,13 +1147,13 @@ class AddRMDomestic extends Component {
 
     const { handleSubmit, initialConfiguration, data } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
-    
-    
+
+
     const filterList = (inputValue) => {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -1443,7 +1445,7 @@ class AddRMDomestic extends Component {
                                 mendatory={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
-                                
+
                               />
                             </Col>
                           )}
@@ -1614,6 +1616,7 @@ class AddRMDomestic extends Component {
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 validate={[required]}
+                                minDate={this.state.minEffectiveDate}
                                 autoComplete={'off'}
                                 required={true}
                                 changeHandler={(e) => {
