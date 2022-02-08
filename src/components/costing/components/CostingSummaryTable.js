@@ -1031,8 +1031,8 @@ const CostingSummaryTable = (props) => {
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
-                            <td>
-                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                            < td >
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
                                 (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
