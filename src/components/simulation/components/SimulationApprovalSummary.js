@@ -903,7 +903,7 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
                                                                 {
-                                                                    (String(SimulationTechnologyId) !== SURFACETREATMENT || String(SimulationTechnologyId) !== OPERATIONS) &&
+                                                                    (String(SimulationTechnologyId) === SURFACETREATMENT || String(SimulationTechnologyId) === OPERATIONS) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
                                                                         <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
