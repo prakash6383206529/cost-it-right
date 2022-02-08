@@ -1671,6 +1671,7 @@ function CostingDetails(props) {
                           errors={errors.Part}
                           message={"Enter"}
                           disabled={technology.length === 0 ? true : false}
+                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
                         />
 
 
