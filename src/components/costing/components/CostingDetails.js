@@ -1670,6 +1670,7 @@ function CostingDetails(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={technology.length === 0 ? true : false}
+                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
                         />
                       </Col>
                       <Col className="col-md-15">

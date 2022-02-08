@@ -1412,9 +1412,17 @@ class AddRMDomestic extends Component {
 
                           <Col md="4" className='mb-4'>
                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
-                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
+                           <AsyncSelect 
+                           name="DestinationSupplierId" 
+                           ref={this.myRef} 
+                           key={this.state.updateAsyncDropdown} 
+                           loadOptions={promiseOptions}
+                           onChange={(e) => this.handleVendorName(e)} 
+                           value={this.state.vendorName} 
+                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                           isDisabled={isEditFlag || isViewFlag} 
+                           />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
 
