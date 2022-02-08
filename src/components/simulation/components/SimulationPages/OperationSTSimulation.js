@@ -25,7 +25,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, isOperation, lastRevision } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -67,7 +67,8 @@ function OperationSTSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let valueShow
-        switch (Number(selectedMasterForSimulation?.value)) {
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        switch (Number(master)) {
             case Number(SURFACETREATMENT):
                 valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
                 break;
@@ -96,7 +97,8 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         let valueShow
-        switch (Number(selectedMasterForSimulation?.value)) {
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        switch (Number(master)) {
             case Number(SURFACETREATMENT):
                 valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
                 break;
