@@ -529,6 +529,7 @@ export function bulkUploadMachineZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -547,6 +548,7 @@ export function bulkUploadMachineVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -565,6 +567,7 @@ export function bulkUploadMachineMoreZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }

@@ -253,6 +253,7 @@ export function deleteCEDotherOperationAPI(Id, callback) {
 export function getOperationsDataList(filterData, temp, callback) {
 
     return (dispatch) => {
+<<<<<<< HEAD
         dispatch({
             type: GET_OPERATION_SURFACE_TREATMENT_DATA_LIST,
             payload: []
@@ -266,6 +267,10 @@ export function getOperationsDataList(filterData, temp, callback) {
             payload: []
         })
         let payloadSurfaceTreatment, payloadOperation, tempData, payload
+=======
+
+        let payload
+>>>>>>> 9e603e9fd (Bulk upload disable applied and callback applied in action creator)
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, headers)
@@ -698,6 +703,7 @@ export function operationZBCBulkUpload(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -716,6 +722,7 @@ export function operationVBCBulkUpload(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }

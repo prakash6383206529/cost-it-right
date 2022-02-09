@@ -161,18 +161,18 @@ class BulkUpload extends Component {
 
     responseHandler = (res) => {
         const { messageLabel, } = this.props;
-        if (res.data.Data) {
-            let Data = res.data.Data;
-            let DynamicData = res.data.DynamicData;
+        if (res?.data?.Data) {
+            let Data = res?.data?.Data;
+            let DynamicData = res?.data?.DynamicData;
 
-            if (Data.CountSucceeded > 0) {
+            if (Data?.CountSucceeded > 0) {
                 Toaster.success(`${Data.CountSucceeded} ${messageLabel}  has been uploaded successfully.`)
-                if (DynamicData && DynamicData.IsDensityAvailable === false) {
+                if (DynamicData && DynamicData?.IsDensityAvailable === false) {
                     this.props.densityAlert()
                 }
             }
 
-            if (Data.CountFailed > 0) {
+            if (Data?.CountFailed > 0) {
                 Toaster.warning(res.data.Message);
                 this.setState({
                     failedData: Data.FaildRecords,
@@ -207,91 +207,106 @@ class BulkUpload extends Component {
         }
 
         if (fileName === 'RMDomestic' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadRMDomesticZBC(rmUploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMDomestic' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadRMDomesticVBC(rmUploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadRMImportZBC(rmUploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMImport' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadRMImportVBC(rmUploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'RMSpecification') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadRMSpecification(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Vendor') {
-
+            this.setState({ setDisable: true })
             this.props.vendorBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Operation' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.operationZBCBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Operation' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.operationVBCBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Fuel') {
-
+            this.setState({ setDisable: true })
             this.props.fuelBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Overhead') {
-
+            this.setState({ setDisable: true })
             this.props.overheadBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Profit') {
-
+            this.setState({ setDisable: true })
             this.props.profitBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Labour') {
-
+            this.setState({ setDisable: true })
             this.props.labourBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
         } else if (fileName === 'Machine' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadMachineZBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Machine' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadMachineVBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'Machine' && costingHead === 'ZBC_MACHINE_MORE') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadMachineMoreZBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
@@ -303,62 +318,72 @@ class BulkUpload extends Component {
             });
 
         } else if (fileName === 'BOPDomestic' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadBOPDomesticZBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'BOPDomestic' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadBOPDomesticVBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'BOPImport' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadBOPImportZBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'BOPImport' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadBOPImportVBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'ActualVolume' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadVolumeActualZBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'ActualVolume' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadVolumeActualVBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'BudgetedVolume' && costingHead === 'ZBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadVolumeBudgetedZBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'BudgetedVolume' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadVolumeBudgetedVBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'InterestRate' && costingHead === 'VBC') {
-
+            this.setState({ setDisable: true })
             this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
         } else if (fileName === 'ProductComponent') {
-
+            this.setState({ setDisable: true })
             this.props.productComponentBulkUpload(uploadData, (res) => {
+                this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
 
