@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm } from 'redux-form'
+import { reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { focusOnError } from '../../layout/FormInputs'
 import Toaster from '../../common/Toaster'
@@ -419,20 +419,7 @@ class VolumeListing extends Component {
     } = this.state
     const ExcelFile = ReactExport.ExcelFile;
 
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    }
 
     const defaultColDef = {
       resizable: true,
@@ -527,7 +514,6 @@ class VolumeListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>

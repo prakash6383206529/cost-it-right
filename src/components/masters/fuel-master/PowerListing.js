@@ -321,7 +321,7 @@ class PowerListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, initialConfiguration, DownloadAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
     const { isEditFlag, } = this.state;
     const ExcelFile = ReactExport.ExcelFile;
 
