@@ -1246,7 +1246,7 @@ class AddRMImport extends Component {
                               </div>
                               {!isEditFlag && (
                                 <div
-                                  onClick={this.rmToggler}
+                                  onClick={this.vendorToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
@@ -1403,7 +1403,7 @@ class AddRMImport extends Component {
                                      
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
-                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                           <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
                               <div className="fullinput-icon">
                            <AsyncSelect 
                            name="DestinationSupplierId" 
