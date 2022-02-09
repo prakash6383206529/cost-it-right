@@ -80,7 +80,8 @@ class AddBOPDomestic extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader:false
     }
   }
 
@@ -100,8 +101,9 @@ class AddBOPDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.setState({inputLoader:true})
     this.props.fetchMaterialComboAPI(res => { });
-    this.props.getVendorTypeBOPSelectList(() => { })
+    this.props.getVendorTypeBOPSelectList(() => { this.setState({inputLoader:false}) })
     this.getDetails()
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
@@ -143,10 +145,11 @@ class AddBOPDomestic extends Component {
       selectedPlants: [],
     }, () => {
       const { IsVendor } = this.state;
+      this.setState({inputLoader:true})
       if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { })
+        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false}) })
       } else {
-        this.props.getVendorTypeBOPSelectList(() => { })
+        this.props.getVendorTypeBOPSelectList(() => { this.setState({inputLoader:false}) })
       }
     });
   }
@@ -190,10 +193,11 @@ class AddBOPDomestic extends Component {
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({inputLoader:true})
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false}) })
           } else {
-            this.props.getVendorTypeBOPSelectList(() => { })
+            this.props.getVendorTypeBOPSelectList(() => { this.setState({inputLoader:false}) })
           }
 
           this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -390,10 +394,11 @@ class AddBOPDomestic extends Component {
   closeVendorDrawer = (e = '') => {
     this.setState({ isOpenVendor: false }, () => {
       const { IsVendor } = this.state;
+      this.setState({inputLoader:true})
       if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { })
+        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false}) })
       } else {
-        this.props.getVendorTypeBOPSelectList(() => { })
+        this.props.getVendorTypeBOPSelectList(() => { this.setState({inputLoader:false}) })
       }
     })
   }
@@ -943,8 +948,16 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
-                           <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
+                           <AsyncSelect 
+                           name="vendorName" 
+                           ref={this.myRef} 
+                           key={this.state.updateAsyncDropdown} 
+                           loadOptions={promiseOptions} 
+                           onChange={(e) => this.handleVendorName(e)} 
+                           value={this.state.vendorName} 
+                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                           isDisabled={isEditFlag ? true : false} />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             
                           </Col>
