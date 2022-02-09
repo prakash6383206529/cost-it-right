@@ -16,9 +16,15 @@ import {
   loggedInUserId
 
 } from '../../../../../helper'
+import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
 
+
+
+
+
 function HotForging(props) {
+  const { rmRowData } = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -74,7 +80,7 @@ function HotForging(props) {
   const dispatch = useDispatch()
   const [inputWeightValue, setInputWeightValue] = useState(0)
   const [lostWeight, setLostWeight] = useState(0)
-  const { rmRowData } = props
+  
   const [tableVal, setTableVal] = useState([])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
@@ -159,6 +165,7 @@ function HotForging(props) {
   /**
    * @method calculateScrapWeight
    * @description Calculate Scrap Weight
+   *
    */
   const calculateScrapWeight = () => {
     const inputWeight = Number(getValues('inputWeight')) // Need to confirm Input RM weight is same as input weight
@@ -185,6 +192,7 @@ function HotForging(props) {
     setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
     //Need to confirm this formula
   }
+
   /**
    * @method onSubmit
    * @description Form submission Function
@@ -202,7 +210,10 @@ function HotForging(props) {
     obj.LossOfTypeDetails = tableVal
     obj.LostSum = lostWeight
     obj.GrossWeight = dataSend.forgeWeight
-
+    obj.majorDia = dataSend.majorDia
+    obj.minorDia = dataSend.minorDia
+    obj.length = dataSend.length
+    obj.forgingVolume = dataSend.forgingVolume
 
     obj.CostingId = costData.CostingId
     obj.TechnologyId = costData.TechnologyId
@@ -258,6 +269,32 @@ function HotForging(props) {
       value: 8,
     },
   ]
+  const machineDropDown = [
+    {
+      label: 'Circular',
+      value: 1,
+    },
+    {
+      label: 'Semi Circular',
+      value: 2,
+    },
+    {
+      label: 'Quarter Circular',
+      value: 3,
+    },
+    {
+      label: 'Square',
+      value: 4,
+    },
+    {
+      label: 'Rectangular',
+      value: 9,
+    },
+    {
+      label: 'Irregular',
+      value: 10,
+    },
+  ]
   return (
     <Fragment>
       <Row>
@@ -266,11 +303,7 @@ function HotForging(props) {
             <Col md="12" className={'mt25'}>
               <div className="border px-3 pt-3">
                 <Row>
-                  <Col md="10">
-                    <div className="left-border">
-                      {'Input Weight Calculator:'}
-                    </div>
-                  </Col>
+                  
                   <Col md="12">
                     <Row className={'mt15'}>
                       <Col md="3">
@@ -298,119 +331,21 @@ function HotForging(props) {
                           disabled={props.CostingViewMode ? props.CostingViewMode : false}
                         />
                       </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Total Machining Stock`}
-                          name={'machiningStock'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={true}
-                          rules={{
-                            required: true,
-                            pattern: {
-
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.',
-                            },
-                          }}
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.machiningStock}
-                          disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Forge Weight`}
-                          name={'forgeWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.forgeWeight}
-                          disabled={true}
-                        />
-                      </Col>
-
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Input Weight(UOM)`}
-                          name={'inputWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.inputWeight}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Slug Weight`}
-                          name={'slugWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.slugWeight}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Scrap Weight`}
-                          name={'scrapWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.scrapWeight}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Scrap Cost`}
-                          name={'scrapCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.scrapCost}
-                          disabled={true}
-                        />
-                      </Col>
+                      
                     </Row>
+                    <MachiningStockTable
+                      dropDownMenu={machineDropDown}
+                      CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
+                      calculation={calculateInputWeight}
+                      weightValue={inputWeightValue}
+                      netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
+                      tableValue={tableData}
+                      rmRowData={props.rmRowData}
+                    />
                   </Col>
                 </Row>
+               
                 <LossStandardTable
                   dropDownMenu={dropDown}
                   CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
@@ -420,6 +355,7 @@ function HotForging(props) {
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                 />
+                
               </div>
             </Col>
             <div className="mt25 col-md-12 text-right">
