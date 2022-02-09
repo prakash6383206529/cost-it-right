@@ -6496,10 +6496,17 @@ left: 17rem;
     }
   }
    // <--------------END Part number showing on hover in costing sticky header --------->
-
   .rm-name-head {
     min-width: 125px;
   }
+  .view-rm-cost {
+    .drawer-1200 {
+        min-width: 1106px;
+        .drawer-1500px {
+          max-width: calc(100vw - 287px);
+        }
+      }
+    }
 }
 
 @media screen and (max-width:$middleDesktop) {
