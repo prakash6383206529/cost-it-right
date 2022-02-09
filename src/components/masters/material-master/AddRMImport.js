@@ -1387,6 +1387,8 @@ class AddRMImport extends Component {
                                      
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
+                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
                            <AsyncSelect 
                            name="DestinationSupplierId" 
                            ref={this.myRef} 
@@ -1396,8 +1398,11 @@ class AddRMImport extends Component {
                            value={this.state.vendorName} 
                            noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                            isDisabled={isEditFlag || isViewFlag} />
+                            
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                           
+                           </div>
+                           {!isEditFlag && (<div   onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>  )}
+                           </div>
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
