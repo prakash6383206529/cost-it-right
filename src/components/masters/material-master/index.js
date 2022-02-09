@@ -60,7 +60,7 @@ function RowMaterialMaster(props) {
 
         applyPermission(topAndLeftMenuData);
 
-    }, [])
+    }, [topAndLeftMenuData])
 
 
 
@@ -212,7 +212,7 @@ function RowMaterialMaster(props) {
                 <Col sm="4">
                     <h1>{`Raw Material Master`}</h1>
                 </Col>
-                <ScrollToTop pointProp ={"go-top-top"} />
+                <ScrollToTop pointProp={"go-top-top"} />
             </Row>
             <Row>
                 <Col>
