@@ -413,20 +413,7 @@ class InterestRateListing extends Component {
       costingHeadFormatter: this.costingHeadFormatter,
       hyphenFormatter: this.hyphenFormatter
     };
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.interestRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
-      exportCSVBtn: this.createCustomExportCSVButton,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    };
 
     return (
       <>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm } from 'redux-form'
+import { reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { focusOnError } from '../../layout/FormInputs'
 import Toaster from '../../common/Toaster'
@@ -418,6 +418,7 @@ class VolumeListing extends Component {
       BulkUploadAccessibility,
       DownloadAccessibility
     } = this.state
+<<<<<<< HEAD
     const options = {
       clearSearch: true,
       noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
@@ -429,8 +430,11 @@ class VolumeListing extends Component {
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
       lastPage: <span className="last-page-pg"></span>,
+=======
+    const ExcelFile = ReactExport.ExcelFile;
 
-    }
+>>>>>>> a10b07e8f (V1.1.252 + unused code removed)
+
 
     const defaultColDef = {
       resizable: true,
@@ -525,7 +529,6 @@ class VolumeListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
