@@ -918,7 +918,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (!simulationDrawer && icons) &&
+                                (data.CostingHeading !== VARIANCE && !simulationDrawer && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
