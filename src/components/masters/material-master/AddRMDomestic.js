@@ -1436,6 +1436,8 @@ class AddRMDomestic extends Component {
                            isDisabled={isEditFlag || isViewFlag} 
                            />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                           {!isEditFlag && (<div   onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>  )}
+                          
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
