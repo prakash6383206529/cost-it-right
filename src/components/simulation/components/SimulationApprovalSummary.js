@@ -964,7 +964,7 @@ function SimulationApprovalSummary(props) {
                                                                     (String(SimulationTechnologyId) === SURFACETREATMENT || String(SimulationTechnologyId) === OPERATIONS) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
