@@ -633,9 +633,9 @@ function RunSimulationDrawer(props) {
                                                         errors={errors.EffectiveDate}
                                                     />
                                                 </Col>
-                                                <Col md="12" className="mt-4 warning-text-container">
+                                                <Col md="12" className="mt-4 pt-1 warning-text-container">
                                                     <div className="warning-text">
-                                                        <WarningMessage dClass="mr-3" message={"Unselected norms won't be applied in future revisions"} />
+                                                        <WarningMessage dClass="mr-3 pt-2" message={"Unselected norms won't be applied in future revisions"} />
                                                     </div>
                                                 </Col>
                                             </Row>
