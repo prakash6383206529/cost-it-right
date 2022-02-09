@@ -69,9 +69,9 @@ class InterestRateListing extends Component {
   componentDidMount() {
 
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
       this.props.getICCAppliSelectList(() => { })
       this.props.getPaymentTermsAppliSelectList(() => { })
       this.getTableListData()
@@ -267,7 +267,7 @@ class InterestRateListing extends Component {
   * @description Renders Costing head
   */
   costingHeadFormatter = (props) => {
-    console.log('props: ', props);
+
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue;
   }
@@ -430,7 +430,7 @@ class InterestRateListing extends Component {
 
     return (
       <>
-       
+
         <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp='go-to-top' />
           <form
@@ -504,7 +504,7 @@ class InterestRateListing extends Component {
           </form>
 
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>

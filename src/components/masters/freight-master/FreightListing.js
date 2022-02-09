@@ -53,9 +53,9 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-this.setState({isLoader: true})
+    this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
       this.props.fetchSupplierCityDataAPI(res => { });
       this.getDataList()
     }, 500);
@@ -73,7 +73,7 @@ this.setState({isLoader: true})
       destination_city_id: destination_city_id,
     }
     this.props.getFreightDataList(filterData, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         this.setState({ tableData: Data })
@@ -330,7 +330,7 @@ this.setState({isLoader: true})
         </form>
         <Row>
           <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.freightDetail && this.props.freightDetail?.length <=0 ?"overlay-contain": ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.freightDetail && this.props.freightDetail?.length <= 0 ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
