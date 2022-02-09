@@ -1245,6 +1245,7 @@ export function bulkUploadRMDomesticZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1263,6 +1264,7 @@ export function bulkUploadRMDomesticVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1299,6 +1301,7 @@ export function bulkUploadRMImportZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1317,6 +1320,7 @@ export function bulkUploadRMImportVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1335,6 +1339,7 @@ export function bulkUploadRMSpecification(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1726,7 +1731,7 @@ export function approvalOrRejectRequestByMasterApprove(data, callback) {
  * @description getting summary of approval by approval id
  */
 
-export function getMasterApprovalSummary(tokenNo, approvalProcessId,masterId, callback) {
+export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, callback) {
     return (dispatch) => {
         const request = axios.get(
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
@@ -1734,24 +1739,24 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId,masterId, ca
             .then((response) => {
                 if (response.data.Result) {
 
-                    if(Number(masterId)===1){
-                    dispatch({
-                        type: GET_RM_DOMESTIC_LIST,
-                        payload: response.data.Data.ImpactedMasterDataList,
-                    })
-                    callback(response)
+                    if (Number(masterId) === 1) {
+                        dispatch({
+                            type: GET_RM_DOMESTIC_LIST,
+                            payload: response.data.Data.ImpactedMasterDataList,
+                        })
+                        callback(response)
+                    }
+                    else if (Number(masterId) === 2) {
+                        dispatch({
+                            type: GET_BOP_DOMESTIC_DATA_LIST,
+                            payload: response.data.Data.ImpactedMasterDataListBOP,
+                        })
+                        callback(response)
+                    }
                 }
-                else if(Number(masterId)===2){
-                    dispatch({
-                        type: GET_BOP_DOMESTIC_DATA_LIST,
-                        payload: response.data.Data.ImpactedMasterDataListBOP,
-                    })
-                    callback(response)
-                }
-            }              
-                 else {
+                else {
                     Toaster.error(MESSAGES.SOME_ERROR)
-                  }
+                }
             })
             .catch((error) => {
                 dispatch({ type: API_FAILURE })

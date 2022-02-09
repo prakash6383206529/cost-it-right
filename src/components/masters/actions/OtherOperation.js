@@ -254,7 +254,7 @@ export function getOperationsDataList(filterData, temp, callback) {
     console.log('temp: ', temp);
 
     return (dispatch) => {
-     
+
         let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
@@ -667,6 +667,7 @@ export function operationZBCBulkUpload(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -685,6 +686,7 @@ export function operationVBCBulkUpload(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
