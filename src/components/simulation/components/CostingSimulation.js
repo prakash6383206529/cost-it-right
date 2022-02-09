@@ -26,6 +26,7 @@ import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -147,7 +148,7 @@ function CostingSimulation(props) {
     }
 
     const getCostingList = (plantId = '', rawMatrialId = '') => {
-        switch (Number(selectedMasterForSimulation?.value)) {
+        switch (Number(reactLocalStorage.getObject("masterForSimulation")?.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
             case Number(BOPDOMESTIC):
