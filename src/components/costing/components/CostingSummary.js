@@ -419,6 +419,7 @@ function CostingSummary(props) {
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
+                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
                           disabled={technology.length === 0 ? true : false}
                         />
 
