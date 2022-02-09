@@ -32,6 +32,7 @@ function RowMaterialMaster(props) {
     const [isViewFlag, setisViewFlag] = useState(false);
     const [Id, setId] = useState('');
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1');
+
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
 
     const [isRMImportForm, setisRMImportForm] = useState(false);
@@ -58,7 +59,7 @@ function RowMaterialMaster(props) {
 
         applyPermission(topAndLeftMenuData);
 
-    }, [])
+    }, [topAndLeftMenuData])
 
 
 
@@ -212,7 +213,7 @@ function RowMaterialMaster(props) {
                 <Col sm="4">
                     <h1>{`Raw Material Master`}</h1>
                 </Col>
-                <ScrollToTop pointProp ={"go-top-top"} />
+                <ScrollToTop pointProp={"go-top-top"} />
             </Row>
             <Row>
                 <Col>
