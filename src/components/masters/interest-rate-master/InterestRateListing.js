@@ -68,7 +68,7 @@ class InterestRateListing extends Component {
   componentDidMount() {
 
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     setTimeout(() => {
       this.props.getVendorWithVendorCodeSelectList()
       this.props.getICCAppliSelectList(() => { })
@@ -137,15 +137,16 @@ class InterestRateListing extends Component {
 
 
   /**
-  * @method editItemDetails
-  * @description confirm edit item
-  */
-  editItemDetails = (Id) => {
+* @method viewOrEditItemDetails
+* @description confirm edit or view item
+*/
+  viewOrEditItemDetails = (Id, isViewMode) => {
     this.setState({
-      data: { isEditFlag: true, ID: Id },
+      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
       toggleForm: true,
     })
   }
+
 
   /**
   * @method deleteItem
@@ -198,10 +199,12 @@ class InterestRateListing extends Component {
     const cellValue = props?.value;
     const rowData = props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.state;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+
+        {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
         {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )
@@ -431,7 +434,7 @@ class InterestRateListing extends Component {
 
     return (
       <>
-       
+
         <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp='go-to-top' />
           <form
@@ -505,7 +508,7 @@ class InterestRateListing extends Component {
           </form>
 
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
@@ -531,7 +534,7 @@ class InterestRateListing extends Component {
                 frameworkComponents={frameworkComponents}
               >
                 <AgGridColumn width={140} field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="PlantName" headerName="Plant" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="ICCApplicability" headerName="ICC Applicability"></AgGridColumn>
                 <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC(%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>

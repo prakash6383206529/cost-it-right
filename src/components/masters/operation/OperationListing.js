@@ -194,20 +194,22 @@ class OperationListing extends Component {
         }
     }
 
+
     /**
-    * @method editItemDetails
-    * @description confirm edit item
-    */
+ * @method viewOrEditItemDetails
+ * @description confirm edit or view item
+ */
 
-
-    editItemDetails = (Id, rowData) => {
+    viewOrEditItemDetails = (Id, isViewMode) => {
         let data = {
             isEditFlag: true,
             ID: Id,
             toggleForm: true,
+            isViewMode: isViewMode
         }
         this.props.getDetails(data);
     }
+
 
     /**
     * @method deleteItem
@@ -244,11 +246,14 @@ class OperationListing extends Component {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-        const { EditAccessibility, DeleteAccessibility } = this.state;
+        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
 
         return (
             <>
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+
+
+                {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )

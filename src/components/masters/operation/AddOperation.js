@@ -42,6 +42,7 @@ class AddOperation extends Component {
       vendorName: [],
       selectedVendorPlants: [],
       UOM: [],
+      isViewMode: this.props?.data?.isViewMode ? true : false,
 
       isSurfaceTreatment: false,
       remarks: '',
@@ -856,7 +857,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={false}
+                          disabled={isViewMode}
                         />
                       </Col>
                       <Col md="3">
@@ -869,7 +870,7 @@ class AddOperation extends Component {
                           component={renderText}
                           //onChange={this.handleBasicRate}
                           required={true}
-                          disabled={false}
+                          disabled={isViewMode}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -970,6 +971,7 @@ class AddOperation extends Component {
                           validate={[maxLength512]}
                           //required={true}
                           component={renderTextAreaField}
+                          disabled={isViewMode}
                           maxLength="512"
                         />
                       </Col>
@@ -987,6 +989,7 @@ class AddOperation extends Component {
                             //onSubmit={this.handleSubmit}
                             accept="*"
                             initialFiles={this.state.initialFiles}
+                            disabled={isViewMode}
                             maxFiles={3}
                             maxSizeBytes={2000000}
                             inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
@@ -1023,15 +1026,15 @@ class AddOperation extends Component {
                                   {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
-
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() =>
-                                      this.deleteFile(f.FileId, f.FileName)
-                                    }
-                                    src={imgRedcross}
-                                  ></img>
+                                  {!isViewMode &&
+                                    <img
+                                      alt={""}
+                                      className="float-right"
+                                      onClick={() =>
+                                        this.deleteFile(f.FileId, f.FileName)
+                                      }
+                                      src={imgRedcross}
+                                    ></img>}
                                 </div>
                               );
                             })}
