@@ -1413,8 +1413,11 @@ class AddRMDomestic extends Component {
                           </Col>
 
                           <Col md="4" className='mb-4'>
+                         
                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
+                           <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                           <div className="fullinput-icon">
                            <AsyncSelect 
                            name="DestinationSupplierId" 
                            ref={this.myRef} 
@@ -1426,8 +1429,14 @@ class AddRMDomestic extends Component {
                            isDisabled={isEditFlag || isViewFlag} 
                            />
                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                           {!isEditFlag && (<div   onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>  )}
-                          
+                           </div>
+                           {!isEditFlag && (
+                                <div
+                                  onClick={this.vendorToggler}
+                                  className={"plus-icon-square  right"}
+                                ></div>
+                              )}
+                           </div>
                           </Col>
 
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
