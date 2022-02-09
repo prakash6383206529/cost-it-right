@@ -69,18 +69,18 @@ const SendForApproval = (props) => {
       if (!res.data.Data.IsFinalApprovar) {
 
         dispatch(getAllApprovalDepartment((res) => {
-          const Data = res.data.SelectList
+          const Data = res?.data?.SelectList
           const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
 
-          setSelectedDepartment({ label: departObj[0].Text, value: departObj[0].Value })
-          setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+          setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
+          setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
 
           let tempDropdownList = []
 
           dispatch(
             getAllApprovalUserFilterByDepartment({
               LoggedInUserId: userData.LoggedInUserId,
-              DepartmentId: departObj[0].Value,
+              DepartmentId: departObj[0]?.Value,
               TechnologyId: partNo.technologyId,
               ReasonId: 0 // key only for minda
             }, (res) => {

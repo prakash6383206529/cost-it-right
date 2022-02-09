@@ -618,6 +618,12 @@ function CostingSimulation(props) {
         return cell != null ? checkForDecimalAndNull(row.RMVariance, getConfigurationKey().NoOfDecimalForPrice) : ''
 
     }
+    const variancePOFormatter = (props) => {
+
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return cell != null ? checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice) : ''
+    }
 
     const varianceSTFormatter = (props) => {
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -843,7 +849,8 @@ function CostingSimulation(props) {
         oldRMCFormatter: oldRMCFormatter,
         newRMCFormatter: newRMCFormatter,
         varianceRMCFormatter: varianceRMCFormatter,
-        varianceSTFormatter: varianceSTFormatter
+        varianceSTFormatter: varianceSTFormatter,
+        variancePOFormatter: variancePOFormatter
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -937,7 +944,7 @@ function CostingSimulation(props) {
                                                     </>}
                                                     <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' ></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='variancePOFormatter' ></AgGridColumn>
 
                                                     {isRMDomesticOrRMImport && <>
                                                         {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
@@ -965,8 +972,6 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {isSurfaceTreatment && <>
-                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentRate" headerName='Old Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentRate" headerName='New Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldTranspotationCost" headerName='Extra Cost' ></AgGridColumn>
@@ -975,8 +980,6 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
                                                     </>}
                                                     {isOperation && <>
-                                                        <AgGridColumn width={140} field="OldOperationRate" headerName='Old Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewOperationRate" headerName='New Rate' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>

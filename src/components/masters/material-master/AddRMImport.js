@@ -37,6 +37,9 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
+
 
 const selector = formValueSelector('AddRMImport');
 
@@ -63,6 +66,7 @@ class AddRMImport extends Component {
       VendorCode: '',
       selectedVendorPlants: [],
       vendorLocation: [],
+      isVendorNameNotSelected:false,
 
       HasDifferentSource: false,
       sourceLocation: [],
@@ -247,7 +251,7 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue,isVendorNameNotSelected:false, selectedVendorPlants: [], vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -939,11 +943,21 @@ class AddRMImport extends Component {
 
     const { initialConfiguration } = this.props;
     this.setState({ setDisable: true, disablePopup:false})
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+
+    this.setState({ isVendorNameNotSelected: false })
+
     let plantArray = [];
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
       return plantArray;
     })
+
+
 
     let vendorPlantArray = [];
     selectedVendorPlants && selectedVendorPlants.map((item) => {
@@ -1116,6 +1130,28 @@ class AddRMImport extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
       isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
+
+
+      const filterList = (inputValue) => {
+        let tempArr = []
+  
+        tempArr = this.renderListing("VendorNameList").filter(i =>
+          i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        );
+  
+        if (tempArr.length <= 100) {
+          return tempArr
+        } else {
+          return tempArr.slice(0, 100)
+        }
+      };
+  
+      const promiseOptions = inputValue =>
+        new Promise(resolve => {
+          resolve(filterList(inputValue));
+  
+  
+        });
 
     return (
       <>
@@ -1362,19 +1398,10 @@ class AddRMImport extends Component {
                           <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
-                                <Field
-                                  name="DestinationSupplierId"
-                                  type="text"
-                                  label="Vendor Name"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("VendorNameList")}
-                                  validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleVendorName}
-                                  valueDescription={this.state.vendorName}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
+                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
+                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                               </div>
                               {!isEditFlag && (
                                 <div

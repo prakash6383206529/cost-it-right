@@ -26,7 +26,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing,setSelectedRowsDataEmpty } = props
 
 
   const userLoggedIn = loggedInUserId()
@@ -319,8 +319,6 @@ function ApproveRejectDrawer(props) {
     const reason = getValues('reason')
     const dept = getValues('dept')
     const approver = getValues('approver')
-
-
     if (type === 'Reject') {
       if (remark) {
         setShowError(false)
@@ -430,6 +428,7 @@ function ApproveRejectDrawer(props) {
       // THIS OBJ IS FOR SIMULATION APPROVE/REJECT
 
 
+      // setSelectedRowsDataEmpty()
       //lll
       let approverObject = []
       if (isSimulationApprovalListing === true) {
