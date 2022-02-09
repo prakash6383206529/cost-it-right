@@ -1401,7 +1401,7 @@ const CostingSummaryTable = (props) => {
                                   'No attachment found'
                                 ) : data.attachment.length == 1 ? (
 
-                                  <td>
+                                  <>
                                     {data.attachment && data.CostingHeading !== VARIANCE &&
                                       data.attachment.map((f) => {
                                         const withOutTild = f.FileURL
@@ -1409,14 +1409,16 @@ const CostingSummaryTable = (props) => {
                                           : ''
                                         const fileURL = `${FILE_URL}${withOutTild}`
                                         return (
+                                          <td>
                                           <div className={"single-attachment images"}>
                                             <a href={fileURL} target="_blank">
                                               {f.OriginalFileName}
                                             </a>
                                           </div>
+                                          </td>
                                         )
                                       })}
-                                  </td>
+                                  </>
                                 )
                                   : (
 
