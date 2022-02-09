@@ -251,7 +251,6 @@ export function deleteCEDotherOperationAPI(Id, callback) {
  * @description get all operation list
  */
 export function getOperationsDataList(filterData, temp, callback) {
-    console.log('temp: ', temp);
 
     return (dispatch) => {
 
