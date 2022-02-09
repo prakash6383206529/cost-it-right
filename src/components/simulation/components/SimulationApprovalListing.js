@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
 import ScrollToTop from '../../common/ScrollToTop'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -201,6 +202,9 @@ function SimulationApprovalListing(props) {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
         if (rowObj.DisplayStatus === 'Draft' || rowObj.SimulationType === 'Provisional') {
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+            reactLocalStorage.setObject("masterForSimulation",
+                { label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }
+            );
             setRedirectCostingSimulation(true)
         } else {
             setShowApprovalSummary(true)
