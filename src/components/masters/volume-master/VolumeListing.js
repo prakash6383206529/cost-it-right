@@ -132,7 +132,7 @@ class VolumeListing extends Component {
       showData: false,
       showPopup: false,
       deletedId: '',
-      isLoader:false
+      isLoader: false
 
     }
   }
@@ -142,7 +142,7 @@ class VolumeListing extends Component {
     this.props.getPlantSelectList(() => { })
     this.props.getFinancialYearSelectList(() => { })
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
+    this.props.getVendorWithVendorCodeSelectList(() => { })
     this.getTableListData()
   }
 
@@ -181,7 +181,7 @@ class VolumeListing extends Component {
    * @description Get user list data
    */
   getTableListData = (year = '', month = '', vendor_id = '', plant_id = '', costing_head = '') => {
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     let filterData = {
       year: year,
       month: month,
@@ -190,7 +190,7 @@ class VolumeListing extends Component {
       costing_head: costing_head
     }
     this.props.getVolumeDataList(filterData, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
@@ -460,7 +460,7 @@ class VolumeListing extends Component {
       <>
         <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp="go-to-top" />
-        {this.state.isLoader && <LoaderCustom />}
+          {this.state.isLoader && <LoaderCustom />}
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -537,7 +537,7 @@ class VolumeListing extends Component {
             </Row>
           </form>
 
-          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.volumeDataList && this.props.volumeDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.volumeDataList && this.props.volumeDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>

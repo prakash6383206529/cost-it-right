@@ -70,7 +70,7 @@ class InterestRateListing extends Component {
     this.applyPermission(this.props.topAndLeftMenuData)
     this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
       this.props.getICCAppliSelectList(() => { })
       this.props.getPaymentTermsAppliSelectList(() => { })
       this.getTableListData()
@@ -278,7 +278,7 @@ class InterestRateListing extends Component {
   * @description Renders Costing head
   */
   costingHeadFormatter = (props) => {
-    console.log('props: ', props);
+
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue;
   }

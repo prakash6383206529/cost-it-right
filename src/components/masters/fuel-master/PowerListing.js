@@ -52,7 +52,7 @@ class PowerListing extends Component {
       vendorPlant: [],
       showPopup: false,
       deletedId: '',
-      isLoader:false
+      isLoader: false
     }
   }
 
@@ -63,20 +63,20 @@ class PowerListing extends Component {
   componentDidMount() {
     this.props.getZBCPlantList(() => { })
     this.props.getStateSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList();
+    this.props.getVendorWithVendorCodeSelectList(() => { });
     this.getDataList()
   }
 
   getDataList = () => {
     const { StateName, plant, vendorName, vendorPlant } = this.state;
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     if (!this.state.IsVendor) {
       const filterData = {
         plantID: plant ? plant.value : '',
         stateID: StateName ? StateName.value : '',
       }
       this.props.getPowerDetailDataList(filterData, (res) => {
-        this.setState({isLoader:false})
+        this.setState({ isLoader: false })
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           this.setState({ tableData: Data })
@@ -435,7 +435,7 @@ class PowerListing extends Component {
           <Col>
 
 
-            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.powerDataList && this.props.powerDataList?.length <=0 ?"overlay-contain": ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.powerDataList && this.props.powerDataList?.length <= 0 ? "overlay-contain" : ""}`}>
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
