@@ -109,7 +109,7 @@ class AddRMDomestic extends Component {
       updatedObj: {},
       setDisable: false,
       disablePopup: false,
-      inputLoader:false
+      inputLoader: false
     }
   }
   /**
@@ -130,12 +130,12 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.setState({inputLoader:true})
+    this.setState({ inputLoader: true })
     const { data } = this.props
     this.getDetails(data)
     this.props.getRawMaterialCategory((res) => { })
-      this.props.getVendorListByVendorType(false, () => { this.setState({inputLoader:false}) })
-    this.props.getTechnologySelectList(() => { this.setState({inputLoader:false})})
+    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getAllCity(cityId => {
@@ -395,11 +395,11 @@ class AddRMDomestic extends Component {
 
           
           this.setState({ DataToChange: Data }, () => { })
-          this.setState({inputLoader:true})
+          this.setState({ inputLoader: true })
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false}) })
+            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
           } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => {  this.setState({inputLoader:false}) })
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           }
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -505,11 +505,11 @@ class AddRMDomestic extends Component {
       },
       () => {
         const { IsVendor } = this.state
-        this.setState({inputLoader:true})
+        this.setState({ inputLoader: true })
         if (IsVendor) {
-          this.props.getVendorWithVendorCodeSelectList(() => {  this.setState({inputLoader:false}) })
+          this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
         } else {
-          this.props.getVendorListByVendorType(IsVendor, () => {  this.setState({inputLoader:false})})
+          this.props.getVendorListByVendorType(IsVendor, () => { this.setState({ inputLoader: false }) })
           this.props.getPlantBySupplier('', () => { })
           this.props.getCityBySupplier(0, () => { })
         }
@@ -1045,6 +1045,7 @@ class AddRMDomestic extends Component {
     else {
       let formData = {}
       // const formData = {
+      formData.RawMaterialId = RawMaterialID
       formData.IsVendor = IsVendor
       formData.RawMaterial = RawMaterial.value
       formData.RMGrade = RMGrade.value
@@ -1407,21 +1408,20 @@ class AddRMDomestic extends Component {
                           </Col>
 
                           <Col md="4" className='mb-4'>
-                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
-                           <AsyncSelect 
-                           name="DestinationSupplierId" 
-                           ref={this.myRef} 
-                           key={this.state.updateAsyncDropdown} 
-                           loadOptions={promiseOptions}
-                           onChange={(e) => this.handleVendorName(e)} 
-                           value={this.state.vendorName} 
-                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                           isDisabled={isEditFlag || isViewFlag} 
-                           />
-                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                           {!isEditFlag && (<div   onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>  )}
-                          
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            <AsyncSelect
+                              name="DestinationSupplierId"
+                              ref={this.myRef}
+                              key={this.state.updateAsyncDropdown}
+                              loadOptions={promiseOptions}
+                              onChange={(e) => this.handleVendorName(e)}
+                              value={this.state.vendorName}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              isDisabled={isEditFlag || isViewFlag}
+                            />
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            {!isEditFlag && (<div   onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>  )}
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
