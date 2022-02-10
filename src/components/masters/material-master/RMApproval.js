@@ -147,6 +147,7 @@ function RMApproval(props) {
     * @description Renders buttons
     */
     const effectiveDateFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
@@ -190,6 +191,7 @@ function RMApproval(props) {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <Fragment>
                 {
@@ -269,12 +271,12 @@ function RMApproval(props) {
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
 
-        if(props?.isApproval){
+        if (props?.isApproval) {
             gridApi.paginationSetPageSize(Number(newPageSize));  // APPLIED THIS IF ELSE CONDITION JUST BECAUSE IN DASHBOARD INCREASING PAGE DROPDOWN WAS NOT WORKING
 
         }
         else {
-        gridApi.paginationSetPageSize(Number(value));
+            gridApi.paginationSetPageSize(Number(value));
         }
     };
 
@@ -361,7 +363,7 @@ function RMApproval(props) {
                                     isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
