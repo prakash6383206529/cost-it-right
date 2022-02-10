@@ -26,7 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -37,7 +37,6 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddRMImport');
@@ -51,7 +50,7 @@ class AddRMImport extends Component {
     this.state = {
       isEditFlag: false,
       isViewFlag: this.props?.data?.isViewFlag ? true : false,
-      RawMaterialID: '',
+      RawMaterialID: EMPTY_GUID,
 
       RawMaterial: [],
       RMGrade: [],
@@ -105,7 +104,7 @@ class AddRMImport extends Component {
       isFinalApprovar: false,
       disablePopup: false,
       setDisable: false,
-      inputLoader:false
+      inputLoader: false
 
     }
   }
@@ -128,13 +127,13 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
-    this.setState({inputLoader:true})
+    this.setState({ inputLoader: true })
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
     this.props.getRawMaterialCategory(res => { });
     this.props.fetchSupplierCityDataAPI(res => { });
-    this.props.getVendorListByVendorType(false, () => { this.setState({inputLoader:false}) })
-    this.props.getTechnologySelectList(() => {  this.setState({inputLoader:false})})
+    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
 
@@ -410,11 +409,11 @@ class AddRMImport extends Component {
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data, inputLoader:true })
+          this.setState({ DataToChange: Data, inputLoader: true })
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false})})
+            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
           } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({inputLoader:false})})
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
@@ -515,12 +514,12 @@ class AddRMImport extends Component {
       vendorLocation: [],
     }, () => {
       const { IsVendor } = this.state;
-      this.setState({inputLoader:true})
+      this.setState({ inputLoader: true })
       if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({inputLoader:false})})
+        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       } else {
 
-        this.props.getVendorListByVendorType(IsVendor, () => { this.setState({inputLoader:false})})
+        this.props.getVendorListByVendorType(IsVendor, () => { this.setState({ inputLoader: false }) })
         this.props.getPlantBySupplier('', () => { })
         this.props.getCityBySupplier(0, () => { })
       }
@@ -1029,6 +1028,7 @@ class AddRMImport extends Component {
     } else {
       this.setState({ setDisable: true })
       const formData = {
+        RawMaterialId: RawMaterialID,
         IsVendor: IsVendor,
         RawMaterial: RawMaterial.value,
         RMGrade: RMGrade.value,

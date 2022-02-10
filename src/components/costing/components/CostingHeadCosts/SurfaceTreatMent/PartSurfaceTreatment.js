@@ -33,6 +33,7 @@ function PartSurfaceTreatment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
+          AssemCostingId: costData.CostingId
         }
         dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
