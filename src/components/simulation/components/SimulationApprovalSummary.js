@@ -571,9 +571,9 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
-        if (String(SimulationTechnologyId) !== SURFACETREATMENT) {
+        if (String(SimulationTechnologyId) === SURFACETREATMENT) {
             temp = row.IsMultiple === true ? 'Multiple Surface Treatment' : row.OperationName
-        } else if (String(SimulationTechnologyId) !== OPERATIONS) {
+        } else if (String(SimulationTechnologyId) === OPERATIONS) {
             temp = row.IsMultiple === true ? 'Multiple Operation' : row.OperationName
         }
         return cell != null ? temp : '-';
@@ -906,7 +906,7 @@ function SimulationApprovalSummary(props) {
                                                                     (String(SimulationTechnologyId) === SURFACETREATMENT || String(SimulationTechnologyId) === OPERATIONS) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
