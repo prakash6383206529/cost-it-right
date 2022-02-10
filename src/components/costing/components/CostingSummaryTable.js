@@ -749,7 +749,7 @@ const CostingSummaryTable = (props) => {
                   <thead>
                     <tr className="main-row">
                       {
-                        isApproval ? <th scope="col">{props.id}</th> : <th scope="col">VBC/ZBC</th>
+                        isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col">VBC/ZBC</th>
                       }
 
 
@@ -757,7 +757,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
 
                           return (
-                            <th scope="col">
+                            <th scope="col" >
                               <div class="element w-60 d-inline-flex align-items-center">
                                 {
                                   (data.status === DRAFT || data.status === REJECTED) &&
@@ -797,7 +797,7 @@ const CostingSummaryTable = (props) => {
                                   // </div>
                                 }
                                 {
-                                  isApproval ? <span className="checkbox-text">{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
+                                  isApproval ? <span>{data.CostingHeading}</span> : <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName}(${data.vendorCode}) ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                                 }
                               </div>
                               {(!viewMode && icons) && (
