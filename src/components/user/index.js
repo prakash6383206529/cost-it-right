@@ -31,7 +31,7 @@ class User extends Component {
     }
   }
 
-  topAndLeftMenuFunctionFunc = () => {
+  topAndLeftMenuFunction = () => {
     let ModuleId = reactLocalStorage.get('ModuleId');
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       const { leftMenuData } = this.props;
@@ -62,14 +62,14 @@ class User extends Component {
   }
 
   componentDidMount() {
-    this.topAndLeftMenuFunctionFunc()
+    this.topAndLeftMenuFunction()
   }
 
 
   componentDidUpdate() {
     if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {
       this.setState({ count: 1 })
-      this.topAndLeftMenuFunctionFunc()
+      this.topAndLeftMenuFunction()
     }
   }
 
