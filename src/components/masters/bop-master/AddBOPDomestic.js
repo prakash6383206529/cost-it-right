@@ -20,7 +20,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC,BOP_MASTER_ID } from '../../../config/constants';
+import { FILE_URL, ZBC,BOP_MASTER_ID,EMPTY_GUID } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -32,7 +32,6 @@ import { CheckApprovalApplicableMaster } from '../../../helper'   // WILL BE USE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 
@@ -45,7 +44,7 @@ class AddBOPDomestic extends Component {
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
     this.state = {
-      BOPID: '',
+      BOPID: EMPTY_GUID,
       isEditFlag: false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
@@ -660,6 +659,7 @@ class AddBOPDomestic extends Component {
 
       this.setState({ setDisable: true })
       const formData = {
+        BoughtOutPartId: BOPID,
         IsVendor: IsVendor,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
