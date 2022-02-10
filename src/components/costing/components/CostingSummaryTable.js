@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, REJECTED, VARIANCE, VBC, ZBC } from '../../../config/constants'
+import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, REJECTED, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -29,7 +29,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master } = props
   let history = useHistory();
 
   const dispatch = useDispatch()
@@ -916,9 +916,9 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{!simulationDrawer ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                              <span>{!simulationDrawer && !(Number(master)===Number(RMDOMESTIC)||Number(master)===Number(RMIMPORT)) ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && !simulationDrawer && icons) &&
+                                (!simulationDrawer && !(Number(master)===Number(RMDOMESTIC)||Number(master)===Number(RMIMPORT)) && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -983,9 +983,10 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                             
+                              <span>{!simulationDrawer && !(Number(master)===Number(OPERATIONS)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice): '-'}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons) &&
+                                (data.CostingHeading !== VARIANCE && !simulationDrawer&&!(Number(master)===Number(OPERATIONS)) && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1031,9 +1032,9 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             < td >
-                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
+                              <span>{ !simulationDrawer && !(Number(master)===Number(SURFACETREATMENT)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :'-'}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons) &&
+                                (data.CostingHeading !== VARIANCE && icons && !(Number(master)===Number(SURFACETREATMENT))) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
