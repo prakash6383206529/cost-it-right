@@ -71,8 +71,6 @@ function RowMaterialMaster(props) {
     // }
 
 
-    // jp ka order scheduling se compare
-
     // useMemo((nextProps) => {
     //     // componentWillReceiveProps
     //     if (topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
