@@ -708,7 +708,7 @@ class AddBOPDomestic extends Component {
       } else {
         this.props.reset()
         this.props.createBOPDomestic(formData, (res) => {
-          if (res.data.Result) {
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
             this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
