@@ -29,6 +29,7 @@ import {
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
     GET_VERIFY_OVERHEAD_SIMULATION_LIST,
     GET_VERIFY_PROFIT_SIMULATION_LIST,
+    SET_SHOW_SIMULATION_PAGE,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -1155,4 +1156,16 @@ export function runSimulationOnSelectedProfitCosting(data, callback) {
     };
 }
 
-
+/**
+ * @method setShowSimulationPage
+ * @description Set Show Simulation Page
+ */
+export function setShowSimulationPage(Data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SHOW_SIMULATION_PAGE,
+            payload: Data,
+        })
+        // callback();
+    }
+};
