@@ -6,10 +6,12 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { EMPTY_DATA } from '../../../config/constants';
-import { DRAFT,BOP_MASTER_ID } from '../../../config/constants';
+import { DRAFT, BOP_MASTER_ID } from '../../../config/constants';
 import { getBOPApprovalList } from '../actions/BoughtOutParts'
 import DayTime from '../../common/DayTimeWrapper'
 import SummaryDrawer from '../SummaryDrawer';
+import Toaster from '../../common/Toaster'
+import MasterSendForApproval from '../MasterSendForApproval';
 
 
 
@@ -25,6 +27,7 @@ function BOPApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const { BopApprovalList } = useSelector((state) => state.boughtOutparts)
     const [loader, setLoader] = useState(true)
+    const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const dispatch = useDispatch()
 
@@ -46,6 +49,15 @@ function BOPApproval(props) {
             setLoader(false)
         }))
 
+
+    }
+
+
+
+    const closeApprovalDrawer = (e = '') => {
+        setApprovalDrawer(false)
+        setLoader(true)
+        getTableData()
 
     }
 
@@ -125,6 +137,13 @@ function BOPApproval(props) {
 
     const sendForApproval = () => {
 
+        if (selectedRowData.length > 0) {
+            setApprovalDrawer(true)
+        }
+        else {
+            Toaster.warning('Please select draft token to send for approval.')
+        }
+
     }
 
 
@@ -166,7 +185,7 @@ function BOPApproval(props) {
 
     return (
         <div>
-             {loader && <LoaderCustom />}
+            {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
                 <Col md="6" lg="6" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -186,9 +205,9 @@ function BOPApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    
+
                     <div className={`ag-grid-react`}>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -257,6 +276,20 @@ function BOPApproval(props) {
                     approvalData={approvalData}
                     anchor={'bottom'}
                     masterId={BOP_MASTER_ID}
+                />
+            }
+
+            {
+                approvalDrawer &&
+                <MasterSendForApproval
+                    isOpen={approvalDrawer}
+                    closeDrawer={closeApprovalDrawer}
+                    isEditFlag={false}
+                    masterId={BOP_MASTER_ID}
+                    type={'Sender'}
+                    anchor={"right"}
+                    isBulkUpload={true}
+                    approvalData={selectedRowData}
                 />
             }
 
