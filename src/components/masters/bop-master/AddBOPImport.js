@@ -1378,7 +1378,7 @@ class AddBOPImport extends Component {
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
-                IsImportEntery={false}
+                IsImportEntery={true}
               />
             )
           }
