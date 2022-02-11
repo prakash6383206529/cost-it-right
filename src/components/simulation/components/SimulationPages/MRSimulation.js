@@ -216,7 +216,7 @@ function MRSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            toastr.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
