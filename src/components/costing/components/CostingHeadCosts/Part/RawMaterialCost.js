@@ -14,7 +14,7 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, INR, KG, MG } from '../../../../../config/constants'
 import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow, FORGINING } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -37,6 +37,7 @@ function RawMaterialCost(props) {
 
   const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
+  console.log('costData: ', costData);
   const CostingViewMode = useContext(ViewCostingContext);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false)
@@ -55,7 +56,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
-  const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
+  const isScrapRecoveryPercentageApplied = Number(costData.TechnologyId) === Number(FORGINING) ? true:false
 
   const dispatch = useDispatch()
 
