@@ -167,7 +167,7 @@ class BOPDomesticListing extends Component {
 
         let isEditbale = false
         if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
-            if (EditAccessibility && !rowData.IsAssociated) {
+            if (EditAccessibility && !rowData.IsBOPAssociated) {
                 isEditbale = true
             } else {
                 isEditbale = false
