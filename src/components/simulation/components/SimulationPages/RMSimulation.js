@@ -77,7 +77,7 @@ function RMSimulation(props) {
             return null;
         })
         if (basicRateCount === list.length && basicScrapCount === list.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         setIsDisable(true)
@@ -315,7 +315,7 @@ function RMSimulation(props) {
             }
 
             if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             } else {
                 setShowRunSimulationDrawer(true)
             }
