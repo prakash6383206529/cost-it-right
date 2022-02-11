@@ -512,23 +512,21 @@ function VerifySimulation(props) {
                                                     </>
                                                 }
 
-                                                {/* {isBOPDomesticOrImport === true &&
+                                                {isBOPDomesticOrImport === true &&
                                                     <>
                                                         <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
                                                         <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
                                                     </>
-                                                } */}
+                                                }
 
-                                                {isBOPDomesticOrImport === true &&
+                                                {/* {isBOPDomesticOrImport === true &&
                                                     <>
                                                         <AgGridColumn width={130} field="ModelType" headerName="Model Type"></AgGridColumn>
                                                         <AgGridColumn width={130} field="OverheadApplicabilityType" headerName="Overhead Applicability Type"></AgGridColumn>
-                                                        {/* <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn> */}
-                                                    </>
-                                                }
+                                                             </>
+                                                } */}
                                                 {isMachineRate &&
                                                     <>
                                                         <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>
