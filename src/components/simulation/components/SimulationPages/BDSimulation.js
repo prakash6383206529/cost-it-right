@@ -72,7 +72,7 @@ function BDSimulation(props) {
         })
 
         if (basicRateCount === list.length && basicScrapCount === list.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         basicRateCount = 0
@@ -303,7 +303,7 @@ function BDSimulation(props) {
             }
 
             if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             } else {
                 setShowRunSimulationDrawer(true)
             }
