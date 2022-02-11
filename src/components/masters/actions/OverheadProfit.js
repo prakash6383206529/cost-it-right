@@ -58,6 +58,7 @@ export function createOverhead(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -77,6 +78,7 @@ export function createProfit(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -94,6 +96,7 @@ export function updateOverhead(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }
@@ -111,6 +114,7 @@ export function updateProfit(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }

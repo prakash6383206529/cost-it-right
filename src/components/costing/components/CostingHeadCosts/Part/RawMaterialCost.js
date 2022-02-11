@@ -8,13 +8,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { EMPTY_DATA, PLASTIC } from '../../../../../config/constants'
 import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
+import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable, maxLength20 } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, INR, KG, MG } from '../../../../../config/constants'
 import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow, FORGINING } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -37,6 +37,7 @@ function RawMaterialCost(props) {
 
   const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
+  console.log('costData: ', costData);
   const CostingViewMode = useContext(ViewCostingContext);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false)
@@ -55,7 +56,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
-  const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
+  const isScrapRecoveryPercentageApplied = Number(costData.TechnologyId) === Number(FORGINING) ? true:false
 
   const dispatch = useDispatch()
 
@@ -92,12 +93,12 @@ function RawMaterialCost(props) {
       }
       selectedIds(gridData)
 
-      // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
-      if (Object.keys(gridData).length > 0 ) {
+       // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
+       if (Object.keys(gridData).length > 0 ) {
         let isCutOffApplicableCount=0
         let totalCutOff=0
         gridData && gridData.map(item=>{
-          console.log('item: ', item);
+          
           if(item.IsCutOffApplicable){
             isCutOffApplicableCount = isCutOffApplicableCount +1
             totalCutOff = totalCutOff + checkForNull(item.CutOffRMC)
@@ -105,12 +106,13 @@ function RawMaterialCost(props) {
           else{
             totalCutOff = totalCutOff +checkForNull(item.NetLandedCost)
           }
-          console.log(totalCutOff,"totalCutOfftotalCutOff");
+          
         })
-        console.log(isCutOffApplicableCount,"isCutOffApplicableCount",totalCutOff);
+        
         // dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
         dispatch(setRMCutOff({ IsCutOffApplicable:isCutOffApplicableCount >0 ?true:false, CutOffRMC: totalCutOff }))
       }
+
 
     }, 500)
   }, [gridData]);
@@ -651,19 +653,19 @@ function RawMaterialCost(props) {
 
   const onRemarkPopUpClick = (index) => {
 
-    setRemarkPopUpData(getValues('remarkPopUp'))
+    setRemarkPopUpData(getValues(`${rmGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
 
     tempData = {
       ...tempData,
 
-      Remark: getValues(`remarkPopUp${index}`)
+      Remark: getValues(`${rmGridFields}.${index}.remarkPopUp`)
     }
     tempArr = Object.assign([...gridData], { [index]: tempData })
     setGridData(tempArr)
 
-    if (getValues(`remarkPopUp${index}`)) {
+    if (getValues(`${rmGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
 
@@ -1030,17 +1032,26 @@ function RawMaterialCost(props) {
                                 position="top center">
                                 <TextAreaHookForm
                                   label="Remark:"
-                                  name={`remarkPopUp${index}`}
+                                  name={`${rmGridFields}.${index}.remarkPopUp`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  rules={{}}
+                                  rules={{
+
+                                
+                                    maxLength: {
+                                      value: 75,
+                                      message: "Remark should be less than 75 word"
+                                    },
+                                  }}
+                                 
                                   handleChange={(e) => { }}
-                                  defaultValue={item.Remark}
+                                  defaultValue={item.Remark }
                                   className=""
                                   customClassName={"withBorder"}
-                                  errors={errors.MBId}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].remarkPopUp : ''}
+                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
                                   disabled={CostingViewMode ? true : false}
                                   hidden={false}
                                 />
@@ -1073,7 +1084,7 @@ function RawMaterialCost(props) {
             <Row >
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData.TechnologyName === PLASTIC &&
-                <Col md="2" className="py-3  mb-width">
+                <Col md="2" className="py-3 pr-1 mb-width">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -1097,9 +1108,9 @@ function RawMaterialCost(props) {
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {IsApplyMasterBatch && costData.TechnologyName === PLASTIC &&
                 <>
-                  <Col md="3">
+                  <div>
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={CostingViewMode} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
-                  </Col>
+                  </div>
                   {/* <Col md="2" > */}
                   <TextFieldHookForm
                     label="MB Id"

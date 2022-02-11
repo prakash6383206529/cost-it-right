@@ -7,10 +7,10 @@ import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
@@ -37,7 +37,7 @@ import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
 import _ from 'lodash'
 import { SimulationUtils } from '../SimulationUtils'
-import { SIMULATIONAPPROVALSUMMARYDOWNLOAD } from '../../../config/masterData'
+import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import imgGreencross from '../../../assests/images/greenCross.png';
@@ -193,6 +193,9 @@ function SimulationApprovalSummary(props) {
         }))
     }, [])
 
+    useEffect((item) => {
+        gridApi?.redrawRows()
+    }, [simulationDetail])
 
 
     useEffect(() => {
@@ -380,10 +383,17 @@ function SimulationApprovalSummary(props) {
 
 
     const renderColumn = () => {
-
-        return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOAD, dataForDownload.length > 0 ? dataForDownload : [])
+        switch (String(SimulationTechnologyId)) {
+            case RMDOMESTIC:
+            case RMIMPORT:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
+            case SURFACETREATMENT:
+            case OPERATIONS:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADST, dataForDownload.length > 0 ? dataForDownload : [])
+            default:
+                break;
+        }
     }
-
 
     const returnExcelColumn = (data = [], TempData) => {
 
@@ -444,7 +454,7 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{_.round(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const oldPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -598,12 +608,23 @@ function SimulationApprovalSummary(props) {
         return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
-
-
     const rawMaterailFormat = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return cell != null ? `${cell} - ${row.RMGrade} ` : '-';
+        const temp = row.IsMultiple === true ? 'Multiple RM' : `${cell}- ${row.RMGrade}`
+        return cell != null ? temp : '-';
+    }
+
+    const operationNameFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let temp = ''
+        if (String(SimulationTechnologyId) !== SURFACETREATMENT) {
+            temp = row.IsMultiple === true ? 'Multiple Surface Treatment' : row.OperationName
+        } else if (String(SimulationTechnologyId) !== OPERATIONS) {
+            temp = row.IsMultiple === true ? 'Multiple Operation' : row.OperationName
+        }
+        return cell != null ? temp : '-';
     }
 
     if (showListing === true) {
@@ -673,7 +694,8 @@ function SimulationApprovalSummary(props) {
         newPOCurrencyFormatter: newPOCurrencyFormatter,
         newCCFormatter: newCCFormatter,
         oldCCFormatter: oldCCFormatter,
-        POVarianceFormatter: POVarianceFormatter
+        POVarianceFormatter: POVarianceFormatter,
+        operationNameFormatter: operationNameFormatter,
     };
 
     const errorBoxClass = () => {
@@ -822,7 +844,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
 
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Masters: `}</span>
+                                                <span className="d-block grey-text">{`Master:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</span>
                                             </th>
                                             <th className="align-top">
@@ -860,7 +882,7 @@ function SimulationApprovalSummary(props) {
                             {/* {lastRevisionDataAccordian && */}
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
-                                {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
+                                {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} lastRevision={false} />}
 
                             </div>
                             {/* } */}
@@ -922,7 +944,7 @@ function SimulationApprovalSummary(props) {
                                         <Col md="12">
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <=0 ?"overlay-contain": ""}`}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${costingList && costingList?.length <= 0 ? "overlay-contain" : ""}`}>
                                                         <div className="ag-grid-header d-flex">
 
                                                             <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -964,7 +986,13 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
-
+                                                                {
+                                                                    (String(SimulationTechnologyId) !== SURFACETREATMENT || String(SimulationTechnologyId) !== OPERATIONS) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
+                                                                    </>
+                                                                }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
                                                                     <AgGridColumn width={150} field="PlantName" headerName='Plant' ></AgGridColumn>
                                                                 }
@@ -1097,7 +1125,7 @@ function SimulationApprovalSummary(props) {
                             {lastRevisionDataAccordian &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} />}
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
 
                                 </div>
                             }

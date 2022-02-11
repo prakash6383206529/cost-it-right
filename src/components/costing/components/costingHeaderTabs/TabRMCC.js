@@ -1273,6 +1273,7 @@ function TabRMCC(props) {
 
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails = { ...i.CostingPartDetails };
+          // i ={...i}
           // i.CostingPartDetails.TotalRawMaterialsCost = item.CostingPartDetails.TotalRawMaterialsCost
           // i.CostingPartDetails.TotalConversionCost = getProcessTotalCost(i.CostingChildPartDetails, Data.TotalProcessCost, params) +
           //   getOperationTotalCost(i.CostingChildPartDetails, Data.TotalOperationCost, params) + getOtherOperationTotalCost(i.CostingChildPartDetails, Data.TotalOtherOperationCost, params)

@@ -3,13 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import { getManageBOPSOBDataList, getInitialFilterData, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
-import { MESSAGES } from '../../../config/message';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
@@ -44,7 +41,8 @@ class SOBListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      isLoader:false
 
     }
   }
@@ -70,7 +68,9 @@ class SOBListing extends Component {
       bought_out_part_id: bought_out_part_id,
       plant_id: plant_id
     }
+    this.setState({isLoader:true})
     this.props.getManageBOPSOBDataList(filterData, (res) => {
+      this.setState({isLoader:false})
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         this.setState({ tableData: Data })
@@ -320,7 +320,6 @@ class SOBListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
       costingHeadFormatter: this.costingHeadFormatter,
@@ -329,7 +328,7 @@ class SOBListing extends Component {
 
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
 
@@ -384,7 +383,6 @@ class SOBListing extends Component {
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
-                  loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,

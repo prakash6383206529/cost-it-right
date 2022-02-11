@@ -20,6 +20,9 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddProfit');
 
@@ -36,6 +39,7 @@ class AddProfit extends Component {
       isEditFlag: false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected:false,
 
       ModelType: [],
       vendorName: [],
@@ -60,7 +64,9 @@ class AddProfit extends Component {
       DataToChange: [],
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
 
     }
   }
@@ -235,7 +241,7 @@ class AddProfit extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected:false });
     } else {
       this.setState({ vendorName: [] })
     }
@@ -444,9 +450,22 @@ class AddProfit extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -458,6 +477,7 @@ class AddProfit extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadProfit(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -466,13 +486,16 @@ class AddProfit extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -546,10 +569,16 @@ class AddProfit extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
       isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged,uploadAttachements } = this.state;
     const userDetail = userDetails()
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
 
     if (isEditFlag) {
 
@@ -576,7 +605,7 @@ class AddProfit extends Component {
         this.cancel()
         return false
       }
-
+      this.setState({ setDisable: true, disablePopup:false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: ProfitID }
       })
@@ -613,7 +642,7 @@ class AddProfit extends Component {
 
 
     } else {
-
+      this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
         IsCombinedEntry: !isOverheadPercent ? true : false,
@@ -634,26 +663,27 @@ class AddProfit extends Component {
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
       }
 
-      this.props.reset()
       this.props.createProfit(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.PROFIT_ADDED_SUCCESS);
           this.cancel()
         }
       });
     }
-  }
+  }, 500)
   onPopupConfirm = () => {
-    this.props.reset()
+    this.setState({ disablePopup: true })
     this.props.updateProfit(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
         this.cancel()
       }
     });
   }
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -668,8 +698,27 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
-      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode } = this.state;
-
+      isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
+      const filterList = (inputValue) => {
+        let tempArr = []
+  
+        tempArr = this.renderListing("VendorNameList").filter(i =>
+          i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        );
+  
+        if (tempArr.length <= 100) {
+          return tempArr
+        } else {
+          return tempArr.slice(0, 100)
+        }
+      };
+  
+      const promiseOptions = inputValue =>
+        new Promise(resolve => {
+          resolve(filterList(inputValue));
+  
+  
+        });
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -691,7 +740,6 @@ class AddProfit extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>
@@ -766,27 +814,11 @@ class AddProfit extends Component {
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <Col md="4">
-                            <Field
-                              name="vendorName"
-                              type="text"
-                              label={"Vendor Name"}
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("VendorNameList")}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.vendorName == null ||
-                                  this.state.vendorName.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={
-                                this.handleVendorName
-                              }
-                              valueDescription={this.state.vendorName}
-                              disabled={isEditFlag ? true : false}
-                            />
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                             
                           </Col>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
@@ -1045,6 +1077,7 @@ class AddProfit extends Component {
                           type={"button"}
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
+                          disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
@@ -1052,7 +1085,7 @@ class AddProfit extends Component {
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"
-                          disabled={isViewMode}
+                          disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
@@ -1065,7 +1098,7 @@ class AddProfit extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>

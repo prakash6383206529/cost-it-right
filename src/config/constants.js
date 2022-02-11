@@ -16,7 +16,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = 'http://10.148.80.4:10122/api/v1';
+// const BASE_URL = 'http://10.10.1.100:10122/api/v1';
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -186,14 +186,13 @@ export const API = {
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
   //RM APPROVAL API'S
-  getRMApprovalList: `${BASE_URL}/masters-approval-raw-material/get-master-approvals-by-filter`,
-  getAllMasterApprovalDepartment: `${BASE_URL}/masters-approval-raw-material/get-all-master-approval-department`,
-  getAllMasterApprovalUserByDepartment: `${BASE_URL}/masters-approval-raw-material/get-all-master-approval-users-level-filter-by-department`,
+  getRMApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
+  getAllMasterApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-department`,
+  getAllMasterApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-master-approval-users-level-filter-by-department`,
   masterSendToApprover: `${BASE_URL}/masters-approval-raw-material/master-send-to-approver-by-sender`,
-  approveMasterByApprover: `${BASE_URL}/masters-approval-raw-material/approved-master-by-approver`,
-  rejectMasterByApprover: `${BASE_URL}/masters-approval-raw-material/rejected-master-by-approver`,
-  getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/masters-approval-raw-material/get-approval-master-summary`,
-  masterFinalLeveluser: `${BASE_URL}/masters-approval-raw-material/is-this-user-final-master-approver`,
+  approveOrRejectMasterByApprover: `${BASE_URL}/app-approval-system/approve-or-reject-master-by-approver`,
+  getMasterApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-master-summary`,
+  masterFinalLeveluser: `${BASE_URL}/app-approval-system/is-this-user-final-master-approver`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -301,7 +300,7 @@ export const API = {
 
   //BOP APPROVAL API'S
 
-  getBOPApprovalList: `${BASE_URL}/masters-approval-Bought-Out-Part/get-master-approvals-by-filter`,
+  getBOPApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
   masterSendToApproverBop: `${BASE_URL}/masters-approval-Bought-Out-Part/master-send-to-approver-by-sender`,
 
 
@@ -890,9 +889,9 @@ export const API = {
   sapPushedInitialMoment: `${BASE_URL}/sap-integration/sap-pushed-initial-moment`,
 
   uploadFileOnSimulation: `${BASE_URL}/simulation/simulation-file-upload`,
-  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment`,
-  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-impacted-simulation-costings`,
-  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-surface-treatment-costing`,
+  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment-and-operation`,
+  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-surface-treatment-and-operation-impacted-simulation-costings`,
+  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-selected-surface-treatment-and-operation-costing`,
   draftMachineRateSimulation: `${BASE_URL}/simulation/draft-simulation-machine-rate`,
   runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-machine-rate-costing`,
   draftBoughtOutpartSimulation: `${BASE_URL}/simulation/draft-simulation-bought-out-part`,
@@ -907,6 +906,7 @@ export const API = {
   runSimulationOnSelectedProfitCosting: `${BASE_URL}/simulation/run-simulation-on-profit-costing`,
   draftOverheadSimulation: `${BASE_URL}/simulation/draft-simulation-overhead`,
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
+  getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
 
   //SIMULATION APPROVAL 
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -922,7 +922,7 @@ export const API = {
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
-  getSimualtionInsightReport:`${BASE_URL}/reports/get-simulation-insights`
+  getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`
 
 }
 
@@ -1160,7 +1160,9 @@ export const CREATE_OTHER_OPERATION_FAILURE = 'CREATE_OTHER_OPERATION_FAILURE'
 export const CREATE_OTHER_OPERATION_SUCCESS = 'CREATE_OTHER_OPERATION_SUCCESS'
 export const GET_OTHER_OPERATION_FORMDATA_SUCCESS = 'GET_OTHER_OPERATION_FORMDATA_SUCCESS'
 export const GET_OTHER_OPERATION_FORMDATA_FAILURE = 'GET_OTHER_OPERATION_FORMDATA_FAILURE'
-export const GET_OPERATION_DATA_LIST = 'GET_OPERATION_DATA_LIST'
+export const GET_OPERATION_COMBINED_DATA_LIST = 'GET_OPERATION_COMBINED_DATA_LIST'
+export const GET_OPERATION_SURFACE_TREATMENT_DATA_LIST = 'GET_OPERATION_SURFACE_TREATMENT_DATA_LIST'
+export const GET_OPERATION_INDIVIDUAL_DATA_LIST = 'GET_OPERATION_INDIVIDUAL_DATA_LIST'
 
 //CED OTHER OPERATION
 export const GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS = 'GET_CED_OTHER_OPERATION_COMBO_DATA_SUCCESS'
@@ -1497,7 +1499,7 @@ export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
-export const GET_SIMULATION_INSIGHT_REPORT='GET_SIMULATION_INSIGHT_REPORT'
+export const GET_SIMULATION_INSIGHT_REPORT = 'GET_SIMULATION_INSIGHT_REPORT'
 
 export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 
@@ -1777,7 +1779,9 @@ export const ATTACHMENTS = 'Attachments'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
-
+export const BOP_MASTER_ID = 2
+export const OPERATIONS_ID = 3
+export const MACHINE_MASTER_ID = 4
 
 //approve reject drawer
 export const provisional = "Provisional"
@@ -1800,4 +1804,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.98.3";
+export const VERSION = "V1.1.241.1";

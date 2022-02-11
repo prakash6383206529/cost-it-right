@@ -8,9 +8,7 @@ import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
 import MachineInsights from './MachineInsights';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { MACHINE, MASTERS, } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper';
 import MachineApproval from './MachineApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 

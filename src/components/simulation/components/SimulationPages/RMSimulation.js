@@ -460,19 +460,22 @@ function RMSimulation(props) {
                                             <div className="refresh mr-0"></div>
                                         </button>
                                         </div>
-                                         {/* <div className='d-flex'>
-                                             <div className='d-flex pl-3'>
-                                             <label>Technology: </label>
-                                             <p className='surface-treatment-btn mx-1' > RM Domestic </p>
+                                        {/* {list && list.map( item=> {
+                                            return <>
+                                             <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
+                                                <div className='d-flex pl-3'>
+                                                 <label>Technology: </label>
+                                                  <p className='technology mx-1' title={item.TechnologyName}>{item.TechnologyName}</p>
+                                                </div>
+                                                <div className='d-flex pl-3'>
+                                                 <label className='mx-1'>Vendor:</label>
+                                                 <p title={item.VendorName}>{item.VendorName}</p>
+                                                </div>
                                              </div>
-                                             <div className='d-flex pl-3'>
-                                             <label className='mx-1'> Vendor:</label>
-                                             <p> vendor(123456)</p>
-                                             </div>
-                                             
-                                         </div> 
-                                         <------------------Work on fuure please dont remove it-------->
-                                         */}
+                                            </>
+                                               
+                                        })} */}
+                                        {/* <------------Don't remove the code it will use in future----> */}
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact

@@ -690,7 +690,7 @@ function TabDiscountOther(props) {
           "OtherCostDescription": values.OtherCostDescription,
           "CurrencyExchangeRate": CurrencyExchangeRate,
           "EffectiveDate": effectiveDate,
-          "OtherCostPercentage": '',
+          "OtherCostPercentage":  values.PercentageOtherCost,
           "PercentageOtherCost": values.PercentageOtherCost,
           "OtherCostType": otherCostType.value,
           "DiscountCostType": hundiscountType.value,

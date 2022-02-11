@@ -11,6 +11,7 @@ export const MESSAGES = {
   PRODUCT_ADD_SUCCESS: 'Product added successfully',
   ASSEMBLY_PART_ADD_SUCCESS: 'Assembly part added successfully',
   PART_DELETE_SUCCESS: 'Part has been deleted',
+  PRODUCT_DELETE_SUCCESS: 'Product has been deleted',
   UPDATE_PART_SUCESS: 'Part updated successfully',
   UPDATE_PRODUCT_SUCESS: 'Product updated successfully',
   MESSAGE_SENT_EXCEPT_USER: 'Message has been sent except the user',
@@ -147,7 +148,7 @@ export const MESSAGES = {
   //BOP MASTER
   // ADD_BOP_SUCCESS: 'BOP added successfully', kitna baar BOP ko success karoge
   BOP_ADD_SUCCESS: 'BOP added successfully',
-  BOP_CATEGORY_ADD_SUCCESS: 'BOP added successfully',
+  BOP_CATEGORY_ADD_SUCCESS: 'BOP category added successfully',
   UPDATE_BOP_SUCESS: 'BOP updated successfully',
   BOP_DELETE_ALERT: 'Are you sure you want to delete this BOP?',
   BOP_DELETE_SUCCESS: 'BOP has been deleted',

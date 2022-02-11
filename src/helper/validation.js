@@ -44,6 +44,7 @@ export const maxLength45 = maxLength(45);
 export const maxLength50 = maxLength(50);
 export const maxLength70 = maxLength(70);
 export const maxLength71 = maxLength(71);
+export const maxLength75 = maxLength(75);
 export const maxLength85 = maxLength(85);
 export const maxLength100 = maxLength(100);
 export const maxLength200 = maxLength(200);
@@ -106,6 +107,7 @@ export const selectRequired = value =>
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
+    
     return value && !value.toString().replace(/\s/g, '').length ? 'This field is invalid.' : undefined;
 }
 
@@ -145,8 +147,11 @@ export const specialName = value =>
         ? 'Please enter a valid name.' : undefined;
 
 export const validatePassword = value => {
-    return (value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*?[#?!@$%^&*-]).{5,}$/.test(value) === false);
+    
+    return (value && /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[#?!@$%^&*-]).{5,}$/.test(value) === false);
+   
 }
+
 
 export const alphaNumeric = value =>
     value && /[^a-zA-Z0-9 ]/i.test(value)

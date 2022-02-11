@@ -46,7 +46,8 @@ class ProfitListing extends Component {
             vendorName: [],
             overheadAppli: [],
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
         }
     }
 
@@ -73,7 +74,9 @@ class ProfitListing extends Component {
             profit_applicability_type_id: overhead,
             model_type_id: modelType,
         }
+        this.setState({isLoader:true})
         this.props.getProfitDataList(filterData, (res) => {
+            this.setState({isLoader:false})
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -194,7 +197,7 @@ class ProfitListing extends Component {
   */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? (cellValue) : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
 
 
@@ -363,8 +366,6 @@ class ProfitListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             statusButtonFormatter: this.statusButtonFormatter,
@@ -373,7 +374,7 @@ class ProfitListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
+            {this.state.isLoader && <LoaderCustom />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
 
@@ -408,11 +409,7 @@ class ProfitListing extends Component {
 
                                                 {this.onBtExport()}
                                             </ExcelFile>
-
                                         </>
-
-
-
                                     }
 
                                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -428,7 +425,7 @@ class ProfitListing extends Component {
                     <Col>
 
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.overheadProfitList && this.props.overheadProfitList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.overheadProfitList && this.props.overheadProfitList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -445,7 +442,6 @@ class ProfitListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
@@ -464,7 +460,7 @@ class ProfitListing extends Component {
                                     <AgGridColumn field="ProfitRMPercentage" headerName="Profit on RM (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitBOPPercentage" headerName="Profit on BOP (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="ProfitMachiningCCPercentage" headerName="Profit on CC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="ProfitId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">

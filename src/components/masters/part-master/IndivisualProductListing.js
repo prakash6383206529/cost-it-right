@@ -13,6 +13,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { ComponentPart, PRODUCT } from '../../../config/constants';
+import Toaster from '../../common/Toaster';
 import ReactExport from 'react-export-excel';
 import { INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -27,9 +28,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+
 
 class IndivisualProductListing extends Component {
     constructor(props) {
@@ -42,7 +41,8 @@ class IndivisualProductListing extends Component {
             isBulkUpload: false,
             ActivateAccessibility: true,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
         }
     }
 
@@ -61,15 +61,16 @@ class IndivisualProductListing extends Component {
     * @description Get DATA LIST
     */
     getTableListData = () => {
+        this.setState({isLoader:true})
         this.props.getProductDataList((res) => {
-
+            this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
 
                 let Data = res.data.DataList;
                 this.setState({
-                    tableData: Data,
+                    tableData: Data
                 })
             } else {
 
@@ -110,6 +111,11 @@ class IndivisualProductListing extends Component {
             LoggedInUserId: loggedInUserId()
         }
         this.props.deleteProduct(ID, (res) => {
+            if (res.data.Result === true) {
+                Toaster.success(MESSAGES.PRODUCT_DELETE_SUCCESS);
+
+                this.getTableListData();
+            }
 
         });
         this.setState({ showPopup: false })
@@ -335,13 +341,7 @@ class IndivisualProductListing extends Component {
     render() {
         const { isBulkUpload } = this.state;
         const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
-        const onExportToCSV = (row) => {
-            // ...
-            let products = []
-            products = this.props.newPartsListing
-            return products; // must return the data which you want to be exported
-        }
-
+      
 
         const defaultColDef = {
             resizable: true,
@@ -351,7 +351,6 @@ class IndivisualProductListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
@@ -360,7 +359,7 @@ class IndivisualProductListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+             {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
@@ -415,7 +414,7 @@ class IndivisualProductListing extends Component {
                     </Col>
                 </Row>
 
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.productDataList && this.props.productDataList?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.productDataList && this.props.productDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
@@ -432,7 +431,6 @@ class IndivisualProductListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,

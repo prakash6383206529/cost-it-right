@@ -85,6 +85,7 @@ class BOMViewer extends Component {
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
+    
 
     this.setState({ isOpenChildDrawer: false }, () => {
       this.setChildPartsData(childData)
@@ -107,6 +108,7 @@ class BOMViewer extends Component {
 
       this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
         let Data = res.data.Data.FlowPoints;
+        
 
         const DeleteNodeL1 = getRandomSixDigit();
         Data && Data.map((el, index) => {
@@ -128,25 +130,27 @@ class BOMViewer extends Component {
           return null;
         })
 
+        setTimeout(() => {
+          
+  
+          tempArray && tempArray.map((el, i) => {
+            if (el.Level === 'L1') {
+              outputArray.push(el.Input)
+            }
+            return null;
+          })
+  
+          //GET INDEX OF L0 LEVEL OBJECTS
+          let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
+  
+          let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
+          
+  
+          this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
+  
+        }, 200)
       })
 
-      setTimeout(() => {
-
-        tempArray && tempArray.map((el, i) => {
-          if (el.Level === 'L1') {
-            outputArray.push(el.Input)
-          }
-          return null;
-        })
-
-        //GET INDEX OF L0 LEVEL OBJECTS
-        let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
-
-        let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
-
-        this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
-
-      }, 200)
 
     } else if (Object.keys(childData).length > 0) {
 

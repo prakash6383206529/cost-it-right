@@ -11,62 +11,105 @@ import { getSimulationInsightReport } from '../actions/SimulationInsight';
 import { useDispatch } from 'react-redux';
 
 
-
 const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationInsights(props) {
 
   const dispatch = useDispatch()
   const [simulationInsightsReport, setSimulationInsight] = useState([])
-  const [tableHeader, setTableHeader] = useState([])
   const [tableHeaderColumnDefs, setTableHeaderColumnDefs] = useState([])
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [loader, setLoader] = useState(true)
-  let arr = [];
+  const [simulationInsightDownloadExcel, setSimulationInsightDownloadExcel] = useState([])
+
 
   useEffect(() => {
     setLoader(true)
     dispatch(getSimulationInsightReport(res => {
-
       const data = res.data.DataList
-
       setSimulationInsight(data[0].Data)
-      setTableHeader(data[0].TableHeads)
 
-
-
+      let arr = [];
+      let simulationInsightExcel = [];
 
       data[0].TableHeads && data[0].TableHeads.map(ele => {
-
-        if (ele.field == "DisplayStatus") {
-
+        if (ele.field === "DisplayStatus") {
           let obj = {
             field: "DisplayStatus",
             headerName: "Display Status",
             cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>
-            //cellStyle: { background: "green" },
-            //cellClass: ["Draft"]
-
+            //cellStyle: { background: "green" },    // DO NOT DELETE THIS
+            //cellClass: ["Draft"]                       // DO NOT DELETE THIS
           }
 
+          let obj1 = {
+            label: ele.headerName,
+            value: ele.field
+          }
           arr.push(obj)
+          simulationInsightExcel.push(obj1)
+
+        } else if (ele.field === "SimulationStatus") {
+          let obj = {
+            field: "SimulationStatus",
+            headerName: "Simulation Status",
+            cellRendererFramework: (params) => <div className={params.value}>{params.value}</div>
+            //cellStyle: { background: "green" },      // DO NOT DELETE THIS
+            //cellClass: ["Draft"]                     // DO NOT DELETE THIS
+          }
+
+          let obj1 = {
+            label: ele.headerName,
+            value: ele.field
+          }
+          arr.push(obj)
+          simulationInsightExcel.push(obj1)
         }
         else {
+          let obj1 = {
+            label: ele.headerName,
+            value: ele.field
+          }
           arr.push(ele)
+          simulationInsightExcel.push(obj1)
+
         }
         return null;
       })
 
-
       setTableHeaderColumnDefs(arr)
+      setSimulationInsightDownloadExcel(simulationInsightExcel)
 
       setLoader(false)
-
 
     }))
   }, [])
 
+
+  const onBtExport = () => {
+
+    return returnExcelColumn(simulationInsightDownloadExcel, simulationInsightsReport)
+  };
+
+
+  const returnExcelColumn = (data = [], TempData) => {
+
+    return (
+
+      <ExcelSheet data={TempData} name={'Simulation Insights'}>
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      </ExcelSheet>);
+  }
+
+
+
+  const resetState = () => {
+    gridColumnApi.resetColumnState()
+    gridApi.setFilterModel(null);
+  }
 
 
   const onGridReady = (params) => {
@@ -101,13 +144,6 @@ function SimulationInsights(props) {
     gridApi.setQuickFilter(e.target.value);
   }
 
-
-  const resetState = () => {
-
-    gridColumnApi.resetColumnState()
-    gridApi.setFilterModel(null);
-
-  }
   return (
     // <div>{`hello`}</div>
     <div className="container-fluid report-listing-page ag-grid-react">
@@ -118,7 +154,7 @@ function SimulationInsights(props) {
           <div className="d-flex justify-content-end bd-highlight excel-btn w100">
             <div>
               <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-
+                {onBtExport()}
               </ExcelFile>
               <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                 <div className="refresh mr-0"></div>

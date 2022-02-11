@@ -10,16 +10,17 @@ import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaFie
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
+import {masterFinalLevelUser} from '../actions/Material'
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId,userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC,BOP_MASTER_ID } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -30,7 +31,9 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import { CheckApprovalApplicableMaster } from '../../../helper'   // WILL BE USED LATER WHEN BOP APPROVAL IS DONE
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-
+import { debounce } from 'lodash';
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -49,6 +52,7 @@ class AddBOPDomestic extends Component {
 
       BOPCategory: [],
       isCategoryDrawerOpen: false,
+      isVendorNameNotSelected:false,
 
       selectedPartAssembly: [],
       selectedPlants: [],
@@ -72,7 +76,9 @@ class AddBOPDomestic extends Component {
       DropdownChanged: true,
       uploadAttachements: true,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
     }
   }
 
@@ -98,6 +104,22 @@ class AddBOPDomestic extends Component {
     this.props.getAllCity(cityId => {
       this.props.getCityByCountry(cityId, 0, () => { })
     })
+
+
+    let obj = {
+      MasterId: BOP_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
+
+
   }
 
   componentDidUpdate(prevProps) {
@@ -137,6 +159,15 @@ class AddBOPDomestic extends Component {
     } else {
       this.setState({ BOPCategory: [], });
 
+    }
+  }
+
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+    
+      this.cancel()
     }
   }
 
@@ -340,7 +371,7 @@ class AddBOPDomestic extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [], }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected:false, selectedVendorPlants: [], }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
         //this.props.getCityBySupplier(vendorName.value, () => { })
@@ -435,10 +466,21 @@ class AddBOPDomestic extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
-
     const { files, } = this.state;
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -450,6 +492,7 @@ class AddBOPDomestic extends Component {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadBOPDomestic(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -458,13 +501,16 @@ class AddBOPDomestic extends Component {
     }
 
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -535,18 +581,25 @@ class AddBOPDomestic extends Component {
       UOM: [],
     })
     this.props.hideForm()
+    this.getDetails()
+
   }
 
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
+
     const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, uploadAttachements } = this.state;
 
-
+      if (vendorName.length <= 0) {
+        this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
+      this.setState({ isVendorNameNotSelected: false })
 
     let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -570,6 +623,7 @@ class AddBOPDomestic extends Component {
           return false;
         }
       }
+      this.setState({ setDisable: true , disablePopup:false})
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -595,6 +649,7 @@ class AddBOPDomestic extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       const formData = {
         IsVendor: IsVendor,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
@@ -618,46 +673,48 @@ class AddBOPDomestic extends Component {
         Attachements: files,
       }
 
-      this.props.reset()
-      this.props.createBOPDomestic(formData, (res) => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+      // this.props.createBOPDomestic(formData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.BOP_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
 
-      // if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-      //   this.setState({ approveDrawer: true, approvalObj: formData })
-      // } else {
-      //   this.props.reset()
-      //   this.props.createBOPDomestic(formData, (res) => {
-      //     if (res.data.Result) {
-      //       Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
-      //       //this.clearForm()
-      //       this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
-      //     }
-      //   })
-      // }
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createBOPDomestic(formData, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
+            //this.clearForm()
+            this.cancel()                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+          }
+        })
+      }
 
 
 
 
      
     }
-  }
-  onPopupConfirm = () => {
-    this.props.reset()
+  }, 500)
+
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateBOPDomestic(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
         this.cancel();
       }
     })
 
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
 
   handleKeyDown = function (e) {
@@ -672,8 +729,27 @@ class AddBOPDomestic extends Component {
   */
   render() {
     const { handleSubmit } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+    const filterList = (inputValue) => {
+      let tempArr = []
 
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -864,32 +940,12 @@ class AddBOPDomestic extends Component {
                           <Col md="12">
                             <div className="left-border">{"Vendor:"}</div>
                           </Col>
-                          <Col md="3">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="vendorName"
-                                  type="text"
-                                  label="Vendor Name"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "VendorNameList"
-                                  )}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleVendorName}
-                                  valueDescription={this.state.vendorName}
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </div>
-                              {/* {!isEditFlag && <div
-                                                        onClick={this.vendorToggler}
-                                                        className={'plus-icon-square mr15 right'}>
-                                                    </div>} */}
-                            </div>
+                          <Col md="3" className='mb-4'>
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                           <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            
                           </Col>
                           {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                             <Col md="3">
@@ -1059,7 +1115,6 @@ class AddBOPDomestic extends Component {
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 disabled={isViewMode}
-                                //onSubmit={this.handleSubmit}
                                 accept="*"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
@@ -1140,26 +1195,27 @@ class AddBOPDomestic extends Component {
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancel}
+                            disabled={setDisable}
                           >
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
 
                           {
-                            // (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                            //   <button type="submit"
-                            //     class="user-btn approval-btn save-btn mr5"
-                            //     disabled={isViewMode}
-                            //   >
-                            //     <div className="send-for-approval"></div>
-                            //     {'Send For Approval'}
-                            //   </button>
-                            //   :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+                            (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                disabled={isViewMode}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
 
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={isViewMode}
+                              disabled={isViewMode || setDisable}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
@@ -1218,7 +1274,7 @@ class AddBOPDomestic extends Component {
             )
           }
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </>
@@ -1284,7 +1340,8 @@ export default connect(mapStateToProps, {
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getCityByCountry,
-  getAllCity
+  getAllCity,
+  masterFinalLevelUser
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
