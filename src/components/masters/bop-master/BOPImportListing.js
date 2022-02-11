@@ -171,7 +171,7 @@ class BOPImportListing extends Component {
         let isEditable = false
 
         if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
-            if (EditAccessibility && !rowData.IsRMAssociated) {
+            if (EditAccessibility && !rowData.IsBOPAssociated) {
                 isEditable = true
             } else {
                 isEditable = false
