@@ -1311,7 +1311,6 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-                  
                     <tr className='border-right'>
                       <td>
                         <span class="d-block small-grey-text"> Any Other Cost</span>
