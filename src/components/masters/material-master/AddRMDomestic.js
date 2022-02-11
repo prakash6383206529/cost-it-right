@@ -27,7 +27,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -51,7 +51,7 @@ class AddRMDomestic extends Component {
       isViewFlag: this.props?.data?.isViewFlag ? true : false,
 
 
-      RawMaterialID: '',
+      RawMaterialID: EMPTY_GUID,
 
       RawMaterial: [],
       RMGrade: [],
@@ -106,7 +106,8 @@ class AddRMDomestic extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader: false
     }
   }
   /**
@@ -127,11 +128,12 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.setState({ inputLoader: true })
     const { data } = this.props
     this.getDetails(data)
     this.props.getRawMaterialCategory((res) => { })
-    this.props.getVendorListByVendorType(false, () => { })
-    this.props.getTechnologySelectList(() => { })
+    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getAllCity(cityId => {
@@ -393,10 +395,11 @@ class AddRMDomestic extends Component {
 
 
           this.setState({ DataToChange: Data }, () => { })
+          this.setState({ inputLoader: true })
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
           } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           }
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -502,11 +505,11 @@ class AddRMDomestic extends Component {
       },
       () => {
         const { IsVendor } = this.state
+        this.setState({ inputLoader: true })
         if (IsVendor) {
-          this.props.getVendorWithVendorCodeSelectList(() => { })
+          this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
         } else {
-          // this.props.getVendorTypeBOPSelectList(() => { })
-          this.props.getVendorListByVendorType(IsVendor, () => { })
+          this.props.getVendorListByVendorType(IsVendor, () => { this.setState({ inputLoader: false }) })
           this.props.getPlantBySupplier('', () => { })
           this.props.getCityBySupplier(0, () => { })
         }
@@ -1047,6 +1050,7 @@ class AddRMDomestic extends Component {
 
       let formData = {}
       // const formData = {
+      formData.RawMaterialId = RawMaterialID
       formData.IsVendor = IsVendor
       formData.RawMaterial = RawMaterial.value
       formData.RMGrade = RMGrade.value
@@ -1411,8 +1415,17 @@ class AddRMDomestic extends Component {
 
                           <Col md="4" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
-                            <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            <AsyncSelect
+                              name="DestinationSupplierId"
+                              ref={this.myRef}
+                              key={this.state.updateAsyncDropdown}
+                              loadOptions={promiseOptions}
+                              onChange={(e) => this.handleVendorName(e)}
+                              value={this.state.vendorName}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              isDisabled={isEditFlag || isViewFlag}
+                            />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
 

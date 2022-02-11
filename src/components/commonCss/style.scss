@@ -6539,10 +6539,17 @@ left: 17rem;
     }
   }
    // <--------------END Part number showing on hover in costing sticky header --------->
-
   .rm-name-head {
     min-width: 125px;
   }
+  .view-rm-cost {
+    .drawer-1200 {
+        min-width: 1106px;
+        .drawer-1500px {
+          max-width: calc(100vw - 287px);
+        }
+      }
+    }
 }
 
 @media screen and (max-width:$middleDesktop) {
@@ -6712,6 +6719,7 @@ left: 17rem;
     right: 17px;
     top: 30px;
     bottom: 20px;
+    border-radius: 5px;
     align-items: flex-end;
     .loaderinner {
       font-size: 30px;
@@ -6757,6 +6765,21 @@ left: 17rem;
          margin-bottom: -10px;
        }
      }
+    }
+    &.zero-based {
+      left: 16px;
+      bottom: 1px;
+      top: 29px;
+    }
+    &.vendor-based {
+      left: 16px;
+      top: 29px;
+      bottom: 15px;
+    }
+    &.switch-vendor {
+      left: 16px;
+      top: 30px;
+      bottom: 55px;
     }
 }
 // <------END input field loader----->

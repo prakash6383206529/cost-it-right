@@ -41,6 +41,7 @@ function TabRMCC(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
+        AssemCostingId: costData.CostingId
       }
       dispatch(getRMCCTabData(data, true, (res) => {   
         dispatch(setAllCostingInArray(res.data.DataList[0],false))
