@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA,BOP_MASTER_ID } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
@@ -15,7 +15,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey,CheckApprovalApplicableMaster } from '../../../helper';
+import { getConfigurationKey, CheckApprovalApplicableMaster } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -50,7 +50,7 @@ class BOPDomesticListing extends Component {
             showData: false,
             showPopup: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
 
         }
     }
@@ -60,7 +60,7 @@ class BOPDomesticListing extends Component {
     * @description Called after rendering the component
     */
     componentDidMount() {
-        
+
 
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
@@ -79,24 +79,24 @@ class BOPDomesticListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
         }
-        this.setState({isLoader :true})
-       const {isMasterSummaryDrawer}= this.props
-       
+        this.setState({ isLoader: true })
+        const { isMasterSummaryDrawer } = this.props
 
-        if (  isMasterSummaryDrawer!==undefined && !isMasterSummaryDrawer ) {
-            
-        this.props.getBOPDomesticDataList(filterData, (res) => {
-            this.setState({isLoader:false})
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
-            } else {
-                this.setState({ tableData: [] })
-            }
-        })
-    }
+
+        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+
+            this.props.getBOPDomesticDataList(filterData, (res) => {
+                this.setState({ isLoader: false })
+                if (res && res.status === 200) {
+                    let Data = res.data.DataList;
+                    this.setState({ tableData: Data })
+                } else if (res && res.response && res.response.status === 412) {
+                    this.setState({ tableData: [] })
+                } else {
+                    this.setState({ tableData: [] })
+                }
+            })
+        }
     }
 
     /**
@@ -121,7 +121,7 @@ class BOPDomesticListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
-        
+
     }
 
     /**
@@ -164,10 +164,22 @@ class BOPDomesticListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
+
+        let isEditbale = false
+        if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
+            if (EditAccessibility && !rowData.IsAssociated) {
+                isEditbale = true
+            } else {
+                isEditbale = false
+            }
+        } else {
+            isEditbale = EditAccessibility
+        }
+
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isEditbale && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -183,8 +195,8 @@ class BOPDomesticListing extends Component {
 
         const rowData = props.data
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return rowData.CostingHead?rowData.CostingHead:cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
-        
+        return rowData.CostingHead ? rowData.CostingHead : cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+
     }
 
     plantFormatter = (props) => {
@@ -398,12 +410,12 @@ class BOPDomesticListing extends Component {
                         </Col>
                     </Row>
 
-                </form > 
+                </form >
 
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopDomesticList && this.props.bopDomesticList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -429,7 +441,7 @@ class BOPDomesticListing extends Component {
                                     onSelectionChanged={onRowSelect}
                                 >
 
-                                     <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="IsVendor" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
