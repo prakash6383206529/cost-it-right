@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -25,7 +25,6 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { Errorbox } from '../../common/ErrorBox';
 import { SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -40,6 +39,7 @@ function CostingSimulation(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+    const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
 
     const [shown, setshown] = useState(false);
 
@@ -116,6 +116,10 @@ function CostingSimulation(props) {
         }
     }, [tableData])
 
+    window.onbeforeunload = (e) => {
+        dispatch(setShowSimulationPage(true))
+    };
+
     const reducerOldRMPrice = (array, item) => {
         let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
         let sum = 0
@@ -147,7 +151,7 @@ function CostingSimulation(props) {
     }
 
     const getCostingList = (plantId = '', rawMatrialId = '') => {
-        switch (Number(reactLocalStorage.getObject("masterForSimulation")?.value)) {
+        switch (Number(selectedMasterForSimulation?.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
             case Number(BOPDOMESTIC):
@@ -1090,7 +1094,7 @@ function CostingSimulation(props) {
             }
 
 
-            {showApprovalHistory && <Redirect to='/simulation-history' />}
+            {(showApprovalHistory || getShowSimulationPage) && <Redirect to='/simulation-history' />}
 
             {CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer

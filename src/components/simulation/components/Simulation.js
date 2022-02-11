@@ -93,7 +93,6 @@ function Simulation(props) {
         setTechnology({ label: '', value: '' })
         setValue('Technology', '')
         dispatch(setMasterForSimulation(value))
-        reactLocalStorage.setObject("masterForSimulation", { label: value.label, value: value.value });
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             // setEditWarning(applyEditCondSimulation(getValues('Masters').value))
             setShowMasterList(true)

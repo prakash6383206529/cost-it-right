@@ -202,9 +202,6 @@ function SimulationApprovalListing(props) {
         setApprovalData({ approvalProcessId: rowObj.ApprovalProcessId, approvalNumber: rowObj.ApprovalNumber, SimulationTechnologyHead: rowObj.SimulationTechnologyHead, SimulationTechnologyId: rowObj.SimulationTechnologyId })
         if (rowObj.DisplayStatus === 'Draft' || rowObj.SimulationType === 'Provisional') {
             dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
-            reactLocalStorage.setObject("masterForSimulation",
-                { label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }
-            );
             setRedirectCostingSimulation(true)
         } else {
             setShowApprovalSummary(true)
