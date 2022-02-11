@@ -604,114 +604,112 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version" cellRenderer={'hyperLinkableFormatter'}></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='AmorizationQuantity' headerName='Amorization Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='CostingVersion' headerName='Costing Version' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        {/* <AgGridColumn field='CreatedBy' headerName='CreatedBy' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='CreatedByName' headerName='CreatedByName' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='CreatedByUserName' headerName='CreatedByUserName' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        {/* <AgGridColumn field='CreatedDate' headerName='CreatedDate' cellRenderer='effectiveDateFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='DepartmentCode' headerName='Department Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='DepartmentName' headerName='Department Name' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='DiscountCost' headerName='Discount Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        {/* <AgGridColumn field='DisplayStatus' headerName='DisplayStatus' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        {/* <AgGridColumn field='ECN' headerName='ECN' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                        <AgGridColumn field='FinalPOPrice' headerName='PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='FinishWeight' headerName='Finish Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='FreightCost' headerName='Freight Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='FreightPercentage' headerName='Freight Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='FreightType' headerName='Freight Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='GrossWeight' headerName='Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='HundiOrDiscountValue' headerName='Hundi Or Discount Value' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ICCCost' headerName='ICC Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ICCOn' headerName='ICC On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        {/* <AgGridColumn field='IsActive' headerName='IsActive' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='IsDeleted' headerName='IsDeleted' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        {/* <AgGridColumn field='IsPackagingCostFixed' headerName='IsPackagingCostFixed' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='MasterBatchTotal' headerName='Master Batch Total' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type For Overhead And Profit' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ModifiedByName' headerName='Modified By Name' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ModifiedByUserName' headerName='Modified By UserName' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ModifiedDate' headerName='Modified Date' cellRenderer='effectiveDateFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetBoughtOutPartCost' headerName='Net Bought Out Part Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetConversionCost' headerName='Net Conversion Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetConvertedPOPrice' headerName='Net Converted PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetDiscountsCost' headerName='Net Discounts Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetFreightPackaging' headerName='Net Freight Packaging' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetFreightPackagingCost' headerName='Net Freight Packaging Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetOtherCost' headerName='Net Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price INR' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetPOPriceInCurrency' headerName='Net PO Price In Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetRawMaterialsCost' headerName='Net Raw Materials Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetTotalRMBOPCC' headerName='Net Total RM BOP CC' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OtherCost' headerName='Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadCost' headerName='Overhead Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadOn' headerName='Overhead On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PackagingCost' headerName='Packaging Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PackagingCostPercentage' headerName='Packaging Cost Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='VendorName' headerName='Vendor Name' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='VendorCode' headerName='Vendor Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PlantName' headerName='Plant Name' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PlantCode' headerName='Plant Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='PartType' headerName='Part Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantCode' headerName='Plant Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='PlantName' headerName='Plant Name' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitOn' headerName='Profit On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RMGrade' headerName='RM Grade' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RMSpecification' headerName='RM Specification' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='DepartmentCode' headerName='Department Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='DepartmentName' headerName='Department Name' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RevisionNumber' headerName='Revision Number' cellRenderer='hyphenFormatter'></AgGridColumn>
+
                         <AgGridColumn field='RawMaterialCode' headerName='Raw Material Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialGrade' headerName='Raw Material Grade' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialGrossWeight' headerName='Raw Material Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialName' headerName='Raw Material Name' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialGrade' headerName='Raw Material Grade' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RMSpecification' headerName='RM Specification' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RawMaterialSpecification' headerName='Raw Material Specification' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialRate' headerName='Raw Material Rate' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='RawMaterialScrapWeight' headerName='Raw Material Scrap Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RawMaterialSpecification' headerName='Raw Material Specification' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RecordInsertedBy' headerName='Record Inserted By' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectOn' headerName='Reject On' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        {/* <AgGridColumn field='Rev' headerName='Rev' cellRenderer='hyphenFormatter'></AgGridColumn> */}
-                        <AgGridColumn field='RevisionNumber' headerName='Revision Number' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ScrapRate' headerName='Scrap Rate' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ScrapWeight' headerName='Scrap Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        {/* <AgGridColumn field='Status' headerName='Status' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        <AgGridColumn field='RawMaterialGrossWeight' headerName='Raw Material Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='GrossWeight' headerName='Gross Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='FinishWeight' headerName='Finish Weight' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetRawMaterialsCost' headerName='Net Raw Materials Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetBoughtOutPartCost' headerName='Net Bought Out Part Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetProcessCost' headerName='Net Process Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetOperationCost' headerName='Net Operation Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetConversionCost' headerName='Net Conversion Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='SurfaceTreatmentCost' headerName='Surface Treatment Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetSurfaceTreatmentCost' headerName='Net Surface Treatment Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ModelTypeForOverheadAndProfit' headerName='Model Type' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadApplicability' headerName='Overhead Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadPercentage' headerName='Overhead Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadCombinedCost' headerName='Overhead Combined Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OverheadCost' headerName='Overhead Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='OverheadOn' headerName='Overhead On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        <AgGridColumn field='ProfitApplicability' headerName='Profit Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ProfitPercentage' headerName='Profit Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ProfitCost' headerName='Profit Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='ProfitOn' headerName='Profit On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        <AgGridColumn field='NetOverheadAndProfitCost' headerName='Net Overhead And Profit Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RejectionApplicability' headerName='Rejection Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RejectionPercentage' headerName='Rejection Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='RejectionCost' headerName='Rejection Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='RejectOn' headerName='Reject On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        <AgGridColumn field='ICCApplicability' headerName='ICC Applicability' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ICCInterestRate' headerName='ICC Interest Rate' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ICCCost' headerName='ICC Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='ICCOn' headerName='ICC On' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        <AgGridColumn field='NetICCCost' headerName='Net ICC Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PaymentTermsOn' headerName='Payment Terms On' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PaymentTermCost' headerName='Payment Term Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PackagingCostPercentage' headerName='Packaging Cost Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='PackagingCost' headerName='Packaging Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='FreightPercentage' headerName='Freight Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='FreightCost' headerName='Freight Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='TransportationCost' headerName='Transportation Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='FreightType' headerName='Freight Type' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetFreightPackaging' headerName='Net Freight Packaging' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetFreightPackagingCost' headerName='Net Freight Packaging Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='DiscountCost' headerName='Discount Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetDiscountsCost' headerName='Net Discounts Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='HundiOrDiscountValue' headerName='Hundi Or Discount Value' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ToolCost' headerName='Tool Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ToolLife' headerName='Tool Life' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ToolMaintenanceCost' headerName='Tool Maintenance Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ToolPrice' headerName='Tool Price' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ToolQuantity' headerName='Tool Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='TotalCost' headerName='Total Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='AmorizationQuantity' headerName='Amortization Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='OtherCost' headerName='Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetOtherCost' headerName='Net Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='TotalOtherCost' headerName='Total Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='TotalRecordCount' headerName='Total Record Count' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='TransportationCost' headerName='Transportation Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorCode' headerName='Vendor Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='VendorName' headerName='Vendor Name' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='Version' headerName='Version' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn pinned="right" field="Display Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter'></AgGridColumn>
+
+
+
+
+
+
+
+
+                        <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetConvertedPOPrice' headerName='Net Converted PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price INR' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPriceInCurrency' headerName='Net PO Price In Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetTotalRMBOPCC' headerName='Net Total RM BOP CC' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='TotalCost' headerName='Total Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+
+
+                        {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='CreatedBy' headerName='CreatedBy' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='CreatedByName' headerName='CreatedByName' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='CreatedByUserName' headerName='CreatedByUserName' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='CreatedDate' headerName='CreatedDate' cellRenderer='effectiveDateFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='DisplayStatus' headerName='DisplayStatus' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='ECN' headerName='ECN' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='IsActive' headerName='IsActive' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='IsDeleted' headerName='IsDeleted' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='Rev' headerName='Rev' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='Status' headerName='Status' cellRenderer='hyphenFormatter'></AgGridColumn> */}
 
 
                     </AgGridReact>
