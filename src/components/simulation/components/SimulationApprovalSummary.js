@@ -571,9 +571,9 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
-        if (String(SimulationTechnologyId) !== SURFACETREATMENT) {
+        if (String(SimulationTechnologyId) === SURFACETREATMENT) {
             temp = row.IsMultiple === true ? 'Multiple Surface Treatment' : row.OperationName
-        } else if (String(SimulationTechnologyId) !== OPERATIONS) {
+        } else if (String(SimulationTechnologyId) === OPERATIONS) {
             temp = row.IsMultiple === true ? 'Multiple Operation' : row.OperationName
         }
         return cell != null ? temp : '-';

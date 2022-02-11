@@ -32,6 +32,7 @@ import ProfitListing from '../../masters/overhead-profit-master/ProfitListing'
 import ScrollToTop from '../../common/ScrollToTop';
 import OverheadSimulation from './SimulationPages/OverheadSimulation';
 import ProfitSimulation from './SimulationPages/ProfitSimulation';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -135,9 +136,9 @@ function Simulation(props) {
         switch (Number(master.value)) {
             case Number(SURFACETREATMENT):
                 temp = TempData && TempData.map((item) => {
-                    if (item.IsVendor === true) {
+                    if (item.CostingHead === true) {
                         item.IsVendor = 'Vendor Based'
-                    } else if (item.IsVendor === false) {
+                    } else if (item.CostingHead === false) {
                         item.IsVendor = 'Zero Based'
                     }
                     return item
@@ -145,9 +146,9 @@ function Simulation(props) {
                 break;
             case Number(OPERATIONS):
                 temp = TempData && TempData.map((item) => {
-                    if (item.IsVendor === true) {
+                    if (item.CostingHead === true) {
                         item.IsVendor = 'Vendor Based'
-                    } else if (item.IsVendor === false) {
+                    } else if (item.CostingHead === false) {
                         item.IsVendor = 'Zero Based'
                     }
                     return item

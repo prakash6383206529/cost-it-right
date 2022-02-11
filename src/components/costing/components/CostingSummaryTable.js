@@ -916,9 +916,9 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{!simulationDrawer && !(Number(master)===Number(RMDOMESTIC)||Number(master)===Number(RMIMPORT)) ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                              <span>{!simulationDrawer && !(Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (!simulationDrawer && !(Number(master)===Number(RMDOMESTIC)||Number(master)===Number(RMIMPORT)) && icons) &&
+                                (!simulationDrawer && !(Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -983,10 +983,10 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                             
-                              <span>{!simulationDrawer && !(Number(master)===Number(OPERATIONS)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice): '-'}</span>
+
+                              <span>{!simulationDrawer && !(Number(master) === Number(OPERATIONS)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && !simulationDrawer&&!(Number(master)===Number(OPERATIONS)) && icons) &&
+                                (data.CostingHeading !== VARIANCE && !simulationDrawer && !(Number(master) === Number(OPERATIONS)) && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1033,9 +1033,9 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             < td >
-                              <span>{ !simulationDrawer && !(Number(master)===Number(SURFACETREATMENT)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :'-'}</span>
+                              <span>{!simulationDrawer && !(Number(master) === Number(SURFACETREATMENT)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons && !(Number(master)===Number(SURFACETREATMENT))) &&
+                                (data.CostingHeading !== VARIANCE && icons && !(Number(master) === Number(SURFACETREATMENT))) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1412,11 +1412,11 @@ const CostingSummaryTable = (props) => {
                                         const fileURL = `${FILE_URL}${withOutTild}`
                                         return (
                                           <td>
-                                          <div className={"single-attachment images"}>
-                                            <a href={fileURL} target="_blank" rel="noreferrer">
-                                              {f.OriginalFileName}
-                                            </a>
-                                          </div>
+                                            <div className={"single-attachment images"}>
+                                              <a href={fileURL} target="_blank" rel="noreferrer">
+                                                {f.OriginalFileName}
+                                              </a>
+                                            </div>
                                           </td>
                                         )
                                       })}
