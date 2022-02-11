@@ -948,7 +948,8 @@ function CostingSimulation(props) {
                                                     {isSurfaceTreatment && <>
                                                         <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldTranspotationCost" headerName='Extra Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldTranspotationCost" headerName='Old Extra Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
