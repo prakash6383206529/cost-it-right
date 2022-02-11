@@ -13,6 +13,7 @@ import {
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+    SET_SHOW_SIMULATION_PAGE,
 } from '../../../config/constants';
 
 const initialState = {
@@ -114,7 +115,12 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 valdataTemp: action.payload
             }
-
+        case SET_SHOW_SIMULATION_PAGE:
+            return {
+                ...state,
+                loading: false,
+                getShowSimulationPage: action.payload
+            };
 
         default:
             return state;
