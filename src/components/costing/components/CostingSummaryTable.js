@@ -1274,7 +1274,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-
+                    { }
                     <tr className='border-right'>
                       <td width={"20%"}>
                         <span class="d-block small-grey-text">
@@ -1300,8 +1300,8 @@ const CostingSummaryTable = (props) => {
                                   <span className="d-inline-block small-grey-text">
                                     {data.CostingHeading !== VARIANCE ? data.otherDiscountValue.dicountType : ''}
                                   </span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? data.otherDiscountValue.discountApplicablity : '-'}</span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.dicountType === "Percentage" ? data.otherDiscountValue.discountApplicablity : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.dicountType === "Percentage" ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                                   <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
 
@@ -1312,7 +1312,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-
+                    { }
                     <tr className='border-right'>
                       <td>
                         <span class="d-block small-grey-text"> Any Other Cost</span>
@@ -1334,8 +1334,8 @@ const CostingSummaryTable = (props) => {
                                   <span className="d-inline-block small-grey-text">
                                     {data.CostingHeading !== VARIANCE ? data.anyOtherCostType : ''}
                                   </span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? data.anyOtherCostApplicablity : '-'}</span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? checkForDecimalAndNull(data.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostType === "Percentage" ? data.anyOtherCostApplicablity : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostType === "Percentage" ? checkForDecimalAndNull(data.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                                   <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
                               </td>
