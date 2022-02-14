@@ -6927,3 +6927,9 @@ left: 17rem;
   grid-template-columns: 25% 35% 20% 20%;
 }
 // <-----END compare costing table--->
+// <-----START Loader center--->
+.max-loader-height {
+  max-height: 32vh;
+  overflow-x: hidden;
+}
+// <-----END Loader center--->
