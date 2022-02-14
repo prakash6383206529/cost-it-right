@@ -10,6 +10,8 @@ import { getOperationApprovalList } from '../actions/OtherOperation';
 import { DRAFT } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import SummaryDrawer from '../SummaryDrawer';
+import MasterSendForApproval from '../MasterSendForApproval';
+import Toaster from '../../common/Toaster'
 
 
 
@@ -24,6 +26,7 @@ function OperationApproval(props) {
     const { OperationApprovalList } = useSelector((state) => state.otherOperation)
     const [loader, setLoader] = useState(false)
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
+    const [approvalDrawer, setApprovalDrawer] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -53,6 +56,14 @@ function OperationApproval(props) {
         }))
     }
 
+
+
+    const closeApprovalDrawer = (e = '') => {
+        setApprovalDrawer(false)
+        setLoader(true)
+        getTableData()
+
+    }
 
 
     const statusFormatter = (props) => {
@@ -111,6 +122,12 @@ function OperationApproval(props) {
     }
 
     const sendForApproval = () => {
+        if (selectedRowData.length > 0) {
+            setApprovalDrawer(true)
+        }
+        else {
+            Toaster.warning('Please select draft token to send for approval.')
+        }
 
     }
 
@@ -248,6 +265,20 @@ function OperationApproval(props) {
                     approvalData={approvalData}
                     anchor={'bottom'}
                     masterId={OPERATIONS_ID}
+                />
+            }
+
+            {
+                approvalDrawer &&
+                <MasterSendForApproval
+                    isOpen={approvalDrawer}
+                    closeDrawer={closeApprovalDrawer}
+                    isEditFlag={false}
+                    masterId={OPERATIONS_ID}
+                    type={'Sender'}
+                    anchor={"right"}
+                    isBulkUpload={true}
+                    approvalData={selectedRowData}
                 />
             }
 
