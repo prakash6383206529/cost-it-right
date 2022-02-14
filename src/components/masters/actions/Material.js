@@ -35,6 +35,10 @@ import {
     GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
+    GET_OPERATION_COMBINED_DATA_LIST,
+    OPERATIONS_ID,
+    BOP_MASTER_ID,
+    RM_MASTER_ID,
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
@@ -1739,17 +1743,23 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
             .then((response) => {
                 if (response.data.Result) {
 
-                    if (Number(masterId) === 1) {
+                    if (Number(masterId) === RM_MASTER_ID) {
                         dispatch({
                             type: GET_RM_DOMESTIC_LIST,
                             payload: response.data.Data.ImpactedMasterDataList,
                         })
                         callback(response)
                     }
-                    else if (Number(masterId) === 2) {
+                    else if (Number(masterId) === BOP_MASTER_ID) {
                         dispatch({
                             type: GET_BOP_DOMESTIC_DATA_LIST,
                             payload: response.data.Data.ImpactedMasterDataListBOP,
+                        })
+                        callback(response)
+                    } else if (Number(masterId) === OPERATIONS_ID) {
+                        dispatch({
+                            type: GET_OPERATION_COMBINED_DATA_LIST,
+                            payload: response.data.Data.ImpactedMasterDataListOperation,
                         })
                         callback(response)
                     }
