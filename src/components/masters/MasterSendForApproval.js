@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
+import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
 import { Container, Row, Col } from 'reactstrap'
@@ -193,6 +194,28 @@ function MasterSendForApproval(props) {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('BOP has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
+                    break;
+
+
+                case 3:  //CASE 3 FOR OPERATIONS
+
+                    if (isBulkUpload) {
+                        approvalData && approvalData.map(item => {
+                            tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {} })
+                        })
+                    } else {
+                        tempArray.push({ OperationId: EMPTY_GUID, IsImportEntery: IsImportEntery, OperationRequest: approvalObj })
+                    }
+                    senderObj.EntityList = tempArray
+
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalRequestBySenderOperation(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('Operation has been sent for approval.')
                             props.closeDrawer('', 'submit')
                         }
                     }))

@@ -112,45 +112,58 @@ class OperationListing extends Component {
     */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null) => {
         this.setState({ isLoader: true })
+
+        const { isMasterSummaryDrawer } = this.props
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
         }
-        this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
-            this.setState({ isLoader: false })
-            if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
-            } else if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList;
-                if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
-                    let surfaceTreatmentOperationData = []
-                    Data && Data.map(item => {
-                        if (item.IsSurfaceTreatmentOperation === true) {
-                            surfaceTreatmentOperationData.push(item)
-                        }
-                    })
-                    this.setState({ tableData: surfaceTreatmentOperationData })
-                } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
-                    let OperationData = []
-                    Data && Data.map(item => {
-                        if (item.IsSurfaceTreatmentOperation === false) {
-                            OperationData.push(item)
-                        }
-                    })
-                    this.setState({ tableData: OperationData })
+
+
+        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+            this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
+                this.setState({ isLoader: false })
+                if (res.status === 204 && res.data === '') {
+                    this.setState({ tableData: [], })
+                } else if (res && res.data && res.data.DataList) {
+                    let Data = res.data.DataList;
+                    if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
+                        let surfaceTreatmentOperationData = []
+                        Data && Data.map(item => {
+                            if (item.IsSurfaceTreatmentOperation === true) {
+                                surfaceTreatmentOperationData.push(item)
+                            }
+                        })
+                        this.setState({ tableData: surfaceTreatmentOperationData })
+                    } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
+                        let OperationData = []
+                        Data && Data.map(item => {
+                            if (item.IsSurfaceTreatmentOperation === false) {
+                                OperationData.push(item)
+                            }
+                        })
+                        this.setState({ tableData: OperationData })
+                    } else {
+                        this.setState({ tableData: Data })
+                    }
+
+                    // if (this.props.isSimulation) {
+                    //     this.props.apply(Data)
+                    // }
                 } else {
-                    this.setState({ tableData: Data })
+
                 }
+            });
+        } else {
 
-                // if (this.props.isSimulation) {
-                //     this.props.apply(Data)
-                // }
-            } else {
+            setTimeout(() => {
+                this.setState({ tableData: this.props.operationList })
 
-            }
-        });
+            }, 500);
+
+        }
     }
 
     /**
@@ -572,7 +585,7 @@ class OperationListing extends Component {
 
         return (
             <div className="container-fluid">
-                {this.state.isLoader && <LoaderCustom />}
+                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 

@@ -22,9 +22,9 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
+import { CheckApprovalApplicableMaster } from '../../../helper';
 
 const selector = formValueSelector('AddOperation');
 
@@ -38,7 +38,7 @@ class AddOperation extends Component {
       IsVendor: false,
       selectedTechnology: [],
       selectedPlants: [],
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
 
       vendorName: [],
       selectedVendorPlants: [],
@@ -69,7 +69,7 @@ class AddOperation extends Component {
       updatedObj: {},
       setDisable: false,
       disablePopup: false,
-      inputLoader:false,
+      inputLoader: false,
     }
   }
 
@@ -86,10 +86,10 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    
+
     this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-   
+
     this.getDetail()
 
 
@@ -171,8 +171,8 @@ class AddOperation extends Component {
     this.setState({
       IsVendor: !this.state.IsVendor,
     });
-    this.setState({inputLoader:true})
-    this.props.getVendorWithVendorCodeSelectList(()=>{ this.setState({inputLoader:false}) })
+    this.setState({ inputLoader: true })
+    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
   }
 
   /**
@@ -197,7 +197,7 @@ class AddOperation extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected:false, selectedVendorPlants: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
@@ -216,6 +216,17 @@ class AddOperation extends Component {
     })
   }
 
+<<<<<<< HEAD
+=======
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    if (type === 'submit') {
+      this.cancel()
+    }
+  }
+
+>>>>>>> 570c25545 (operation approval work undergoing)
   /**
   * @method handleVendorPlant
   * @description called
@@ -512,7 +523,7 @@ class AddOperation extends Component {
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -586,26 +597,26 @@ class AddOperation extends Component {
 
 
 
-      // if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-      //   this.setState({ approveDrawer: true, approvalObj: formData })
-      // } else {
-      //   this.props.reset()
-      //   this.props.createOperationsAPI(formData, (res) => {
-      //     if (res.data.Result) {
-      //       Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-      //       //this.clearForm()
-      //       this.cancel()
-      //     }
-      //   })
-      // }
+      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: formData })
+      } else {
+        this.props.reset()
+        this.props.createOperationsAPI(formData, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
+            //this.clearForm()
+            this.cancel()
+          }
+        })
+      }
 
-      this.props.createOperationsAPI(formData, (res) => {
-        this.setState({ setDisable: false })
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+      // this.props.createOperationsAPI(formData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
 
     }
@@ -642,7 +653,7 @@ class AddOperation extends Component {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -793,6 +804,7 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {this.state.IsVendor && (
+<<<<<<< HEAD
                        <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                         {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
                         <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
@@ -816,6 +828,22 @@ class AddOperation extends Component {
                               )}
                            </div>
                        </Col>
+=======
+                        <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
+                          <AsyncSelect
+                            name="vendorName"
+                            ref={this.myRef}
+                            key={this.state.updateAsyncDropdown}
+                            loadOptions={promiseOptions}
+                            onChange={(e) => this.handleVendorName(e)}
+                            value={this.state.vendorName}
+                            noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                            isDisabled={isEditFlag ? true : false} />
+                          {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
+                        </Col>
+>>>>>>> 570c25545 (operation approval work undergoing)
 
                       )}
                       {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
@@ -1038,27 +1066,25 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-
-
-                      {/* //  (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                        //    <button type="submit"
-                        //      class="user-btn approval-btn save-btn mr5"
-                        //      disabled={this.state.isFinalApprovar}
-                        //   >
-                        //      <div className="send-for-approval"></div>
-                        //     {'Send For Approval'}
-                        //    </button>
-                        //    : */}
-                      <button
-                        type="submit"
-                        className="user-btn mr5 save-btn"
-                        disabled={isViewMode || setDisable}
-                      >
-                        <div className={"save-icon"}></div>
-                        {isEditFlag ? "Update" : "Save"}
-                      </button>
-
-
+                      {
+                        (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
+                          <button type="submit"
+                            class="user-btn approval-btn save-btn mr5"
+                            disabled={this.state.isFinalApprovar}
+                          >
+                            <div className="send-for-approval"></div>
+                            {'Send For Approval'}
+                          </button>
+                          :
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                            disabled={isViewMode || setDisable}
+                          >
+                            <div className={"save-icon"}></div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                      }
 
 
                     </div>
