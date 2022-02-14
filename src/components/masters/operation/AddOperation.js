@@ -15,7 +15,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -43,6 +43,7 @@ class AddOperation extends Component {
       vendorName: [],
       selectedVendorPlants: [],
       UOM: [],
+      isDateChange: false,
 
       isSurfaceTreatment: false,
       remarks: '',
@@ -58,8 +59,9 @@ class AddOperation extends Component {
       isShowForm: false,
       isOpenVendor: false,
       isOpenUOM: false,
-      OperationId: '',
+      OperationId: EMPTY_GUID,
       effectiveDate: '',
+      minEffectiveDate: '',
       destinationPlant: [],
       changeValue: true,
       dataToChange: '',
@@ -216,8 +218,6 @@ class AddOperation extends Component {
     })
   }
 
-<<<<<<< HEAD
-=======
 
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false })
@@ -226,7 +226,6 @@ class AddOperation extends Component {
     }
   }
 
->>>>>>> 570c25545 (operation approval work undergoing)
   /**
   * @method handleVendorPlant
   * @description called
@@ -265,6 +264,7 @@ class AddOperation extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
+      isDateChange: true,
     })
 
   }
@@ -298,11 +298,13 @@ class AddOperation extends Component {
         isEditFlag: true,
         OperationId: data.ID,
       })
+      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
 
           let plantArray = [];
           Data && Data.Plant.map((item) => {
@@ -322,12 +324,14 @@ class AddOperation extends Component {
             return vendorPlantArray;
           })
 
+
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, UOMSelectList, plantSelectList } = this.props;
 
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
+
 
             this.setState({
               isEditFlag: true,
@@ -518,13 +522,15 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange, uploadAttachements, isDateChange } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
-      return false
+      if (IsVendor) {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
     }
     this.setState({ isVendorNameNotSelected: false })
 
@@ -547,7 +553,7 @@ class AddOperation extends Component {
     })
 
     /** Update existing detail of supplier master **/
-    if (this.state.isEditFlag) {
+    if (!isDateChange && this.state.isEditFlag && this.state.isFinalApprovar) {
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OperationId }
       })
@@ -574,6 +580,7 @@ class AddOperation extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
+        OperationId: OperationId,
         IsVendor: IsVendor,
         OperationName: values.OperationName,
         OperationCode: values.OperationCode,
@@ -598,7 +605,14 @@ class AddOperation extends Component {
 
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ approveDrawer: true, approvalObj: formData })
+
+        if (isDateChange) {
+          this.setState({ approveDrawer: true, approvalObj: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+        }
+        else {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+        }
       } else {
         this.props.reset()
         this.props.createOperationsAPI(formData, (res) => {
@@ -804,31 +818,6 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {this.state.IsVendor && (
-<<<<<<< HEAD
-                       <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                        {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
-                        <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
-                           <div className="fullinput-icon">
-                        <AsyncSelect 
-                        name="vendorName" 
-                        ref={this.myRef} 
-                        key={this.state.updateAsyncDropdown} 
-                        loadOptions={promiseOptions} 
-                        onChange={(e) => this.handleVendorName(e)} 
-                        value={this.state.vendorName} 
-                        noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                        isDisabled={isEditFlag ? true : false} />
-                        {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                        </div>
-                           {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
-                           </div>
-                       </Col>
-=======
                         <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                           {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
                           <AsyncSelect
@@ -841,9 +830,14 @@ class AddOperation extends Component {
                             noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                             isDisabled={isEditFlag ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
+                          {!isEditFlag && (
+                                <div
+                                  onClick={this.vendorToggler}
+                                  className={"plus-icon-square  right"}
+                                ></div>
+                              )}
+                        
                         </Col>
->>>>>>> 570c25545 (operation approval work undergoing)
 
                       )}
                       {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
@@ -935,13 +929,14 @@ class AddOperation extends Component {
                             onChange={this.handleEffectiveDateChange}
                             type="text"
                             validate={[required]}
+                            minDate={this.state.minEffectiveDate}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {
                             }}
                             component={renderDatePicker}
                             className=" "
-                            disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                             customClassName=" withBorder"
                           />
                         </div>
