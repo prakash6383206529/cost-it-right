@@ -5,10 +5,11 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
-import { EMPTY_DATA } from '../../../config/constants';
-import { getRMApprovalList } from '../actions/Material';
+import { EMPTY_DATA, OPERATIONS_ID } from '../../../config/constants';
+import { getOperationApprovalList } from '../actions/OtherOperation';
 import { DRAFT } from '../../../config/constants';
-
+import DayTime from '../../common/DayTimeWrapper'
+import SummaryDrawer from '../SummaryDrawer';
 
 
 
@@ -20,8 +21,9 @@ function OperationApproval(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
-    const { approvalList } = useSelector((state) => state.material)
+    const { OperationApprovalList } = useSelector((state) => state.otherOperation)
     const [loader, setLoader] = useState(false)
+    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -29,6 +31,14 @@ function OperationApproval(props) {
 
     }, [])
 
+
+
+
+    const closeDrawer = (e = '') => {
+        setShowApprovalSummary(false)
+        setLoader(true)
+        getTableData()
+    }
 
     /**
 * @method getTableData
@@ -38,7 +48,7 @@ function OperationApproval(props) {
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
         setLoader(true)
-        dispatch(getRMApprovalList((res) => {
+        dispatch(getOperationApprovalList((res) => {
             setLoader(false)
         }))
     }
@@ -53,12 +63,12 @@ function OperationApproval(props) {
 
 
 
-    const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
-        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
 
-        // props.closeDashboard()
-
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
+
 
     /**
   * @method linkableFormatter
@@ -133,16 +143,23 @@ function OperationApproval(props) {
 
         statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
+        effectiveDateRenderer: effectiveDateFormatter,
 
     };
 
     const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === DRAFT : false
 
+    const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
+        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
+        setShowApprovalSummary(true)
+        // props.closeDashboard()
+
+    }
 
 
     return (
         <div>
-              {loader && <LoaderCustom />}
+            {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
                 <Col md="6" lg="6" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
@@ -163,7 +180,7 @@ function OperationApproval(props) {
             <Row>
                 <Col>
                     <div className={`ag-grid-react`}>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${OperationApprovalList && OperationApprovalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -174,7 +191,7 @@ function OperationApproval(props) {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={approvalList}
+                                    rowData={OperationApprovalList}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
@@ -191,21 +208,17 @@ function OperationApproval(props) {
                                     isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
-                                    <AgGridColumn width="145" field="TechnologyName" headerName='BOP Part No'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RawMaterial" headerName='BOP Part Name'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RMGrade" headerName='BOP Category'></AgGridColumn>
-                                    <AgGridColumn width="150" field="RMSpec" headerName='UOM'></AgGridColumn>
-                                    <AgGridColumn width="140" field="Category" headerName='Specification'></AgGridColumn>
-                                    <AgGridColumn width="140" field="MaterialType" headerName='Plant'></AgGridColumn>
-                                    <AgGridColumn field="Plant" headerName='Vendor'></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Minimum Order Quantity"></AgGridColumn>
-                                    <AgGridColumn width="140" field="UOM" headerName="Basic Rate(INR)"></AgGridColumn>
-                                    <AgGridColumn width="140" field="BasicRate" headerName="Net Cost(INR)"></AgGridColumn>
-                                    <AgGridColumn width="140" field="ScrapRate" headerName="Effective Date"></AgGridColumn>
-
+                                    <AgGridColumn width="145" field="Technology" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>
+                                    <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>
+                                    <AgGridColumn width="150" field="Plants" headerName='Plant (Code)'></AgGridColumn>
+                                    <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                    <AgGridColumn width="140" field="UnitOfMeasurement" headerName='UOM'></AgGridColumn>
+                                    <AgGridColumn field="Rate" headerName='Rate'></AgGridColumn>
+                                    <AgGridColumn field="EffectiveDate" headerName="EffectiveDate" cellRenderer='effectiveDateRenderer'></AgGridColumn>
 
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
                                 </AgGridReact>
@@ -222,6 +235,19 @@ function OperationApproval(props) {
                     </div>
                 </Col>
             </Row>
+
+
+
+            {
+                showApprovalSumary &&
+                <SummaryDrawer
+                    isOpen={showApprovalSumary}
+                    closeDrawer={closeDrawer}
+                    approvalData={approvalData}
+                    anchor={'bottom'}
+                    masterId={OPERATIONS_ID}
+                />
+            }
 
         </div>
 

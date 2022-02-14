@@ -304,7 +304,6 @@ export const API = {
   masterSendToApproverBop: `${BASE_URL}/masters-approval-Bought-Out-Part/master-send-to-approver-by-sender`,
 
 
-
   //BOP Category
   createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
   getBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
@@ -384,6 +383,12 @@ export const API = {
   getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
   getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
   getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
+
+
+  //OPERATION APPROVAL API'S
+
+  masterSendToApproverOperation: `${BASE_URL}/masters-approval-Operation/master-send-to-approver-by-sender`,
+  getOperationApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
 
   //FREIGHT MASTER
   createFreight: `${BASE_URL}/masters-freight/create`,
@@ -1169,6 +1174,8 @@ export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS'
 export const GET_OPERATION_SELECTLIST_SUCCESS = 'GET_OPERATION_SELECTLIST_SUCCESS'
 export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST'
 export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST'
+export const GET_OPERATION_APPROVAL_LIST = 'GET_OPERATION_APPROVAL_LIST'
+
 
 //FREIGHT MASTER
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS'
@@ -1774,4 +1781,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.263";
+export const VERSION = "V1.1.264";
