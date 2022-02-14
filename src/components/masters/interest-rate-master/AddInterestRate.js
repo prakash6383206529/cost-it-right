@@ -34,7 +34,7 @@ class AddInterestRate extends Component {
 
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
@@ -43,7 +43,7 @@ class AddInterestRate extends Component {
       updatedObj: {},
       setDisable: false,
       disablePopup: false,
-      inputLoader:false,
+      inputLoader: false,
     }
   }
   /**
@@ -116,8 +116,8 @@ class AddInterestRate extends Component {
   */
   onPressVendor = () => {
     this.setState({ IsVendor: !this.state.IsVendor, });
-    this.setState({inputLoader:true})
-    this.props.getVendorWithVendorCodeSelectList(()=>{  this.setState({inputLoader:false})})
+    this.setState({ inputLoader: true })
+    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
   }
 
   /**
@@ -126,7 +126,7 @@ class AddInterestRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected:false});
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
     } else {
       this.setState({ vendorName: [], })
     }
@@ -257,8 +257,11 @@ class AddInterestRate extends Component {
 
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
-      return false
+
+      if (IsVendor) {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
     }
     this.setState({ isVendorNameNotSelected: false })
 
@@ -276,7 +279,7 @@ class AddInterestRate extends Component {
       else {
 
       }
-      this.setState({ setDisable: true, disablePopup:false })
+      this.setState({ setDisable: true, disablePopup: false })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -355,7 +358,7 @@ class AddInterestRate extends Component {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -423,17 +426,17 @@ class AddInterestRate extends Component {
                         <Col md="3" className='mb-4'>
 
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          {this.state.inputLoader  && <LoaderCustom customClass={`input-loader zero-based `}/>}
-                          <AsyncSelect 
-                          name="vendorName" 
-                          ref={this.myRef} 
-                          key={this.state.updateAsyncDropdown} 
-                          loadOptions={promiseOptions} 
-                          onChange={(e) => this.handleVendorName(e)} 
-                          noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                          value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader zero-based `} />}
+                          <AsyncSelect
+                            name="vendorName"
+                            ref={this.myRef}
+                            key={this.state.updateAsyncDropdown}
+                            loadOptions={promiseOptions}
+                            onChange={(e) => this.handleVendorName(e)}
+                            noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                            value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                          
+
                         </Col>
                       )}
                     </Row>
