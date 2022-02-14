@@ -550,7 +550,7 @@ class IndivisualPartListing extends Component {
                         <div className="ag-grid-header mt-4 pt-1">
 
                         </div>
-                        <div className="ag-theme-material">
+                        <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
