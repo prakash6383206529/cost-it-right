@@ -6952,8 +6952,17 @@ left: 17rem;
   grid-template-columns: 25% 35% 20% 20%;
 }
 // <-----END compare costing table--->
+<<<<<<< HEAD
 .inputwith-icon.async-select {
 
   min-width:45px;
   
   }
+=======
+// <-----START Loader center--->
+.max-loader-height {
+  max-height: 32vh;
+  overflow-x: hidden;
+}
+// <-----END Loader center--->
+>>>>>>> 3e9f96a1b (loader shift bottom issue fixed)
