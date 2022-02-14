@@ -71,7 +71,7 @@ class OperationsMaster extends Component {
             <>
                 <div className="container-fluid" id='go-to-top'>
                     {/* {this.props.loading && <Loader/>} */}
-                    <ScrollToTop pointProp ="go-to-top" />
+                    <ScrollToTop pointProp="go-to-top" />
                     <Row>
                         <Col sm="4">
                             <h1>{`Operation Master`}</h1>
@@ -107,6 +107,7 @@ class OperationsMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
+                                                isMasterSummaryDrawer={false}
                                             />
                                         </TabPane>}
 
