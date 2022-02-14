@@ -338,9 +338,7 @@ function RMApproval(props) {
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div
-                                className="ag-theme-material"
-                            >
+                            <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                                 <AgGridReact
                                     floatingFilter={true}
                                     style={{ height: '100%', width: '100%' }}
