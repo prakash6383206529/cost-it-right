@@ -6,7 +6,7 @@ import { Redirect } from "react-router-dom";
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
-import { EXCHNAGERATE, RAW_MATERIAL, RMDOMESTIC, RMIMPORT,COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
+import { EXCHNAGERATE, RAW_MATERIAL, RMDOMESTIC, RMIMPORT, COMBINED_PROCESS, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
 
 
 
@@ -21,7 +21,7 @@ function CostingDetailSimulationDrawer(props) {
     };
 
     // table code starts here
-    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master,isReport } = props
+    const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport } = props
 
     const dispatch = useDispatch()
 
@@ -90,7 +90,7 @@ function CostingDetailSimulationDrawer(props) {
                                         ></div>
                                     </Col>
                                 </Row>
-                       
+
                                 {!isReport &&
                                     <Row className="ml-0 pb-3">
                                         <Col md="12">
@@ -126,21 +126,7 @@ function CostingDetailSimulationDrawer(props) {
                                                     </Col>
                                                 </>
                                         }
-                                  
-                                    {Number(master) === Number(COMBINED_PROCESS) &&
-                                        <>
-                                            <Col md="3">
-                                                <label>Old CC</label>
-                                                <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                            <Col md="3">
-                                                <label>New CC</label>
-                                                <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                        </>
-                                    }
-
-                                    {
+                                        {
                                             (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) &&
                                             <>
                                                 <Col md="3">
@@ -153,34 +139,8 @@ function CostingDetailSimulationDrawer(props) {
                                                 </Col>
                                             </>
                                         }
-                                    {
-                                        Number(master) === Number(EXCHNAGERATE) &&
-                                        <>
-                                            <Col md="3">
-                                                <label>Old Exchange Rate</label>
-                                                <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                            <Col md="3">
-                                                <label>New Exchange Rate</label>
-                                                <label className={`${pricesDetail.OldExchangeRate > pricesDetail.NewExchangeRate ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                            </Col>
-                                        </>
-                                    }
-                                     {
-                                            Number(master) === Number(SURFACETREATMENT) &&
-                                            <>
-                                                <Col md="3">
-                                                    <label>Old Surface Treatment</label>
-                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                                </Col>
-                                                <Col md="3">
-                                                    <label>New Surface Treatment</label>
-                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
-                                                </Col>
-                                            </>
-                                        }
                                         {
-                                            Number(master) === Number(OPERATIONS) &&
+                                            Number(master) === Number(EXCHNAGERATE) &&
                                             <>
                                                 <Col md="3">
                                                     <label>Old Exchange Rate</label>
@@ -215,6 +175,18 @@ function CostingDetailSimulationDrawer(props) {
                                                 <Col md="3">
                                                     <label>New Oper Rate</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                            </>
+                                        }
+                                        {Number(master) === Number(COMBINED_PROCESS) &&
+                                            <>
+                                                <Col md="3">
+                                                    <label>Old CC</label>
+                                                    <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                </Col>
+                                                <Col md="3">
+                                                    <label>New CC</label>
+                                                    <label className={`${pricesDetail.OldNetCC > pricesDetail.NewNetCC ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
                                         }

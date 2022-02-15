@@ -851,7 +851,7 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_VERIFY_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                    payload: response.data.Data.SimulationSurfaceTreatmentAndOperationImpactedCosting
                 })
                 callback(response)
             }
@@ -859,8 +859,8 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
-
-        })
+            callback(error);
+        });
     }
 }
 

@@ -58,7 +58,7 @@ class OperationListing extends Component {
             selectedRowData: [],
             showPopup: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
         }
     }
 
@@ -68,13 +68,6 @@ class OperationListing extends Component {
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
         this.getTableListData(null, null, null, null)
-        if (Number(this.props.isOperationST) === SURFACETREATMENT) {
-            this.setState({ tableData: this.props.operationSurfaceTreatmentList })
-        } else if (Number(this.props.isOperationST) === OPERATIONS) {
-            this.setState({ tableData: this.props.operationIndividualList })
-        } else {
-            this.setState({ tableData: this.props.operationList })
-        }
     }
 
 
@@ -118,7 +111,7 @@ class OperationListing extends Component {
     * @description Get user list data
     */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null) => {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
@@ -126,13 +119,31 @@ class OperationListing extends Component {
             vendor_id: vendor_id,
         }
         this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
+            this.setState({ isLoader: false })
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                })
+                if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
+                    let surfaceTreatmentOperationData = []
+                    Data && Data.map(item => {
+                        if (item.IsSurfaceTreatmentOperation === true) {
+                            surfaceTreatmentOperationData.push(item)
+                        }
+                    })
+                    this.setState({ tableData: surfaceTreatmentOperationData })
+                } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
+                    let OperationData = []
+                    Data && Data.map(item => {
+                        if (item.IsSurfaceTreatmentOperation === false) {
+                            OperationData.push(item)
+                        }
+                    })
+                    this.setState({ tableData: OperationData })
+                } else {
+                    this.setState({ tableData: Data })
+                }
+
                 // if (this.props.isSimulation) {
                 //     this.props.apply(Data)
                 // }
@@ -517,10 +528,6 @@ class OperationListing extends Component {
 
         }
 
-        const onFloatingFilterChanged = (p) => {
-            this.state.gridApi.deselectAll()
-        }
-
         const isFirstColumn = (params) => {
             const { isSimulation } = this.props
             if (isSimulation) {
@@ -658,7 +665,6 @@ class OperationListing extends Component {
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
-                                onFilterModified={onFloatingFilterChanged}
                             >
                                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>

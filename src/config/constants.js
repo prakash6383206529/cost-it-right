@@ -16,7 +16,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = 'http://10.148.80.4:10122/api/v1';
+// const BASE_URL = 'http://10.10.1.100:10122/api/v1';
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -922,7 +922,7 @@ export const API = {
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
-  getSimualtionInsightReport:`${BASE_URL}/reports/get-simulation-insights`
+  getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`
 
 }
 
@@ -1499,7 +1499,7 @@ export const GET_IMPACTED_MASTER_DATA = 'GET_IMPACTED_MASTER_DATA'
 
 // REPORT
 export const GET_REPORT_LIST = 'GET_REPORT_LIST'
-export const GET_SIMULATION_INSIGHT_REPORT='GET_SIMULATION_INSIGHT_REPORT'
+export const GET_SIMULATION_INSIGHT_REPORT = 'GET_SIMULATION_INSIGHT_REPORT'
 
 export const RM_APPROVAL_DASHBOARD = 'RM_APPROVAL_DASHBOARD'
 
@@ -1804,4 +1804,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.110";
+export const VERSION = "V1.1.241.1";

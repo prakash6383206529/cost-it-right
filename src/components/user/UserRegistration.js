@@ -1264,7 +1264,7 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[postiveNumber, maxLength12, checkWhiteSpaces]}
+                          validate={[postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
                           required={false}
                           // maxLength={10}
                           customClassName={'withBorder'}
@@ -1278,7 +1278,7 @@ class UserRegistration extends Component {
                               name={"PhoneNumber"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[postiveNumber,vlidatePhoneNumber, maxLength12 ]}
+                              validate={[postiveNumber, minLength10, maxLength12 ]}
                               component={renderText}
                               //required={true}
                               maxLength={12}
@@ -1345,7 +1345,7 @@ class UserRegistration extends Component {
                               placeholder="Enter"
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
-                              validate={[required, minLength6, maxLength18, validatePassword ]}
+                              validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
                              
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}

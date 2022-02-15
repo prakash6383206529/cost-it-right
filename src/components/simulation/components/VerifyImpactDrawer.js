@@ -99,32 +99,33 @@ function VerifyImpactDrawer(props) {
               </Row>
 
               <Row >
-                <Col md="12" className="mt-3">
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Vendor :</span>
+                <Col md="12">
+                  <div className="border impact-drawer-header">
+                  <span class=" mr-2">
+                    <span class="grey-text d-block">Vendor :</span>
                     <span>{amendmentDetails.Vendor}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Technology:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Technology:</span>
                     <span>{amendmentDetails.Technology}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Master:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Master:</span>
                     <span>{amendmentDetails.SimulationAppliedOn}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Costing Head:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Costing Head:</span>
                     <span>{amendmentDetails.CostingHead}</span>
                   </span>
 
-                  <span class="d-inline-block mr-2 mb-4 pl-3">
-                    <span class="cr-tbl-label d-block">Effective Date:</span>
+                  <span class=" mr-2 pl-3">
+                    <span class="grey-text d-block">Effective Date:</span>
                     <span>{DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</span>
                   </span>
-
+                  </div>
                 </Col>
               </Row>
 
@@ -136,7 +137,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
-                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} />
+                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} lastRevision={false} />
                 </div>
                 }
               </Row>
@@ -187,7 +188,7 @@ function VerifyImpactDrawer(props) {
                   </div>
                 </Col>
                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} />}
+                  {lastRevisionDataAccordial && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
 
                 </div>
               </Row>

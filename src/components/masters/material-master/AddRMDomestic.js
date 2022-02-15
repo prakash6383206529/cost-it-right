@@ -37,6 +37,9 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
 
+import AsyncSelect from 'react-select/async';
+
+
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -952,6 +955,12 @@ class AddRMDomestic extends Component {
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state
     const { initialConfiguration } = this.props
     this.setState({ setDisable: true, disablePopup:false})
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -1114,6 +1123,7 @@ class AddRMDomestic extends Component {
 
 
 
+
   // sendForMasterApproval = () => {
 
   // }
@@ -1127,6 +1137,27 @@ class AddRMDomestic extends Component {
     const { handleSubmit, initialConfiguration, data } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
 
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
+      
     return (
       <>
         {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
@@ -1367,32 +1398,12 @@ class AddRMDomestic extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="DestinationSupplierId"
-                                  type="text"
-                                  label="Vendor Name"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("VendorNameList")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleVendorName}
-                                  valueDescription={this.state.vendorName}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-                              {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
-                            </div>
+
+                          <Col md="4" className='mb-4'>
+                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
+                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
@@ -1411,7 +1422,7 @@ class AddRMDomestic extends Component {
                                 mendatory={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
-                                disabled={isViewFlag}
+                                
                               />
                             </Col>
                           )}
@@ -1616,7 +1627,7 @@ class AddRMDomestic extends Component {
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
                               validate={[maxLength512]}
-                              required={true}
+                              required={false}
                               component={renderTextAreaField}
                               maxLength="512"
                               rows="6"

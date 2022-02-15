@@ -19,29 +19,29 @@ import BDSimulation from './SimulationPages/BDSimulation';
 const gridOptions = {};
 
 export function Impactedmasterdata(props) {
-    const { data, masterId, viewCostingAndPartNo, customClass,isSimulationImpactMaster } = props;
+    const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
 
     const renderMaster = () => {
         switch (String(masterId)) {
             case EXCHNAGERATE:
                 return <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} />
             case RMDOMESTIC:
-                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass}/>
+                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
             case RMIMPORT:
-                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} isSimulationImpactMaster={isSimulationImpactMaster} customClass={customClass} />
+                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
             case COMBINED_PROCESS:
-                return <CPSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} isSimulationImpactMaster={isSimulationImpactMaster}  customClass={customClass}/>
+                return <CPSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false}  customClass={customClass}/>
              
             case SURFACETREATMENT:
-                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />
             case OPERATIONS:
-                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false}/>
+                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />
             case MACHINERATE:
-                return <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false}/>
+                return <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
             case BOPDOMESTIC:
-                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false}/>
+                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
             case BOPIMPORT:
-                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false}/>
+                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
 
 
             default:

@@ -424,7 +424,7 @@ export const VendorTempData = [
         'Extension': '123',
         'MobileNumber': '1234567890',
         'Country': 'India',
-        'State': 'MP',
+        'State': 'Madhya Pradesh',
         'City': 'Indore',
         'ZipCode': '123456',
         'AddressLine1': '123, Area location',
@@ -1834,28 +1834,31 @@ export const RMImportSimulation = [
 
 export const SurfaceTreatmentSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "CostingHead" },
+    { label: "CostingHead", value: "IsVendor" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
-    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "DestinationPlant", value: "Plants" },
     { label: "VendorName", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
     { label: "Rate", value: "Rate" },
     { label: "NewRate", value: "NewRate" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "OperationId", value: "OperationId" },
 ]
 
 export const OperationSimulation = [
     { label: "Technology", value: "Technology" },
-    { label: "CostingHead", value: "CostingHead" },
+    { label: "CostingHead", value: "IsVendor" },
     { label: "OperationName", value: "OperationName" },
     { label: "OperationCode", value: "OperationCode" },
-    { label: "DestinationPlant", value: "DestinationPlant" },
+    { label: "DestinationPlant", value: "Plants" },
     { label: "VendorName", value: "VendorName", },
     { label: "UnitOfMeasurement", value: "UnitOfMeasurement" },
     { label: "Rate", value: "Rate" },
     { label: "NewRate", value: "NewRate" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "OperationId", value: "OperationId" },
+
 ]
 
 export const MachineRateSimulation = [
@@ -2591,6 +2594,24 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "RM Cost Old", value: "OldRMPrice" },
     { label: "RM Cost New", value: "NewRMPrice" },
     { label: "RM Variance", value: "Variance" },
+
+
+]
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Operation Name", value: "OperationName" },
+    { label: "Operation Code", value: "OperationCode" },
+    { label: "Plant", value: "PlantName" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
 
 
 ]
