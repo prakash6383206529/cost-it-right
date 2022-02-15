@@ -63,7 +63,7 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
 
       sourceLocation: [],
-
+      IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
 
@@ -663,8 +663,15 @@ class AddBOPDomestic extends Component {
 
     } else {
 
+
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
       this.setState({ setDisable: true })
       const formData = {
+        IsSendForApproval: this.state.IsSendForApproval,
         BoughtOutPartId: BOPID,
         IsVendor: IsVendor,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
