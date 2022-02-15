@@ -687,44 +687,53 @@ class AddBOPImport extends Component {
       return false;
     }
 
-    if (!isDateChange && this.state.isFinalApprovar && isEditFlag) {
+    if (this.state.isFinalApprovar && isEditFlag) {
 
 
-      if (DataToChange.IsVendor) {
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
-          this.cancel()
-          return false;
+      if (isDateChange) {
+
+        if (DataToChange.IsVendor) {
+          if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
+            Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
+            this.cancel()
+            return false;
+          }
         }
-      }
-      if (Boolean(DataToChange.IsVendor) === false) {
-        if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
-          this.cancel()
-          return false;
+        if (Boolean(DataToChange.IsVendor) === false) {
+          if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
+            this.cancel()
+            return false;
+          }
         }
-      }
-      this.setState({ setDisable: true, disablePopup: false })
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: BOPID }
-      })
-      let requestData = {
-        Currency: currency.label,
-        BoughtOutPartId: BOPID,
-        Source: values.Source,
-        SourceLocation: values.sourceLocation,
-        BasicRate: values.BasicRate,
-        NetLandedCost: this.state.netLandedcost,
-        Remark: values.Remark,
-        LoggedInUserId: loggedInUserId(),
-        Plant: IsVendor === false ? [plantArray] : [],
-        Attachements: updatedFiles,
-        UnitOfMeasurementId: UOM.value,
-        NetLandedCostConversion: netLandedConverionCost,
-        IsForcefulUpdated: true,
-        NumberOfPieces: values.NumberOfPieces,
-      }
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        this.setState({ setDisable: true, disablePopup: false })
+        let updatedFiles = files.map((file) => {
+          return { ...file, ContextId: BOPID }
+        })
+        let requestData = {
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+          Currency: currency.label,
+          BoughtOutPartId: BOPID,
+          Source: values.Source,
+          SourceLocation: values.sourceLocation,
+          BasicRate: values.BasicRate,
+          NetLandedCost: this.state.netLandedcost,
+          Remark: values.Remark,
+          LoggedInUserId: loggedInUserId(),
+          Plant: IsVendor === false ? [plantArray] : [],
+          Attachements: updatedFiles,
+          UnitOfMeasurementId: UOM.value,
+          NetLandedCostConversion: netLandedConverionCost,
+          IsForcefulUpdated: true,
+          NumberOfPieces: values.NumberOfPieces,
+        }
+        if (isEditFlag) {
+          this.setState({ showPopup: true, updatedObj: requestData })
+        }
+
+
+      } else {
+        Toaster.warning('Please update the effective date')
+        this.setState({ setDisable: false })
       }
 
 
