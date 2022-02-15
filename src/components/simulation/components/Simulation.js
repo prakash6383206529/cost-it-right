@@ -200,9 +200,9 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isOperationST={OPERATIONS} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={OPERATIONS} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
