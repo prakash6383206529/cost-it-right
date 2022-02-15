@@ -277,10 +277,7 @@ class LevelTechnologyListing extends Component {
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
 							</div>
-							<div
-								className="ag-theme-material"
-
-							>
+							<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 								<AgGridReact
 									defaultColDef={defaultColDef}
 									floatingFilter={true}
@@ -337,10 +334,7 @@ class LevelTechnologyListing extends Component {
 							<div className="ag-grid-header">
 								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 							</div>
-							<div
-								className="ag-theme-material"
-
-							>
+							<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 								<AgGridReact
 									defaultColDef={defaultColDef}
 									domLayout='autoHeight'
@@ -401,10 +395,7 @@ class LevelTechnologyListing extends Component {
 									<div className="ag-grid-header">
 										<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
 									</div>
-									<div
-										className="ag-theme-material"
-
-									>
+									<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
 										<AgGridReact
 											defaultColDef={defaultColDef}
 											domLayout='autoHeight'
