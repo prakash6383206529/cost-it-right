@@ -474,7 +474,7 @@ function ViewConversionCost(props) {
               {props.viewConversionCostData.isSurfaceTreatmentCost&&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
                  <Row>
                     <Col md="12">
-                      <div className="left-border">{'Transportation Cost:'}</div>
+                      <div className="left-border">{'Extra Cost:'}</div>
                     </Col>
                   </Row>
               }
