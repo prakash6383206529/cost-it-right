@@ -898,11 +898,13 @@ class AddRMImport extends Component {
         Id: FileId,
         DeletedBy: loggedInUserId(),
       }
-      this.props.fileDeleteRMDomestic(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      // this.props.fileDeleteRMDomestic(deleteData, (res) => {
+      //   Toaster.success('File has been deleted successfully.')
+      //   let tempArr = this.state.files.filter(item => item.FileId !== FileId)
+      //   this.setState({ files: tempArr })
+      // })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
       let tempArr = this.state.files.filter(
