@@ -1007,27 +1007,30 @@ class AddRMDomestic extends Component {
     }
     if (isEditFlag && this.state.isFinalApprovar) {
       this.setState({ updatedObj: requestData })
-      if (isSourceChange) {
+
+      if (isDateChange) {                                                                        //DONT DELETE COMMENTED CODE BELOW
+
+        // if (isSourceChange) {
+        //   this.props.updateRMDomesticAPI(requestData, (res) => {
+        //     this.setState({ setDisable: false })
+        //     if (res?.data?.Result) {
+        //       Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+        //       this.clearForm()
+
+
+        //     }
+        //   })
+        // }
+        // if (isDateChange) {
         this.props.updateRMDomesticAPI(requestData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
 
-
           }
         })
-      }
-      if (isDateChange) {
-        this.props.updateRMDomesticAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
-
-          }
-        })
-      } else {
+        // } else {
 
         if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
 

@@ -25,6 +25,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
 import { CheckApprovalApplicableMaster } from '../../../helper';
+import { masterFinalLevelUser } from '../actions/Material'
 
 const selector = formValueSelector('AddOperation');
 
@@ -91,6 +92,19 @@ class AddOperation extends Component {
 
     this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+
+    let obj = {
+      MasterId: OPERATIONS_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
 
     this.getDetail()
 
@@ -553,28 +567,35 @@ class AddOperation extends Component {
     })
 
     /** Update existing detail of supplier master **/
-    if (!isDateChange && this.state.isEditFlag && this.state.isFinalApprovar) {
+    if (this.state.isEditFlag && this.state.isFinalApprovar) {
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OperationId }
       })
-      let updateData = {
-        OperationId: OperationId,
-        UnitOfMeasurementId: UOM.value,
-        Rate: values.Rate,
-        Technology: technologyArray,
-        Remark: remarks,
-        Attachements: updatedFiles,
-        LoggedInUserId: loggedInUserId(),
-        IsForcefulUpdated: true
-      }
-      if (this.state.isEditFlag) {
-        if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate)) {
-          this.cancel()
-          return false
+
+      if (isDateChange) {
+        let updateData = {
+          EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
+          OperationId: OperationId,
+          UnitOfMeasurementId: UOM.value,
+          Rate: values.Rate,
+          Technology: technologyArray,
+          Remark: remarks,
+          Attachements: updatedFiles,
+          LoggedInUserId: loggedInUserId(),
+          IsForcefulUpdated: true
         }
+        // if (this.state.isEditFlag) {
+        // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
+        //   this.cancel()
+        //   return false
+        // }
         this.setState({ showPopup: true, updatedObj: updateData })
+        // }
+        this.setState({ setDisable: true })
+      } else {
+        Toaster.warning('Please update the effective date')
+        this.setState({ setDisable: false })
       }
-      this.setState({ setDisable: true })
 
     } else {/** Add new detail for creating operation master **/
 
@@ -1180,6 +1201,7 @@ export default connect(mapStateToProps, {
   getOperationDataAPI,
   fileUploadOperation,
   fileDeleteOperation,
+  masterFinalLevelUser,
   checkAndGetOperationCode,
 })(reduxForm({
   form: 'AddOperation',
