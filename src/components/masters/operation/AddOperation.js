@@ -45,6 +45,8 @@ class AddOperation extends Component {
       selectedVendorPlants: [],
       UOM: [],
       isDateChange: false,
+      IsSendForApproval: false,
+
 
       isSurfaceTreatment: false,
       remarks: '',
@@ -599,8 +601,16 @@ class AddOperation extends Component {
 
     } else {/** Add new detail for creating operation master **/
 
+
+      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
+
       this.setState({ setDisable: true })
       let formData = {
+        IsSendForApproval: this.state.IsSendForApproval,
         OperationId: OperationId,
         IsVendor: IsVendor,
         OperationName: values.OperationName,
