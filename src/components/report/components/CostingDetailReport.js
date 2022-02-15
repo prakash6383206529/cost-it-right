@@ -578,7 +578,7 @@ function ReportListing(props) {
             </form>
 
             <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <= 0 ? "overlay-contain" : ""}`}>
-                <div className="ag-theme-material mt-2" >
+            <div className={`ag-theme-material mt-2 ${isLoader && "max-loader-height"}`}>
                     <AgGridReact
                         style={{ height: '100%', width: '100%' }}
                         domLayout="autoHeight"
