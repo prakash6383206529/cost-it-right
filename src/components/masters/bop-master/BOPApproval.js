@@ -12,6 +12,8 @@ import DayTime from '../../common/DayTimeWrapper'
 import SummaryDrawer from '../SummaryDrawer';
 import Toaster from '../../common/Toaster'
 import MasterSendForApproval from '../MasterSendForApproval';
+import { masterFinalLevelUser } from '../actions/Material'
+import { loggedInUserId, userDetails } from '../../../helper'
 
 
 
@@ -29,10 +31,24 @@ function BOPApproval(props) {
     const [loader, setLoader] = useState(true)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
+    const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
         getTableData()
+
+        let obj = {
+            MasterId: BOP_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+
+        dispatch(masterFinalLevelUser(obj, (res) => {
+            if (res.data.Result) {
+                setIsFinalApprover(res.data.Data.IsFinalApprovar)
+            }
+        }))
 
     }, [])
 
@@ -196,7 +212,7 @@ function BOPApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                            <button title="send-for-approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>

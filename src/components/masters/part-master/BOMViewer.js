@@ -128,25 +128,28 @@ class BOMViewer extends Component {
           return null;
         })
 
+
+
+
+        setTimeout(() => {
+
+          tempArray && tempArray.map((el, i) => {
+            if (el.Level === 'L1') {
+              outputArray.push(el.Input)
+            }
+            return null;
+          })
+
+          //GET INDEX OF L0 LEVEL OBJECTS
+          let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
+
+          let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
+
+          this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
+
+        }, 200)
       })
 
-      setTimeout(() => {
-
-        tempArray && tempArray.map((el, i) => {
-          if (el.Level === 'L1') {
-            outputArray.push(el.Input)
-          }
-          return null;
-        })
-
-        //GET INDEX OF L0 LEVEL OBJECTS
-        let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
-
-        let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
-
-        this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
-
-      }, 200)
 
     } else if (Object.keys(childData).length > 0) {
 
