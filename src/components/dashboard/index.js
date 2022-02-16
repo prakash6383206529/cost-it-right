@@ -6,9 +6,9 @@ import { Col, Container, Row } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
 import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
 import RMApproval from "../masters/material-master/RMApproval";
-import { reactLocalStorage } from "reactjs-localstorage";
-import { Field, reduxForm } from "redux-form";
-import dashboardImg from '../../assests/images/dashboard-img.png'
+import {reduxForm } from "redux-form";
+import dashboardImg from '../../assests/images/dashboard-img.png';
+import BOPApproval from "../masters/bop-master/BOPApproval";
 
 function Dashboard(props) {
   const { handleSubmit, menusData } = props
@@ -16,9 +16,11 @@ function Dashboard(props) {
   const [acc1, setAcc1] = useState(false)
   const [acc2, setAcc2] = useState(true)
   const [acc3, setAcc3] = useState(false)
+  const [acc4, setAcc4] = useState(false)
   const [costingApprovalListingView, setCostingApprovalListingView] = useState(false)
   const [simulationApprovalListingView, setSimulationApprovalListingView] = useState(false)
   const [RMApprovalView, setRMApprovalView] = useState(false)
+  const [BOPApprovalView, setBOPApprovalView] = useState(false)
   const [hideDash, setShowHideDash] = useState(false)
 
   const isOpenRMApprovalDashboard = useSelector((state) => state.auth.RMApprovalDashboard)
@@ -42,6 +44,9 @@ function Dashboard(props) {
       }
       if (isOpenRMApprovalDashboard.CostingsApprovalDashboard === true) {
         setCostingApprovalListingView(true);
+      }
+      if (isOpenRMApprovalDashboard.BOPApprovalDashboard === true) {
+        setBOPApprovalView(true);
       }
     }
 

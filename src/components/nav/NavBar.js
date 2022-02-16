@@ -158,7 +158,7 @@ class SideBar extends Component {
       case "Dashboard":
         return this.renderDashboard(module);
       case "Master":
-        this.props.ApprovalDashboard(this.commonObj = { RMApprovalDashboard: true });
+        this.props.ApprovalDashboard(this.commonObj = { RMApprovalDashboard: true, BOPApprovalDashboard:true });
         return this.renderMaster(module);
       case "Additional Masters":
         return this.renderAdditionalMaster(module);
