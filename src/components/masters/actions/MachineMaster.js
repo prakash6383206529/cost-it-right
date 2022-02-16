@@ -12,9 +12,12 @@ import {
     GET_MACHINE_TYPE_SELECTLIST,
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
+    GET_MACHINE_APPROVAL_LIST,
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import Toaster from '../../common/Toaster';
+import { loggedInUserId, userDetails } from '../../../helper';
 
 const headers = config
 
@@ -568,6 +571,59 @@ export function bulkUploadMachineMoreZBC(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error);
+        });
+    };
+}
+
+
+
+/*
+@method  masterApprovalRequestBySenderMachine
+**/
+
+export function masterApprovalRequestBySenderMachine(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterSendToApproverMachine, data, headers)
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    Toaster.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+
+
+export function getMachineApprovalList(callback) {
+
+    return (dispatch) => {
+
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${4}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                //
+                dispatch({
+                    type: GET_MACHINE_APPROVAL_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                    // payload: JSON.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error)
         });
     };
 }

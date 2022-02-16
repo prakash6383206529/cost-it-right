@@ -6,8 +6,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { EMPTY_DATA } from '../../../config/constants';
-import { getRMApprovalList } from '../actions/Material';
 import { DRAFT } from '../../../config/constants';
+import { getMachineApprovalList } from '../actions/MachineMaster'
 
 
 
@@ -23,6 +23,9 @@ function MachineApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const [loader, setLoader] = useState(true)
     const dispatch = useDispatch()
+    const { machineApprovalList } = useSelector((state) => state.machine)
+
+
 
     useEffect(() => {
         getTableData()
@@ -37,7 +40,7 @@ function MachineApproval(props) {
 
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
-        dispatch(getRMApprovalList((res) => {
+        dispatch(getMachineApprovalList((res) => {
             setLoader(false)
         }))
     }
@@ -60,9 +63,9 @@ function MachineApproval(props) {
     }
 
     /**
-  * @method linkableFormatter
-  * @description Renders Name link
-  */
+    * @method linkableFormatter
+    * @description Renders Name link
+    */
     const linkableFormatter = (props) => {
 
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -163,7 +166,7 @@ function MachineApproval(props) {
             <Row>
                 <Col>
                     <div className={`ag-grid-react`}>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -174,7 +177,7 @@ function MachineApproval(props) {
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={approvalList}
+                                    rowData={machineApprovalList}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
@@ -194,16 +197,16 @@ function MachineApproval(props) {
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
-                                    <AgGridColumn width="145" field="TechnologyName" headerName='BOP Part No'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RawMaterial" headerName='BOP Part Name'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RMGrade" headerName='BOP Category'></AgGridColumn>
-                                    <AgGridColumn width="150" field="RMSpec" headerName='UOM'></AgGridColumn>
-                                    <AgGridColumn width="140" field="Category" headerName='Specification'></AgGridColumn>
-                                    <AgGridColumn width="140" field="MaterialType" headerName='Plant'></AgGridColumn>
-                                    <AgGridColumn field="Plant" headerName='Vendor'></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Minimum Order Quantity"></AgGridColumn>
-                                    <AgGridColumn width="140" field="UOM" headerName="Basic Rate(INR)"></AgGridColumn>
-                                    <AgGridColumn width="140" field="BasicRate" headerName="Net Cost(INR)"></AgGridColumn>
+                                    <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
+                                    <AgGridColumn width="145" field="RawMaterial" headerName='Vendor (Code)'></AgGridColumn>
+                                    <AgGridColumn width="145" field="RMGrade" headerName='Plant (Code)'></AgGridColumn>
+                                    <AgGridColumn width="150" field="RMSpec" headerName='Machine Number'></AgGridColumn>
+                                    <AgGridColumn width="140" field="Category" headerName='Machine Type'></AgGridColumn>
+                                    <AgGridColumn width="140" field="MaterialType" headerName='Machine Tonnage'></AgGridColumn>
+                                    <AgGridColumn field="Plant" headerName='Process Name'></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName="Machine Rate"></AgGridColumn>
+                                    {/* <AgGridColumn width="140" field="UOM" headerName="Basic Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn width="140" field="BasicRate" headerName="Net Cost(INR)"></AgGridColumn> */}
                                     <AgGridColumn width="140" field="ScrapRate" headerName="Effective Date"></AgGridColumn>
 
 

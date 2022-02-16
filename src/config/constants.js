@@ -315,6 +315,12 @@ export const API = {
   updateProcessAPI: `${BASE_URL}/masters-process/update`,
   deleteProcessAPI: `${BASE_URL}/masters-process/delete`,
 
+
+  //MACHINE APPROVAL API'S
+
+  masterSendToApproverMachine: `${BASE_URL}/masters-machine/master-send-to-approver-by-sender`,
+
+
   //FUEL MASTER
   createFuel: `${BASE_URL}/masters-fuel/create-fuel`,
   createFuelDetail: `${BASE_URL}/masters-fuel/create-fuel-details`,
@@ -1441,6 +1447,7 @@ export const GET_MACHINE_DATALIST_SUCCESS = 'GET_MACHINE_DATALIST_SUCCESS'
 export const GET_MACHINE_DATA_SUCCESS = 'GET_MACHINE_DATA_SUCCESS'
 export const GET_MACHINE_LIST_SUCCESS = 'GET_MACHINE_LIST_SUCCESS'
 export const GET_DEPRECIATION_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_SELECTLIST_SUCCESS'
+export const GET_MACHINE_APPROVAL_LIST = 'GET_MACHINE_APPROVAL_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
