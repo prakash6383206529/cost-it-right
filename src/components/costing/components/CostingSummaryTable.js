@@ -910,7 +910,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -931,7 +931,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netBOP > viewCostingData[1].netBOP ? 'green-row' : viewCostingData[0].netBOP < viewCostingData[1].netBOP ? 'red-row' : '' : '-'}`}>
                       <th>Net Insert Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -977,7 +977,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nConvCost > viewCostingData[1].nConvCost ? 'green-row' : viewCostingData[0].nConvCost < viewCostingData[1].nConvCost ? 'red-row' : '' : '-'}`}>
                       <th>Net Conversion Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -1026,7 +1026,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
 
-                    <tr class="background-light-blue">
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nsTreamnt > viewCostingData[1].nsTreamnt ? 'green-row' : viewCostingData[0].nsTreamnt < viewCostingData[1].nsTreamnt ? 'red-row' : '' : '-'}`}>
                       <th>Net Surface Treatment Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
