@@ -181,7 +181,7 @@ function RunSimulationDrawer(props) {
         const Rejection = selectedData.includes("Rejection")
         const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
         const PaymentTerms = selectedData.includes("Payment Terms")
-        const Inventory = selectedData.includes("Inventory")
+        const Inventory = selectedData.includes("ICC")
         const AdditionalDiscount = selectedData.includes("Additional Discount")
         const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
 
