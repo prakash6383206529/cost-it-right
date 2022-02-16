@@ -15,7 +15,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -25,6 +25,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from '../../common/LoaderCustom';
 import { CheckApprovalApplicableMaster } from '../../../helper';
+import { masterFinalLevelUser } from '../actions/Material'
 
 const selector = formValueSelector('AddOperation');
 
@@ -43,6 +44,9 @@ class AddOperation extends Component {
       vendorName: [],
       selectedVendorPlants: [],
       UOM: [],
+      isDateChange: false,
+      IsSendForApproval: false,
+
 
       isSurfaceTreatment: false,
       remarks: '',
@@ -58,8 +62,9 @@ class AddOperation extends Component {
       isShowForm: false,
       isOpenVendor: false,
       isOpenUOM: false,
-      OperationId: '',
+      OperationId: EMPTY_GUID,
       effectiveDate: '',
+      minEffectiveDate: '',
       destinationPlant: [],
       changeValue: true,
       dataToChange: '',
@@ -89,6 +94,19 @@ class AddOperation extends Component {
 
     this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
+
+    let obj = {
+      MasterId: OPERATIONS_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
 
     this.getDetail()
 
@@ -262,6 +280,7 @@ class AddOperation extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
+      isDateChange: true,
     })
 
   }
@@ -295,11 +314,13 @@ class AddOperation extends Component {
         isEditFlag: true,
         OperationId: data.ID,
       })
+      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
 
           let plantArray = [];
           Data && Data.Plant.map((item) => {
@@ -319,12 +340,14 @@ class AddOperation extends Component {
             return vendorPlantArray;
           })
 
+
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, UOMSelectList, plantSelectList } = this.props;
 
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
+
 
             this.setState({
               isEditFlag: true,
@@ -515,13 +538,15 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange, uploadAttachements } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange, uploadAttachements, isDateChange } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
-      return false
+      if (IsVendor) {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
     }
     this.setState({ isVendorNameNotSelected: false })
 
@@ -544,33 +569,49 @@ class AddOperation extends Component {
     })
 
     /** Update existing detail of supplier master **/
-    if (this.state.isEditFlag) {
+    if (this.state.isEditFlag && this.state.isFinalApprovar) {
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OperationId }
       })
-      let updateData = {
-        OperationId: OperationId,
-        UnitOfMeasurementId: UOM.value,
-        Rate: values.Rate,
-        Technology: technologyArray,
-        Remark: remarks,
-        Attachements: updatedFiles,
-        LoggedInUserId: loggedInUserId(),
-        IsForcefulUpdated: true
-      }
-      if (this.state.isEditFlag) {
-        if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
-          this.cancel()
-          return false
+
+      if (isDateChange) {
+        let updateData = {
+          EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
+          OperationId: OperationId,
+          UnitOfMeasurementId: UOM.value,
+          Rate: values.Rate,
+          Technology: technologyArray,
+          Remark: remarks,
+          Attachements: updatedFiles,
+          LoggedInUserId: loggedInUserId(),
+          IsForcefulUpdated: true
         }
+        // if (this.state.isEditFlag) {
+        // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
+        //   this.cancel()
+        //   return false
+        // }
         this.setState({ showPopup: true, updatedObj: updateData })
+        // }
+        this.setState({ setDisable: true })
+      } else {
+        Toaster.warning('Please update the effective date')
+        this.setState({ setDisable: false })
       }
-      this.setState({ setDisable: true })
 
     } else {/** Add new detail for creating operation master **/
 
+
+      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
+
       this.setState({ setDisable: true })
       let formData = {
+        IsSendForApproval: this.state.IsSendForApproval,
+        OperationId: OperationId,
         IsVendor: IsVendor,
         OperationName: values.OperationName,
         OperationCode: values.OperationCode,
@@ -595,7 +636,14 @@ class AddOperation extends Component {
 
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ approveDrawer: true, approvalObj: formData })
+
+        if (isDateChange) {
+          this.setState({ approveDrawer: true, approvalObj: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+        }
+        else {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+        }
       } else {
         this.props.reset()
         this.props.createOperationsAPI(formData, (res) => {
@@ -906,13 +954,14 @@ class AddOperation extends Component {
                             onChange={this.handleEffectiveDateChange}
                             type="text"
                             validate={[required]}
+                            minDate={this.state.minEffectiveDate}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {
                             }}
                             component={renderDatePicker}
                             className=" "
-                            disabled={isEditFlag ? true : false}
+                            disabled={isViewMode}
                             customClassName=" withBorder"
                           />
                         </div>
@@ -1156,6 +1205,7 @@ export default connect(mapStateToProps, {
   getOperationDataAPI,
   fileUploadOperation,
   fileDeleteOperation,
+  masterFinalLevelUser,
   checkAndGetOperationCode,
 })(reduxForm({
   form: 'AddOperation',
