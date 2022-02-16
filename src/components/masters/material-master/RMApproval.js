@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper'
 import { EMPTY_DATA, PENDING } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -16,6 +16,8 @@ import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
 import { debounce } from 'lodash'
 import Toaster from '../../common/Toaster'
+import { masterFinalLevelUser } from '../actions/Material'
+
 
 
 
@@ -33,10 +35,24 @@ function RMApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
         getTableData()
+        let obj = {
+            MasterId: RM_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+
+        dispatch(masterFinalLevelUser(obj, (res) => {
+            if (res.data.Result) {
+                setIsFinalApprover(res.data.Data.IsFinalApprovar)
+            }
+        }))
+
 
     }, [])
 
@@ -324,7 +340,7 @@ function RMApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                            <button title="send-for-approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>

@@ -62,7 +62,7 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
 
       sourceLocation: [],
-
+      IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
@@ -618,49 +618,62 @@ class AddBOPDomestic extends Component {
       return false;
     }
 
-    if (!isDateChange && this.state.isFinalApprovar && isEditFlag) {
+    if (isEditFlag && this.state.isFinalApprovar) {
 
 
-      if (DataToCheck.IsVendor) {
-        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-          this.cancel()
-          return false;
+      if (isDateChange) {
+        if (DataToCheck.IsVendor) {
+          if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
+            this.cancel()
+            return false;
+          }
+        }
+        else if (Boolean(DataToCheck.IsVendor) === false) {
+          if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
+            this.cancel()
+            return false;
+          }
+        }
+        this.setState({ setDisable: true, disablePopup: false })
+        let updatedFiles = files.map((file) => {
+          return { ...file, ContextId: BOPID }
+        })
+        let requestData = {
+          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+          BoughtOutPartId: BOPID,
+          Source: values.Source,
+          SourceLocation: sourceLocation.value ? sourceLocation.value : '',
+          BasicRate: values.BasicRate,
+          NetLandedCost: this.state.NetLandedCost,
+          Remark: values.Remark,
+          LoggedInUserId: loggedInUserId(),
+          Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
+          Attachements: updatedFiles,
+          UnitOfMeasurementId: UOM.value,
+          IsForcefulUpdated: true,
+          NumberOfPieces: values.NumberOfPieces,
+        }
+        if (isEditFlag) {
+          this.setState({ showPopup: true, updatedObj: requestData })
         }
       }
-      else if (Boolean(DataToCheck.IsVendor) === false) {
-        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-          this.cancel()
-          return false;
-        }
+      else {
+        Toaster.warning('Please update the effective date')
+        this.setState({ setDisable: false })
       }
-      this.setState({ setDisable: true, disablePopup: false })
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: BOPID }
-      })
-      let requestData = {
-        BoughtOutPartId: BOPID,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
-        BasicRate: values.BasicRate,
-        NetLandedCost: this.state.NetLandedCost,
-        Remark: values.Remark,
-        LoggedInUserId: loggedInUserId(),
-        Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
-        Attachements: updatedFiles,
-        UnitOfMeasurementId: UOM.value,
-        IsForcefulUpdated: true,
-        NumberOfPieces: values.NumberOfPieces,
-      }
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: requestData })
-      }
-
 
 
     } else {
 
+
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
       this.setState({ setDisable: true })
       const formData = {
+        IsSendForApproval: this.state.IsSendForApproval,
         BoughtOutPartId: BOPID,
         IsVendor: IsVendor,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
