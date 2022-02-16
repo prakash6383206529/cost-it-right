@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList } from '../../../actions/Common';
-import { getVendorListByVendorType, } from '../actions/Material';
+import { getVendorListByVendorType, masterFinalLevelUser } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
   checkAndGetMachineNumber, getMachineData,
@@ -20,7 +20,7 @@ import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, user
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC,MACHINE_MASTER_ID } from '../../../config/constants';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -33,7 +33,9 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../common/Tooltip';
+import { CheckApprovalApplicableMaster } from '../../../helper'
 import AsyncSelect from 'react-select/async';
+
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -55,11 +57,13 @@ class AddMachineRate extends Component {
       isViewMode: this.props?.editDetails?.isViewMode ? true : false,
 
       selectedTechnology: [],
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
       vendorName: [],
       selectedVendorPlants: [],
       selectedPlants: [],
-
+      isFinalApprovar: false,
+      approvalObj: {},
+      IsSendForApproval: false,
       machineType: [],
       isOpenMachineType: false,
 
@@ -100,6 +104,7 @@ class AddMachineRate extends Component {
       this.setState({
         isViewFlag: true
       })
+
     }
 
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
@@ -149,6 +154,23 @@ class AddMachineRate extends Component {
     // } else if (Object.keys(data).length > 0 && data.constructor === Object) {
     //     this.showFormData()
     // }
+
+
+    let obj = {
+      MasterId: MACHINE_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
+
+
+
 
     //GET MACHINE VALUES IN EDIT MODE
     this.getDetails()
@@ -392,7 +414,7 @@ class AddMachineRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected:false, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
@@ -834,11 +856,14 @@ class AddMachineRate extends Component {
       remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements } = this.state;
 
 
-      if (vendorName.length <= 0) {
-        this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+    if (vendorName.length <= 0) {
+
+      if (IsVendor) {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
         return false
       }
-      this.setState({ isVendorNameNotSelected: false })
+    }
+    this.setState({ isVendorNameNotSelected: false })
 
     if (isViewFlag) {
       this.cancel();
@@ -855,13 +880,13 @@ class AddMachineRate extends Component {
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-    if (isEditFlag) {
+    if (this.state.isEditFlag && this.state.isFinalApprovar) {
 
 
       // if (DropdownChange) {
 
       // }
-      this.setState({ setDisable: true , disablePopup:false })
+      this.setState({ setDisable: true, disablePopup: false })
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
@@ -909,9 +934,18 @@ class AddMachineRate extends Component {
       }
     } else {
 
+
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
+
       // EXECUTED WHEN:- NEW MACHINE WITH BASIC DETAILS
       this.setState({ setDisable: true })
       const formData = {
+        IsSendForApproval: this.state.IsSendForApproval,
+        MachineId: MachineID,
         IsVendor: IsVendor,
         VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         IsDetailedEntry: false,
@@ -933,30 +967,47 @@ class AddMachineRate extends Component {
 
 
 
-      // if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
-      //   this.setState({ approveDrawer: true, approvalObj: formData })
-      // } else {
-      //   this.props.reset()
-      //   this.props.createMachine(formData, (res) => {
-      //     if (res.data.Result) {
-      //       toastr.success(MESSAGES.MACHINE_ADD_SUCCESS)
-      //       //this.clearForm()
-      //       this.cancel()
-      //     }
-      //   })
-      // }
+      let obj = {}
+      let finalObj = {
+
+        MachineProcessRates: processGrid,
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        MachineId: MachineID,
+        IsVendor: IsVendor,
+        MachineZBCRequest: IsVendor ? obj : formData,
+        MachineVBCRequest: IsVendor ? formData : obj,
+
+      }
 
 
-      this.props.createMachine(formData, (res) => {
-        this.setState({ setDisable: false })
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS);
-          this.cancel();
-        }
-      });
+
+
+      if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ approveDrawer: true, approvalObj: finalObj })
+      } else {
+        this.props.reset()
+        this.props.createMachine(formData, (res) => {
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS)
+            //this.clearForm()
+            this.cancel()
+          }
+        })
+      }
+
+
+      // this.props.createMachine(formData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
     }
   }, 500)
+
+
   onPopupConfirm = debounce(() => {
     this.setState({ disablePopup: true })
     this.props.updateMachine(this.state.updatedObj, (res) => {
@@ -1048,7 +1099,7 @@ class AddMachineRate extends Component {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -1139,17 +1190,17 @@ class AddMachineRate extends Component {
                         {this.state.IsVendor &&
                           <Col md="3">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                             <AsyncSelect 
-                             name="vendorName" 
-                             ref={this.myRef} 
-                             key={this.state.updateAsyncDropdown} 
-                             loadOptions={promiseOptions} 
-                             onChange={(e) => this.handleVendorName(e)} 
-                             noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                             value={this.state.vendorName} 
-                             isDisabled={isEditFlag ? true : false} />
-                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                        
+                            <AsyncSelect
+                              name="vendorName"
+                              ref={this.myRef}
+                              key={this.state.updateAsyncDropdown}
+                              loadOptions={promiseOptions}
+                              onChange={(e) => this.handleVendorName(e)}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              value={this.state.vendorName}
+                              isDisabled={isEditFlag ? true : false} />
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
                           </Col>}
                         {this.state.IsVendor &&
                           checkVendorPlantConfigurable() &&
@@ -1557,25 +1608,25 @@ class AddMachineRate extends Component {
 
 
                               {
-                                // (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                                //   <button type="submit"
-                                //     class="user-btn approval-btn save-btn mr5"
+                                (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) ?
+                                  <button type="submit"
+                                    class="user-btn approval-btn save-btn mr5"
 
-                                //     disabled={this.state.isFinalApprovar}
-                                //   >
-                                //     <div className="send-for-approval"></div>
-                                //     {'Send For Approval'}
-                                //   </button>
-                                //   :
+                                    disabled={this.state.isFinalApprovar}
+                                  >
+                                    <div className="send-for-approval"></div>
+                                    {'Send For Approval'}
+                                  </button>
+                                  :
 
-                                <button
-                                  type="submit"
-                                  className="user-btn mr5 save-btn"
-                                  disabled={isViewMode || setDisable}
-                                >
-                                  <div className={"save-icon"}></div>
-                                  {isEditFlag ? "Update" : "Save"}
-                                </button>
+                                  <button
+                                    type="submit"
+                                    className="user-btn mr5 save-btn"
+                                    disabled={isViewMode || setDisable}
+                                  >
+                                    <div className={"save-icon"}></div>
+                                    {isEditFlag ? "Update" : "Save"}
+                                  </button>
                               }
 
 
@@ -1623,7 +1674,7 @@ class AddMachineRate extends Component {
               isOpen={this.state.approveDrawer}
               closeDrawer={this.closeApprovalDrawer}
               isEditFlag={false}
-              // masterId={MACHINE_MASTER_ID}
+              masterId={MACHINE_MASTER_ID}
               type={'Sender'}
               anchor={"right"}
               approvalObj={this.state.approvalObj}
@@ -1696,6 +1747,7 @@ export default connect(mapStateToProps, {
   createMachine,
   updateMachine,
   updateMachineDetails,
+  masterFinalLevelUser,
   getMachineData,
 })(reduxForm({
   form: 'AddMachineRate',
