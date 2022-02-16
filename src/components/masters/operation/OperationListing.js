@@ -162,7 +162,7 @@ class OperationListing extends Component {
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
 
-            }, 500);
+            }, 700);
 
         }
     }
@@ -595,7 +595,7 @@ class OperationListing extends Component {
                                                 :
                                                 ""
                                             }
-                                            {AddAccessibility && (
+                                            {AddAccessibility && !this.props?.isMasterSummaryDrawer && (
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
@@ -606,7 +606,7 @@ class OperationListing extends Component {
                                                     {/* ADD */}
                                                 </button>
                                             )}
-                                            {BulkUploadAccessibility && (
+                                            {BulkUploadAccessibility && !this.props?.isMasterSummaryDrawer && (
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
@@ -618,7 +618,7 @@ class OperationListing extends Component {
                                                 </button>
                                             )}
                                             {
-                                                DownloadAccessibility &&
+                                                DownloadAccessibility && !this.props?.isMasterSummaryDrawer &&
                                                 <>
 
                                                     <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
