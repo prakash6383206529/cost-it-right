@@ -100,8 +100,8 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
                 ((item.NewFirstValue !== null && item.NewFirstValue !== undefined
                     && item.NewFirstValue !== '' && item.NewFirstValue !== ' ') ||
 
-                    ((item.NewThirdValue !== null && item.NewThirdValue !== undefined
-                        && item.NewThirdValue !== '' && item.NewThirdValue !== ' ')) ||
+                    ((item.NewSecondValue !== null && item.NewSecondValue !== undefined
+                        && item.NewSecondValue !== '' && item.NewSecondValue !== ' ')) ||
 
                     ((item.NewThirdValue !== null && item.NewThirdValue !== undefined
                         && item.NewThirdValue !== '' && item.NewThirdValue !== ' ')))))
