@@ -18,7 +18,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelComboData, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -55,6 +55,7 @@ class AddMoreDetails extends Component {
       isEditFlag: false,
       IsPurchased: false,
       isViewFlag: false,
+      isDateChange: false,
 
       selectedTechnology: [],
       selectedPlants: [],
@@ -64,6 +65,8 @@ class AddMoreDetails extends Component {
 
       isOpenAvailability: false,
       WorkingHrPrYr: 0,
+      isFinalUserEdit: false,
+      MachineID: EMPTY_GUID,
 
       shiftType: [],
       approvalObj: {},
@@ -74,6 +77,7 @@ class AddMoreDetails extends Component {
       IsAnnualMaintenanceFixed: false,
       IsAnnualConsumableFixed: false,
       IsInsuranceFixed: false,
+      isViewMode: false,
 
       IsUsesFuel: false,
       IsUsesSolarPower: false,
@@ -222,6 +226,7 @@ class AddMoreDetails extends Component {
         isEditFlag: false,
         isLoader: true,
         MachineID: editDetails.Id,
+        isViewMode: editDetails.isViewMode
       })
 
       this.props.getMachineDetailsData(editDetails.Id, res => {
@@ -268,6 +273,7 @@ class AddMoreDetails extends Component {
 
             this.setState({
               isEditFlag: true,
+              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
@@ -605,6 +611,7 @@ class AddMoreDetails extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
+      isDateChange: true,
     });
   };
   /**
@@ -1690,7 +1697,15 @@ class AddMoreDetails extends Component {
 
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ approveDrawer: true, approvalObj: finalObj })
+
+
+        if (this.state.isDateChange) {
+          this.setState({ approveDrawer: true, approvalObj: finalObj })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+        }
+        else {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+        }
       } else {
 
         this.props.reset()
@@ -3288,7 +3303,7 @@ class AddMoreDetails extends Component {
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
 
-                              disabled={this.state.isFinalApprovar}
+                              disabled={this.state.isViewMode}
                             >
                               <div className="send-for-approval"></div>
                               {'Send For Approval'}
@@ -3298,7 +3313,7 @@ class AddMoreDetails extends Component {
                             <button
                               type="submit"
                               className="user-btn mr5 save-btn"
-                              disabled={false}
+                              disabled={this.state.isViewMode}
                             >
                               <div className={"save-icon"}></div>
                               {isEditFlag ? "Update" : "Save"}
