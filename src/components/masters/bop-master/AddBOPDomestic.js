@@ -68,6 +68,8 @@ class AddBOPDomestic extends Component {
       IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
+      approveDrawer: false,
+      isFinalUserEdit: false,
 
       effectiveDate: '',
       minEffectiveDate: '',
@@ -224,6 +226,7 @@ class AddBOPDomestic extends Component {
 
             this.setState({
               isEditFlag: true,
+              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
               // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
@@ -621,46 +624,42 @@ class AddBOPDomestic extends Component {
     if (isEditFlag && this.state.isFinalApprovar) {
 
 
-      if (isDateChange) {
-        if (DataToCheck.IsVendor) {
-          if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-            this.cancel()
-            return false;
-          }
-        }
-        else if (Boolean(DataToCheck.IsVendor) === false) {
-          if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-            this.cancel()
-            return false;
-          }
-        }
-        this.setState({ setDisable: true, disablePopup: false })
-        let updatedFiles = files.map((file) => {
-          return { ...file, ContextId: BOPID }
-        })
-        let requestData = {
-          EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-          BoughtOutPartId: BOPID,
-          Source: values.Source,
-          SourceLocation: sourceLocation.value ? sourceLocation.value : '',
-          BasicRate: values.BasicRate,
-          NetLandedCost: this.state.NetLandedCost,
-          Remark: values.Remark,
-          LoggedInUserId: loggedInUserId(),
-          Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
-          Attachements: updatedFiles,
-          UnitOfMeasurementId: UOM.value,
-          IsForcefulUpdated: true,
-          NumberOfPieces: values.NumberOfPieces,
-        }
-        if (isEditFlag) {
-          this.setState({ showPopup: true, updatedObj: requestData })
+
+      if (DataToCheck.IsVendor) {
+        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
+          this.cancel()
+          return false;
         }
       }
-      else {
-        Toaster.warning('Please update the effective date')
-        this.setState({ setDisable: false })
+      else if (Boolean(DataToCheck.IsVendor) === false) {
+        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
+          this.cancel()
+          return false;
+        }
       }
+      this.setState({ setDisable: true, disablePopup: false })
+      let updatedFiles = files.map((file) => {
+        return { ...file, ContextId: BOPID }
+      })
+      let requestData = {
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        BoughtOutPartId: BOPID,
+        Source: values.Source,
+        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
+        BasicRate: values.BasicRate,
+        NetLandedCost: this.state.NetLandedCost,
+        Remark: values.Remark,
+        LoggedInUserId: loggedInUserId(),
+        Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
+        Attachements: updatedFiles,
+        UnitOfMeasurementId: UOM.value,
+        IsForcefulUpdated: true,
+        NumberOfPieces: values.NumberOfPieces,
+      }
+      if (isEditFlag) {
+        this.setState({ showPopup: true, updatedObj: requestData })
+      }
+
 
 
     } else {
@@ -1079,7 +1078,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode}
+                                disabled={isViewMode || this.state.isFinalUserEdit}
                               //minDate={moment()}
                               />
                             </div>
