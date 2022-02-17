@@ -225,7 +225,7 @@ function Simulation(props) {
             case MACHINERATE:
                 return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case BOPIMPORT:
                 return (<BOPImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case EXCHNAGERATE:
