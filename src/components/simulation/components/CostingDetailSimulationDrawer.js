@@ -149,11 +149,11 @@ function CostingDetailSimulationDrawer(props) {
                                             <>
                                                 <Col md="3">
                                                     <label>Old Surface Treatment</label>
-                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label className={`${pricesDetail.OldNetSurfaceTreatmentCost > pricesDetail.NewNetSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
                                                     <label>New Surface Treatment</label>
-                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label className={`${pricesDetail.OldNetSurfaceTreatmentCost > pricesDetail.NewNetSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
                                         }
@@ -172,7 +172,7 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} master={master}/>
+                                <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} master={master} />
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">
