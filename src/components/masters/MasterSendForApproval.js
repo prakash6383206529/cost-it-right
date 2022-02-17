@@ -3,6 +3,7 @@ import { getConfigurationKey, loggedInUserId, userDetails } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import { masterApprovalRequestBySenderBop } from './actions/BoughtOutParts'
 import { masterApprovalRequestBySenderOperation } from './actions/OtherOperation'
+import { masterApprovalRequestBySenderMachine } from './actions/MachineMaster'
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
 import { Container, Row, Col } from 'reactstrap'
@@ -209,7 +210,7 @@ function MasterSendForApproval(props) {
                             tempArray.push({ OperationId: item.OperationId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, OperationRequest: {} })
                         })
                     } else {
-                        tempArray.push({ OperationId: EMPTY_GUID, IsImportEntery: IsImportEntery, OperationRequest: approvalObj })
+                        tempArray.push({ OperationId: EMPTY_GUID, IsImportEntery: IsImportEntery ?? false, OperationRequest: approvalObj })
                     }
                     senderObj.EntityList = tempArray
 
@@ -218,6 +219,28 @@ function MasterSendForApproval(props) {
                         setIsDisable(false)
                         if (res?.data?.Result) {
                             Toaster.success('Operation has been sent for approval.')
+                            props.closeDrawer('', 'submit')
+                        }
+                    }))
+                    break;
+
+
+                case 4:  //CASE 4 FOR MACHINE
+
+                    if (isBulkUpload) {
+                        approvalData && approvalData.map(item => {
+                            tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {} })
+                        })
+                    } else {
+                        tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
+                    }
+                    senderObj.EntityList = tempArray
+
+                    //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    dispatch(masterApprovalRequestBySenderMachine(senderObj, res => {
+                        setIsDisable(false)
+                        if (res?.data?.Result) {
+                            Toaster.success('Machine has been sent for approval.')
                             props.closeDrawer('', 'submit')
                         }
                     }))
@@ -591,8 +614,8 @@ function MasterSendForApproval(props) {
 
                                                         return (
                                                             <TextFieldHookForm
-                                                                label={`Machine Rate ${index + 1}`}
-                                                                name={'machine'}
+                                                                label={`Process ${index + 1} Machine Rate`}
+                                                                name={`machine${index}`}
                                                                 Controller={Controller}
                                                                 control={control}
                                                                 register={register}

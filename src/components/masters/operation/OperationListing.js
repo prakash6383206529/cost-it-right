@@ -162,7 +162,7 @@ class OperationListing extends Component {
             setTimeout(() => {
                 this.setState({ tableData: this.props.operationList })
 
-            }, 500);
+            }, 700);
 
         }
     }
@@ -595,7 +595,7 @@ class OperationListing extends Component {
                                                 :
                                                 ""
                                             }
-                                            {AddAccessibility && (
+                                            {AddAccessibility && !this.props?.isMasterSummaryDrawer && (
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
@@ -606,7 +606,7 @@ class OperationListing extends Component {
                                                     {/* ADD */}
                                                 </button>
                                             )}
-                                            {BulkUploadAccessibility && (
+                                            {BulkUploadAccessibility && !this.props?.isMasterSummaryDrawer && (
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
@@ -618,7 +618,7 @@ class OperationListing extends Component {
                                                 </button>
                                             )}
                                             {
-                                                DownloadAccessibility &&
+                                                DownloadAccessibility && !this.props?.isMasterSummaryDrawer &&
                                                 <>
 
                                                     <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
@@ -677,7 +677,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                {!isSimulation && <AgGridColumn field="OperationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
