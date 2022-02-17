@@ -382,11 +382,6 @@ function RMSimulation(props) {
         setTextFilterSearch(e?.target?.value)
     }
     const cellChange = (props) => {
-        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        // if (row.NewBasicRate < row.NewScrapRate) {
-        //     // return false
-        // }
     }
 
     const onCellValueChanged = (props) => {
