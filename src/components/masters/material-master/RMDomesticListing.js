@@ -496,7 +496,7 @@ function RMDomesticListing(props) {
                                                 </ExcelFile>
                                             </>
                                         }
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
                                     </>
@@ -511,7 +511,7 @@ function RMDomesticListing(props) {
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
-                        <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
+                        <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 style={{ height: '100%', width: '100%' }}
                                 defaultColDef={defaultColDef}
