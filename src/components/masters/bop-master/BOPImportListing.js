@@ -16,7 +16,7 @@ import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, CheckApprovalApplicableMaster } from '../../../helper';
+import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -385,6 +385,13 @@ class BOPImportListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
+    getFilterBOPData = () => {
+        if (this.props.isSimulation) {
+            return getFilteredData(this.props.bopImportList, BOP_MASTER_ID)
+        } else {
+            return this.props.bopImportList
+        }
+    }
 
 
     /**
@@ -508,7 +515,7 @@ class BOPImportListing extends Component {
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
-                            <div  className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
+                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
 
@@ -516,7 +523,7 @@ class BOPImportListing extends Component {
 
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={this.props.bopImportList}
+                                    rowData={this.getFilterBOPData}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}

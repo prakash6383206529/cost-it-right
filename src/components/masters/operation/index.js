@@ -9,6 +9,7 @@ import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
 import OperationApproval from './OperationApproval';
 import ScrollToTop from '../../common/ScrollToTop';
+import { getConfigurationKey } from '../../../helper';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -112,7 +113,7 @@ class OperationsMaster extends Component {
                                         </TabPane>}
 
 
-                                    {this.state.activeTab == 2 &&
+                                    {this.state.activeTab == 2 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
                                         <TabPane tabId="2">
                                             <OperationApproval
                                                 AddAccessibility={this.state.AddAccessibility}
