@@ -22,7 +22,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredRMData, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -93,8 +93,8 @@ function RMImportListing(props) {
 
 
   const getFilterRMData = () => {
-    if (isSimulation && CheckApprovalApplicableMaster(RM_MASTER_ID)) {
-      return getFilteredRMData(rmImportDataList)
+    if (isSimulation) {
+      return getFilteredData(rmImportDataList, RM_MASTER_ID)
     } else {
 
       return rmImportDataList

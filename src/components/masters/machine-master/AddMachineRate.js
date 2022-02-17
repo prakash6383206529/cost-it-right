@@ -56,6 +56,8 @@ class AddMachineRate extends Component {
       isViewFlag: false,
       approveDrawer: false,
       isViewMode: this.props?.editDetails?.isViewMode ? true : false,
+      minEffectiveDate: '',
+      isDateChange: false,
 
       selectedTechnology: [],
       isVendorNameNotSelected: false,
@@ -237,6 +239,7 @@ class AddMachineRate extends Component {
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.props.change('Description', Data.Description)
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
@@ -716,6 +719,7 @@ class AddMachineRate extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
+      isDateChange: true,
     });
   };
 
@@ -858,7 +862,7 @@ class AddMachineRate extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements } = this.state;
+      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements, isDateChange } = this.state;
 
 
     if (vendorName.length <= 0) {
@@ -988,7 +992,16 @@ class AddMachineRate extends Component {
 
 
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ approveDrawer: true, approvalObj: finalObj })
+
+        if (isDateChange) {
+          this.setState({ approveDrawer: true, approvalObj: finalObj })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+        }
+        else {
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+        }
+
+
       } else {
         this.props.reset()
         this.props.createMachine(formData, (res) => {
@@ -1338,13 +1351,14 @@ class AddMachineRate extends Component {
                                 type="text"
                                 validate={[required]}
                                 autoComplete={'off'}
+                                minDate={this.state.minEffectiveDate}
                                 required={true}
                                 changeHandler={(e) => {
                                   //e.preventDefault()
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isEditFlag ? true : false}
+                                disabled={isViewMode}
                               />
                             </div>
                           </div>
