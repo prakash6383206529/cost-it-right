@@ -183,7 +183,7 @@ function RMSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cell, props)
         return (
             <>
                 {
@@ -215,7 +215,7 @@ function RMSimulation(props) {
     const newScrapRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cell, props)
         return (
             <>
                 {
@@ -258,11 +258,45 @@ function RMSimulation(props) {
     }
 
     /**
+* @method beforeSaveCell
+* @description CHECK FOR ENTER NUMBER IN CELL
+*/
+    // const beforeSaveCellScrapRate = (cell, props) => {
+    //     const cellValue = cell
+    //     if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
+    //         if (cellValue.length > 8) {
+    //             Toaster.warning("Value should not be more than 8")
+    //             return false
+    //         }
+    //         return true
+    //     } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+    //         Toaster.warning('Please enter a valid positive numbers.')
+    //         return false
+    //     }
+    //     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+
+    //     // if (props?.column?.userProvidedColDef?.field === "NewScrapRate") {
+    //     // if ((row?.NewBasicRate === undefined ? row.BasicRate : row?.NewBasicRate) < row.NewScrapRate) {
+    //     //     Toaster.warning('Scrap Rate should be less than Basic Rate')
+    //     //     return false
+    //     // }
+    //     // }
+    //     return true
+    // }
+
+
+    /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
   */
-    const beforeSaveCell = (props) => {
-        const cellValue = props
+    const beforeSaveCell = (cell, props) => {
+        const cellValue = cell
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        if ((row?.NewBasicRate === undefined ? row?.BasicRate : row?.NewBasicRate) < row?.NewScrapRate) {
+            Toaster.warning('Scrap Rate should be less than Basic Rate')
+            return false
+        }
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
                 Toaster.warning("Value should not be more than 8")
@@ -377,7 +411,22 @@ function RMSimulation(props) {
         setTextFilterSearch(e?.target?.value)
     }
     const cellChange = (props) => {
+        // const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        // if (row.NewBasicRate < row.NewScrapRate) {
+        //     // return false
+        // }
     }
+
+    const onCellValueChanged = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        if (props?.column?.userProvidedColDef?.field === "NewScrapRate") {
+            if ((row.NewBasicRate === undefined ? row.BasicRate : row.NewBasicRate) < row.NewScrapRate) {
+                return false
+            }
+        }
+    }
+
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -452,13 +501,13 @@ function RMSimulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex justify-content-between align-items-center">
                                         <div className='d-flex'>
-                                        <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                            <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
                                         </div>
                                         {/* {list && list.map( item=> {
                                             return <>
@@ -496,6 +545,7 @@ function RMSimulation(props) {
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
+                                            onCellValueChanged={onCellValueChanged}
                                         >
                                             {
                                                 !isImpactedMaster &&
