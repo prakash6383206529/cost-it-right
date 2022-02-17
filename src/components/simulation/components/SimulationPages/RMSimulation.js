@@ -258,35 +258,6 @@ function RMSimulation(props) {
     }
 
     /**
-* @method beforeSaveCell
-* @description CHECK FOR ENTER NUMBER IN CELL
-*/
-    // const beforeSaveCellScrapRate = (cell, props) => {
-    //     const cellValue = cell
-    //     if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
-    //         if (cellValue.length > 8) {
-    //             Toaster.warning("Value should not be more than 8")
-    //             return false
-    //         }
-    //         return true
-    //     } else if (cellValue && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-    //         Toaster.warning('Please enter a valid positive numbers.')
-    //         return false
-    //     }
-    //     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
-    //     // if (props?.column?.userProvidedColDef?.field === "NewScrapRate") {
-    //     // if ((row?.NewBasicRate === undefined ? row.BasicRate : row?.NewBasicRate) < row.NewScrapRate) {
-    //     //     Toaster.warning('Scrap Rate should be less than Basic Rate')
-    //     //     return false
-    //     // }
-    //     // }
-    //     return true
-    // }
-
-
-    /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
   */
