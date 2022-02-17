@@ -207,6 +207,7 @@ function Simulation(props) {
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
             //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
+
             default:
                 return <div className="empty-table-paecholder" />;
         }
