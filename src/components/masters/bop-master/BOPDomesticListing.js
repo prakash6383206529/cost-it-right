@@ -298,8 +298,11 @@ class BOPDomesticListing extends Component {
 
     getFilterBOPData = () => {
         if (this.props.isSimulation) {
+
+
             return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
         } else {
+
             return this.props.bopDomesticList
         }
     }
@@ -433,7 +436,7 @@ class BOPDomesticListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    rowData={this.getFilterBOPData}
+                                    rowData={this.getFilterBOPData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
