@@ -280,6 +280,11 @@ function VerifySimulation(props) {
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
+    const poPriceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cell != null && cell.length !== 0) ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+    }
+
     const renderPlant = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cell !== null && cell !== '-') ? `${cell}` : '-'
@@ -441,6 +446,7 @@ function VerifySimulation(props) {
         newSRFormatter: newSRFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        poPriceFormatter: poPriceFormatter
     };
 
     return (
@@ -508,7 +514,7 @@ function VerifySimulation(props) {
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                <AgGridColumn width={130} field="POPrice" headerName="Current PO Price"></AgGridColumn>
+                                                <AgGridColumn width={130} field="POPrice" headerName="Current PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
 
                                                 {isSurfaceTreatmentOrOperation === true &&
                                                     <>
