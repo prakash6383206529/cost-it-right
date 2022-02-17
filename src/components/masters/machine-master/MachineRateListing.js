@@ -66,6 +66,11 @@ class MachineRateListing extends Component {
         this.getDataList()
     }
 
+
+    componentWillUnmount() {
+
+    }
+
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '') => {
         const filterData = {
             costing_head: costing_head,
@@ -75,11 +80,14 @@ class MachineRateListing extends Component {
             process_id: process_id,
             plant_id: plant_id,
         }
-        this.setState({isLoader:true})
-        this.props.getMachineDataList(filterData, (res) => {
-            this.setState({ isLoader: false })
 
-        })
+        if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
+            this.setState({ isLoader: true })
+            this.props.getMachineDataList(filterData, (res) => {
+                this.setState({ isLoader: false })
+
+            })
+        }
     }
 
 
@@ -371,7 +379,7 @@ class MachineRateListing extends Component {
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                 {this.state.isLoader && <LoaderCustom />}
+                    {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                     <Row className={`pt-4 filter-row-large ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
                         <Col md="6" lg="6" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -432,7 +440,7 @@ class MachineRateListing extends Component {
                 </form>
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.machineDatalist && this.props.machineDatalist?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.machineDatalist && this.props.machineDatalist?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -466,7 +474,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!isSimulation && <AgGridColumn field="MachineId" width={200} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={200} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
                                 <div className="paging-container d-inline-block float-right">
                                     <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
