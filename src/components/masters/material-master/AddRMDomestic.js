@@ -76,6 +76,7 @@ class AddRMDomestic extends Component {
       effectiveDate: '',
       minEffectiveDate: '',
       remarks: '',
+      isFinalUserEdit: false,
 
       isShowForm: false,
       IsVendor: false,
@@ -153,6 +154,7 @@ class AddRMDomestic extends Component {
       }
 
     })
+
 
   }
 
@@ -445,6 +447,7 @@ class AddRMDomestic extends Component {
                 this.setState({ minEffectiveDate: Data.EffectiveDate })
 
                 this.setState({
+                  isFinalUserEdit: this.state.isFinalApprovar ? true : false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -1010,20 +1013,9 @@ class AddRMDomestic extends Component {
     if (isEditFlag && this.state.isFinalApprovar) {
       this.setState({ updatedObj: requestData })
 
-      if (isDateChange) {                                                                        //DONT DELETE COMMENTED CODE BELOW
+      //DONT DELETE COMMENTED CODE BELOW
 
-        // if (isSourceChange) {
-        //   this.props.updateRMDomesticAPI(requestData, (res) => {
-        //     this.setState({ setDisable: false })
-        //     if (res?.data?.Result) {
-        //       Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-        //       this.clearForm()
-
-
-        //     }
-        //   })
-        // }
-        // if (isDateChange) {
+      if (isSourceChange) {
         this.props.updateRMDomesticAPI(requestData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
@@ -1637,7 +1629,7 @@ class AddRMDomestic extends Component {
                                 className="form-control"
 
 
-                                disabled={isViewFlag}
+                                disabled={isViewFlag || this.state.isFinalUserEdit}
 
                               />
                             </div>
