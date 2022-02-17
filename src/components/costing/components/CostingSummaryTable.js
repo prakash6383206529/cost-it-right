@@ -1127,7 +1127,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : viewCostingData[0].nOverheadProfit < viewCostingData[1].nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
-                      <th>Net Overhead & Profits</th>
+                      <th>Net Overheads & Profits</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (

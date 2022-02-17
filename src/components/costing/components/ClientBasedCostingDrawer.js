@@ -374,7 +374,7 @@ export function Clientbasedcostingdrawer(props) {
 
                                 <Col md="3">
                                     <Field
-                                    label={`Net Overhead & Profits`}
+                                    label={`Net Overheads & Profits`}
                                     type="text"
                                     placeholder={"Auto Calculated"}
                                     component={renderText}
