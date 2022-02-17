@@ -24,6 +24,7 @@ import {
     GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
     GET_RM_NAME_SELECTLIST,
+    GET_MACHINE_DATALIST_SUCCESS,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
     GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
     GET_GRADE_SELECTLIST_SUCCESS,
@@ -39,6 +40,7 @@ import {
     OPERATIONS_ID,
     BOP_MASTER_ID,
     RM_MASTER_ID,
+    MACHINE_MASTER_ID,
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
@@ -1736,6 +1738,8 @@ export function approvalOrRejectRequestByMasterApprove(data, callback) {
  */
 
 export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, callback) {
+
+
     return (dispatch) => {
         const request = axios.get(
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
@@ -1760,6 +1764,14 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                         dispatch({
                             type: GET_OPERATION_COMBINED_DATA_LIST,
                             payload: response.data.Data.ImpactedMasterDataListOperation,
+                        })
+                        callback(response)
+                    } else if (Number(masterId) === MACHINE_MASTER_ID) {
+                        const value = response.data.Data.ImpactedMasterDataListMachine.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
+
+                        dispatch({
+                            type: GET_MACHINE_DATALIST_SUCCESS,
+                            payload: value,
                         })
                         callback(response)
                     }
