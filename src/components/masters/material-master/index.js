@@ -244,7 +244,11 @@ function RowMaterialMaster(props) {
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
                             {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
+<<<<<<< HEAD
                                 {/* {ViewRMAccessibility && <NavItem> */}
+=======
+                            {/* {ViewRMAccessibility && <NavItem> */}
+>>>>>>> 8599a39ac (add approvals status on dashboard)
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
                                     // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
