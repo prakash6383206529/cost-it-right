@@ -36,3 +36,76 @@ export const SimulationUtils = (TempData) => {
 
 
 }
+
+export const checkForChangeInOverheadProfit1Values = (item) => {
+    if ((item.NewApplicabilityType === item.ApplicabilityType &&
+        (item.NewValue !== null && item.NewValue !== undefined
+            && item.NewValue !== '' && item.NewValue !== ' ' &&
+            Number(item.NewValue) !== Number(item.Value))) ||
+        (item.NewApplicabilityType !== item.ApplicabilityType &&
+            (item.NewValue !== null && item.NewValue !== undefined
+                && item.NewValue !== '' && item.NewValue !== ' ')))
+        return item
+}
+
+export const checkForChangeInOverheadProfit2Values = (item) => {
+    if ((item.NewApplicabilityType === item.ApplicabilityType &&
+        ((item.NewOverheadPercentage !== null && item.NewOverheadPercentage !== undefined
+            && item.NewOverheadPercentage !== '' && item.NewOverheadPercentage !== ' ' &&
+            Number(item.NewOverheadPercentage) !== Number(item.OverheadPercentage)) ||
+
+            (((item.NewFirstValue !== null && item.NewFirstValue !== undefined
+                && item.NewFirstValue !== '' && item.NewFirstValue !== ' ') &&
+                Number(item.NewFirstValue) !== Number(item.FirstValue)) ||
+
+                ((item.NewSecondValue !== null && item.NewSecondValue !== undefined
+                    && item.NewSecondValue !== '' && item.NewSecondValue !== ' ') &&
+                    Number(item.NewSecondValue) !== Number(item.SecondValue))))) ||
+
+        (item.NewApplicabilityType !== item.ApplicabilityType &&
+            ((item.NewOverheadPercentage !== null && item.NewOverheadPercentage !== undefined
+                && item.NewOverheadPercentage !== '' && item.NewOverheadPercentage !== ' ') ||
+
+                ((item.NewFirstValue !== null && item.NewFirstValue !== undefined
+                    && item.NewFirstValue !== '' && item.NewFirstValue !== ' ') ||
+
+                    ((item.NewSecondValue !== null && item.NewSecondValue !== undefined
+                        && item.NewSecondValue !== '' && item.NewSecondValue !== ' ')))))
+    )
+        return item
+}
+
+export const checkForChangeInOverheadProfit3Values = (item) => {
+    if ((item.NewApplicabilityType === item.ApplicabilityType &&
+        ((item.NewOverheadPercentage !== null && item.NewOverheadPercentage !== undefined
+            && item.NewOverheadPercentage !== '' && item.NewOverheadPercentage !== ' ' &&
+            Number(item.NewOverheadPercentage) !== Number(item.OverheadPercentage)) ||
+
+            (((item.NewFirstValue !== null && item.NewFirstValue !== undefined
+                && item.NewFirstValue !== '' && item.NewFirstValue !== ' ') &&
+                Number(item.NewFirstValue) !== Number(item.FirstValue)) ||
+
+                ((item.NewSecondValue !== null && item.NewSecondValue !== undefined
+                    && item.NewSecondValue !== '' && item.NewSecondValue !== ' ') &&
+                    Number(item.NewSecondValue) !== Number(item.SecondValue)) ||
+
+                ((item.NewThirdValue !== null && item.NewThirdValue !== undefined
+                    && item.NewThirdValue !== '' && item.NewThirdValue !== ' ') &&
+                    Number(item.NewThirdValue) !== Number(item.ThirdValue))))) ||
+
+        (item.NewApplicabilityType !== item.ApplicabilityType &&
+            ((item.NewOverheadPercentage !== null && item.NewOverheadPercentage !== undefined
+                && item.NewOverheadPercentage !== '' && item.NewOverheadPercentage !== ' ') ||
+
+                ((item.NewFirstValue !== null && item.NewFirstValue !== undefined
+                    && item.NewFirstValue !== '' && item.NewFirstValue !== ' ') ||
+
+                    ((item.NewThirdValue !== null && item.NewThirdValue !== undefined
+                        && item.NewThirdValue !== '' && item.NewThirdValue !== ' ')) ||
+
+                    ((item.NewThirdValue !== null && item.NewThirdValue !== undefined
+                        && item.NewThirdValue !== '' && item.NewThirdValue !== ' ')))))
+    )
+        return item
+}
+
