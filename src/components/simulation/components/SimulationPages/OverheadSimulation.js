@@ -79,13 +79,14 @@ function OverheadSimulation(props) {
         let tempBOPCC = 0
         let tempRMCCBOP = 0
         let tempE = 0
+        let stopflow = 0
 
         let checkRMPercent_NOT_CHANGED = 0
         let checkCCPercent_NOT_CHANGED = 0
         let checkBOPPercent_NOT_CHANGED = 0
         let checkPercent_NOT_CHANGED = 0
 
-        let tempObj = new Set([]);
+        let tempObjVal = new Set([]);
 
         list && list.map((item) => {
             tempRM = 0
@@ -104,7 +105,7 @@ function OverheadSimulation(props) {
                     tempRMValue.NewValue = item.NewOverheadRMPercentage
                     tempRMValue.Value = item.OverheadRMPercentage
                     if (checkForChangeInOverheadProfit1Values(tempRMValue)) {
-                        tempObj.add(item)
+                        tempObjVal.add(item)
                         tempRMBOP = 1
                     }
                     break;
@@ -114,7 +115,7 @@ function OverheadSimulation(props) {
                     tempCCValue.NewValue = item.NewOverheadMachiningCCPercentage
                     tempCCValue.Value = item.OverheadMachiningCCPercentage
                     if (checkForChangeInOverheadProfit1Values(tempCCValue)) {
-                        tempObj.add(item)
+                        tempObjVal.add(item)
                         tempRMBOP = 1
                     }
                     break;
@@ -124,13 +125,13 @@ function OverheadSimulation(props) {
                     tempBOPValue.NewValue = item.NewOverheadBOPPercentage
                     tempBOPValue.Value = item.OverheadBOPPercentage
                     if (checkForChangeInOverheadProfit1Values(tempBOPValue)) {
-                        tempObj.add(item)
+                        tempObjVal.add(item)
                         tempRMBOP = 1
                     }
                     break;
 
                 case 'Fixed':
-                    tempObj.add(item)
+                    tempObjVal.add(item)
 
                     break;
 
@@ -146,7 +147,7 @@ function OverheadSimulation(props) {
                     tempRM_CC_Value.SecondValue = item.OverheadMachiningCCPercentage
 
                     if (checkForChangeInOverheadProfit2Values(tempRM_CC_Value)) {
-                        tempObj.add(item)
+                        tempObjVal.add(item)
                         tempRMBOP = 1
                     }
                     break;
@@ -163,7 +164,7 @@ function OverheadSimulation(props) {
                     tempRM_BOP_Value.SecondValue = item.OverheadBOPPercentage
 
                     if (checkForChangeInOverheadProfit2Values(tempRM_BOP_Value)) {
-                        tempObj.add(item)
+                        tempObjVal.add(item)
                         tempRMBOP = 1
                     }
                     break;
@@ -179,7 +180,7 @@ function OverheadSimulation(props) {
                     tempBOP_CC_Value.SecondValue = item.OverheadBOPPercentage
 
                     if (checkForChangeInOverheadProfit2Values(tempBOP_CC_Value)) {
-                        tempObj.add(item)
+                        tempObjVal.add(item)
                         tempRMBOP = 1
                     }
                     break;
@@ -198,7 +199,7 @@ function OverheadSimulation(props) {
                     tempRM_CC_BOP_value.ThirdValue = item.OverheadMachiningCCPercentage
 
                     if (checkForChangeInOverheadProfit3Values(tempRM_CC_BOP_value)) {
-                        tempObj.add(item)
+                        tempObjVal.add(item)
                         tempRMBOP = 1
                     }
                     break;
@@ -206,7 +207,6 @@ function OverheadSimulation(props) {
                     return 'foo';
             }
         })
-        console.log(tempObj, 'tempObjtempObjtempObj');
         list && list.map((item) => {
             tempRM = 0
             tempCC = 0
@@ -280,24 +280,23 @@ function OverheadSimulation(props) {
 
                             (item.NewOverheadBOPPercentage === null || item.NewOverheadBOPPercentage === undefined
                                 || item.NewOverheadBOPPercentage === '' || item.NewOverheadBOPPercentage === ' '))) {
-
+                        // agar condition fali  //no aage
                         tempBOPCC = 1
                     }
                     break;
 
                 case 'RM + CC + BOP':
                     if ((item.NewOverheadPercentage === null || item.NewOverheadPercentage === undefined
-                        || item.NewOverheadPercentage === '' || item.NewOverheadPercentage === ' ') &&
+                        || item.NewOverheadPercentage === '' || item.NewOverheadPercentage === ' ') ||
 
                         ((item.NewOverheadRMPercentage === null || item.NewOverheadRMPercentage === undefined
-                            || item.NewOverheadRMPercentage === '' || item.NewOverheadRMPercentage === ' ') ||
+                            || item.NewOverheadRMPercentage === '' || item.NewOverheadRMPercentage === ' ') &&
 
                             (item.NewOverheadBOPPercentage === null || item.NewOverheadBOPPercentage === undefined
-                                || item.NewOverheadBOPPercentage === '' || item.NewOverheadBOPPercentage === ' ') ||
+                                || item.NewOverheadBOPPercentage === '' || item.NewOverheadBOPPercentage === ' ') &&
 
                             (item.NewOverheadMachiningCCPercentage === null || item.NewOverheadMachiningCCPercentage === undefined
                                 || item.NewOverheadMachiningCCPercentage === '' || item.NewOverheadMachiningCCPercentage === ' '))) {
-
                         tempRMCCBOP = 1
                     }
                     break;
@@ -305,33 +304,41 @@ function OverheadSimulation(props) {
                     return 'foo';
             }
             // if all 0 then temp 0         // IF THERE ARE CHANGES THEN 0        !== 0 -> no changes
-            if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0) {
-                temp = temp + 1
-            } else {
-                tempE = tempE + 1
-            }
-        })
+            // if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0) {
+            //     temp = temp + 1
+            // } else {
+            //     tempE = tempE + 1
+            // }
 
-        if ((Number(temp) <= Number(list.length))) {
-            if (tempRM !== 0) {
+            if (tempRM === 1 || tempCC === 1 || tempBOP === 1 || tempRMCC === 1 || tempRMBOP === 1 || tempBOPCC === 1 || tempRMCCBOP === 1) {
+                stopflow = stopflow + 1
+            } else {
+            }
+
+        })
+        // temp means no changes
+        // if ((Number(temp) < Number(list.length))) {
+        // console.log('Number(stopflow) !== 0: ', Number(stopflow) !== 0);
+        if (tempRM === 0) {
+            if (Number(stopflow) !== 0) {
                 Toaster.warning('Please fill RM');
                 return false
-            } else if (tempCC !== 0) {
+            } else if (tempCC === 0) {
                 Toaster.warning('Please fill CC');
                 return false
-            } else if (tempBOP !== 0) {
+            } else if (tempBOP === 0) {
                 Toaster.warning('Please fill BOM');
                 return false
-            } else if (tempRMCC !== 0) {
+            } else if (tempRMCC === 0) {
                 Toaster.warning('Please fill both RM and CC or Overhead Percentage');
                 return false
-            } else if (tempRMBOP !== 0) {
+            } else if (tempRMBOP === 0) {
                 Toaster.warning('Please fill both RM and BOP or Overhead Percentage');
                 return false
-            } else if (tempBOPCC !== 0) {
+            } else if (tempBOPCC === 0) {
                 Toaster.warning('Please fill both BOP and CC or Overhead Percentage');
                 return false
-            } else if (tempRMCCBOP !== 0) {
+            } else if (tempRMCCBOP === 0) {
                 Toaster.warning('Please fill all values RM, CC and BOP or Overhead Percentage');
                 return false
             }
@@ -430,8 +437,13 @@ function OverheadSimulation(props) {
                 return null;
             }
         })
-        obj.SimulationRawMaterials = tempArr
 
+        let tempO = []
+        for (let item of tempObjVal) {
+            tempO.push(item)
+        }
+
+        obj.SimulationOverheadProfit = tempO
 
         dispatch(runVerifyOverheadSimulation(obj, res => {
 
