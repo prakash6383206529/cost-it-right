@@ -19,6 +19,7 @@ import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyOverheadSimulation } from '../../actions/Simulation';
+import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2Values, checkForChangeInOverheadProfit3Values } from '../../SimulationUtils';
 
 const gridOptions = {
 
@@ -77,15 +78,143 @@ function OverheadSimulation(props) {
         let tempRMBOP = 0
         let tempBOPCC = 0
         let tempRMCCBOP = 0
+        let tempE = 0
 
         let checkRMPercent_NOT_CHANGED = 0
         let checkCCPercent_NOT_CHANGED = 0
         let checkBOPPercent_NOT_CHANGED = 0
         let checkPercent_NOT_CHANGED = 0
 
+        let tempObj = new Set([]);
 
         list && list.map((item) => {
+            tempRM = 0
+            tempCC = 0
+            tempBOP = 0
+            tempRMCC = 0
+            tempRMBOP = 0
+            tempBOPCC = 0
+            tempRMCCBOP = 0
 
+
+
+            switch (item.NewOverheadApplicabilityType) {
+                case 'RM':
+                    let tempRMValue = []
+                    tempRMValue.NewValue = item.NewOverheadRMPercentage
+                    tempRMValue.Value = item.OverheadRMPercentage
+                    if (checkForChangeInOverheadProfit1Values(tempRMValue)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'CC':
+                    let tempCCValue = []
+                    tempCCValue.NewValue = item.NewOverheadMachiningCCPercentage
+                    tempCCValue.Value = item.OverheadMachiningCCPercentage
+                    if (checkForChangeInOverheadProfit1Values(tempCCValue)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'BOP':
+                    let tempBOPValue = []
+                    tempBOPValue.NewValue = item.NewOverheadBOPPercentage
+                    tempBOPValue.Value = item.OverheadBOPPercentage
+                    if (checkForChangeInOverheadProfit1Values(tempBOPValue)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'Fixed':
+                    tempObj.add(item)
+
+                    break;
+
+                case 'RM + CC':
+                    let tempRM_CC_Value = []
+                    tempRM_CC_Value.NewApplicabilityType = item.NewOverheadApplicabilityType
+                    tempRM_CC_Value.ApplicabilityType = item.OverheadApplicabilityType
+                    tempRM_CC_Value.NewOverheadPercentage = item.NewOverheadPercentage
+                    tempRM_CC_Value.OverheadPercentage = item.OverheadPercentage
+                    tempRM_CC_Value.NewFirstValue = item.NewOverheadRMPercentage
+                    tempRM_CC_Value.FirstValue = item.OverheadRMPercentage
+                    tempRM_CC_Value.NewSecondValue = item.NewOverheadMachiningCCPercentage
+                    tempRM_CC_Value.SecondValue = item.OverheadMachiningCCPercentage
+
+                    if (checkForChangeInOverheadProfit2Values(tempRM_CC_Value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'RM + BOP':
+                    let tempRM_BOP_Value = []
+                    tempRM_BOP_Value.NewApplicabilityType = item.NewOverheadApplicabilityType
+                    tempRM_BOP_Value.ApplicabilityType = item.OverheadApplicabilityType
+                    tempRM_BOP_Value.NewOverheadPercentage = item.NewOverheadPercentage
+                    tempRM_BOP_Value.OverheadPercentage = item.OverheadPercentage
+                    tempRM_BOP_Value.NewFirstValue = item.NewOverheadRMPercentage
+                    tempRM_BOP_Value.FirstValue = item.OverheadRMPercentage
+                    tempRM_BOP_Value.NewSecondValue = item.NewOverheadBOPPercentage
+                    tempRM_BOP_Value.SecondValue = item.OverheadBOPPercentage
+
+                    if (checkForChangeInOverheadProfit2Values(tempRM_BOP_Value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+                case 'BOP + CC':
+                    let tempBOP_CC_Value = []
+                    tempBOP_CC_Value.NewApplicabilityType = item.NewOverheadApplicabilityType
+                    tempBOP_CC_Value.ApplicabilityType = item.OverheadApplicabilityType
+                    tempBOP_CC_Value.NewOverheadPercentage = item.NewOverheadPercentage
+                    tempBOP_CC_Value.OverheadPercentage = item.OverheadPercentage
+                    tempBOP_CC_Value.NewFirstValue = item.NewOverheadMachiningCCPercentage
+                    tempBOP_CC_Value.FirstValue = item.OverheadMachiningCCPercentage
+                    tempBOP_CC_Value.NewSecondValue = item.NewOverheadBOPPercentage
+                    tempBOP_CC_Value.SecondValue = item.OverheadBOPPercentage
+
+                    if (checkForChangeInOverheadProfit2Values(tempBOP_CC_Value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'RM + CC + BOP':
+                    let tempRM_CC_BOP_value = []
+                    tempRM_CC_BOP_value.NewApplicabilityType = item.NewOverheadApplicabilityType
+                    tempRM_CC_BOP_value.ApplicabilityType = item.OverheadApplicabilityType
+                    tempRM_CC_BOP_value.NewOverheadPercentage = item.NewOverheadPercentage
+                    tempRM_CC_BOP_value.OverheadPercentage = item.OverheadPercentage
+                    tempRM_CC_BOP_value.NewFirstValue = item.NewOverheadMachiningCCPercentage
+                    tempRM_CC_BOP_value.FirstValue = item.OverheadMachiningCCPercentage
+                    tempRM_CC_BOP_value.NewSecondValue = item.NewOverheadBOPPercentage
+                    tempRM_CC_BOP_value.SecondValue = item.OverheadBOPPercentage
+                    tempRM_CC_BOP_value.NewThirdValue = item.NewOverheadMachiningCCPercentage
+                    tempRM_CC_BOP_value.ThirdValue = item.OverheadMachiningCCPercentage
+
+                    if (checkForChangeInOverheadProfit3Values(tempRM_CC_BOP_value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+                default:
+                    return 'foo';
+            }
+        })
+        console.log(tempObj, 'tempObjtempObjtempObj');
+        list && list.map((item) => {
+            tempRM = 0
+            tempCC = 0
+            tempBOP = 0
+            tempRMCC = 0
+            tempRMBOP = 0
+            tempBOPCC = 0
+            tempRMCCBOP = 0
             switch (item.NewOverheadApplicabilityType) {
                 case 'RM':
                     if (item.NewOverheadRMPercentage === null || item.NewOverheadRMPercentage === undefined
@@ -175,14 +304,15 @@ function OverheadSimulation(props) {
                 default:
                     return 'foo';
             }
-
+            // if all 0 then temp 0         // IF THERE ARE CHANGES THEN 0        !== 0 -> no changes
             if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0) {
                 temp = temp + 1
+            } else {
+                tempE = tempE + 1
             }
-
         })
 
-        if (Number(temp) === 0) {
+        if ((Number(temp) <= Number(list.length))) {
             if (tempRM !== 0) {
                 Toaster.warning('Please fill RM');
                 return false
@@ -190,22 +320,23 @@ function OverheadSimulation(props) {
                 Toaster.warning('Please fill CC');
                 return false
             } else if (tempBOP !== 0) {
-                Toaster.warning('Please fill BPOM');
+                Toaster.warning('Please fill BOM');
                 return false
             } else if (tempRMCC !== 0) {
-                Toaster.warning('Please fill both RM and CC');
+                Toaster.warning('Please fill both RM and CC or Overhead Percentage');
                 return false
             } else if (tempRMBOP !== 0) {
-                Toaster.warning('Please fill both RM and BOP');
+                Toaster.warning('Please fill both RM and BOP or Overhead Percentage');
                 return false
             } else if (tempBOPCC !== 0) {
-                Toaster.warning('Please fill both BOP and CC');
+                Toaster.warning('Please fill both BOP and CC or Overhead Percentage');
                 return false
             } else if (tempRMCCBOP !== 0) {
-                Toaster.warning('Please fill all values RM, CC and BOP');
+                Toaster.warning('Please fill all values RM, CC and BOP or Overhead Percentage');
                 return false
             }
         }
+
         list && list.map((li) => {
 
             if (li.OverheadApplicabilityType === li.NewOverheadApplicabilityType || li?.NewOverheadApplicabilityType === undefined) {
@@ -238,8 +369,9 @@ function OverheadSimulation(props) {
         //     return false
         // }
 
-        if (OverheadPercentageCount === list.length && OverheadRMPercentageCount === list.length
-            && OverheadMachiningCCPercentageCount === list.length && OverheadBOPPercentageCount === list.length) {
+        if (OverheadApplicabilityTypeCount === list.length && OverheadPercentageCount === list.length &&
+            OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length &&
+            OverheadBOPPercentageCount === list.length) {
             Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
             return false
         }
@@ -500,7 +632,7 @@ function OverheadSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.NewOverheadPercentage :
-                        <span className='form-control height33' >{cell && value ? cell : ''} </span>
+                        <span className='form-control height33' >{row.NewOverheadPercentage && value ? row.NewOverheadPercentage : null} </span>
                 }
 
             </>
@@ -642,6 +774,14 @@ function OverheadSimulation(props) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
         params.api.paginationGoToPage(0);
+        gridOptions?.api?.startEditingCell({
+            rowIndex: 1,
+            colKey: 'NewProfitPercentage'
+        })
+        // setTimeout(() => {
+        //     gridApi.stopEditing()
+        // }, 200);
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -740,7 +880,7 @@ function OverheadSimulation(props) {
                 return value
 
             case 'RM + CC':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                if (rowData.NewOverheadPercentage && (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ')) {
                     value = false
                 } else {
                     value = true
@@ -750,7 +890,7 @@ function OverheadSimulation(props) {
                 if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
                     value = false
                 } else {
-                    value = true
+                    value = false
                 }
                 return value
 
@@ -815,7 +955,7 @@ function OverheadSimulation(props) {
                 if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
                     value = false
                 } else {
-                    value = true
+                    value = false
                 }
                 return value
 
@@ -1004,7 +1144,6 @@ function OverheadSimulation(props) {
 
         }
         gridApi.redrawRows()
-
         setApplicabilityForGrid(props.value)
     }
 
@@ -1077,7 +1216,7 @@ function OverheadSimulation(props) {
                     <Fragment>
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
@@ -1104,6 +1243,7 @@ function OverheadSimulation(props) {
 
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
+
                                             <AgGridColumn field="IsVendor" editable='false' headerName="Costing Head" minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="ClientName" editable='false' headerName="Client Name" minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="VendorName" editable='false' headerName="Vendor Name" minWidth={190}></AgGridColumn>
