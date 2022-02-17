@@ -15,7 +15,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
 import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -47,7 +47,7 @@ class AddMachineRate extends Component {
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
     this.state = {
-      MachineID: '',
+      MachineID: EMPTY_GUID,
       isEditFlag: false,
       isFormHide: false,
       IsVendor: false,
@@ -76,6 +76,7 @@ class AddMachineRate extends Component {
 
       processName: [],
       isOpenProcessDrawer: false,
+      isFinalUserEdit: false,
 
       processGrid: [],
       processGridEditIndex: '',
@@ -264,6 +265,7 @@ class AddMachineRate extends Component {
 
             this.setState({
               isEditFlag: true,
+              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
               // isLoader: false,
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
@@ -498,6 +500,7 @@ class AddMachineRate extends Component {
       isEditFlag: editFlag,
       Id: Id,
       isIncompleteMachine: (this.state.isEditFlag && !this.state.IsDetailedEntry) ? true : false,
+      isViewMode: this.state.isViewMode
     }
     this.props.displayMoreDetailsForm(data)
   }
@@ -1358,7 +1361,7 @@ class AddMachineRate extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode}
+                                disabled={isViewMode || this.state.isFinalUserEdit}
                               />
                             </div>
                           </div>
@@ -1631,7 +1634,7 @@ class AddMachineRate extends Component {
                                   <button type="submit"
                                     class="user-btn approval-btn save-btn mr5"
 
-                                    disabled={this.state.isFinalApprovar}
+                                    disabled={isViewMode}
                                   >
                                     <div className="send-for-approval"></div>
                                     {'Send For Approval'}
