@@ -1576,7 +1576,7 @@ class AddMoreDetails extends Component {
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
     }
 
-    if (editDetails.isIncompleteMachine && isEditFlag && this.state.isFinalApprovar) {
+    if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
       let MachineData = { ...requestData, MachineId: editDetails.Id }

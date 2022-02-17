@@ -5,9 +5,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, MACHINE_MASTER_ID } from '../../../config/constants';
 import { DRAFT } from '../../../config/constants';
 import { getMachineApprovalList } from '../actions/MachineMaster'
+import SummaryDrawer from '../SummaryDrawer';
 
 
 
@@ -22,6 +23,7 @@ function MachineApproval(props) {
     const [approvalData, setApprovalData] = useState('')
     const { approvalList } = useSelector((state) => state.material)
     const [loader, setLoader] = useState(true)
+    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const dispatch = useDispatch()
     const { machineApprovalList } = useSelector((state) => state.machine)
 
@@ -47,6 +49,13 @@ function MachineApproval(props) {
 
 
 
+    const closeDrawer = (e = '') => {
+        setShowApprovalSummary(false)
+        setLoader(true)
+        getTableData()
+    }
+
+
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -57,6 +66,7 @@ function MachineApproval(props) {
 
     const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
+        setShowApprovalSummary(true)
 
         // props.closeDashboard()
 
@@ -194,20 +204,20 @@ function MachineApproval(props) {
                                     isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RawMaterial" headerName='Vendor (Code)'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RMGrade" headerName='Plant (Code)'></AgGridColumn>
-                                    <AgGridColumn width="150" field="RMSpec" headerName='Machine Number'></AgGridColumn>
-                                    <AgGridColumn width="140" field="Category" headerName='Machine Type'></AgGridColumn>
-                                    <AgGridColumn width="140" field="MaterialType" headerName='Machine Tonnage'></AgGridColumn>
-                                    <AgGridColumn field="Plant" headerName='Process Name'></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Machine Rate"></AgGridColumn>
+                                    <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>
+                                    <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>
+                                    <AgGridColumn width="150" field="MachineNumber" headerName='Machine Number'></AgGridColumn>
+                                    <AgGridColumn width="140" field="MachineTypeName" headerName='Machine Type'></AgGridColumn>
+                                    <AgGridColumn width="140" field="MachineTonnage" headerName='Machine Tonnage'></AgGridColumn>
+                                    <AgGridColumn field="ProcessName" headerName='Process Name'></AgGridColumn>
+                                    <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     {/* <AgGridColumn width="140" field="UOM" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn width="140" field="BasicRate" headerName="Net Cost(INR)"></AgGridColumn> */}
-                                    <AgGridColumn width="140" field="ScrapRate" headerName="Effective Date"></AgGridColumn>
+                                    <AgGridColumn width="140" field="EffectiveDate" headerName="Effective Date"></AgGridColumn>
 
 
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
@@ -225,6 +235,17 @@ function MachineApproval(props) {
                     </div>
                 </Col>
             </Row>
+
+            {
+                showApprovalSumary &&
+                <SummaryDrawer
+                    isOpen={showApprovalSumary}
+                    closeDrawer={closeDrawer}
+                    approvalData={approvalData}
+                    anchor={'bottom'}
+                    masterId={MACHINE_MASTER_ID}
+                />
+            }
 
         </div>
 
