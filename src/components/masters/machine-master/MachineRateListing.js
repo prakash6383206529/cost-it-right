@@ -67,10 +67,6 @@ class MachineRateListing extends Component {
     }
 
 
-    componentWillUnmount() {
-
-    }
-
     getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '') => {
         const filterData = {
             costing_head: costing_head,
