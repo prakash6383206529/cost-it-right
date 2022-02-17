@@ -404,7 +404,7 @@ class BOMViewer extends Component {
                           // }}
                           >
                             <div className="flowpoint-header">
-                              <h3>{el.PartNumber}</h3>
+                              <h3 title={el.PartNumber}>{el.PartNumber}</h3>
                               <span className="flowpoint-header-level">
                                 {el.Level}
                               </span>
@@ -434,10 +434,10 @@ class BOMViewer extends Component {
                             </div>
                             <div className="flowpoint-body">
                               <p>
-                                Name:<strong>{el.PartName}</strong>
+                                Name:<strong title={el.PartName}>{el.PartName}</strong>
                               </p>
                               <p>
-                                Part Type:<strong>{el.PartType}</strong>
+                                Part Type:<strong title={el.PartType}>{el.PartType}</strong>
                               </p>
                               {/* {`X=:${el.Position.x}`}
                                                             {`Y=:${el.Position.y}`} */}

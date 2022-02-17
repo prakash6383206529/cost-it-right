@@ -1,15 +1,17 @@
-import React, { Component, useEffect, useState } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useSelector } from 'react-redux';
 import { connect } from "react-redux";
 import { getMenuByUser } from "../../actions/auth/AuthActions";
-import { checkForNull, loggedInUserId } from "../../helper";
-import { Col, Container, Row } from "reactstrap";
+import { Col, Row } from "reactstrap";
 import ApprovalListing from '../costing/components/approval/ApprovalListing';
 import SimulationApprovalListing from '../simulation/components/SimulationApprovalListing';
 import RMApproval from "../masters/material-master/RMApproval";
-import { reactLocalStorage } from "reactjs-localstorage";
-import { Field, reduxForm } from "redux-form";
-import dashboardImg from '../../assests/images/dashboard-img.png'
+import {reduxForm } from "redux-form";
+import dashboardImg from '../../assests/images/dashboard-img.png';
+import BOPApproval from "../masters/bop-master/BOPApproval";
+import OperationApproval from "../masters/operation/OperationApproval";
+import MachineApproval from "../masters/machine-master/MachineApproval";
+
 
 
 function Dashboard(props) {
@@ -18,9 +20,15 @@ function Dashboard(props) {
   const [acc1, setAcc1] = useState(false)
   const [acc2, setAcc2] = useState(true)
   const [acc3, setAcc3] = useState(false)
+  const [acc4, setAcc4] = useState(false)
+  const [acc5, setAcc5] = useState(false)
+  const [acc6, setAcc6] = useState(false)
   const [costingApprovalListingView, setCostingApprovalListingView] = useState(false)
   const [simulationApprovalListingView, setSimulationApprovalListingView] = useState(false)
   const [RMApprovalView, setRMApprovalView] = useState(false)
+  const [BOPApprovalView, setBOPApprovalView] = useState(false)
+  const [operationApprovalView, setOperationApprovalView] = useState(false)
+  const [machineApprovalView, setMachineApprovalView] = useState(false)
   const [hideDash, setShowHideDash] = useState(false)
 
   const isOpenRMApprovalDashboard = useSelector((state) => state.auth.RMApprovalDashboard)
@@ -42,6 +50,15 @@ function Dashboard(props) {
       }
       if (isOpenRMApprovalDashboard.CostingsApprovalDashboard === true) {
         setCostingApprovalListingView(true);
+      }
+      if (isOpenRMApprovalDashboard.BOPApprovalDashboard === true) {
+        setOperationApprovalView(true);
+      }
+      if (isOpenRMApprovalDashboard.OperationApprovalDashboard === true) {
+        setBOPApprovalView(true);
+      }
+      if (isOpenRMApprovalDashboard.MachineApprovalDashboard === true) {
+        setMachineApprovalView(true);
       }
     }
 
@@ -134,6 +151,72 @@ function Dashboard(props) {
 
                     <Row>
                       <Col md="12">{acc3 && <RMApproval isApproval={true} />}</Col>
+                    </Row>
+                  </div>
+                </Row>
+              }
+              {BOPApprovalView &&
+                <Row className="m-0">
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">BOP Awaiting Approval</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc4(!acc4) }}>
+                          {acc4 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+
+                    <Row>
+                      <Col md="12">{acc4 && <BOPApproval isApproval={true}/>}</Col>
+                    </Row>
+                  </div>
+                </Row>
+              }
+              {operationApprovalView &&
+                <Row className="m-0">
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">Operation Awaiting Approval</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc5(!acc5) }}>
+                          {acc5 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+
+                    <Row>
+                      <Col md="12">{acc5 && <OperationApproval isApproval={true}/>}</Col>
+                    </Row>
+                  </div>
+                </Row>
+              }
+              {machineApprovalView &&
+                <Row className="m-0">
+                  <div className="graph-box w-100">
+                    <Row>
+                      <Col md="8"><h3 className="mb-0">Machine Awaiting Approval</h3></Col>
+                      <Col md="4" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAcc6(!acc6) }}>
+                          {acc6 ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                    </Row>
+
+                    <Row>
+                      <Col md="12">{acc6 && <MachineApproval  isApproval={true}/>}</Col>
                     </Row>
                   </div>
                 </Row>

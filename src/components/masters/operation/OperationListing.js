@@ -633,7 +633,7 @@ class OperationListing extends Component {
 
 
                                             }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
 
@@ -648,7 +648,7 @@ class OperationListing extends Component {
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
-                        <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+                        <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
