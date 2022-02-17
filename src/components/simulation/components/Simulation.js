@@ -225,7 +225,7 @@ function Simulation(props) {
             case MACHINERATE:
                 return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
+                return (<BOPDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case BOPIMPORT:
                 return (<BOPImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case EXCHNAGERATE:
@@ -233,7 +233,7 @@ function Simulation(props) {
             case OPERATIONS:
                 return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={OPERATIONS} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
