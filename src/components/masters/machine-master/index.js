@@ -226,6 +226,7 @@ class MachineMaster extends Component {
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
+                                                isMasterSummaryDrawer={false}
                                             />
                                         </TabPane>}
 
