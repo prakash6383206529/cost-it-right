@@ -193,7 +193,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case MACHINERATE:
-                return (<MachineRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case BOPDOMESTIC:
                 return (<BOPDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case BOPIMPORT:
