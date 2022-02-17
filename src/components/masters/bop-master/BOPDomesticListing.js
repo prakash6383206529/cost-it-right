@@ -15,7 +15,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { getConfigurationKey, CheckApprovalApplicableMaster } from '../../../helper';
+import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -296,6 +296,18 @@ class BOPDomesticListing extends Component {
     }
 
 
+    getFilterBOPData = () => {
+        if (this.props.isSimulation) {
+
+
+            return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
+        } else {
+
+            return this.props.bopDomesticList
+        }
+    }
+
+
     /**
     * @method render
     * @description Renders the component
@@ -424,7 +436,7 @@ class BOPDomesticListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    rowData={this.props.bopDomesticList}
+                                    rowData={this.getFilterBOPData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}

@@ -10,6 +10,7 @@ import { checkPermission } from '../../../helper/util';
 import { MACHINE, MASTERS, } from '../../../config/constants';
 import MachineApproval from './MachineApproval';
 import ScrollToTop from '../../common/ScrollToTop';
+import { getConfigurationKey } from '../../../helper';
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -223,6 +224,7 @@ class MachineMaster extends Component {
                                                 BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
+                                                isMasterSummaryDrawer={false}
                                             />
                                         </TabPane>}
 
@@ -235,7 +237,7 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
-                                    {this.state.activeTab == 3 &&
+                                    {this.state.activeTab == 3 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
                                         <TabPane tabId="3">
                                             <MachineApproval
                                                 AddAccessibility={this.state.AddAccessibility}

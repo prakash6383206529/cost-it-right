@@ -18,6 +18,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RMApproval from './RMApproval';
 import ScrollToTop from '../../common/ScrollToTop';
+import { getConfigurationKey } from '../../../helper';
 
 
 
@@ -242,8 +243,8 @@ function RowMaterialMaster(props) {
                             </NavItem>}
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
-                            {/* {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem> */}
-                            {ViewRMAccessibility && <NavItem>
+                            {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
+                                {/* {ViewRMAccessibility && <NavItem> */}
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
                                     // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })

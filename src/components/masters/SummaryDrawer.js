@@ -10,7 +10,8 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID } from '../../config/constants';
+import MachineRateListing from './machine-master/MachineRateListing';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -42,6 +43,7 @@ function SummaryDrawer(props) {
     const [isRMApproval, setIsRMApproval] = useState(false)
     const [isBOPApproval, setIsBOPApproval] = useState(false)
     const [isOperationApproval, setIsOperationApproval] = useState(false)
+    const [isMachineApproval, setIsMachineApproval] = useState(false)
 
 
     useEffect(() => {
@@ -59,6 +61,9 @@ function SummaryDrawer(props) {
             setIsBOPApproval(true)
         } else if (Number(props.masterId) === OPERATIONS_ID) {  // MASTER ID 3 FOR OPERATION
             setIsOperationApproval(true)
+
+        } else if (Number(props.masterId) === MACHINE_MASTER_ID) {  // MASTER ID 4 FOR MACHINE
+            setIsMachineApproval(true)
         }
 
 
@@ -103,6 +108,9 @@ function SummaryDrawer(props) {
 
                                 {isOperationApproval &&
                                     <OperationListing isMasterSummaryDrawer={true} />}
+
+                                {isMachineApproval &&
+                                    <MachineRateListing isMasterSummaryDrawer={true} />}
 
 
                             </Col>
