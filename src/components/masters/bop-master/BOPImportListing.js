@@ -438,7 +438,7 @@ class BOPImportListing extends Component {
                                     domLayout='autoHeight'
                                     floatingFilter={true}
                                     // columnDefs={c}
-                                    rowData={this.getFilterBOPData}
+                                    rowData={this.getFilterBOPData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
