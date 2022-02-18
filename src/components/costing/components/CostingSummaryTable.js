@@ -675,11 +675,17 @@ const CostingSummaryTable = (props) => {
   // We have used jsPDF to Generate PDF
   const generatorPDF = () => {
     setLoader(true)
-    var doc = new jsPDF('p', 'mm', [1300, 1300]);
+    var height = document.querySelector("#summaryPdf").clientHeight;
+    var width = document.querySelector("#summaryPdf").offsetWidth;
+    var doc = new jsPDF('p', "ex", [width, height])
+    // var doc = new jsPDF('l', "mm", [width, height])
+    // var doc = new jsPDF('l', "mm", [1244, 1700])
+    // var doc = new jsPDF('l', "pc", [width, height])  
     setPdfHead(true);
     setIcon(false)
     doc.html(document.querySelector("#summaryPdf"), {
       callback: function (pdf) {
+        pdf.deletePage(2)
         pdf.save("CostingSummary.pdf");
         setPdfHead(false);
         setIcon(true);
