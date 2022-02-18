@@ -4,9 +4,13 @@ import { Container, Row, Col, Table, Nav, NavItem, NavLink, TabContent, TabPane 
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import classnames from 'classnames';
 import LoaderCustom from '../../../common/LoaderCustom'
+import { EMPTY_GUID } from '../../../../config/constants';
+import Toaster from '../../../common/Toaster';
+import VariableMhrDrawer from '../Drawers/processCalculatorDrawer/VariableMhrDrawer'
+import { getProcessCalculation } from '../../actions/CostWorking'
 
 function ViewConversionCost(props) {
 
@@ -39,6 +43,11 @@ function ViewConversionCost(props) {
   const [partNumberList, setPartNumberList] = useState([])
   const [index, setIndex] = useState(0)
   const [loader, setLoader] = useState(false)
+  const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
+  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  const [calciData, setCalciData] = useState({})
+  const dispatch = useDispatch()
+
   useEffect(() => {
     if (IsShowToolCost) {
       setIsShowToolCost(IsShowToolCost)
@@ -96,6 +105,34 @@ function ViewConversionCost(props) {
   }
 
 
+  const getWeightData = (index) => {
+    setIndex(index)
+
+    if (costingProcessCost[index].ProcessCalculationId === '00000000-0000-0000-0000-000000000000') {
+      Toaster.warning('Data is not avaliabe for calculator')
+      return false
+    }
+
+    const tempData = viewCostingData[props.index]
+
+    setTimeout(() => {
+      dispatch(getProcessCalculation(tempData.costingId, costingProcessCost[index].ProcessId, costingProcessCost[index].ProcessCalculationId, tempData.technologyId, 'default', res => {
+        if (res && res.data && res.data.Data) {
+          const data = res.data.Data
+          setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
+          setWeightCalculatorDrawer(true)
+        }
+      }))
+    }, 300);
+
+
+  }
+
+  const closeWeightDrawer = (e = "") => {
+    setWeightCalculatorDrawer(false)
+  }
+
+
   const setPartDetail = (index, partNumber) => {
     setActiveTab(index)
     setIndex(index)
@@ -130,7 +167,7 @@ function ViewConversionCost(props) {
               <Col>
                 <div className={'header-wrapper left'}>
 
-                  <h3>{props.viewConversionCostData.isSurfaceTreatmentCost?`View Surface Treatment Cost:`:`View Conversion Cost:`}</h3>
+                  <h3>{props.viewConversionCostData.isSurfaceTreatmentCost ? `View Surface Treatment Cost:` : `View Conversion Cost:`}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -154,134 +191,61 @@ function ViewConversionCost(props) {
               </Nav>}
               <TabContent activeTab={activeTab} className={`${IsAssemblyCosting && partNumberList[0] !== null && partNumberList.length > 0 ? 'col-md-11' : 'col-md-12'}  view-conversion-container`}>
                 <TabPane tabId={index}>
-                 {!props.viewConversionCostData.isSurfaceTreatmentCost&&   // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
-                  <Row>
-                    <Col md="12">
-                      <div className="left-border">{'Process Cost:'}</div>
-                    </Col>
-                  </Row>
-                   }
-
-          {!props.viewConversionCostData.isSurfaceTreatmentCost&&      // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
-                  <Row>
-                    {/*PROCESS COST GRID */}
-                    <Col md="12">
-                      <Table className="table cr-brdr-main" size="sm">
-                        <thead>
-                          <tr>
-                            {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
-                            <th>{`Process Name`}</th>
-                            <th>{`Process Description`}</th>
-                            <th>{`Machine Name`}</th>
-                            <th>{`Tonnage`}</th>
-                            <th>{`UOM`}</th>
-                            <th>{`MHR`}</th>
-                            <th>{`Cycle Time`}</th>
-                            <th>{`Efficiency`}</th>
-                            <th>{`Cavity`}</th>
-                            <th>{`Quantity`}</th>
-                            <th className="costing-border-right">{`Net Cost`}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {costingProcessCost &&
-                            costingProcessCost.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                                  <td>{item.ProcessName ? item.ProcessName : '-'}</td>
-                                  <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
-                                  <td>{item.MachineName ? item.MachineName : '-'}</td>
-                                  <td>{item.Tonnage ? item.Tonnage : '-'}</td>
-                                  <td>{item.UOM ? item.UOM : '-'}</td>
-                                  <td>{item.MHR ? item.MHR : '-'}</td>
-                                  <td>{item.CycleTime ? item.CycleTime : '-'}</td>
-                                  <td>{item.Efficiency ? checkForDecimalAndNull(item.Efficiency, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
-                                  <td>{item.Cavity ? item.Cavity : '-'}</td>
-                                  <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
-                                  <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-                                  </td>
-                                </tr>
-                              )
-                            })}
-                          {costingProcessCost && costingProcessCost.length === 0 && (
-                            <tr>
-                              <td colSpan={12}>
-                                <NoContentFound title={EMPTY_DATA} />
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </Table>
-                    </Col>
-                  </Row>
-                  
-                        }
-
-          {!props.viewConversionCostData.isSurfaceTreatmentCost&&    <br />}
-                 
-                  {!props.viewConversionCostData.isSurfaceTreatmentCost&&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
-                               
-                  <div>
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost &&   // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
                     <Row>
-                      <Col md="8">
-                        <div className="left-border">{'Operation Cost:'}</div>
+                      <Col md="12">
+                        <div className="left-border">{'Process Cost:'}</div>
                       </Col>
                     </Row>
-                    <Row>
-                      {/*OPERATION COST GRID */}
+                  }
 
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost &&      // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                    <Row>
+                      {/*PROCESS COST GRID */}
                       <Col md="12">
-                        <Table className="table cr-brdr-main" size="sm">
+                        <Table className="table cr-brdr-main conversion-cost" size="sm">
                           <thead>
                             <tr>
                               {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
-                              <th>{`Operation Name`}</th>
-                              <th>{`Operation Code`}</th>
+                              <th>{`Process Name`}</th>
+                              <th>{`Process Description`}</th>
+                              <th>{`Machine Name`}</th>
+                              <th>{`Tonnage`}</th>
                               <th>{`UOM`}</th>
-                              <th>{`Rate`}</th>
+                              <th>{`MHR`}</th>
+                              <th>{`Calculator`}</th>
                               <th>{`Quantity`}</th>
-                              {/* make it configurable after deployment */}
-                              {/* <th>{`Labour Rate`}</th>
-                          <th>{`Labour Quantity`}</th> */}
                               <th className="costing-border-right">{`Net Cost`}</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {costingOperationCost &&
-                              costingOperationCost.map((item, index) => {
+                            { }
+                            {costingProcessCost &&
+                              costingProcessCost.map((item, index) => {
                                 return (
                                   <tr key={index}>
                                     {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                                    <td>
-                                      {item.OperationName ? item.OperationName : '-'}
-                                    </td>
-                                    <td>
-                                      {item.OperationCode ? item.OperationCode : '-'}
-                                    </td>
+                                    <td><div className='text-overflow' title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</div></td>
+                                    <td><div className='text-overflow' title={item.ProcessDescription}>{item.ProcessDescription ? item.ProcessDescription : '-'}</div></td>
+                                    <td>{item.MachineName ? item.MachineName : '-'}</td>
+                                    <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                                     <td>{item.UOM ? item.UOM : '-'}</td>
-                                    <td>{item.Rate ? item.Rate : '-'}</td>
-                                    <td>{item.Quantity ? item.Quantity : '-'}</td>
-                                    {/* <td>
-                                  {item.IsLabourRateExist
-                                    ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
-                                    : '-'}
-                                </td>
-                                <td>
-                                  {item.LabourQuantity
-                                    ? item.LabourQuantity
-                                    : '-'}
-                                </td> */}
-                                    {/* <td>{netCost(item.OperationCost)}</td> */}
-                                    <td>
-                                      {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                    <td>{item.MHR ? item.MHR : '-'}</td>
+                                    <td><button
+                                      className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                                      type={"button"}
+                                      disabled={item.ProcessCalculationId === EMPTY_GUID}
+                                      onClick={() => { getWeightData(index) }}
+                                    /></td>
+                                    <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+                                    <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                                     </td>
                                   </tr>
                                 )
                               })}
-                            {costingOperationCost && costingOperationCost.length === 0 && (
+                            {costingProcessCost && costingProcessCost.length === 0 && (
                               <tr>
-                                <td colSpan={9}>
+                                <td colSpan={12}>
                                   <NoContentFound title={EMPTY_DATA} />
                                 </td>
                               </tr>
@@ -290,53 +254,54 @@ function ViewConversionCost(props) {
                         </Table>
                       </Col>
                     </Row>
-                  </div>
-                    }
 
-                   {!props.viewConversionCostData.isSurfaceTreatmentCost&&    <br />} 
+                  }
 
-                  {!props.viewConversionCostData.isSurfaceTreatmentCost&&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
-                  <div>
-                    <Row>
-                      <Col md="8">
-                        <div className="left-border">{'Other Operation Cost:'}</div>
-                      </Col>
-                    </Row>
-                    <Row>
-                      {/*OTHER OPERATION COST GRID */}
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
 
-                      <Col md="12">
-                        <Table className="table cr-brdr-main" size="sm">
-                          <thead>
-                            <tr>
-                              {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
-                              <th>{`Operation Name`}</th>
-                              <th>{`Operation Code`}</th>
-                              <th>{`UOM`}</th>
-                              <th>{`Rate`}</th>
-                              <th>{`Quantity`}</th>
-                              {/* make it configurable after deployment */}
-                              {/* <th>{`Labour Rate`}</th>
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+
+                    <div>
+                      <Row>
+                        <Col md="8">
+                          <div className="left-border">{'Operation Cost:'}</div>
+                        </Col>
+                      </Row>
+                      <Row>
+                        {/*OPERATION COST GRID */}
+
+                        <Col md="12">
+                          <Table className="table cr-brdr-main" size="sm">
+                            <thead>
+                              <tr>
+                                {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
+                                <th>{`Operation Name`}</th>
+                                <th>{`Operation Code`}</th>
+                                <th>{`UOM`}</th>
+                                <th>{`Rate`}</th>
+                                <th>{`Quantity`}</th>
+                                {/* make it configurable after deployment */}
+                                {/* <th>{`Labour Rate`}</th>
                           <th>{`Labour Quantity`}</th> */}
-                              <th className="costing-border-right">{`Net Cost`}</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {othercostingOperationCost &&
-                              othercostingOperationCost.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    {IsAssemblyCosting && partNumberList.length === 0 &&<td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                                    <td>
-                                      {item.OtherOperationName ? item.OtherOperationName : '-'}
-                                    </td>
-                                    <td>
-                                      {item.OtherOperationCode ? item.OtherOperationCode : '-'}
-                                    </td>
-                                    <td>{item.UOM ? item.UOM : '-'}</td>
-                                    <td>{item.Rate ? item.Rate : '-'}</td>
-                                    <td>{item.Quantity ? item.Quantity : '-'}</td>
-                                    {/* <td>
+                                <th className="costing-border-right">{`Net Cost`}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {costingOperationCost &&
+                                costingOperationCost.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                      <td>
+                                        {item.OperationName ? item.OperationName : '-'}
+                                      </td>
+                                      <td>
+                                        {item.OperationCode ? item.OperationCode : '-'}
+                                      </td>
+                                      <td>{item.UOM ? item.UOM : '-'}</td>
+                                      <td>{item.Rate ? item.Rate : '-'}</td>
+                                      <td>{item.Quantity ? item.Quantity : '-'}</td>
+                                      {/* <td>
                                   {item.IsLabourRateExist
                                     ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
                                     : '-'}
@@ -346,28 +311,102 @@ function ViewConversionCost(props) {
                                     ? item.LabourQuantity
                                     : '-'}
                                 </td> */}
-                                    {/* <td>{netCost(item.OperationCost)}</td> */}
-                                    <td>
-                                      {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-                                    </td>
-                                  </tr>
-                                )
-                              })}
-                            {othercostingOperationCost && othercostingOperationCost.length === 0 && (
-                              <tr>
-                                <td colSpan={9}>
-                                  <NoContentFound title={EMPTY_DATA} />
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </Table>
-                      </Col>
-                    </Row>
-                  </div>
-}
+                                      {/* <td>{netCost(item.OperationCost)}</td> */}
+                                      <td>
+                                        {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                      </td>
+                                    </tr>
+                                  )
+                                })}
+                              {costingOperationCost && costingOperationCost.length === 0 && (
+                                <tr>
+                                  <td colSpan={9}>
+                                    <NoContentFound title={EMPTY_DATA} />
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </Table>
+                        </Col>
+                      </Row>
+                    </div>
+                  }
 
-         {!props.viewConversionCostData.isSurfaceTreatmentCost&&    <br />}
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
+
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETCONVERSION COST EYE BUTTON IS CLICKED
+                    <div>
+                      <Row>
+                        <Col md="8">
+                          <div className="left-border">{'Other Operation Cost:'}</div>
+                        </Col>
+                      </Row>
+                      <Row>
+                        {/*OTHER OPERATION COST GRID */}
+
+                        <Col md="12">
+                          <Table className="table cr-brdr-main" size="sm">
+                            <thead>
+                              <tr>
+                                {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
+                                <th>{`Operation Name`}</th>
+                                <th>{`Operation Code`}</th>
+                                <th>{`UOM`}</th>
+                                <th>{`Rate`}</th>
+                                <th>{`Quantity`}</th>
+                                {/* make it configurable after deployment */}
+                                {/* <th>{`Labour Rate`}</th>
+                          <th>{`Labour Quantity`}</th> */}
+                                <th className="costing-border-right">{`Net Cost`}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {othercostingOperationCost &&
+                                othercostingOperationCost.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                      <td>
+                                        {item.OtherOperationName ? item.OtherOperationName : '-'}
+                                      </td>
+                                      <td>
+                                        {item.OtherOperationCode ? item.OtherOperationCode : '-'}
+                                      </td>
+                                      <td>{item.UOM ? item.UOM : '-'}</td>
+                                      <td>{item.Rate ? item.Rate : '-'}</td>
+                                      <td>{item.Quantity ? item.Quantity : '-'}</td>
+                                      {/* <td>
+                                  {item.IsLabourRateExist
+                                    ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
+                                    : '-'}
+                                </td>
+                                <td>
+                                  {item.LabourQuantity
+                                    ? item.LabourQuantity
+                                    : '-'}
+                                </td> */}
+                                      {/* <td>{netCost(item.OperationCost)}</td> */}
+                                      <td>
+                                        {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                      </td>
+                                    </tr>
+                                  )
+                                })}
+                              {othercostingOperationCost && othercostingOperationCost.length === 0 && (
+                                <tr>
+                                  <td colSpan={9}>
+                                    <NoContentFound title={EMPTY_DATA} />
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </Table>
+                        </Col>
+                      </Row>
+                    </div>
+                  }
+
+                  {!props.viewConversionCostData.isSurfaceTreatmentCost && <br />}
                   {isShowToolCost && (
                     <div>
                       <Row>
@@ -422,105 +461,105 @@ function ViewConversionCost(props) {
                   )}
 
 
-             {props.viewConversionCostData.isSurfaceTreatmentCost&&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
-                  <Row>
-                    <Col md="12">
-                      <div className="left-border">{'Surface Treatment Cost:'}</div>
-                    </Col>
-                  </Row>
-                 }
-                 {props.viewConversionCostData.isSurfaceTreatmentCost&&
-                  <Row>
-                    {/*PROCESS COST GRID */}
-                    <Col md="12">
-                      <Table className="table cr-brdr-main" size="sm">
-                        <thead>
-                          <tr>
-                            {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
-                            <th>{`Operation Name`}</th>
-                            <th>{`Surface Area`}</th>
-                            <th>{`UOM`}</th>
-                            <th>{`Rate/UOM`}</th>
-                            <th className="costing-border-right">{`Cost`}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {surfaceTreatmentCost &&
-                            surfaceTreatmentCost.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  {IsAssemblyCosting && partNumberList.length === 0 &&<td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                                  <td>{item.OperationName ? item.OperationName : '-'}</td>
-                                  <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
-                                  <td>{item.UOM ? item.UOM : '-'}</td>
-                                  <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-                                  <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-
-                                </tr>
-                              )
-                            })}
-                          {surfaceTreatmentCost && surfaceTreatmentCost.length === 0 && (
+                  {props.viewConversionCostData.isSurfaceTreatmentCost &&                   // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
+                    <Row>
+                      <Col md="12">
+                        <div className="left-border">{'Surface Treatment Cost:'}</div>
+                      </Col>
+                    </Row>
+                  }
+                  {props.viewConversionCostData.isSurfaceTreatmentCost &&
+                    <Row>
+                      {/*PROCESS COST GRID */}
+                      <Col md="12">
+                        <Table className="table cr-brdr-main" size="sm">
+                          <thead>
                             <tr>
-                              <td colSpan={12}>
-                                <NoContentFound title={EMPTY_DATA} />
-                              </td>
+                              {partNumberList.length === 0 && IsAssemblyCosting && <th>{`Part No`}</th>}
+                              <th>{`Operation Name`}</th>
+                              <th>{`Surface Area`}</th>
+                              <th>{`UOM`}</th>
+                              <th>{`Rate/UOM`}</th>
+                              <th className="costing-border-right">{`Cost`}</th>
                             </tr>
-                          )}
-                        </tbody>
-                      </Table>
-                    </Col>
-                  </Row>
-}
+                          </thead>
+                          <tbody>
+                            {surfaceTreatmentCost &&
+                              surfaceTreatmentCost.map((item, index) => {
+                                return (
+                                  <tr key={index}>
+                                    {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
+                                    <td><div className='text-overflow' title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</div></td>
+                                    <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
+                                    <td>{item.UOM ? item.UOM : '-'}</td>
+                                    <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                    <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+
+                                  </tr>
+                                )
+                              })}
+                            {surfaceTreatmentCost && surfaceTreatmentCost.length === 0 && (
+                              <tr>
+                                <td colSpan={12}>
+                                  <NoContentFound title={EMPTY_DATA} />
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </Table>
+                      </Col>
+                    </Row>
+                  }
                   <br />
 
-              {props.viewConversionCostData.isSurfaceTreatmentCost&&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
-                 <Row>
-                    <Col md="12">
-                      <div className="left-border">{'Extra Cost:'}</div>
-                    </Col>
-                  </Row>
-              }
-             {props.viewConversionCostData.isSurfaceTreatmentCost&&
-                  <Row>
-                    {/*TRANSPORTATION COST GRID */}
-                    <Col md="12">
-                      <Table className="table cr-brdr-main" size="sm">
-                        <thead>
-                          <tr>
-                            {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
-                            <th>{`Type`}</th>
-                            <th>{`Rate`}</th>
-                            <th>{`Quantity`}</th>
-                            <th className="costing-border-right">{`Cost`}</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-
-                          {transportCost &&
-                            transportCost.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
-                                  <td>{item.UOM ? item.UOM : '-'}</td>
-                                  <td>{item.Rate ? item.Rate : '-'}</td>
-                                  <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-                                  <td>{item.TransportationCost ? checkForDecimalAndNull(item.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-
-                                </tr>
-                              )
-                            })}
-                          {transportCost && transportCost.length === 0 && (
+                  {props.viewConversionCostData.isSurfaceTreatmentCost &&    // SHOW ONLY WHEN NETSURFACETREATMENT COST EYE BUTTON IS CLICKED
+                    <Row>
+                      <Col md="12">
+                        <div className="left-border">{'Extra Cost:'}</div>
+                      </Col>
+                    </Row>
+                  }
+                  {props.viewConversionCostData.isSurfaceTreatmentCost &&
+                    <Row>
+                      {/*TRANSPORTATION COST GRID */}
+                      <Col md="12">
+                        <Table className="table cr-brdr-main" size="sm">
+                          <thead>
                             <tr>
-                              <td colSpan={12}>
-                                <NoContentFound title={EMPTY_DATA} />
-                              </td>
+                              {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
+                              <th>{`Type`}</th>
+                              <th>{`Rate`}</th>
+                              <th>{`Quantity`}</th>
+                              <th className="costing-border-right">{`Cost`}</th>
                             </tr>
-                          )}
-                        </tbody>
-                      </Table>
-                    </Col>
-                  </Row>
-                 }
+                          </thead>
+                          <tbody>
+
+                            {transportCost &&
+                              transportCost.map((item, index) => {
+                                return (
+                                  <tr key={index}>
+                                    {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
+                                    <td>{item.UOM ? item.UOM : '-'}</td>
+                                    <td>{item.Rate ? item.Rate : '-'}</td>
+                                    <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                                    <td>{item.TransportationCost ? checkForDecimalAndNull(item.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+
+                                  </tr>
+                                )
+                              })}
+                            {transportCost && transportCost.length === 0 && (
+                              <tr>
+                                <td colSpan={12}>
+                                  <NoContentFound title={EMPTY_DATA} />
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </Table>
+                      </Col>
+                    </Row>
+                  }
 
                 </TabPane>
 
@@ -528,6 +567,18 @@ function ViewConversionCost(props) {
               </TabContent>
 
             </div>
+
+
+            {weightCalculatorDrawer && (
+              <VariableMhrDrawer
+                technology={viewCostingData[props.index].technologyId}
+                calculatorData={calciData}
+                isOpen={weightCalculatorDrawer}
+                CostingViewMode={true}
+                closeDrawer={closeWeightDrawer}
+                anchor={'right'}
+              />
+            )}
           </div>
         </Container>
       </Drawer>
