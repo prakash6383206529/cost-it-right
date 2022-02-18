@@ -69,7 +69,7 @@ function OverheadSimulation(props) {
         let tempBOPCC = 0
         let tempRMCCBOP = 0
         let tempElse = 0
-        let stopflow = 0
+        let stopflow = false
 
         let tempObjVal = new Set([]);
 
@@ -191,8 +191,9 @@ function OverheadSimulation(props) {
                     return 'foo';
             }
         })
+
         // SWITCH TO CHECK EVERY FIELD IS FILLED ACCPRDING TO THE APPLICABILITY CHECK
-        list && list.map((item) => {
+        list && list.map((item, index) => {
             tempRM = 0
             tempCC = 0
             tempBOP = 0
@@ -288,72 +289,34 @@ function OverheadSimulation(props) {
                 default:
                     return 'foo';
             }
-            // if all 0 then temp 0         // IF THERE ARE CHANGES THEN 0        !== 0 -> no changes
-            if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0) {
-                temp = temp + 1
-            } else {
-                tempElse = tempElse + 1
-            }
 
-            // if (tempRM === 1 || tempCC === 1 || tempBOP === 1 || tempRMCC === 1 || tempRMBOP === 1 || tempBOPCC === 1 || tempRMCCBOP === 1) {
-            //     stopflow = stopflow + 1
-            // } else {
-            // }
+            if (Number(tempRM) === 1) {
+                Toaster.warning(`Please fill RM`);
+                stopflow = true
+            } else if (Number(tempCC) === 1) {
+                Toaster.warning(`Please fill CC`);
+                stopflow = true
+            } else if (Number(tempBOP) === 1) {
+                Toaster.warning(`Please fill BOP`);
+                stopflow = true
+            } else if (Number(tempRMCC) === 1) {
+                Toaster.warning(`Please fill both RM and CC or Overhead Percentage`);
+                stopflow = true
+            } else if (Number(tempRMBOP) === 1) {
+                Toaster.warning(`Please fill both RM and BOP or Overhead Percentage`);
+                stopflow = true
+            } else if (Number(tempBOPCC) === 1) {
+                Toaster.warning(`Please fill both BOP and CC or Overhead Percentage`);
+                stopflow = true
+            } else if (Number(tempRMCCBOP) === 1) {
+                Toaster.warning(`Please fill all values RM, CC and BOP or Overhead Percentage`);
+                stopflow = true
+            }
 
         })
-
-        if ((Number(temp) <= Number(list.length))) {
-            if (tempRM !== 0) {
-                Toaster.warning('Please fill RM');
-                return false
-            } else if (tempCC !== 0) {
-                Toaster.warning('Please fill CC');
-                return false
-            } else if (tempBOP !== 0) {
-                Toaster.warning('Please fill BOM');
-                return false
-            } else if (tempRMCC !== 0) {
-                Toaster.warning('Please fill both RM and CC or Profit Percentage');
-                return false
-            } else if (tempRMBOP !== 0) {
-                Toaster.warning('Please fill both RM and BOP or Profit Percentage');
-                return false
-            } else if (tempBOPCC !== 0) {
-                Toaster.warning('Please fill both BOP and CC or Profit Percentage');
-                return false
-            } else if (tempRMCCBOP !== 0) {
-                Toaster.warning('Please fill all values RM, CC and BOP or Profit Percentage');
-                return false
-            }
+        if (stopflow) {
+            return false
         }
-
-        // temp means no changes
-        // if ((Number(temp) < Number(list.length))) {
-        // console.log('Number(stopflow) !== 0: ', Number(stopflow) !== 0);
-        // if (stopflow >= 1) {
-        //     if (Number(tempRM) !== 0) {
-        //         Toaster.warning('Please fill RM');
-        //         return false
-        //     } else if (tempCC === 0) {
-        //         Toaster.warning('Please fill CC');
-        //         return false
-        //     } else if (tempBOP === 0) {
-        //         Toaster.warning('Please fill BOM');
-        //         return false
-        //     } else if (tempRMCC === 0) {
-        //         Toaster.warning('Please fill both RM and CC or Overhead Percentage');
-        //         return false
-        //     } else if (tempRMBOP === 0) {
-        //         Toaster.warning('Please fill both RM and BOP or Overhead Percentage');
-        //         return false
-        //     } else if (tempBOPCC === 0) {
-        //         Toaster.warning('Please fill both BOP and CC or Overhead Percentage');
-        //         return false
-        //     } else if (tempRMCCBOP === 0) {
-        //         Toaster.warning('Please fill all values RM, CC and BOP or Overhead Percentage');
-        //         return false
-        //     }
-        // }
 
         //CHECK IF THERE IS NO CHANGE IN THE TABLE
         list && list.map((li) => {
@@ -721,7 +684,8 @@ function OverheadSimulation(props) {
     const EditableCallbackForBOP = (props) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        const index = props?.node?.rowIndex
+        switch (list[index]?.NewOverheadApplicabilityType) {
             case 'RM':
                 value = false
                 return value
@@ -774,7 +738,8 @@ function OverheadSimulation(props) {
     const EditableCallbackForCC = (props) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        const index = props?.node?.rowIndex
+        switch (list[index]?.NewOverheadApplicabilityType) {
             case 'RM':
                 value = false
                 return value
@@ -826,7 +791,8 @@ function OverheadSimulation(props) {
     const EditableCallbackForRM = (props) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        const index = props?.node?.rowIndex
+        switch (list[index]?.NewOverheadApplicabilityType) {
             case 'RM':
                 value = true
 
@@ -875,10 +841,11 @@ function OverheadSimulation(props) {
         }
     }
 
-    const EditableCallbackForOP = (props, index) => {
+    const EditableCallbackForOP = (props) => {
         const rowData = props?.data;
         let value = false
-        switch (list[0].NewOverheadApplicabilityType) {
+        const index = props?.node?.rowIndex
+        switch (list[index]?.NewOverheadApplicabilityType) {
             case 'RM':
                 value = false
                 return value
@@ -938,68 +905,74 @@ function OverheadSimulation(props) {
     }
 
     const onCellValueChanged = (props) => {
+        const indexFromProps = props?.node?.rowIndex
         if ((props?.value === 'BOP' || props?.value === 'BOP + CC' || props?.value === 'CC' || props?.value === 'Fixed' || props?.value === 'RM'
             || props?.value === 'RM + BOP' || props?.value === 'RM + CC' || props?.value === 'RM + CC + BOP') && props?.value !== undefined) {
-            list && list.map((item) => {
-                item.NewOverheadApplicabilityType = props?.value
-                switch (list[0].NewOverheadApplicabilityType) {
-                    case 'RM':
-                        item.NewOverheadBOPPercentage = ''
-                        item.NewOverheadMachiningCCPercentage = ''
-                        item.NewOverheadPercentage = ''
+            list && list.map((item, index) => {
+                // item.NewOverheadApplicabilityType = props?.value
+                if (Number(indexFromProps) === Number(index)) {
+                    switch (item.NewOverheadApplicabilityType) {
+                        case 'RM':
+                            item.NewOverheadBOPPercentage = ''
+                            item.NewOverheadMachiningCCPercentage = ''
+                            item.NewOverheadPercentage = ''
 
-                        break;
-                    case 'CC':
-                        item.NewOverheadBOPPercentage = ''
-                        item.NewOverheadRMPercentage = ''
-                        item.NewOverheadPercentage = ''
+                            break;
+                        case 'CC':
+                            item.NewOverheadBOPPercentage = ''
+                            item.NewOverheadRMPercentage = ''
+                            item.NewOverheadPercentage = ''
 
-                        break;
-                    case 'BOP':
-                        item.NewOverheadRMPercentage = ''
-                        item.NewOverheadMachiningCCPercentage = ''
-                        item.NewOverheadPercentage = ''
+                            break;
+                        case 'BOP':
+                            item.NewOverheadRMPercentage = ''
+                            item.NewOverheadMachiningCCPercentage = ''
+                            item.NewOverheadPercentage = ''
 
-                        break;
+                            break;
 
-                    case 'Fixed':
-                        item.NewOverheadBOPPercentage = ''
-                        item.NewOverheadRMPercentage = ''
-                        item.NewOverheadMachiningCCPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        case 'Fixed':
+                            item.NewOverheadBOPPercentage = ''
+                            item.NewOverheadRMPercentage = ''
+                            item.NewOverheadMachiningCCPercentage = ''
+                            item.NewOverheadPercentage = ''
 
-                        break;
+                            break;
 
-                    case 'RM + CC':
-                        item.NewOverheadBOPPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        case 'RM + CC':
+                            item.NewOverheadBOPPercentage = ''
+                            item.NewOverheadPercentage = ''
 
-                        break;
+                            break;
 
-                    case 'RM + BOP':
-                        item.NewOverheadMachiningCCPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        case 'RM + BOP':
+                            item.NewOverheadMachiningCCPercentage = ''
+                            item.NewOverheadPercentage = ''
 
-                        break;
+                            break;
 
-                    case 'BOP + CC':
-                        item.NewOverheadRMPercentage = ''
-                        item.NewOverheadPercentage = ''
+                        case 'BOP + CC':
+                            item.NewOverheadRMPercentage = ''
+                            item.NewOverheadPercentage = ''
 
-                        break;
+                            break;
 
-                    case 'RM + CC + BOP':
-                        item.NewOverheadPercentage = ''
+                        case 'RM + CC + BOP':
+                            item.NewOverheadPercentage = ''
 
-                        break;
+                            break;
 
-                    default:
-                        return 'foo';
+                        default:
+                            return 'foo';
 
+                    }
+
+                    // HERE | PUT
+
+                    return null
                 }
-                return null
-            })
 
+            })
         }
         gridApi.redrawRows()
         setApplicabilityForGrid(props.value)
