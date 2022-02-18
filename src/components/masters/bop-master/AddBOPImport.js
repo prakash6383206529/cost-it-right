@@ -486,17 +486,19 @@ class AddBOPImport extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    // COMMENTED FOR MINDA
-    // const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0; 
-    // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    // const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
-    // this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
-    // this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    // THIS CALCULATION IS FOR BASE
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
-    this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+    this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
+
+    // THIS CALCULATION IS FOR MINDA
+    // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
+    // const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
+    // this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
+    // this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
