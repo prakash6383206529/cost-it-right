@@ -385,12 +385,7 @@ function RMSimulation(props) {
     }
 
     const onCellValueChanged = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (props?.column?.userProvidedColDef?.field === "NewScrapRate") {
-            if ((row.NewBasicRate === undefined ? row.BasicRate : row.NewBasicRate) < row.NewScrapRate) {
-                return false
-            }
-        }
+
     }
 
     const frameworkComponents = {
