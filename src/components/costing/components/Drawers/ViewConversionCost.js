@@ -189,8 +189,8 @@ function ViewConversionCost(props) {
                               return (
                                 <tr key={index}>
                                   {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                                  <td>{item.ProcessName ? item.ProcessName : '-'}</td>
-                                  <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
+                                  <td><div className='text-overflow' title={item.ProcessName}>{item.ProcessName ? item.ProcessName : '-'}</div></td>
+                                  <td><div className='text-overflow' title={item.ProcessDescription}>{item.ProcessDescription ? item.ProcessDescription : '-'}</div></td>
                                   <td>{item.MachineName ? item.MachineName : '-'}</td>
                                   <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                                   <td>{item.UOM ? item.UOM : '-'}</td>
@@ -253,9 +253,7 @@ function ViewConversionCost(props) {
                                 return (
                                   <tr key={index}>
                                     {IsAssemblyCosting && partNumberList.length === 0 && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                                    <td>
-                                      {item.OperationName ? item.OperationName : '-'}
-                                    </td>
+                                    <td><div className='text-overflow' title={item.OperationName}>{item.OperationName ? item.OperationName : '-'}</div></td>
                                     <td>
                                       {item.OperationCode ? item.OperationCode : '-'}
                                     </td>
