@@ -280,7 +280,7 @@ function OverheadSimulation(props) {
 
                             (item.NewOverheadBOPPercentage === null || item.NewOverheadBOPPercentage === undefined
                                 || item.NewOverheadBOPPercentage === '' || item.NewOverheadBOPPercentage === ' '))) {
-                        // agar condition fali  //no aage
+                        // if condition failed  //stop here
                         tempBOPCC = 1
                     }
                     break;
