@@ -46,6 +46,7 @@ class AddOperation extends Component {
       UOM: [],
       isDateChange: false,
       IsSendForApproval: false,
+      isFinalUserEdit: false,
 
 
       isSurfaceTreatment: false,
@@ -351,6 +352,7 @@ class AddOperation extends Component {
 
             this.setState({
               isEditFlag: true,
+              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
               isLoader: false,
               IsVendor: Data.IsVendor,
               selectedTechnology: technologyArray,
@@ -574,30 +576,27 @@ class AddOperation extends Component {
         return { ...file, ContextId: OperationId }
       })
 
-      if (isDateChange) {
-        let updateData = {
-          EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
-          OperationId: OperationId,
-          UnitOfMeasurementId: UOM.value,
-          Rate: values.Rate,
-          Technology: technologyArray,
-          Remark: remarks,
-          Attachements: updatedFiles,
-          LoggedInUserId: loggedInUserId(),
-          IsForcefulUpdated: true
-        }
-        // if (this.state.isEditFlag) {
-        // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
-        //   this.cancel()
-        //   return false
-        // }
-        this.setState({ showPopup: true, updatedObj: updateData })
-        // }
-        this.setState({ setDisable: true })
-      } else {
-        Toaster.warning('Please update the effective date')
-        this.setState({ setDisable: false })
+
+      let updateData = {
+        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
+        OperationId: OperationId,
+        UnitOfMeasurementId: UOM.value,
+        Rate: values.Rate,
+        Technology: technologyArray,
+        Remark: remarks,
+        Attachements: updatedFiles,
+        LoggedInUserId: loggedInUserId(),
+        IsForcefulUpdated: true
       }
+      // if (this.state.isEditFlag) {
+      // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
+      //   this.cancel()
+      //   return false
+      // }
+      this.setState({ showPopup: true, updatedObj: updateData })
+      // }
+      this.setState({ setDisable: true })
+
 
     } else {/** Add new detail for creating operation master **/
 
@@ -961,7 +960,7 @@ class AddOperation extends Component {
                             }}
                             component={renderDatePicker}
                             className=" "
-                            disabled={isViewMode}
+                            disabled={isViewMode || this.state.isFinalUserEdit}
                             customClassName=" withBorder"
                           />
                         </div>
@@ -1090,7 +1089,7 @@ class AddOperation extends Component {
                         (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
                           <button type="submit"
                             class="user-btn approval-btn save-btn mr5"
-                            disabled={this.state.isFinalApprovar}
+                            disabled={isViewMode}
                           >
                             <div className="send-for-approval"></div>
                             {'Send For Approval'}

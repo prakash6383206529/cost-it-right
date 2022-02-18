@@ -78,6 +78,7 @@ class AddRMImport extends Component {
       IsVendor: false,
       files: [],
       errors: [],
+      isFinalUserEdit: false,
 
       isRMDrawerOpen: false,
       isOpenGrade: false,
@@ -455,6 +456,7 @@ class AddRMImport extends Component {
                 const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
                 this.setState({
+                  isFinalUserEdit: this.state.isFinalApprovar ? true : false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -987,22 +989,12 @@ class AddRMImport extends Component {
         IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
         RawMaterialCode: values.Code
       }
-      // if (isEditFlag && this.state.isFinalApprovar) {                                              //DONT DELETE COMMENTED CODE BELOW
+      //DONT DELETE COMMENTED CODE BELOW
 
-      if (isDateChange) {
 
-        // if (isSourceChange) {
 
-        //   this.props.updateRMImportAPI(requestData, (res) => {
-        //     this.setState({ setDisable: false })
-        //     if (res?.data?.Result) {
-        //       Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-        //       this.clearForm()
+      if (isSourceChange) {
 
-        //     }
-        //   })
-        // }
-        // if (isDateChange) {
         this.props.updateRMImportAPI(requestData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
@@ -1011,27 +1003,34 @@ class AddRMImport extends Component {
 
           }
         })
-
-        // } else {
-        //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-        //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-        //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-        //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-        //     this.cancel()
-        //     return false
-        //   }
-        //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-        //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-        //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
-        //     this.setState({ showPopup: true, updatedObj: requestData })
-        //   }
-
-        // }
-
-      } else {
-        Toaster.warning('Please update the effective date')
-        this.setState({ setDisable: false })
       }
+      // if (isDateChange) {
+      // this.props.updateRMImportAPI(requestData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+      //     this.clearForm()
+
+      //   }
+      // })
+
+      else {
+        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+          String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+            values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+          this.cancel()
+          return false
+        }
+        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+          Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+            values.cutOffPrice === undefined) || uploadAttachements === false)) {
+          this.setState({ showPopup: true, updatedObj: requestData })
+        }
+
+      }
+
+
 
 
     } else {
@@ -1525,7 +1524,7 @@ class AddRMImport extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || this.state.isFinalUserEdit}
 
                                 />
                               </div>

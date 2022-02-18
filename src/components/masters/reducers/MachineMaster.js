@@ -11,6 +11,7 @@ import {
     GET_MACHINE_TYPE_SELECTLIST,
     GET_PROCESSES_LIST_SUCCESS,
     GET_MACHINE_LIST_SUCCESS,
+    GET_MACHINE_APPROVAL_LIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -97,7 +98,16 @@ export default function MachineReducer(state = initialState, action) {
                 error: true,
                 machineSelectList: action.payload
             };
+        case GET_MACHINE_APPROVAL_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                machineApprovalList: action.payload
+            };
         default:
             return state;
     }
 }
+
+
