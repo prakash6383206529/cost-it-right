@@ -6933,3 +6933,26 @@ left: 17rem;
   overflow-x: hidden;
 }
 // <-----END Loader center--->
+ 
+  //<-----------START Zoom in zoom out header UI destroy prevent css------->
+  @media screen and (max-width:$belowLaptop) {
+    .fixed-top {
+      min-width: fit-content;
+      flex-wrap: nowrap;
+      padding-right: 0 !important;
+      .navbar-collapse {
+        .navbar-nav.ml-auto {
+          flex-direction: row;
+          justify-content: end;
+        }
+      }
+    }
+    .header-secondry {
+      min-width: max-content;
+      .navbar-nav {
+        flex-direction: row;
+        min-width: fit-content;
+      }
+    } 
+ }
+  //<-----------END Zoom in zoom out header UI destroy prevent css------->
