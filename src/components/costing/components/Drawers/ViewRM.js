@@ -119,7 +119,7 @@ function ViewRM(props) {
                     return (
                       <tr key={index}>
                         {isAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
-                        <td>{item.RMName}</td>
+                        <td><div className='text-overflow' title={item.RMName}>{item.RMName}</div></td>
                         <td>{checkForDecimalAndNull(item.RMRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapRecoveryPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
