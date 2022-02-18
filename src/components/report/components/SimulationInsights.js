@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
-import {  AgGridReact } from 'ag-grid-react';
+import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
@@ -24,16 +24,16 @@ function SimulationInsights(props) {
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [loader, setLoader] = useState(true)
   const [simulationInsightDownloadExcel, setSimulationInsightDownloadExcel] = useState([])
-  
+
 
   useEffect(() => {
     setLoader(true)
-    dispatch(getSimulationInsightReport(res => {  
+    dispatch(getSimulationInsightReport(res => {
       const data = res.data.DataList
       setSimulationInsight(data[0].Data)
 
       let arr = [];
-      let simulationInsightExcel =[];
+      let simulationInsightExcel = [];
 
       data[0].TableHeads && data[0].TableHeads.map(ele => {
         if (ele.field === "DisplayStatus") {
@@ -46,13 +46,13 @@ function SimulationInsights(props) {
           }
 
           let obj1 = {
-            label :ele.headerName,
-            value: ele.field 
+            label: ele.headerName,
+            value: ele.field
           }
           arr.push(obj)
           simulationInsightExcel.push(obj1)
 
-        } else if(ele.field==="SimulationStatus") {     
+        } else if (ele.field === "SimulationStatus") {
           let obj = {
             field: "SimulationStatus",
             headerName: "Simulation Status",
@@ -62,16 +62,16 @@ function SimulationInsights(props) {
           }
 
           let obj1 = {
-            label :ele.headerName,
-            value: ele.field 
+            label: ele.headerName,
+            value: ele.field
           }
-          arr.push(obj) 
+          arr.push(obj)
           simulationInsightExcel.push(obj1)
-        }     
+        }
         else {
           let obj1 = {
-            label :ele.headerName,
-            value: ele.field 
+            label: ele.headerName,
+            value: ele.field
           }
           arr.push(ele)
           simulationInsightExcel.push(obj1)
@@ -84,25 +84,32 @@ function SimulationInsights(props) {
       setSimulationInsightDownloadExcel(simulationInsightExcel)
 
       setLoader(false)
-    
+
     }))
   }, [])
 
 
   const onBtExport = () => {
-    
+
     return returnExcelColumn(simulationInsightDownloadExcel, simulationInsightsReport)
-};
+  };
 
 
-const returnExcelColumn = (data = [], TempData) => {
-  
-  return (
+  const returnExcelColumn = (data = [], TempData) => {
+
+    return (
 
       <ExcelSheet data={TempData} name={'Simulation Insights'}>
-          {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
-}
+  }
+
+
+
+  const resetState = () => {
+    gridColumnApi.resetColumnState()
+    gridApi.setFilterModel(null);
+  }
 
 
   const onGridReady = (params) => {
@@ -147,8 +154,11 @@ const returnExcelColumn = (data = [], TempData) => {
           <div className="d-flex justify-content-end bd-highlight excel-btn w100">
             <div>
               <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
-              {onBtExport()}          
+                {onBtExport()}
               </ExcelFile>
+              <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                <div className="refresh mr-0"></div>
+              </button>
             </div>
           </div>
         </Col>
