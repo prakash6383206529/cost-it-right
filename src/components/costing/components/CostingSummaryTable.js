@@ -163,6 +163,7 @@ const CostingSummaryTable = (props) => {
   const viewConversionCost = (index) => {
     setIsViewConversionCost(true)
     setViewBOP(false)
+    setIndex(index)
     if (index !== -1) {
       let data = viewCostingData[index].netConversionCostView
       let netTransportationCostView = viewCostingData[index].netTransportationCostView
@@ -674,11 +675,17 @@ const CostingSummaryTable = (props) => {
   // We have used jsPDF to Generate PDF
   const generatorPDF = () => {
     setLoader(true)
-    var doc = new jsPDF('p', 'mm', [1300, 1300]);
+    var height = document.querySelector("#summaryPdf").clientHeight;
+    var width = document.querySelector("#summaryPdf").offsetWidth;
+    var doc = new jsPDF('p', "ex", [width, height])
+    // var doc = new jsPDF('l', "mm", [width, height])
+    // var doc = new jsPDF('l', "mm", [1244, 1700])
+    // var doc = new jsPDF('l', "pc", [width, height])  
     setPdfHead(true);
     setIcon(false)
     doc.html(document.querySelector("#summaryPdf"), {
       callback: function (pdf) {
+        pdf.deletePage(2)
         pdf.save("CostingSummary.pdf");
         setPdfHead(false);
         setIcon(true);
@@ -1128,7 +1135,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : viewCostingData[0].nOverheadProfit < viewCostingData[1].nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
-                      <th>Net Overhead & Profits</th>
+                      <th>Net Overheads & Profits</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
@@ -1509,6 +1516,7 @@ const CostingSummaryTable = (props) => {
             viewConversionCostData={viewConversionCostData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
+            index={index}
           />
         )
       }
