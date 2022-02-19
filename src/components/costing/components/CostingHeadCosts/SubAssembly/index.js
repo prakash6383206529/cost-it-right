@@ -7,9 +7,11 @@ import { getRMCCTabData, saveAssemblyBOPHandlingCharge, } from '../../../actions
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { ViewCostingContext } from '../../CostingDetails';
+import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
+  console.log('item of subassembly: ', item);
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
@@ -28,7 +30,8 @@ function AssemblyPart(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        AssemCostingId: costData.CostingId
+        AssemCostingId: costData.CostingId,
+        subAsmCostingId:props.subAssembId !== null ? props.subAssembId:EMPTY_GUID
       }
       dispatch(getRMCCTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
@@ -84,6 +87,7 @@ function AssemblyPart(props) {
         setOperationCost={props.setOperationCost}
         setOtherOperationCost={props.setOtherOperationCost}
         setToolCost={props.setToolCost}
+        subAssembId={item.CostingId}
       />
     }
   })
@@ -106,6 +110,7 @@ function AssemblyPart(props) {
       setToolCost={props.setToolCost}
       setAssemblyOperationCost={props.setAssemblyOperationCost}
       setAssemblyToolCost={props.setAssemblyToolCost}
+      subAssembId={item.CostingId}
     />
   })
 
