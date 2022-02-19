@@ -41,7 +41,8 @@ function TabRMCC(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        AssemCostingId: costData.CostingId
+        AssemCostingId: costData.CostingId,
+        subAsmCostingId:costData.CostingId
       }
       dispatch(getRMCCTabData(data, true, (res) => {   
         dispatch(setAllCostingInArray(res.data.DataList[0],false))
@@ -1830,6 +1831,7 @@ function TabRMCC(props) {
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
     if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false  && checkIsDataChange === true) {
+      console.log('ComponentItemData: ', ComponentItemData);
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -1849,11 +1851,12 @@ function TabRMCC(props) {
         "CostingNumber": costData.CostingNumber,                         //ROOT    
         "PartNumber": ComponentItemData.PartNumber,                      //ROOT
 
-        "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        // "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-
+        "AssemblyCostingId":ComponentItemData.AssemblyCostingId,
+        "SubAssemblyCostingId":ComponentItemData.SubAssemblyCostingId,
         "PlantId": costData.PlantId,
         "VendorId": costData.VendorId,
         "VendorCode": costData.VendorCode,
@@ -2093,6 +2096,7 @@ function TabRMCC(props) {
                                       setToolCost={setToolCost}
                                       setAssemblyOperationCost={setAssemblyOperationCost}
                                       setAssemblyToolCost={setAssemblyToolCost}
+                                      subAssembId={item.CostingId}
                                     />
                                   </>
                                 )

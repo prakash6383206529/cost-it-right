@@ -163,6 +163,7 @@ const CostingSummaryTable = (props) => {
   const viewConversionCost = (index) => {
     setIsViewConversionCost(true)
     setViewBOP(false)
+    setIndex(index)
     if (index !== -1) {
       let data = viewCostingData[index].netConversionCostView
       let netTransportationCostView = viewCostingData[index].netTransportationCostView
@@ -674,11 +675,17 @@ const CostingSummaryTable = (props) => {
   // We have used jsPDF to Generate PDF
   const generatorPDF = () => {
     setLoader(true)
-    var doc = new jsPDF('p', 'mm', [1300, 1300]);
+    var height = document.querySelector("#summaryPdf").clientHeight;
+    var width = document.querySelector("#summaryPdf").offsetWidth;
+    var doc = new jsPDF('p', "ex", [width, height])
+    // var doc = new jsPDF('l', "mm", [width, height])
+    // var doc = new jsPDF('l', "mm", [1244, 1700])
+    // var doc = new jsPDF('l', "pc", [width, height])  
     setPdfHead(true);
     setIcon(false)
     doc.html(document.querySelector("#summaryPdf"), {
       callback: function (pdf) {
+        pdf.deletePage(2)
         pdf.save("CostingSummary.pdf");
         setPdfHead(false);
         setIcon(true);
@@ -910,15 +917,15 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
                       <th>Net RM Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{!simulationDrawer && !(Number(master)===Number(RMDOMESTIC)||Number(master)===Number(RMIMPORT)) ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                              <span>{!simulationDrawer && !(Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (!simulationDrawer && !(Number(master)===Number(RMDOMESTIC)||Number(master)===Number(RMIMPORT)) && icons) &&
+                                (!simulationDrawer && data.CostingHeading !== VARIANCE && !(Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -931,7 +938,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netBOP > viewCostingData[1].netBOP ? 'green-row' : viewCostingData[0].netBOP < viewCostingData[1].netBOP ? 'red-row' : '' : '-'}`}>
                       <th>Net BOP Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
@@ -977,16 +984,16 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                    <tr class="background-light-blue">
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nConvCost > viewCostingData[1].nConvCost ? 'green-row' : viewCostingData[0].nConvCost < viewCostingData[1].nConvCost ? 'red-row' : '' : '-'}`}>
                       <th>Net Conversion Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                             
-                              <span>{!simulationDrawer && !(Number(master)===Number(OPERATIONS)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice): '-'}</span>
+
+                              <span>{!simulationDrawer && !(Number(master) === Number(OPERATIONS)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && !simulationDrawer&&!(Number(master)===Number(OPERATIONS)) && icons) &&
+                                (data.CostingHeading !== VARIANCE && !simulationDrawer && !(Number(master) === Number(OPERATIONS)) && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1026,16 +1033,16 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
 
-                    <tr class="background-light-blue">
+                    <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nsTreamnt > viewCostingData[1].nsTreamnt ? 'green-row' : viewCostingData[0].nsTreamnt < viewCostingData[1].nsTreamnt ? 'red-row' : '' : '-'}`}>
                       <th>Net Surface Treatment Cost</th>
 
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             < td >
-                              <span>{ !simulationDrawer && !(Number(master)===Number(SURFACETREATMENT)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) :'-'}</span>
+                              <span>{!simulationDrawer && !(Number(master) === Number(SURFACETREATMENT)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && icons && !(Number(master)===Number(SURFACETREATMENT))) &&
+                                (data.CostingHeading !== VARIANCE && icons && !(Number(master) === Number(SURFACETREATMENT))) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1128,7 +1135,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
                     <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : viewCostingData[0].nOverheadProfit < viewCostingData[1].nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
-                      <th>Net Overhead & Profits</th>
+                      <th>Net Overheads & Profits</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
@@ -1274,7 +1281,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-
+                    { }
                     <tr className='border-right'>
                       <td width={"20%"}>
                         <span class="d-block small-grey-text">
@@ -1300,8 +1307,8 @@ const CostingSummaryTable = (props) => {
                                   <span className="d-inline-block small-grey-text">
                                     {data.CostingHeading !== VARIANCE ? data.otherDiscountValue.dicountType : ''}
                                   </span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? data.otherDiscountValue.discountApplicablity : '-'}</span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.discountPercentValue !== 0 ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.dicountType === "Percentage" ? data.otherDiscountValue.discountApplicablity : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.otherDiscountValue.dicountType === "Percentage" ? checkForDecimalAndNull(data.otherDiscountValue.discountPercentValue, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                                   <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
 
@@ -1312,7 +1319,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-
+                    { }
                     <tr className='border-right'>
                       <td>
                         <span class="d-block small-grey-text"> Any Other Cost</span>
@@ -1334,8 +1341,8 @@ const CostingSummaryTable = (props) => {
                                   <span className="d-inline-block small-grey-text">
                                     {data.CostingHeading !== VARIANCE ? data.anyOtherCostType : ''}
                                   </span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? data.anyOtherCostApplicablity : '-'}</span>
-                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostPercent !== 0 ? checkForDecimalAndNull(data.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostType === "Percentage" ? data.anyOtherCostApplicablity : '-'}</span>
+                                  <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE && data.anyOtherCostType === "Percentage" ? checkForDecimalAndNull(data.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
                                   <span className="d-inline-block small-grey-text">{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice) : ''}</span>
                                 </div>
                               </td>
@@ -1412,11 +1419,11 @@ const CostingSummaryTable = (props) => {
                                         const fileURL = `${FILE_URL}${withOutTild}`
                                         return (
                                           <td>
-                                          <div className={"single-attachment images"}>
-                                            <a href={fileURL} target="_blank" rel="noreferrer">
-                                              {f.OriginalFileName}
-                                            </a>
-                                          </div>
+                                            <div className={"single-attachment images"}>
+                                              <a href={fileURL} target="_blank" rel="noreferrer">
+                                                {f.OriginalFileName}
+                                              </a>
+                                            </div>
                                           </td>
                                         )
                                       })}
@@ -1509,6 +1516,7 @@ const CostingSummaryTable = (props) => {
             viewConversionCostData={viewConversionCostData}
             closeDrawer={closeViewDrawer}
             anchor={'right'}
+            index={index}
           />
         )
       }

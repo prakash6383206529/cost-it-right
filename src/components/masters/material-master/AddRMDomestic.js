@@ -74,6 +74,7 @@ class AddRMDomestic extends Component {
       effectiveDate: '',
       minEffectiveDate: '',
       remarks: '',
+      isFinalUserEdit: false,
 
       isShowForm: false,
       IsVendor: false,
@@ -151,6 +152,7 @@ class AddRMDomestic extends Component {
       }
 
     })
+
 
   }
 
@@ -445,6 +447,7 @@ class AddRMDomestic extends Component {
                 this.setState({ minEffectiveDate: Data.EffectiveDate })
 
                 this.setState({
+                  isFinalUserEdit: this.state.isFinalApprovar ? true : false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -918,11 +921,13 @@ class AddRMDomestic extends Component {
         Id: FileId,
         DeletedBy: loggedInUserId(),
       }
-      this.props.fileDeleteRMDomestic(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
-        let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      // this.props.fileDeleteRMDomestic(deleteData, (res) => {
+      //   Toaster.success('File has been deleted successfully.')
+      //   let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      //   this.setState({ files: tempArr })
+      // })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
       let tempArr = this.state.files.filter(
@@ -1008,6 +1013,9 @@ class AddRMDomestic extends Component {
     }
     if (isEditFlag && this.state.isFinalApprovar) {
       this.setState({ updatedObj: requestData })
+
+      //DONT DELETE COMMENTED CODE BELOW
+
       if (isSourceChange) {
         this.props.updateRMDomesticAPI(requestData, (res) => {
           this.setState({ setDisable: false })
@@ -1015,20 +1023,19 @@ class AddRMDomestic extends Component {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
 
-
           }
         })
       }
-      if (isDateChange) {
-        this.props.updateRMDomesticAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
+      // if (isDateChange) {
+      // this.props.updateRMDomesticAPI(requestData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+      //     this.clearForm()
 
-          }
-        })
-      } else {
+      //   }
+      // })
+      else {
 
         if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
           && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
@@ -1043,6 +1050,7 @@ class AddRMDomestic extends Component {
             values.cutOffPrice === undefined) || uploadAttachements === false)) {
           this.setState({ showPopup: true, updatedObj: requestData })
         }
+
       }
     }
 
@@ -1626,7 +1634,7 @@ class AddRMDomestic extends Component {
                                 className="form-control"
 
 
-                                disabled={isViewFlag}
+                                disabled={isViewFlag || this.state.isFinalUserEdit}
 
                               />
                             </div>

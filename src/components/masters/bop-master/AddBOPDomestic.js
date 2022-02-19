@@ -62,10 +62,11 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
 
       sourceLocation: [],
-
+      IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
+      isFinalUserEdit: false,
 
       effectiveDate: '',
       minEffectiveDate: '',
@@ -224,6 +225,7 @@ class AddBOPDomestic extends Component {
 
             this.setState({
               isEditFlag: true,
+              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
               // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
@@ -448,10 +450,11 @@ class AddBOPDomestic extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    // const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0; // MAY BE USED LATER IF USED IN CALCULATION
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0; // MAY BE USED LATER IF USED IN CALCULATION
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    // const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) //COMMENTED FOR MINDA
-    const NetLandedCost = checkForNull(BasicRate) //THIS IS ONLY FOR MINDA
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
+    //COMMENTED FOR MINDA
+    // const NetLandedCost = checkForNull(BasicRate) //THIS IS ONLY FOR MINDA
     this.setState({
       NetLandedCost: NetLandedCost
     })
@@ -618,7 +621,8 @@ class AddBOPDomestic extends Component {
       return false;
     }
 
-    if (!isDateChange && this.state.isFinalApprovar && isEditFlag) {
+    if (isEditFlag && this.state.isFinalApprovar) {
+
 
 
       if (DataToCheck.IsVendor) {
@@ -638,6 +642,7 @@ class AddBOPDomestic extends Component {
         return { ...file, ContextId: BOPID }
       })
       let requestData = {
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         BoughtOutPartId: BOPID,
         Source: values.Source,
         SourceLocation: sourceLocation.value ? sourceLocation.value : '',
@@ -659,8 +664,15 @@ class AddBOPDomestic extends Component {
 
     } else {
 
+
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
       this.setState({ setDisable: true })
       const formData = {
+        IsSendForApproval: this.state.IsSendForApproval,
         BoughtOutPartId: BOPID,
         IsVendor: IsVendor,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
@@ -1060,7 +1072,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode}
+                                disabled={isViewMode || this.state.isFinalUserEdit}
                               //minDate={moment()}
                               />
                             </div>
