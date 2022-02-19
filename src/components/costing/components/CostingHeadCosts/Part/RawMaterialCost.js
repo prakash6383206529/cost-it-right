@@ -22,6 +22,7 @@ import 'reactjs-popup/dist/index.css';
 let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
+  
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset, setError } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -57,6 +58,7 @@ function RawMaterialCost(props) {
 
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = Number(costData.TechnologyId) === Number(FORGINING) ? true:false
+
 
   const dispatch = useDispatch()
 

@@ -392,7 +392,7 @@ function ProcessCost(props) {
     }
 
     setTabData(tempArr)
-    props.setOtherOperationCost(tempArr, props.index, item)
+    // props.setOtherOperationCost(tempArr, props.index, item)
   }
 
   /**
