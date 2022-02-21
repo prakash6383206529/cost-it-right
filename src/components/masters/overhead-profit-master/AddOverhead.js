@@ -890,7 +890,6 @@ class AddOverhead extends Component {
                               value={this.state.vendorName}
                               noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
                               isDisabled={isEditFlag ? true : false} />
-<<<<<<< HEAD
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </Col>
                             <Col md="4" >
@@ -915,12 +914,6 @@ class AddOverhead extends Component {
                               />
                             </Col>
                           </>
-=======
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
-
-                          </Col>
->>>>>>> 85e3dddb1 (Add overhead & profit save button working now)
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
                           <Col md="4">
