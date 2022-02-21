@@ -208,6 +208,7 @@ function Simulation(props) {
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
             //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
+
             default:
                 return <div className="empty-table-paecholder" />;
         }
@@ -552,16 +553,17 @@ function Simulation(props) {
             //     }
             //     Data && Data.forEach((element, index) => {
             //         if (index !== 0) {
-            //             if (element.IsVendor !== Data[index - 1].IsVendor) {
-            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
-            //                 setEditWarning(true);
-            //                 flag = false
-            //             }
-            //             if (element.Vendor !== Data[index - 1].Vendor) {
+            //             if (element.VendorName !== Data[index - 1].VendorName) {
             //                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
             //                 setEditWarning(true);
             //                 vendorFlag = false
             //             }
+            //             // UNCOMMENT THIS IN MINDA ONLY
+            //             // if (element.Plant !== Data[index - 1].Plant) {
+            //             //     (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //             //     setEditWarning(true);
+            //             //     vendorFlag = false
+            //             // }
             //             if (element.OverheadApplicabilityType !== Data[index - 1].OverheadApplicabilityType) {
             //                 (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
             //                 setEditWarning(true);
@@ -569,17 +571,17 @@ function Simulation(props) {
             //             }
             //         }
             //     });
-            // if (flag === true && vendorFlag === true && plantFlag === true) {
-            //     setEditWarning(false)
-            // } if (flag === false && vendorFlag === false) {
-            //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
-            // } if (vendorFlag === false && plantFlag === false) {
-            //     (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
-            // } if (flag === false && plantFlag === false) {
-            //     (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
-            // } if (flag === false && vendorFlag === false && plantFlag === false) {
-            //     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
-            // }
+            //     if (flag === true && vendorFlag === true && plantFlag === true) {
+            //         setEditWarning(false)
+            //     } if (flag === false && vendorFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+            //     } if (vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+            //     } if (flag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+            //     } if (flag === false && vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+            //     }
             //     break;
             // case BOPIMPORT:
             //     if (Data.length === 0) {
