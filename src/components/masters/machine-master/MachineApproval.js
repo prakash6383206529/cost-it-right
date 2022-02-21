@@ -9,6 +9,10 @@ import { EMPTY_DATA, MACHINE_MASTER_ID } from '../../../config/constants';
 import { DRAFT } from '../../../config/constants';
 import { getMachineApprovalList } from '../actions/MachineMaster'
 import SummaryDrawer from '../SummaryDrawer';
+import { loggedInUserId, userDetails } from '../../../helper'
+import { masterFinalLevelUser } from '../actions/Material'
+import MasterSendForApproval from '../MasterSendForApproval';
+import Toaster from '../../common/Toaster'
 
 
 
@@ -24,6 +28,8 @@ function MachineApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const [loader, setLoader] = useState(true)
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
+    const [isFinalApprover, setIsFinalApprover] = useState(false)
+    const [approvalDrawer, setApprovalDrawer] = useState(false)
     const dispatch = useDispatch()
     const { machineApprovalList } = useSelector((state) => state.machine)
 
@@ -31,6 +37,20 @@ function MachineApproval(props) {
 
     useEffect(() => {
         getTableData()
+
+        let obj = {
+            MasterId: MACHINE_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+
+        dispatch(masterFinalLevelUser(obj, (res) => {
+            if (res.data.Result) {
+                setIsFinalApprover(res.data.Data.IsFinalApprovar)
+            }
+        }))
+
 
     }, [])
 
@@ -114,6 +134,22 @@ function MachineApproval(props) {
 
     const sendForApproval = () => {
 
+
+        if (selectedRowData.length > 0) {
+            setApprovalDrawer(true)
+        }
+        else {
+            Toaster.warning('Please select draft token to send for approval.')
+        }
+
+    }
+
+
+    const closeApprovalDrawer = (e = '') => {
+        setApprovalDrawer(false)
+        setLoader(true)
+        getTableData()
+
     }
 
 
@@ -166,7 +202,7 @@ function MachineApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                            <button title="send-for-approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
@@ -244,6 +280,19 @@ function MachineApproval(props) {
                     approvalData={approvalData}
                     anchor={'bottom'}
                     masterId={MACHINE_MASTER_ID}
+                />
+            }
+            {
+                approvalDrawer &&
+                <MasterSendForApproval
+                    isOpen={approvalDrawer}
+                    closeDrawer={closeApprovalDrawer}
+                    isEditFlag={false}
+                    masterId={MACHINE_MASTER_ID}
+                    type={'Sender'}
+                    anchor={"right"}
+                    isBulkUpload={true}
+                    approvalData={selectedRowData}
                 />
             }
 
