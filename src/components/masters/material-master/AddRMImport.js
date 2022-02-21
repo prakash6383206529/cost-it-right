@@ -1240,7 +1240,7 @@ class AddRMImport extends Component {
                               </div>
                               {!isEditFlag && (
                                 <div
-                                  onClick={this.rmToggler}
+                                  onClick={this.vendorToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
@@ -1391,19 +1391,24 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                           <Col md="4" className='mb-4'>
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
-                            <AsyncSelect
-                              name="DestinationSupplierId"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
-                              onChange={(e) => this.handleVendorName(e)}
-                              value={this.state.vendorName}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={isEditFlag || isViewFlag} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-
+                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
+                           <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="fullinput-icon">
+                           <AsyncSelect 
+                           name="DestinationSupplierId" 
+                           ref={this.myRef} 
+                           key={this.state.updateAsyncDropdown} 
+                           loadOptions={promiseOptions} 
+                           onChange={(e) => this.handleVendorName(e)} 
+                           value={this.state.vendorName} 
+                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                           isDisabled={isEditFlag || isViewFlag} />
+                            
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                           </div>
+                           {!isEditFlag && (<div   onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>  )}
+                           </div>
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">

@@ -591,7 +591,7 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[postiveNumber, maxLength10, maxLength12, checkWhiteSpaces]}
+                                            validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                             maxLength={12}
                                             customClassName={'withBorder'}
                                             disabled={isViewMode}

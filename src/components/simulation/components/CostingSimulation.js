@@ -361,7 +361,7 @@ function CostingSimulation(props) {
         }
         setId(id)
         setPricesDetail({
-            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldSurfaceTreatmentCost: data.OldSurfaceTreatmentCost, NewSurfaceTreatmentCost: data.NewSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
