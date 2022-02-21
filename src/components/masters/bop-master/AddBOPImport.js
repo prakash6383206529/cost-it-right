@@ -786,8 +786,8 @@ class AddBOPImport extends Component {
 
 
       } else {
-        this.props.reset()
         this.props.createBOPImport(formData, (res) => {
+          this.setState({ setDisable: false })
           if (res.data.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
