@@ -2863,13 +2863,13 @@ table{
   color: #3D4465;
 }
 .add-min-height{
-  .btn-secondary,.btn-primary, .user-btn{
+  .btn-secondary,.btn-primary, .user-btn, .add-cancel-btn{
     height: 40px;
   }
   .reset-btn{
     height: 40px;
   }
-  .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: 27px;}
+  .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30, .add-cancel-btn.mt30{margin-top: 27px;}
 }
 button:disabled{pointer-events: none;}
 
@@ -4802,13 +4802,13 @@ body{
     padding: calc(0.5rem * 80 / 100) calc(0.75rem * 80 / 100);
   }
   .add-min-height{
-    .btn-secondary,.btn-primary,.user-btn{
+    .btn-secondary,.btn-primary,.user-btn, .add-cancel-btn{
       height: calc(40px * 80 / 100);
     }
     .reset-btn{
       height: calc(40px * 80 / 100);
     }
-    .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: calc(27px * 80 / 100);}
+    .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30, .add-cancel-btn.mt30{margin-top: calc(27px * 80 / 100);}
   }
 
   // simulation page
@@ -4997,7 +4997,7 @@ body{
           margin-bottom: 8px;
         }
       }
-      .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary{
+      .edit-btn,.btn-danger,.btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary, .add-cancel-btn{
         font-size: calc(14px * 80 / 100);
         padding-left: calc(15px * 80 / 100);
         padding-right: calc(15px * 80 / 100);
@@ -6599,7 +6599,7 @@ left: 17rem;
 .loader_container.simulation-history-loader {
   background-color: rgba(255, 255, 255, 0.97);
 }
-.reset-btn-container .user-btn {
+.reset-btn-container .user-btn, .add-cancel-btn {
  height: auto;
 }
 .width33 {width: 33.33%;}
@@ -6689,10 +6689,10 @@ left: 17rem;
       }
     }
     &.vendor-input {
-      left: 17px;
-      right: 16px;
-      top: 31px;
-      bottom: 42px;
+      left: 16px;
+      right: 52px;
+      top: 32px;
+      bottom: 37px;
     .loaderinner {
       margin-right: -14px;
       @-moz-document url-prefix() {      //firefox css
@@ -6723,18 +6723,38 @@ left: 17rem;
     }
     &.zero-based {
       left: 16px;
-      bottom: 1px;
-      top: 29px;
+      bottom: 19px;
+      top: 32px;
+      right: 49px;
+      &.col-4-loader {
+        right: 51px;
+      }
     }
     &.vendor-based {
       left: 16px;
-      top: 29px;
-      bottom: 15px;
+      top: 32px;
+      bottom: 18px;
+      right: 49px;
+      &.col-4-loader {
+        bottom: 19px;
+        right: 51px;
+      }
     }
     &.switch-vendor {
       left: 16px;
-      top: 30px;
-      bottom: 55px;
+      top: 32px;
+      bottom: 51px;
+      right: 51px;
+    }
+    &.masters-vendor-loader {
+      left: 16px;
+      right: 16px;
+      top: 29px;
+      bottom: 39px;
+    }
+    &.interest-rate-vendor-loader {
+      @extend .masters-vendor-loader;
+      bottom: 1px;
     }
 }
 // <------END input field loader----->
@@ -6882,11 +6902,7 @@ left: 17rem;
   grid-template-columns: 25% 35% 20% 20%;
 }
 // <-----END compare costing table--->
-.inputwith-icon.async-select {
 
-  min-width:45px;
-  
-  }
 // <-----START Loader center--->
 .max-loader-height {
   max-height: 32vh;
@@ -6932,3 +6948,6 @@ left: 17rem;
     }
   }
 }
+.inputwith-icon.async-select {
+  min-height:45px !important;
+  }
