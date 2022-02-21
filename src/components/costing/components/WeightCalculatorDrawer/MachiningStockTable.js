@@ -414,7 +414,7 @@ function MachiningStockTable(props) {
         </Col>
 
        
-        <Col md="2">
+        <Col md="3">
                       <TextFieldHookForm
                         label={`Description`}
                         name={'description'}
@@ -441,7 +441,7 @@ function MachiningStockTable(props) {
                     </Col>
                     {!irregularMachiningStock&&
                     <>
-                    <Col md="3">
+                    <Col md="2">
                     <TextFieldHookForm
                       label={`Length(mm)`}
                       name={'Length'}
@@ -543,7 +543,7 @@ function MachiningStockTable(props) {
                    {squareMachiningStock&&
                   <>
                   
-                <Col md="3">
+                <Col md="2">
                     <TextFieldHookForm
                       label={`Number`}
                       name={'No'}
@@ -574,7 +574,7 @@ function MachiningStockTable(props) {
                   </Col>
                   
                 
-                  <Col md="3">
+                  <Col md="2">
                   <TextFieldHookForm
                     label={`Height(mm)`}
                     name={'Height'}
@@ -607,7 +607,7 @@ function MachiningStockTable(props) {
                 {rectangularMachiningStock&&
                 <>
                 
-                <Col md="3">
+                <Col md="2">
                     <TextFieldHookForm
                       label={`Number`}
                       name={'No'}
@@ -639,7 +639,7 @@ function MachiningStockTable(props) {
                  
                   
                 
-                <Col md="3">
+                <Col md="2">
                     <TextFieldHookForm
                       label={`Breadth (mm)`}
                       name={'Breadth'}
@@ -668,7 +668,7 @@ function MachiningStockTable(props) {
                       disabled={props.CostingViewMode || diableMachiningStock ? true : false}
                     />
                   </Col>
-                  <Col md="3">
+                  <Col md="2">
                   <TextFieldHookForm
                     label={`Height(mm)`}
                     name={'Height'}
@@ -879,7 +879,7 @@ function MachiningStockTable(props) {
                 })}
               {tableData && tableData.length === 0 && (
                 <tr>
-                  <td colspan="4">
+                  <td colspan="15">
                     <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>
@@ -895,7 +895,7 @@ function MachiningStockTable(props) {
               //   {checkForDecimalAndNull(burningWeight, trim)}
               // </span>} */}
             <span className="w-50 d-inline-block">
-              {`Total Machining Stock:`}
+              {`Total Machining Stock: `}
               {checkForDecimalAndNull(calculateTotalMachiningStock(tableData),trim)}
             </span>
           </div>

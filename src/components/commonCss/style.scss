@@ -6921,3 +6921,14 @@ left: 17rem;
   }
 }
   //<-----------END Zoom in zoom out header UI destroy prevent css------->
+.calculator-drawer {
+  .drawer-wrapper {
+    width: 1140px;
+    table {
+      th {
+        vertical-align: middle;
+        font-size: 15px;
+      }
+    }
+  }
+}
