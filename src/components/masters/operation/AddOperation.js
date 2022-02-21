@@ -644,8 +644,9 @@ class AddOperation extends Component {
           Toaster.warning('Please update the effective date')
         }
       } else {
-        this.props.reset()
+
         this.props.createOperationsAPI(formData, (res) => {
+          this.setState({ setDisable: false })
           if (res.data.Result) {
             Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
             //this.clearForm()
@@ -848,29 +849,29 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {this.state.IsVendor && (
-                       <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                        {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
-                        <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
-                           <div className="fullinput-icon">
-                        <AsyncSelect 
-                        name="vendorName" 
-                        ref={this.myRef} 
-                        key={this.state.updateAsyncDropdown} 
-                        loadOptions={promiseOptions} 
-                        onChange={(e) => this.handleVendorName(e)} 
-                        value={this.state.vendorName} 
-                        noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                        isDisabled={isEditFlag ? true : false} />
-                        {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                        </div>
-                           {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
-                           </div>
-                       </Col>
+                        <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                            <div className="fullinput-icon">
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handleVendorName(e)}
+                                value={this.state.vendorName}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                isDisabled={isEditFlag ? true : false} />
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            </div>
+                            {!isEditFlag && (
+                              <div
+                                onClick={this.vendorToggler}
+                                className={"plus-icon-square  right"}
+                              ></div>
+                            )}
+                          </div>
+                        </Col>
 
                       )}
                       {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
