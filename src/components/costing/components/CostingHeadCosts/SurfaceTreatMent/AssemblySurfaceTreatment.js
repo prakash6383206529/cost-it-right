@@ -126,7 +126,7 @@ function AssemblySurfaceTreatment(props) {
           </td>
         </div>
         <td>
-          {!CostingViewMode && ((item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
+          {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
             <button
               type="button"
               className={'user-btn surface-treatment-btn'}
@@ -147,7 +147,7 @@ function AssemblySurfaceTreatment(props) {
                 // DrawerToggle()
               }}
             >
-              <div className={'plus'}></div>AAAA T.</button>)
+              <div className={'plus'}></div> Surface T.</button>
           }
         </td>
       </tr>
