@@ -159,8 +159,10 @@ function HotForging(props) {
   const calculateInputLength = (netLossWeight = 0) =>{
     
     const BilletDiameter = checkForDecimalAndNull(getValues('BilletDiameter'), getConfigurationKey().NoOfDecimalForInputOutput)
-    const forgedWeight = checkForDecimalAndNull(getValues('forgedWeight'))   
+    const forgedWeight = forgeWeightValue
+    console.log(forgeWeightValue,'forgeWeightValue');
     const InputLength = (forgedWeight + netLossWeight)/(0.7857 * BilletDiameter * BilletDiameter * rmRowData.Density/1000000)
+    console.log('InputLength: ', InputLength);
     setDataSend(prevState => ({ ...prevState, InputLength: InputLength })) 
     setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
     setLostWeight(netLossWeight)
@@ -403,7 +405,7 @@ const calculateNetRmCostComponent = () =>{
       value: 10,
     },
   ]
-  const LossMachine=(value)=>{
+  const LossMachineFunction=(value)=>{
     setDiableMachiningStock(value)
   }
 console.log(diableMachiningStock,'diableMachiningStock');
@@ -498,7 +500,9 @@ console.log(diableMachiningStock,'diableMachiningStock');
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                   rmRowData={props.rmRowData}
-                  LossMachine ={LossMachine}
+                  LossMachineFunction ={LossMachineFunction}
+                  isLossStandard = {true}
+
                 />
                 
               </div>
