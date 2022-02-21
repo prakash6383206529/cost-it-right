@@ -63,12 +63,13 @@ function AddAssemblyOperation(props) {
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
+
       "CostingDetailId": "00000000-0000-0000-0000-000000000000",
       "PartId": item.PartId,
       "PartNumber": item.PartNumber,
       "PartTypeId": item.PartTypeId,
       "Type": item.PartType,
-
+      "SubAssemblyCostingId":item.SubAssemblyCostingId,
       "PlantId": costData.PlantId,
       "VendorId": costData.VendorId,
       "VendorCode": costData.VendorCode,
