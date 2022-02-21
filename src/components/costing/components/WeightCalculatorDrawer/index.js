@@ -135,12 +135,12 @@ function OpenWeightCalculator(props) {
   return (
     <div>
       <Drawer
-        className="weight-drawer-costing"
+        className="weight-drawer-costing calculator-drawer"
         anchor={props.anchor}
         open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
-        <Container>
+        <Container className='px-0'>
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>

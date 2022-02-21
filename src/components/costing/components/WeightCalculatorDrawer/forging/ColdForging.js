@@ -408,18 +408,17 @@ const calculateNetRmCostComponent = () =>{
   const LossMachineFunction=(value)=>{
     setDiableMachiningStock(value)
   }
-console.log(diableMachiningStock,'diableMachiningStock');
   return (
     <Fragment>
       <Row>
         <Col>
           <form noValidate className="form">
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>
                   
                   <Col md="12">
-                    <Row className={'mt15'}>
+                    <Row>
                       <Col md="3">
                         <TextFieldHookForm
                           label={`Finished Weight(kg)`}
@@ -464,7 +463,7 @@ console.log(diableMachiningStock,'diableMachiningStock');
                   </Col>
                 </Row>
                
-                <Col md="3">
+                <Col md="3" className='mt10 px-0'>
                   <TextFieldHookForm
                       label={`Forged Weight (Kg)`}
                       name={'forgedWeight'}
@@ -507,7 +506,7 @@ console.log(diableMachiningStock,'diableMachiningStock');
                 
               </div>
             </Col>
-            <Row>
+            <Row className='mt20'>
             <Col md="3">
                     <TextFieldHookForm
                       label={`Billet Diameter(mm)`}
@@ -667,9 +666,7 @@ console.log(diableMachiningStock,'diableMachiningStock');
                       disabled={true}
                     />
                   </Col>
- 
-                  </Row>
-                  <Row>
+
                   <Col md="3">
                   <TextFieldHookForm
                       label={`Total Input Weight (Kg)`}
