@@ -793,6 +793,8 @@ export function isRMDivisorApplicable(technology) {
   return allowedTechnologyForRMDivisor.includes(technology);
 }
 
+
+
 export function findLostWeight(tableVal) {
   let sum = 0
   tableVal && tableVal.map(item => {
@@ -802,6 +804,7 @@ export function findLostWeight(tableVal) {
       sum = sum + item.LossWeight
     }
   })
+  
   return sum
 }
 
