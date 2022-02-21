@@ -23,6 +23,7 @@ import {
   CHECK_IS_TOOL_DATA_CHANGE,
   CHECK_IS_DISCOUNT_DATA_CHANGE,
   SET_NEW_ARRAY_FOR_COSTING,
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2353,5 +2354,18 @@ export function isDiscountDataChange(isDataChange) {
   }
 }
 
+/**
+ * @method:setForgingCalculatorMachiningStockSection
+ * @description: Used for storing part no from costing summary
+ * @param {*} data
+ */
+ export function setForgingCalculatorMachiningStockSection(data) {
+  return (dispatch) => {
+    dispatch({
+      type: FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
+      payload: data,
+    })
+  }
+}
 
 
