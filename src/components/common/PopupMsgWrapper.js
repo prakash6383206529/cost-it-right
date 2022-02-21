@@ -9,8 +9,8 @@ function PopupMsgWrapper(props) {
       fade={false}
       toggle={props.closePopUp}
       isOpen={props.isOpen}
-      className="popup-container"
-    >
+      className={`popup-container ${props.customClass}`}
+    > 
       <ModalHeader toggle={props.closePopUp} className="pl-5">
         {props.header ? props.header : 'Confirm'}
       </ModalHeader>
