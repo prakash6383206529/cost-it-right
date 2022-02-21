@@ -26,10 +26,11 @@ class User extends Component {
       ViewRoleAccessibility: false,
       ViewDepartmentAccessibility: false,
       ViewLevelAccessibility: false,
+      count: 0
     }
   }
 
-  componentDidMount() {
+  topAndLeftMenuFunction = () => {
     let ModuleId = reactLocalStorage.get('ModuleId');
     let leftMenuFromAPI = []
     const { topAndLeftMenuData } = this.props;
@@ -61,6 +62,18 @@ class User extends Component {
           activeTab: userData && userData.View ? '1' : (roleData && roleData.View ? '2' : (departmentData && departmentData.View ? '3' : '4'))
         })
       }
+    }
+  }
+
+  componentDidMount() {
+    this.topAndLeftMenuFunction()
+  }
+
+
+  componentDidUpdate() {
+    if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {
+      this.setState({ count: 1 })
+      this.topAndLeftMenuFunction()
     }
   }
 

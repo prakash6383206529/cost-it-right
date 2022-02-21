@@ -128,25 +128,28 @@ class BOMViewer extends Component {
           return null;
         })
 
+
+
+
+        setTimeout(() => {
+
+          tempArray && tempArray.map((el, i) => {
+            if (el.Level === 'L1') {
+              outputArray.push(el.Input)
+            }
+            return null;
+          })
+
+          //GET INDEX OF L0 LEVEL OBJECTS
+          let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
+
+          let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
+
+          this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
+
+        }, 200)
       })
 
-      setTimeout(() => {
-
-        tempArray && tempArray.map((el, i) => {
-          if (el.Level === 'L1') {
-            outputArray.push(el.Input)
-          }
-          return null;
-        })
-
-        //GET INDEX OF L0 LEVEL OBJECTS
-        let isAvailable = flowpoints.findIndex(el => el.Level === 'L0')
-
-        let flowPointstempArray = Object.assign([...flowpoints], { [isAvailable]: Object.assign({}, flowpoints[isAvailable], { Outputs: [...flowpoints[isAvailable].Outputs, ...outputArray], }) })
-
-        this.setState({ flowpoints: [...flowPointstempArray, ...tempArray] })
-
-      }, 200)
 
     } else if (Object.keys(childData).length > 0) {
 
@@ -402,7 +405,7 @@ class BOMViewer extends Component {
                           // }}
                           >
                             <div className="flowpoint-header">
-                              <h3>{el.PartNumber}</h3>
+                              <h3 title={el.PartNumber}>{el.PartNumber}</h3>
                               <span className="flowpoint-header-level">
                                 {el.Level}
                               </span>
@@ -432,10 +435,10 @@ class BOMViewer extends Component {
                             </div>
                             <div className="flowpoint-body">
                               <p>
-                                Name:<strong>{el.PartName}</strong>
+                                Name:<strong title={el.PartName}>{el.PartName}</strong>
                               </p>
                               <p>
-                                Part Type:<strong>{el.PartType}</strong>
+                                Part Type:<strong title={el.PartType}>{el.PartType}</strong>
                               </p>
                               {/* {`X=:${el.Position.x}`}
                                                             {`Y=:${el.Position.y}`} */}

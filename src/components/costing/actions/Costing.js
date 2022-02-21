@@ -21,6 +21,7 @@ import {
   CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
   CHECK_IS_TOOL_DATA_CHANGE,
   CHECK_IS_DISCOUNT_DATA_CHANGE,
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -441,7 +442,7 @@ export function getVBCDetailByVendorId(data, callback) {
  */
 export function getRMCCTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}`, headers);
+    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}/${data.subAsmCostingId}`, headers);
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
         let TabData = response.data.DataList;
@@ -826,7 +827,7 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}`, headers);
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}/${data.AssemCostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         if (IsUseReducer && response.data.Result) {
@@ -2331,5 +2332,18 @@ export function isDiscountDataChange(isDataChange) {
   }
 }
 
+/**
+ * @method:setForgingCalculatorMachiningStockSection
+ * @description: Used for storing part no from costing summary
+ * @param {*} data
+ */
+ export function setForgingCalculatorMachiningStockSection(data) {
+  return (dispatch) => {
+    dispatch({
+      type: FORGING_CALCULATOR_MACHININGSTOCK_SECTION,
+      payload: data,
+    })
+  }
+}
 
 

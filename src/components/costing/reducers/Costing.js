@@ -71,7 +71,8 @@ import {
   CHECK_IS_DISCOUNT_DATA_CHANGE,
   CHECK_IS_TOOL_DATA_CHANGE,
   CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE,
-  CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE
+  CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
+  FORGING_CALCULATOR_MACHININGSTOCK_SECTION
 } from '../../../config/constants';
 
 const initialState = {
@@ -594,7 +595,12 @@ export default function costingReducer(state = initialState, action) {
         loading:false,
         checkIsDiscountChange:action.payload
       }
-  
+      case FORGING_CALCULATOR_MACHININGSTOCK_SECTION:
+        return {
+          ...state,
+          forgingCalculatorMachiningStockSectionValue: action.payload,
+        }
+    
     
     default:
       return state

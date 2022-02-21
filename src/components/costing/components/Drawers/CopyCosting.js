@@ -255,10 +255,14 @@ function CopyCosting(props) {
     let vendor = value.vendorId
 
     vbcVendorGrid && vbcVendorGrid.filter(item => {
-      if (item.VendorId === vendor) {
-        temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
+      // if (item.VendorId === vendor) {
+      //   temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
+      //   return temp
+      // }
+
+        temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
         return temp
-      }
+      
     })
     setDestinationPlant(temp)
 

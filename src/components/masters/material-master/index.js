@@ -33,6 +33,7 @@ function RowMaterialMaster(props) {
     const [isViewFlag, setisViewFlag] = useState(false);
     const [Id, setId] = useState('');
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1');
+
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
 
     const [isRMImportForm, setisRMImportForm] = useState(false);
@@ -59,7 +60,7 @@ function RowMaterialMaster(props) {
 
         applyPermission(topAndLeftMenuData);
 
-    }, [])
+    }, [topAndLeftMenuData])
 
 
 
@@ -69,8 +70,6 @@ function RowMaterialMaster(props) {
     //     }
     // }
 
-
-    // jp ka order scheduling se compare
 
     // useMemo((nextProps) => {
     //     // componentWillReceiveProps
@@ -243,7 +242,7 @@ function RowMaterialMaster(props) {
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
                             {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
-                                {/* {ViewRMAccessibility && <NavItem> */}
+                            {/* {ViewRMAccessibility && <NavItem> */}
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
                                     // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })

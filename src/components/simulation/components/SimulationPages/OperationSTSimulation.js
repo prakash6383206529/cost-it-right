@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { EMPTY_DATA } from '../../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -25,7 +25,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, isOperation } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -66,14 +66,26 @@ function OperationSTSimulation(props) {
     const oldCPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let valueShow
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        switch (Number(master)) {
+            case Number(SURFACETREATMENT):
+                valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
+                break;
+            case Number(OPERATIONS):
+                valueShow = lastRevision ? row.OldNetOperationCost : row.OldOperationRate
+                break;
 
+            default:
+                break;
+        }
         const value = beforeSaveCell(cell)
         return (
             <>
                 {
                     isImpactedMaster ?
-                        row.OldOperationRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ConversionCost)} </span>
+                        valueShow :
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
             </>
@@ -84,11 +96,24 @@ function OperationSTSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
+        let valueShow
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        switch (Number(master)) {
+            case Number(SURFACETREATMENT):
+                valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
+                break;
+            case Number(OPERATIONS):
+                valueShow = lastRevision ? row.NewNetOperationCost : row.NewOperationRate
+                break;
+
+            default:
+                break;
+        }
         return (
             <>
                 {
                     isImpactedMaster ?
-                        row.NewOperationRate :
+                        valueShow ://NewNetOperationCost
                         <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
@@ -172,17 +197,17 @@ function OperationSTSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewRate || Number(row.ConversionCost) === Number(row.NewRate) || row.NewRate === '') return ''
+        if (!row.NewRate || Number(row.Rate) === Number(row.NewRate) || row.NewRate === '') return ''
         const NewRate = Number(row.NewRate) + checkForNull(row.RemainingTotal)
-        const NetCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
+        const NetCost = Number(row.Rate) + checkForNull(row.RemainingTotal)
         const classGreen = (NewRate > NetCost) ? 'red-value form-control' : (NewRate < NetCost) ? 'green-value form-control' : 'form-class'
         return row.NewRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const OldcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const ConversionCost = Number(row.ConversionCost) + checkForNull(row.RemainingTotal)
-        return row.ConversionCost != null ? checkForDecimalAndNull(ConversionCost, getConfigurationKey().NoOfDecimalForPrice) : ''
+        const Rate = Number(row.Rate) + checkForNull(row.RemainingTotal)
+        return row.Rate != null ? checkForDecimalAndNull(Rate, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const frameworkComponents = {
@@ -220,7 +245,7 @@ function OperationSTSimulation(props) {
             return null;
         })
         if (Count === tempData.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         setIsDisable(true)
@@ -346,7 +371,7 @@ function OperationSTSimulation(props) {
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

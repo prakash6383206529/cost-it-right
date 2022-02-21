@@ -606,7 +606,7 @@ const SendForApproval = (props) => {
                           <Col md="4">
                             <div className="form-group">
                               <label>Variance</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'green-value' : 'red-value'}`}>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
                                 {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>

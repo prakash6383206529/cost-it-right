@@ -553,7 +553,7 @@ class AddAssemblyPart extends Component {
         this.cancel()
         return false;
       }
-      this.setState({ setDisable: true,  disablePopup:false })
+      this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -580,6 +580,7 @@ class AddAssemblyPart extends Component {
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
         if (fieldsObj.ECNNumber === partData.ECNNumber && fieldsObj.RevisionNumber === partData.RevisionNumber) {
+          this.setState({ setDisable: false })
           this.confirmBOMDraft(updateData)
           Toaster.warning("Please edit Revision No or ECN No.")
           return false;

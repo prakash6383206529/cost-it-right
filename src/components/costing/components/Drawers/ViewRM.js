@@ -80,7 +80,7 @@ function ViewRM(props) {
         open={props.isOpen}
 
       >
-        <Container>
+        <Container className={`${isAssemblyCosting && "drawer-1200"}`}>
           <div className={"drawer-wrapper drawer-1500px"}>
             <Row className="drawer-heading">
               <Col>

@@ -19,6 +19,8 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -34,6 +36,7 @@ class AddOverhead extends Component {
       isEditFlag: false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected: false,
 
       ModelType: [],
       vendorName: [],
@@ -61,7 +64,8 @@ class AddOverhead extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader: false,
 
     }
   }
@@ -73,7 +77,6 @@ class AddOverhead extends Component {
   componentDidMount() {
     this.props.fetchModelTypeAPI('--Model Types--', res => { });
     this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-    this.props.getVendorWithVendorCodeSelectList()
     this.props.getClientSelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.getDetails();
@@ -89,6 +92,10 @@ class AddOverhead extends Component {
       costingHead: costingHeadFlag,
       vendorName: [],
     });
+    if (costingHeadFlag === "vendor") {
+      this.setState({ inputLoader: true })
+      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+    }
   }
 
   /**
@@ -247,7 +254,7 @@ class AddOverhead extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
     } else {
       this.setState({ vendorName: [] })
     }
@@ -623,6 +630,17 @@ class AddOverhead extends Component {
       isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant,uploadAttachements } = this.state;
     const userDetail = userDetails()
 
+
+
+    if (vendorName.length <= 0) {
+
+      if (IsVendor && costingHead === 'vendor') {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     if (isEditFlag) {
 
 
@@ -648,7 +666,7 @@ class AddOverhead extends Component {
         this.cancel()
         return false
       }
-      this.setState({ setDisable: true, disablePopup:false })
+      this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OverheadID }
       })
@@ -745,7 +763,26 @@ class AddOverhead extends Component {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
       isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
+    const filterList = (inputValue) => {
+      let tempArr = []
 
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -842,27 +879,18 @@ class AddOverhead extends Component {
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <>
                             <Col md="4" >
-                              <Field
-                                name="vendorName"
-                                type="text"
-                                label={"Vendor Name"}
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("VendorNameList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.vendorName == null ||
-                                    this.state.vendorName.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleVendorName
-                                }
-                                valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : false}
-                              />
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
+                            <AsyncSelect
+                              name="vendorName"
+                              ref={this.myRef}
+                              key={this.state.updateAsyncDropdown}
+                              loadOptions={promiseOptions}
+                              onChange={(e) => this.handleVendorName(e)}
+                              value={this.state.vendorName}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              isDisabled={isEditFlag ? true : false} />
+                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </Col>
                             <Col md="4" >
                               <Field

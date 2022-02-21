@@ -221,7 +221,7 @@ console.log(props.data,"DATA");
                   register={register}
                   defaultValue={uom.length !== 0 ? uom : ''}
                   options={renderListing('UOM')}
-                  mandatory={true}
+                  mandatory={false}
                   handleChange={handleUOMChange}
                   errors={errors.UOM}
                 />

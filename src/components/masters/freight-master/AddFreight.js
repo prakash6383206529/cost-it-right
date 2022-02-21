@@ -22,6 +22,9 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import LoaderCustom from "../../common/LoaderCustom";
 import { debounce } from "lodash";
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
+
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
   constructor(props) {
@@ -47,7 +50,9 @@ class AddFreight extends Component {
       AddUpdate: true,
       DeleteChanged: true,
       HandleChanged: true,
-      setDisable: false
+      setDisable: false,
+      isVendorNameNotSelected:false,
+      inputLoader:false
     };
   }
   /**
@@ -55,8 +60,6 @@ class AddFreight extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.getVendorListByVendorType(true, () => { });
-    // this.props.fetchSupplierCityDataAPI((res) => { });  
 
     this.props.getFreightModeSelectList((res) => { });
     this.props.getFreigtFullTruckCapacitySelectList((res) => { });
@@ -75,6 +78,8 @@ class AddFreight extends Component {
       IsVendor: !this.state.IsVendor,
       vendorName: [],
     });
+    this.setState({inputLoader:true})
+    this.props.getVendorListByVendorType(true, () => {this.setState({inputLoader:false}) });
   };
   /**
    * @method handleTransportMoodChange
@@ -226,7 +231,7 @@ class AddFreight extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ vendorName: newValue });
+      this.setState({ vendorName: newValue,isVendorNameNotSelected:false });
     } else {
       this.setState({ vendorName: [] });
     }
@@ -472,6 +477,14 @@ class AddFreight extends Component {
       IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
       FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
     const { fieldsObj } = this.props;
+
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     const userDetail = userDetails();
     if (isEditFlag) {
 
@@ -546,6 +559,27 @@ class AddFreight extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isOpenVendor, isEditFlag, isViewMode, setDisable } = this.state;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
 
     return (
       <>
@@ -629,38 +663,29 @@ class AddFreight extends Component {
                           </Col>
                           {this.state.IsVendor === true && (
                             <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="vendorName"
-                                    type="text"
-                                    label="Vendor Name"
-                                    component={searchableSelect}
-                                    placeholder={"Select"}
-                                    options={this.renderListing("VendorNameList")}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.vendorName == null ||
-                                        this.state.vendorName.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleVendorName
-                                    }
-                                    valueDescription={this.state.vendorName}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.vendorToggler}
-                                    className={"plus-icon-square right"}
-                                  ></div>
-                                )}
-                              </div>
-                            </Col>
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                             <div className="fullinput-icon">
+                            <AsyncSelect 
+                            name="vendorName" 
+                            ref={this.myRef} 
+                            key={this.state.updateAsyncDropdown} 
+                            loadOptions={promiseOptions} 
+                            onChange={(e) => this.handleVendorName(e)} 
+                            value={this.state.vendorName} 
+                            noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                            isDisabled={isEditFlag ? true : false} />
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                            </div>
+                           {!isEditFlag && (
+                                <div
+                                  onClick={this.vendorToggler}
+                                  className={"plus-icon-square  right"}
+                                ></div>
+                              )}
+                           </div> 
+                           </Col>
                           )}
                           <Col md="3">
                             <Field

@@ -27,7 +27,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, SHEET_METAL,EMPTY_GUID } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -36,6 +36,7 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -50,7 +51,7 @@ class AddRMDomestic extends Component {
       isViewFlag: this.props?.data?.isViewFlag ? true : false,
 
 
-      RawMaterialID: '',
+      RawMaterialID: EMPTY_GUID,
 
       RawMaterial: [],
       RMGrade: [],
@@ -63,13 +64,17 @@ class AddRMDomestic extends Component {
       VendorCode: '',
       selectedVendorPlants: [],
       vendorLocation: [],
+      isVendorNameNotSelected: false,
+      updateAsyncDropdown: false,
 
       HasDifferentSource: false,
       sourceLocation: [],
 
       UOM: [],
       effectiveDate: '',
+      minEffectiveDate: '',
       remarks: '',
+      isFinalUserEdit: false,
 
       isShowForm: false,
       IsVendor: false,
@@ -103,7 +108,8 @@ class AddRMDomestic extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader: false
     }
   }
   /**
@@ -124,11 +130,12 @@ class AddRMDomestic extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.setState({ inputLoader: true })
     const { data } = this.props
     this.getDetails(data)
     this.props.getRawMaterialCategory((res) => { })
-    this.props.getVendorListByVendorType(false, () => { })
-    this.props.getTechnologySelectList(() => { })
+    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.getAllCity(cityId => {
@@ -146,6 +153,7 @@ class AddRMDomestic extends Component {
       }
 
     })
+
 
   }
 
@@ -252,7 +260,7 @@ class AddRMDomestic extends Component {
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState(
-        { vendorName: newValue, selectedVendorPlants: [], vendorLocation: [] },
+        { vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] },
         () => {
           const { vendorName } = this.state
           const result =
@@ -395,10 +403,11 @@ class AddRMDomestic extends Component {
 
 
           this.setState({ DataToChange: Data }, () => { })
+          this.setState({ inputLoader: true })
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
           } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           }
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -443,8 +452,10 @@ class AddRMDomestic extends Component {
                 const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
                 const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
                 this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
+                this.setState({ minEffectiveDate: Data.EffectiveDate })
 
                 this.setState({
+                  isFinalUserEdit: this.state.isFinalApprovar ? true : false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -506,11 +517,11 @@ class AddRMDomestic extends Component {
       },
       () => {
         const { IsVendor } = this.state
+        this.setState({ inputLoader: true })
         if (IsVendor) {
-          this.props.getVendorWithVendorCodeSelectList(() => { })
+          this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
         } else {
-          // this.props.getVendorTypeBOPSelectList(() => { })
-          this.props.getVendorListByVendorType(IsVendor, () => { })
+          this.props.getVendorListByVendorType(IsVendor, () => { this.setState({ inputLoader: false }) })
           this.props.getPlantBySupplier('', () => { })
           this.props.getCityBySupplier(0, () => { })
         }
@@ -919,11 +930,13 @@ class AddRMDomestic extends Component {
         Id: FileId,
         DeletedBy: loggedInUserId(),
       }
-      this.props.fileDeleteRMDomestic(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
-        let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      // this.props.fileDeleteRMDomestic(deleteData, (res) => {
+      //   Toaster.success('File has been deleted successfully.')
+      //   let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      //   this.setState({ files: tempArr })
+      // })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
       let tempArr = this.state.files.filter(
@@ -963,7 +976,13 @@ class AddRMDomestic extends Component {
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
     const { initialConfiguration } = this.props
-    this.setState({ setDisable: true, disablePopup:false})
+    this.setState({ setDisable: true, disablePopup: false })
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -1004,6 +1023,9 @@ class AddRMDomestic extends Component {
     }
     if (isEditFlag && this.state.isFinalApprovar) {
       this.setState({ updatedObj: requestData })
+
+      //DONT DELETE COMMENTED CODE BELOW
+
       if (isSourceChange) {
         this.props.updateRMDomesticAPI(requestData, (res) => {
           this.setState({ setDisable: false })
@@ -1011,22 +1033,24 @@ class AddRMDomestic extends Component {
             Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
             this.clearForm()
 
-
           }
         })
       }
-      if (isDateChange) {
-        this.props.updateRMDomesticAPI(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-            this.clearForm()
+      // if (isDateChange) {
+      // this.props.updateRMDomesticAPI(requestData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+      //     this.clearForm()
 
-          }
-        })
-      } else {
+      //   }
+      // })
+      else {
 
-        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
+        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+          && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
+          && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
+          && DataToChange.RawMaterialCode === values.Code) {
 
           this.cancel()
           return false
@@ -1036,6 +1060,7 @@ class AddRMDomestic extends Component {
             values.cutOffPrice === undefined) || uploadAttachements === false)) {
           this.setState({ showPopup: true, updatedObj: requestData })
         }
+
       }
     }
 
@@ -1043,6 +1068,7 @@ class AddRMDomestic extends Component {
     else {
       let formData = {}
       // const formData = {
+      formData.RawMaterialId = RawMaterialID
       formData.IsVendor = IsVendor
       formData.RawMaterial = RawMaterial.value
       formData.RMGrade = RMGrade.value
@@ -1106,7 +1132,7 @@ class AddRMDomestic extends Component {
   onPopupConfirm = () => {
     this.setState({ disablePopup: true })
     this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
-      this.setState({ setDisable: false  })
+      this.setState({ setDisable: false })
       if (res?.data?.Result) {
         Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
         this.clearForm()
@@ -1141,6 +1167,29 @@ class AddRMDomestic extends Component {
 
     const { handleSubmit, initialConfiguration, data } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state
+
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
+
 
     return (
       <>
@@ -1384,32 +1433,32 @@ class AddRMDomestic extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="4">
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                              <div className="fullinput-icon">
-                                <Field
-                                  name="DestinationSupplierId"
-                                  type="text"
-                                  label="Vendor Name"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("VendorNameList")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                  required={true}
-                                  handleChangeDescription={this.handleVendorName}
-                                  valueDescription={this.state.vendorName}
-                                  disabled={isEditFlag || isViewFlag}
-                                />
-                              </div>
-                              {!isEditFlag && (
+
+                          <Col md="4" className='mb-4'>
+                         
+                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
+                           <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                           <div className="fullinput-icon">
+                           <AsyncSelect 
+                           name="DestinationSupplierId" 
+                           ref={this.myRef} 
+                           key={this.state.updateAsyncDropdown} 
+                           loadOptions={promiseOptions}
+                           onChange={(e) => this.handleVendorName(e)} 
+                           value={this.state.vendorName} 
+                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                           isDisabled={isEditFlag || isViewFlag} 
+                           />
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                           </div>
+                           {!isEditFlag && (
                                 <div
                                   onClick={this.vendorToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
-                            </div>
+                           </div>
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
@@ -1428,6 +1477,7 @@ class AddRMDomestic extends Component {
                                 mendatory={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
+
                               />
                             </Col>
                           )}
@@ -1634,6 +1684,7 @@ class AddRMDomestic extends Component {
                                 onChange={this.handleEffectiveDateChange}
                                 type="text"
                                 validate={[required]}
+                                minDate={this.state.minEffectiveDate}
                                 autoComplete={'off'}
                                 required={true}
                                 changeHandler={(e) => {
@@ -1642,7 +1693,7 @@ class AddRMDomestic extends Component {
                                 className="form-control"
 
 
-                                disabled={isViewFlag}
+                                disabled={isViewFlag || this.state.isFinalUserEdit}
 
                               />
                             </div>
@@ -1667,7 +1718,7 @@ class AddRMDomestic extends Component {
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
                               validate={[maxLength512]}
-                              required={true}
+                              required={false}
                               component={renderTextAreaField}
                               disabled={isViewFlag}
                               maxLength="512"
