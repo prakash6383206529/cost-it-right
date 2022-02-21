@@ -192,7 +192,7 @@ function MachiningStockTable(props) {
     setValue('grossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setGrossWeight(GrossWeight)
    
-   
+    
   }
   
   const calculateTotalMachiningStock = (tableVal) =>{
@@ -821,6 +821,7 @@ function MachiningStockTable(props) {
           <Table className="table mb-0 forging-cal-table" size="sm">
             <thead>
               <tr>
+                <th>{`Description`}</th>
                 <th>{`Type of Machining Stock`}</th>
                 <th>{`Major Diameter (mm)`}</th>
                 <th>{`Minor Diameter (mm)`}</th>
@@ -840,6 +841,7 @@ function MachiningStockTable(props) {
                   return (
                     <Fragment>
                       <tr key={index}>
+                        <td>{item.Description !== null ?item.Description : '-'}</td>
                         <td>{item.TypesOfMachiningStock !== null ?item.TypesOfMachiningStock:'-'}</td>
                         <td>{checkForDecimalAndNull(item.MajorDiameter , getConfigurationKey().NoOfDecimalForInputOutput) !== null ?checkForDecimalAndNull(item.MajorDiameter , getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td> 
                         <td>{checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput)  !== null?checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>

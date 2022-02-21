@@ -11,7 +11,7 @@ import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../.
 
 
 function LossStandardTable(props) {
-  const { rmRowData , LossMachine} = props
+  const { rmRowData , LossMachineFunction ,isLossStandard} = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -227,15 +227,15 @@ function LossStandardTable(props) {
    */
   const addRow = () => {
     const LossPercentage = checkForNull(getValues('LossPercentage'))   
-    const LossOfType = getValues('LossOfType').value
+    const LossOfType = getValues('LossOfType').label
     const FlashLength = checkForNull(getValues('FlashLength'))  
     const FlashThickness = checkForNull(getValues('FlashThickness'))    
     const FlashWidth = checkForNull(getValues('FlashWidth'))    
     const BarDiameter = checkForNull(getValues('BarDiameter'))  
     const BladeThickness = checkForNull(getValues('BladeThickness'))
-    const LossWeight = checkForDecimalAndNull(lossWeight, getConfigurationKey().NoOfDecimalForInputOutput)
+    const LossWeight = lossWeight
     
-    
+  console.log(lossWeight,'lossWeight');
 
     if (LossWeight && LossWeight === 0  ) {
       Toaster.warning("Please add data first.")
@@ -282,26 +282,32 @@ function LossStandardTable(props) {
     if (isEdit) {
       tempArray = Object.assign([...tableData], { [editIndex]: obj })
       setTableData(tempArray)
+      if(isLossStandard===true){
       if(tempArray.length===0){
-      //false
-      LossMachine(false)
+        LossMachineFunction(false)
       }
       else{
-        LossMachine(true)
-      }     
-  
+        LossMachineFunction(true)
+      }
+    } 
+     
+      
       setIsEdit(false)
     } else {
       // tempArray = [...tableData, obj]
       tempArray = tableData
       tempArray.push(obj)
       setTableData(tempArray)
-      if(tempArray.length===0){
-        LossMachine(false)
+      if(isLossStandard===true){
+        if(tempArray.length===0){
+          LossMachineFunction(false)
         }
         else{
-          LossMachine(true)
-        }  
+          LossMachineFunction(true)
+        }
+      } 
+   
+      
     
     }
 
@@ -421,13 +427,18 @@ function LossStandardTable(props) {
     props.tableValue(tempData)
 
     setTableData(tempData)
-    if(tempData.length===0){
-  
-      LossMachine(false)
+    if(isLossStandard===true){
+      if(tempData.length===0){
+      LossMachineFunction(false)
       }
       else{
-        LossMachine(true)
-      }  
+        LossMachineFunction(true)
+      }
+    } 
+      else{
+      isLossStandard(false)
+      }
+      
   
   }
 
