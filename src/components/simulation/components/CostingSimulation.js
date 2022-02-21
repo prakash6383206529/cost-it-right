@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -39,6 +39,7 @@ function CostingSimulation(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
+    const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
 
     const [shown, setshown] = useState(false);
 
@@ -114,6 +115,10 @@ function CostingSimulation(props) {
             setAssemblyImpactButtonTrue(false)
         }
     }, [tableData])
+
+    window.onbeforeunload = (e) => {
+        dispatch(setShowSimulationPage(true))
+    };
 
     const reducerOldRMPrice = (array, item) => {
         let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
@@ -614,9 +619,7 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-
     }
-
     const newRMCFormatter = (props) => {
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // const sumold = oldRMCalc(row)
@@ -628,6 +631,45 @@ function CostingSimulation(props) {
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
+    }
+    const oldOPERFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newOPERFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const oldSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewSurfaceTreatmentCost > row.OldSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewSurfaceTreatmentCost < row.OldSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewSurfaceTreatmentCost > row.OldSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewSurfaceTreatmentCost < row.OldSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const oldNetSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newNetSTFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const varianceRMCFormatter = (props) => {
@@ -808,6 +850,12 @@ function CostingSimulation(props) {
         oldRMFormatter: oldRMFormatter,
         buttonFormatter: buttonFormatter,
         newRMFormatter: newRMFormatter,
+        newOPERFormatter:newOPERFormatter,
+        oldOPERFormatter:oldOPERFormatter,
+        newSTFormatter:newSTFormatter,
+        oldSTFormatter:oldSTFormatter,
+        newNetSTFormatter:newNetSTFormatter,
+        oldNetSTFormatter:oldNetSTFormatter,
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         varianceFormatter: varianceFormatter,
@@ -941,16 +989,17 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {isSurfaceTreatment && <>
-                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldTranspotationCost" headerName='Extra Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' cellRenderer="oldSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' cellRenderer="newSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldTranspotationCost" headerName='Old Extra Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost'  cellRenderer="oldNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost'  cellRenderer="newNetSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
                                                     </>}
                                                     {isOperation && <>
-                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
@@ -1057,7 +1106,7 @@ function CostingSimulation(props) {
             }
 
 
-            {showApprovalHistory && <Redirect to='/simulation-history' />}
+            {(showApprovalHistory || getShowSimulationPage) && <Redirect to='/simulation-history' />}
 
             {CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer

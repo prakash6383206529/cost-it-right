@@ -392,6 +392,7 @@ export function bulkUploadBOPDomesticZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -410,6 +411,7 @@ export function bulkUploadBOPDomesticVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -428,6 +430,7 @@ export function bulkUploadBOPImportZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -446,6 +449,7 @@ export function bulkUploadBOPImportVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }

@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, OverheadProfitSimulation } from '../../../config/masterData';
 import Toaster from '../../common/Toaster';
@@ -21,7 +21,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
+import { applyEditCondSimulation, getFilteredData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
@@ -32,6 +32,7 @@ import ProfitListing from '../../masters/overhead-profit-master/ProfitListing'
 import ScrollToTop from '../../common/ScrollToTop';
 import OverheadSimulation from './SimulationPages/OverheadSimulation';
 import ProfitSimulation from './SimulationPages/ProfitSimulation';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -117,7 +118,7 @@ function Simulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
-        let temp1 = getFilteredRMData(TempData)
+        let temp1 = getFilteredData(TempData, RM_MASTER_ID)
         temp = temp1 && temp1.map((item) => {
             if (item.CostingHead === true) {
                 item.CostingHead = 'Vendor Based'
@@ -135,9 +136,9 @@ function Simulation(props) {
         switch (Number(master.value)) {
             case Number(SURFACETREATMENT):
                 temp = TempData && TempData.map((item) => {
-                    if (item.IsVendor === true) {
+                    if (item.CostingHead === true) {
                         item.IsVendor = 'Vendor Based'
-                    } else if (item.IsVendor === false) {
+                    } else if (item.CostingHead === false) {
                         item.IsVendor = 'Zero Based'
                     }
                     return item
@@ -145,9 +146,9 @@ function Simulation(props) {
                 break;
             case Number(OPERATIONS):
                 temp = TempData && TempData.map((item) => {
-                    if (item.IsVendor === true) {
+                    if (item.CostingHead === true) {
                         item.IsVendor = 'Vendor Based'
-                    } else if (item.IsVendor === false) {
+                    } else if (item.CostingHead === false) {
                         item.IsVendor = 'Zero Based'
                     }
                     return item
@@ -192,7 +193,7 @@ function Simulation(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case MACHINERATE:
-                return (<MachineRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case BOPDOMESTIC:
                 return (<BOPDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case BOPIMPORT:
@@ -200,9 +201,9 @@ function Simulation(props) {
             case EXCHNAGERATE:
                 return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isOperationST={OPERATIONS} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={OPERATIONS} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
@@ -215,9 +216,9 @@ function Simulation(props) {
     const renderColumn = (fileName) => {
         switch (fileName) {
             case RMDOMESTIC:
-                return returnExcelColumn(RMDomesticSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
+                return returnExcelColumn(RMDomesticSimulation, getFilteredData(tableData, RM_MASTER_ID) && getFilteredData(tableData, RM_MASTER_ID).length > 0 ? getFilteredData(tableData, RM_MASTER_ID) : [])
             case RMIMPORT:
-                return returnExcelColumn(RMImportSimulation, getFilteredRMData(tableData) && getFilteredRMData(tableData).length > 0 ? getFilteredRMData(tableData) : [])
+                return returnExcelColumn(RMImportSimulation, getFilteredData(tableData, RM_MASTER_ID) && getFilteredData(tableData, RM_MASTER_ID).length > 0 ? getFilteredData(tableData, RM_MASTER_ID) : [])
             case SURFACETREATMENT:
                 return returnExcelColumn(SurfaceTreatmentSimulation, tableData && tableData.length > 0 ? tableData : [])
             case OPERATIONS:
@@ -637,9 +638,9 @@ function Simulation(props) {
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmDomesticListing)} technology={technology.label} master={master.label} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} master={master.label} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredRMData(rmImportListing)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
                 return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} />
             case SURFACETREATMENT:

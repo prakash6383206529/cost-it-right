@@ -59,6 +59,8 @@ class AddBOPImport extends Component {
 
       isOpenVendor: false,
       isVendorNameNotSelected: false,
+      IsSendForApproval: false,
+      isFinalUserEdit: false,
 
       vendorName: [],
       selectedVendorPlants: [],
@@ -233,6 +235,7 @@ class AddBOPImport extends Component {
 
             this.setState({
               isEditFlag: true,
+              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
               // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
@@ -484,17 +487,19 @@ class AddBOPImport extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    // COMMENTED FOR MINDA
-    // const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0; 
-    // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    // const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
-    // this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
-    // this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    // THIS CALCULATION IS FOR BASE
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
-    this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+    this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
+
+    // THIS CALCULATION IS FOR MINDA
+    // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
+    // const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
+    // this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
+    // this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -687,7 +692,7 @@ class AddBOPImport extends Component {
       return false;
     }
 
-    if (!isDateChange && this.state.isFinalApprovar && isEditFlag) {
+    if (this.state.isFinalApprovar && isEditFlag) {
 
 
       if (DataToChange.IsVendor) {
@@ -708,6 +713,7 @@ class AddBOPImport extends Component {
         return { ...file, ContextId: BOPID }
       })
       let requestData = {
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         Currency: currency.label,
         BoughtOutPartId: BOPID,
         Source: values.Source,
@@ -728,10 +734,18 @@ class AddBOPImport extends Component {
       }
 
 
+
     } else {
+
+      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
 
       this.setState({ setDisable: true })
       const formData = {
+        IsSendForApproval: this.state.IsSendForApproval,
         BoughtOutPartId: BOPID,
         Currency: currency.label,
         IsVendor: IsVendor,
@@ -1139,7 +1153,7 @@ class AddBOPImport extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode}
+                                disabled={isViewMode || this.state.isFinalUserEdit}
                               //minDate={moment()}
                               />
                             </div>
@@ -1327,7 +1341,7 @@ class AddBOPImport extends Component {
                             (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                disabled={this.state.isFinalApprovar}
+                                disabled={isViewMode}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -1387,7 +1401,7 @@ class AddBOPImport extends Component {
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
-                IsImportEntery={false}
+                IsImportEntery={true}
               />
             )
           }

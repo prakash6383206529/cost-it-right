@@ -175,6 +175,7 @@ export function bulkUploadVolumeActualZBC(data, callback) {
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error);
       })
   }
 }
@@ -195,6 +196,7 @@ export function bulkUploadVolumeActualVBC(data, callback) {
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error);
       })
   }
 }
@@ -215,6 +217,7 @@ export function bulkUploadVolumeBudgetedZBC(data, callback) {
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)
+        callback(error);
       })
   }
 }
@@ -233,6 +236,7 @@ export function bulkUploadVolumeBudgetedVBC(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       apiErrors(error);
+      callback(error);
     });
   };
 }
