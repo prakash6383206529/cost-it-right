@@ -159,8 +159,10 @@ function ColdForging(props) {
   const calculateInputLength = (netLossWeight = 0) =>{
     
     const BilletDiameter = checkForDecimalAndNull(getValues('BilletDiameter'), getConfigurationKey().NoOfDecimalForInputOutput)
-    const forgedWeight = checkForDecimalAndNull(getValues('forgedWeight'))   
+    const forgedWeight = forgeWeightValue
+    console.log(forgeWeightValue,'forgeWeightValue');
     const InputLength = (forgedWeight + netLossWeight)/(0.7857 * BilletDiameter * BilletDiameter * rmRowData.Density/1000000)
+    console.log('InputLength: ', InputLength);
     setDataSend(prevState => ({ ...prevState, InputLength: InputLength })) 
     setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
     setLostWeight(netLossWeight)
@@ -297,13 +299,15 @@ const calculateNetRmCostComponent = () =>{
     obj.NoOfPartsPerLength = dataSend.NoOfPartsPerLength
     obj.EndBitLength = dataSend.EndBitLength
     obj.EndBitLoss = dataSend.EndBitLoss
-    obj.InputWeight = dataSend.TotalInputWeight
+    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH gROSS WEIGHT KEY
     obj.GrossWeight = dataSend.TotalInputWeight
     obj.ScrapWeight = dataSend.ScrapWeight
     obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
     obj.ScrapCost = dataSend.ScrapCost
-    obj.NetRMCost = dataSend.NetRMCostComponent
+    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IOT WITH NETLANDED COST
     obj.NetLandedCost = dataSend.NetRMCostComponent 
+
+
     obj.LoggedInUserId = loggedInUserId()
 
     let tempArr = []
@@ -352,7 +356,10 @@ const calculateNetRmCostComponent = () =>{
     setTableVal(value)
   }
   const dropDown = [
- 
+    {
+      label: 'Scale Loss',
+      value: 5,
+    },
     {
       label: 'Bilet Heating Loss',
       value: 6,
@@ -398,7 +405,7 @@ const calculateNetRmCostComponent = () =>{
       value: 10,
     },
   ]
-  const LossMachine=(value)=>{
+  const LossMachineFunction=(value)=>{
     setDiableMachiningStock(value)
   }
 console.log(diableMachiningStock,'diableMachiningStock');
@@ -493,7 +500,9 @@ console.log(diableMachiningStock,'diableMachiningStock');
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                   rmRowData={props.rmRowData}
-                  LossMachine ={LossMachine}
+                  LossMachineFunction ={LossMachineFunction}
+                  isLossStandard = {true}
+
                 />
                 
               </div>
