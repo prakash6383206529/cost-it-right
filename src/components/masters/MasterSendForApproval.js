@@ -183,7 +183,7 @@ function MasterSendForApproval(props) {
 
                     if (isBulkUpload) {
                         approvalData && approvalData.map(item => {
-                            tempArray.push({ BoughtPartId: item.BoughtPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {} })
+                            tempArray.push({ BoughtOutPartId: item.BoughtOutPartId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, BoughtoutPartRequest: {} })
                         })
                     } else {
                         tempArray.push({ BoughtPartId: EMPTY_GUID, IsImportEntery: IsImportEntery, BoughtoutPartRequest: approvalObj })
