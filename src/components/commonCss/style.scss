@@ -6962,3 +6962,14 @@ left: 17rem;
       min-height: auto !important;
     }
   }
+.calculator-drawer {
+  .drawer-wrapper {
+    width: 1140px;
+    table {
+      th {
+        vertical-align: middle;
+        font-size: 15px;
+      }
+    }
+  }
+}
