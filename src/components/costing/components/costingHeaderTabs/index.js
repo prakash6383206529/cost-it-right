@@ -215,6 +215,7 @@ function CostingHeaderTabs(props) {
         if(item.PartType === 'Sub Assembly'){
           let subAssemblyObj = {
             "CostingId": item.CostingId,
+            "SubAssemblyCostingId":item.SubAssemblyCostingId,
             "CostingNumber": "", // Need to find out how to get it.
             "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
             "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
