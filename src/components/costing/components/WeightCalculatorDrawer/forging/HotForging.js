@@ -12,44 +12,79 @@ import {
 } from '../../../../layout/HookFormInputs'
 import {
   checkForDecimalAndNull,
+  checkForNull,
+  findLostWeight,
   getConfigurationKey,
+  checkPercentageValue,
   loggedInUserId
 
 } from '../../../../../helper'
+import MachiningStockTable from '../MachiningStockTable'
 import LossStandardTable from '../LossStandardTable'
+import { data } from 'react-dom-factories'
+import { KG } from '../../../../../config/constants'
+
+
+
+
 
 function HotForging(props) {
+  const { rmRowData } = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const defaultValues = {
-    forgeWeight: WeightCalculatorRequest &&
+    finishedWeight: WeightCalculatorRequest &&
+    WeightCalculatorRequest.FinishWeight !== undefined
+    ? WeightCalculatorRequest.FinishWeight
+    : '',
+    forgedWeight: WeightCalculatorRequest &&
       WeightCalculatorRequest.ForgedWeight !== undefined
       ? WeightCalculatorRequest.ForgedWeight
       : '',
-    inputWeight: WeightCalculatorRequest &&
+    BilletDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.BilletDiameter !== undefined
+      ? WeightCalculatorRequest.BilletDiameter
+      : '',
+    BilletLength: WeightCalculatorRequest &&
+     WeightCalculatorRequest.BilletLength !== undefined
+      ? WeightCalculatorRequest.BilletLength
+      : '',
+    InputLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.InputLength !== undefined
+      ? WeightCalculatorRequest.InputLength
+      : '',
+    NoOfPartsPerLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.NoOfPartsPerLength !== undefined
+      ? WeightCalculatorRequest.NoOfPartsPerLength
+      : '',
+    EndBitLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.EndBitLength !== undefined
+      ? WeightCalculatorRequest.EndBitLength
+      : '',
+    EndBitLoss: WeightCalculatorRequest &&
+      WeightCalculatorRequest.EndBitLoss !== undefined
+      ? WeightCalculatorRequest.EndBitLoss
+      : '',
+    TotalInputWeight: WeightCalculatorRequest &&
       WeightCalculatorRequest.InputWeight !== undefined
       ? WeightCalculatorRequest.InputWeight
       : '',
-    slugWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.SlugWeight !== undefined
-      ? WeightCalculatorRequest.SlugWeight
-      : '',
-    scrapWeight: WeightCalculatorRequest &&
+    ScrapWeight: WeightCalculatorRequest &&
       WeightCalculatorRequest.ScrapWeight !== undefined
       ? WeightCalculatorRequest.ScrapWeight
       : '',
-    scrapCost: WeightCalculatorRequest &&
+    ScrapCost: WeightCalculatorRequest &&
       WeightCalculatorRequest.ScrapCost !== undefined
       ? WeightCalculatorRequest.ScrapCost
+      : '', 
+    ScrapRecoveryPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RecoveryPercentage !== undefined
+      ? WeightCalculatorRequest.RecoveryPercentage
       : '',
-    finishedWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FinishWeight !== undefined
-      ? WeightCalculatorRequest.FinishWeight
-      : '',
-    machiningStock: WeightCalculatorRequest &&
-      WeightCalculatorRequest.TotalMachiningStock !== undefined
-      ? WeightCalculatorRequest.TotalMachiningStock
+    NetRMCostComponent: WeightCalculatorRequest &&
+      WeightCalculatorRequest.NetRMCost !== undefined
+      ? WeightCalculatorRequest.NetRMCost
       : ''
   }
   const {
@@ -68,158 +103,227 @@ function HotForging(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['finishedWeight', 'machiningStock'],
+    name: ['finishedWeight', 'BilletDiameter' , 'BilletLength' , 'ScrapRecoveryPercentage'],
   })
 
   const dispatch = useDispatch()
   const [inputWeightValue, setInputWeightValue] = useState(0)
-  const [lostWeight, setLostWeight] = useState(0)
-  const { rmRowData } = props
-  const [tableVal, setTableVal] = useState([])
+  const [forgeWeightValue, setForgeWeightValue] = useState(0)
+  const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
+  const [inputLengthValue, setInputLengthValue] = useState(0)
+  const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
+  const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators !== null ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : [])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
+  const [totalMachiningStock, setTotalMachiningStock] = useState('')
+  const [diableMachiningStock,setDiableMachiningStock]= useState(false)
+  
 
   const costData = useContext(costingInfoContext)
   useEffect(() => {
     calculateForgeWeight()
-    calculateSacleLoss()
-    calculateInputWeight()
-    calculateSlugWeight()
+    calculateInputLength(lostWeight)
+    calculateNoOfPartsPerLength()
+    calculateEndBitLength() 
+    calculateEndBitLoss()
+    calculateTotalInputWeight(lostWeight)
     calculateScrapWeight()
     calculateScrapCost()
-  }, [fieldValues])
+    calculateNetRmCostComponent()
 
+  }, [fieldValues])
+    
   /**
    * @method calculateForgeWeight
    * @description calculate forge weight
    */
   const calculateForgeWeight = () => {
-    const finishedWeight = Number(getValues('finishedWeight'))
-    const machiningStock = Number(getValues('machiningStock'))
-    if (!finishedWeight || !machiningStock) {
+    
+    const finishedWeight = checkForNull(getValues('finishedWeight'))
+    if (!finishedWeight || !totalMachiningStock) {
       return ''
     }
-    const forgeWeight = checkForDecimalAndNull(
-      finishedWeight + machiningStock,
-      trim,
-    )
-    setDataSend(prevState => ({ ...prevState, forgeWeight: forgeWeight }))
-    setValue('forgeWeight', checkForDecimalAndNull(forgeWeight, initialConfiguration.NoOfDecimalForInputOutput))
-  }
-  /**
-   * @method calculateSacleLoss
-   * @description calculating Sacle Loss
-   */
-  const calculateSacleLoss = () => {
-    const forgeWeight = Number(getValues('forgeWeight'))
-    const scaleLossPercent = 2 //Need to ask how to make it dynamic
-    const sacleLoss = checkForDecimalAndNull(
-      forgeWeight * scaleLossPercent,
-      trim,
-    )
-    setValue('sacleLoss', sacleLoss)
+    const forgedWeight =  finishedWeight + totalMachiningStock
+
+    setDataSend(prevState => ({ ...prevState, forgedWeight: forgedWeight }))
+    setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration.NoOfDecimalForInputOutput))
+    setForgeWeightValue(forgedWeight)
   }
 
-
-  /**
-   * @method calculateInputWeight
-   * @description Calculate Input Weight
+ 
+/**
+   * @method calculateInputLength
+   * @description calculate Input Lengtht
    */
 
-  const calculateInputWeight = (netLossWeight = 0) => {
+  const calculateInputLength = (netLossWeight = 0) =>{
+    
+    const BilletDiameter = checkForDecimalAndNull(getValues('BilletDiameter'), getConfigurationKey().NoOfDecimalForInputOutput)
+    const forgedWeight = checkForDecimalAndNull(getValues('forgedWeight'))   
+    const InputLength = (forgedWeight + netLossWeight)/(0.7857 * BilletDiameter * BilletDiameter * rmRowData.Density/1000000)
+    setDataSend(prevState => ({ ...prevState, InputLength: InputLength })) 
+    setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
     setLostWeight(netLossWeight)
-
-    const forgeWeight = Number(getValues('forgeWeight'))
-    const inputWeight = checkForDecimalAndNull(
-      forgeWeight + netLossWeight,
-      trim,
-    )
-
-    setDataSend(prevState => ({ ...prevState, inputWeight: inputWeight }))
-    setValue('inputWeight', checkForDecimalAndNull(inputWeight, initialConfiguration.NoOfDecimalForInputOutput))
-    setInputWeightValue(inputWeight)
+    setInputLengthValue(InputLength)
   }
   /**
-   * @method calculateSlugWeight
-   * @description Calculate Slug Weight
+   * @method calculateNoOfPartsPerLength
+   * @description calculate No Of Parts Per Length
    */
-  const calculateSlugWeight = () => {
-    const barCutting = Number(getValues('barCutting'))
-    const billetLoss = Number(getValues('billetLoss'))
-    const inputWeight = Number(getValues('inputWeight'))
 
-    const slugWeight = checkForDecimalAndNull(
-      inputWeight - barCutting - billetLoss,
-      trim,
-    )
-
-    setDataSend(prevState => ({ ...prevState, slugWeight: slugWeight }))
-    setValue('slugWeight', checkForDecimalAndNull(slugWeight, initialConfiguration.NoOfDecimalForInputOutput))
+  const calculateNoOfPartsPerLength = () =>{
+    const BilletLength = checkForDecimalAndNull(getValues('BilletLength'), getConfigurationKey().NoOfDecimalForInputOutput)
+    const InputLength = checkForNull(getValues('InputLength'))
+    const NoOfPartsPerLength = parseInt(BilletLength/InputLength)
+    
+    setDataSend(prevState => ({ ...prevState, NoOfPartsPerLength: NoOfPartsPerLength }))
+    setValue('NoOfPartsPerLength', checkForDecimalAndNull(NoOfPartsPerLength, getConfigurationKey().NoOfDecimalForPrice))
   }
+
+   /**
+   * @method calculateEndBitLength
+   * @description calculate EndBit Length 
+   */
+    const calculateEndBitLength = () => {
+      const BilletLength = checkForNull(getValues('BilletLength'))
+      const InputLength = checkForNull(getValues('InputLength'))
+      const NoOfPartsPerLength = checkForNull(getValues('NoOfPartsPerLength'))
+      const EndBitLength = BilletLength-(InputLength*NoOfPartsPerLength)
+      setDataSend(prevState => ({ ...prevState, EndBitLength: EndBitLength }))
+      setValue('EndBitLength', checkForDecimalAndNull(EndBitLength, getConfigurationKey().NoOfDecimalForPrice))
+    }
+
+    
+   /**
+   * @method calculateEndBitLoss
+   * @description calculate End BitLoss
+   */
+  const calculateEndBitLoss= () =>{
+    const BilletDiameter = checkForNull(getValues('BilletDiameter'))
+    const EndBitLength = checkForNull(getValues('EndBitLength'))
+    const NoOfPartsPerLength = checkForNull(getValues('NoOfPartsPerLength'))
+    const EndBitLoss = (0.7857*BilletDiameter*BilletDiameter*EndBitLength*(rmRowData.Density/1000000)/NoOfPartsPerLength)
+    setDataSend(prevState => ({ ...prevState, EndBitLoss: EndBitLoss }))
+    setValue('EndBitLoss', checkForDecimalAndNull(EndBitLoss, getConfigurationKey().NoOfDecimalForPrice))
+  }
+
+   /**
+   * @method calculateTotalInputWeight
+   * @description Calculate Total Input Weight
+   */
+
+    const calculateTotalInputWeight = (netLossWeight = 0) => {
+      
+      const forgedWeight = checkForDecimalAndNull(getValues('forgedWeight'))     
+      const EndBitLoss = checkForNull(getValues('EndBitLoss'))     
+      const TotalInputWeight = forgedWeight + netLossWeight + EndBitLoss
+      setDataSend(prevState => ({ ...prevState, TotalInputWeight: TotalInputWeight }))
+      setValue('TotalInputWeight', checkForDecimalAndNull(TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput))
+      setLostWeight(netLossWeight)
+    }
+ 
   /**
    * @method calculateScrapWeight
    * @description Calculate Scrap Weight
+   *
    */
   const calculateScrapWeight = () => {
-    const inputWeight = Number(getValues('inputWeight')) // Need to confirm Input RM weight is same as input weight
-    const finishedWeight = Number(getValues('finishedWeight'))
-    if (!finishedWeight || !inputWeight) {
+    const TotalInputWeight = checkForNull(getValues('TotalInputWeight')) 
+    const finishedWeight = checkForNull(getValues('finishedWeight'))
+    if (!finishedWeight || !TotalInputWeight) {
       return ''
     }
-    const scrapWeight = checkForDecimalAndNull(
-      inputWeight - finishedWeight * 0.85,
-      trim,
-    )
-
-    setDataSend(prevState => ({ ...prevState, scrapWeight: scrapWeight }))
-    setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
+    const ScrapWeight = TotalInputWeight - finishedWeight
+    setDataSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
+    setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
   }
   /**
    * @method calculateScrapCost
    * @description Calculate Scrap Cost
    */
   const calculateScrapCost = () => {
-    const scrapWeight = Number(getValues('scrapWeight'))
-    const scrapCost = checkForDecimalAndNull(scrapWeight * rmRowData.ScrapRate, trim)
-    setDataSend(prevState => ({ ...prevState, scrapCost: scrapCost }))
-    setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
-    //Need to confirm this formula
+    const ScrapRecoveryPercentage = checkForNull(getValues('ScrapRecoveryPercentage'))
+    const ScrapWeight = checkForNull(getValues('ScrapWeight'))
+    const ScrapCost = (ScrapWeight * ScrapRecoveryPercentage* rmRowData.ScrapRate)/100
+    setDataSend(prevState => ({ ...prevState, ScrapCost: ScrapCost }))
+    setValue('ScrapCost', checkForDecimalAndNull(ScrapCost, getConfigurationKey().NoOfDecimalForPrice))
+    
   }
+  
+  /**
+   * @method calculateNetRmCostComponent
+   * @description calculate Net Rm Cost/Component
+   */
+
+const calculateNetRmCostComponent = () =>{
+  const TotalInputWeight = checkForNull(getValues('TotalInputWeight'))
+  const ScrapCost = checkForNull(getValues('ScrapCost'))
+  const NetRMCostComponent = (TotalInputWeight * rmRowData.RMRate-ScrapCost)
+  
+  setDataSend(prevState => ({ ...prevState, NetRMCostComponent: NetRMCostComponent }))
+  setValue('NetRMCostComponent', checkForDecimalAndNull(NetRMCostComponent, getConfigurationKey().NoOfDecimalForPrice))
+}
+
   /**
    * @method onSubmit
    * @description Form submission Function
    */
   const onSubmit = (values) => {
     let obj = {}
+  
     obj.LayoutType = 'Hot'
-    obj.ForgedWeight = dataSend.forgeWeight
-    obj.InputWeight = dataSend.inputWeight
-    obj.SlugWeight = dataSend.slugWeight
-    obj.ScrapWeight = dataSend.scrapWeight
-    obj.ScrapCost = dataSend.scrapCost
-    obj.FinishWeight = getValues('finishedWeight')
-    obj.TotalMachiningStock = getValues('machiningStock')
-    obj.LossOfTypeDetails = tableVal
-    obj.LostSum = lostWeight
-    obj.GrossWeight = dataSend.forgeWeight
-
-
+    obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
+    obj.IsChangeApplied = true //Need to make it dynamic
+    obj.PartId = costData.PartId
+    obj.RawMaterialId = rmRowData.RawMaterialId
     obj.CostingId = costData.CostingId
     obj.TechnologyId = costData.TechnologyId
-    obj.PartId = costData.PartId
-    obj.RawMaterialId = props.rmRowData.RawMaterialId
-    obj.CostingRawMaterialDetailId = props.rmRowData.RawMaterialDetailId
-    obj.RawMaterialName = props.rmRowData.RMName
-    obj.RawMaterialType = props.rmRowData.MaterialType
-    obj.BasicRatePerUOM = props.rmRowData.RMRate
-    obj.ScrapRate = props.rmRowData.ScrapRate
+    obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
+    obj.RawMaterialName = rmRowData.RMName
+    obj.RawMaterialType = rmRowData.MaterialType
+    obj.BasicRatePerUOM = rmRowData.RMRate
+    obj.ScrapRate = rmRowData.ScrapRate
     obj.PartNumber = costData.PartNumber
     obj.TechnologyName = costData.TechnologyName
+    obj.Density = rmRowData.Density
+    obj.UOMId = rmRowData.UOMId
+    obj.UOM = rmRowData.UOM
+    obj.UOMForDimension = KG
+    obj.FinishWeight = getValues('finishedWeight')
+    obj.ForgedWeight = dataSend.forgedWeight
+    obj.BilletDiameter = getValues('BilletDiameter')
+    obj.BilletLength = getValues('BilletLength')
+    obj.InputLength = dataSend.InputLength
+    obj.NoOfPartsPerLength = dataSend.NoOfPartsPerLength
+    obj.EndBitLength = dataSend.EndBitLength
+    obj.EndBitLoss = dataSend.EndBitLoss
+    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH gROSS WEIGHT KEY
+    obj.GrossWeight = dataSend.TotalInputWeight
+    obj.ScrapWeight = dataSend.ScrapWeight
+    obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
+    obj.ScrapCost = dataSend.ScrapCost
+    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IOT WITH NETLANDED COST
+    obj.NetLandedCost = dataSend.NetRMCostComponent 
+
+
     obj.LoggedInUserId = loggedInUserId()
-    obj.IsChangeApplied = true
 
+    let tempArr = []
+    tableVal && tableVal.map(item => {
+        tempArr.push({ LossOfType: item.LossOfType,FlashLoss: item.FlashLoss,FlashLossId: item.FlashLossId, LossPercentage: item.LossPercentage, FlashLength: item.FlashLength, FlashThickness: item.FlashThickness, FlashWidth: item.FlashWidth, BarDiameter: item.BarDiameter, BladeThickness: item.BladeThickness, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
+    })
+    obj.LossOfTypeDetails = tempArr
+    obj.NetLossWeight = lostWeight
 
-
+    let tempArray = []
+    
+    tableV && tableV.map(item => {
+      tempArray.push({ TypesOfMachiningStock: item.TypesOfMachiningStock,TypesOfMachiningStockId: item.TypesOfMachiningStockId, Description: item.Description, MajorDiameter: item.MajorDiameter, MinorDiameter: item.MinorDiameter, Length: item.Length, Breadth: item.Breadth, Height: item.Height, No: item.No,GrossWeight: item.GrossWeight, Volume: item.Volume, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
+  })
+  obj.CostingRawMaterialForgingWeightCalculators = tempArray
+  obj.TotalMachiningStock = totalMachiningStock
+   
+  
     dispatch(saveRawMaterialCalciData(obj, res => {
       if (res.data.Result) {
         obj.WeightCalculationId = res.data.Identity
@@ -228,6 +332,15 @@ function HotForging(props) {
       }
     }))
   }
+   const TotalMachiningStock = (value) =>{
+
+    setTotalMachiningStock(value)
+   }
+
+   useEffect(()=>{
+    calculateForgeWeight()
+   },[totalMachiningStock])
+
   /**
    * @method onCancel
    * @description on cancel close the drawer
@@ -246,11 +359,11 @@ function HotForging(props) {
       value: 5,
     },
     {
-      label: 'Trimming Loss',
+      label: 'Bilet Heating Loss',
       value: 6,
     },
     {
-      label: 'Billet Heating Loss',
+      label: 'Flash Loss',
       value: 7,
     },
     {
@@ -258,6 +371,42 @@ function HotForging(props) {
       value: 8,
     },
   ]
+  
+  const tableData1 = (value = []) => {
+
+    setTableV(value)
+    
+  }
+  const machineDropDown = [
+    {
+      label: 'Circular',
+      value: 1,
+    },
+    {
+      label: 'Semi Circular',
+      value: 2,
+    },
+    {
+      label: 'Quarter Circular',
+      value: 3,
+    },
+    {
+      label: 'Square',
+      value: 4,
+    },
+    {
+      label: 'Rectangular',
+      value: 9,
+    },
+    {
+      label: 'Irregular',
+      value: 10,
+    },
+  ]
+  const LossMachine=(value)=>{
+    setDiableMachiningStock(value)
+  }
+console.log(diableMachiningStock,'diableMachiningStock');
   return (
     <Fragment>
       <Row>
@@ -266,16 +415,12 @@ function HotForging(props) {
             <Col md="12" className={'mt25'}>
               <div className="border px-3 pt-3">
                 <Row>
-                  <Col md="10">
-                    <div className="left-border">
-                      {'Input Weight Calculator:'}
-                    </div>
-                  </Col>
+                  
                   <Col md="12">
                     <Row className={'mt15'}>
                       <Col md="3">
                         <TextFieldHookForm
-                          label={`Finished Weight`}
+                          label={`Finished Weight(kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
                           control={control}
@@ -288,6 +433,10 @@ function HotForging(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.',
                             },
+                            maxLength: {
+                              value: 8,
+                              message: 'Length should not be more than 8'
+                            },
 
                           }}
                           handleChange={() => { }}
@@ -295,133 +444,360 @@ function HotForging(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.finishedWeight}
-                          disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                          disabled={props.CostingViewMode || diableMachiningStock ? true : false}
                         />
                       </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Total Machining Stock`}
-                          name={'machiningStock'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={true}
-                          rules={{
-                            required: true,
-                            pattern: {
-
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.',
-                            },
-                          }}
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.machiningStock}
-                          disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Forge Weight`}
-                          name={'forgeWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.forgeWeight}
-                          disabled={true}
-                        />
-                      </Col>
-
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Input Weight(UOM)`}
-                          name={'inputWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.inputWeight}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Slug Weight`}
-                          name={'slugWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.slugWeight}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Scrap Weight`}
-                          name={'scrapWeight'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.scrapWeight}
-                          disabled={true}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <TextFieldHookForm
-                          label={`Scrap Cost`}
-                          name={'scrapCost'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={false}
-
-                          handleChange={() => { }}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.scrapCost}
-                          disabled={true}
-                        />
-                      </Col>
+                      
                     </Row>
+                    <MachiningStockTable
+                      dropDownMenu={machineDropDown}
+                      CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
+                      netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                      sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators?.length > 0 ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : []) : []}
+                      tableValue={tableData1}
+                      rmRowData={props.rmRowData}
+                      calculation = {TotalMachiningStock}
+                      diableMachiningStock={diableMachiningStock}
+                    />
                   </Col>
                 </Row>
+               
+                <Col md="3">
+                  <TextFieldHookForm
+                      label={`Forged Weight (Kg)`}
+                      name={'forgedWeight'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.forgedWeight}
+                      disabled={true}
+                    />
+                  </Col>
                 <LossStandardTable
                   dropDownMenu={dropDown}
                   CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
-                  calculation={calculateInputWeight}
-                  weightValue={inputWeightValue}
+                  calculation={calculateInputLength}
+                  calculation={calculateTotalInputWeight}
+                  forgeValue = {forgeWeightValue}
+                  lengthValue={inputLengthValue}
                   netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
+                  rmRowData={props.rmRowData}
+                  LossMachine ={LossMachine}
                 />
+                
               </div>
             </Col>
+            <Row>
+            <Col md="3">
+                    <TextFieldHookForm
+                      label={`Billet Diameter(mm)`}
+                      name={'BilletDiameter'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.',
+                        },
+                        maxLength: {
+                          value: 11,
+                          message: 'Length should not be more than 11'
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.BilletDiameter}
+                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label={`Billet Length(mm)`}
+                      name={'BilletLength'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.',
+                        },
+                        maxLength: {
+                          value: 11,
+                          message: 'Length should not be more than 11'
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.BilletLength}
+                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label={`Input Length(mm)`}
+                      name={'InputLength'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.InputLength}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="3">
+                  <TextFieldHookForm
+                      label={`No Of Parts Per Length`}
+                      name={'NoOfPartsPerLength'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.NoOfPartsPerLength}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="3">
+                  <TextFieldHookForm
+                      label={`End Bit Length`}
+                      name={'EndBitLength'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.EndBitLength}
+                      disabled={true}
+                    />
+                  </Col>
+
+                  <Col md="3">
+                  <TextFieldHookForm
+                      label={`End Bit Loss (Kg)`}
+                      name={'EndBitLoss'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.EndBitLoss}
+                      disabled={true}
+                    />
+                  </Col>
+ 
+                  </Row>
+                  <Row>
+                  <Col md="3">
+                  <TextFieldHookForm
+                      label={`Total Input Weight (Kg)`}
+                      name={'TotalInputWeight'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.TotalInputWeight}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="3">
+                  <TextFieldHookForm
+                      label={`Scrap Weight (Kg)`}
+                      name={'ScrapWeight'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.ScrapWeight}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label={`Scrap Recovery Percentage`}
+                      name={'ScrapRecoveryPercentage'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.',
+                        },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={()=>{}}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.ScrapRecoveryPercentage}
+                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                    />
+                  </Col>
+                  <Col md="3">
+                  <TextFieldHookForm
+                      label={`Scrap Cost`}
+                      name={'ScrapCost'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.ScrapCost}
+                      disabled={true}
+                    />
+                  </Col>
+                  
+                  <Col md="3">
+                  <TextFieldHookForm
+                      label={`Net RM Cost/ Component`}
+                      name={'NetRMCostComponent'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.NetRMCostComponent}
+                      disabled={true}
+                    />
+                  </Col>
+                  </Row>
+               
             <div className="mt25 col-md-12 text-right">
               <button
                 onClick={onCancel} // Need to change this cancel functionality
