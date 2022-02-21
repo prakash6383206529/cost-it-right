@@ -718,8 +718,8 @@ class AddBOPDomestic extends Component {
 
 
       } else {
-        this.props.reset()
         this.props.createBOPDomestic(formData, (res) => {
+          this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
@@ -1246,7 +1246,7 @@ class AddBOPDomestic extends Component {
                             (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                disabled={isViewMode}
+                                disabled={isViewMode || setDisable}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
