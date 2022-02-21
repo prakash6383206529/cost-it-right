@@ -841,7 +841,7 @@ function MachiningStockTable(props) {
                   return (
                     <Fragment>
                       <tr key={index}>
-                        <td>{item.Description !== null ?item.Description : '-'}</td>
+                        <td> <div className='text-overflow' title={item.Description}>{item.Description !== null ?item.Description : '-'}</div></td>
                         <td>{item.TypesOfMachiningStock !== null ?item.TypesOfMachiningStock:'-'}</td>
                         <td>{checkForDecimalAndNull(item.MajorDiameter , getConfigurationKey().NoOfDecimalForInputOutput) !== null ?checkForDecimalAndNull(item.MajorDiameter , getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td> 
                         <td>{checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput)  !== null?checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
