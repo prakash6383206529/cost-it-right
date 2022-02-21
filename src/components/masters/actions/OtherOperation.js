@@ -255,24 +255,8 @@ export function deleteCEDotherOperationAPI(Id, callback) {
 export function getOperationsDataList(filterData, temp, callback) {
 
     return (dispatch) => {
-<<<<<<< HEAD
-        dispatch({
-            type: GET_OPERATION_SURFACE_TREATMENT_DATA_LIST,
-            payload: []
-        })
-        dispatch({
-            type: GET_OPERATION_INDIVIDUAL_DATA_LIST,
-            payload: []
-        })
-        dispatch({
-            type: GET_OPERATION_COMBINED_DATA_LIST,
-            payload: []
-        })
-        let payloadSurfaceTreatment, payloadOperation, tempData, payload
-=======
 
         let payload
->>>>>>> 9e603e9fd (Bulk upload disable applied and callback applied in action creator)
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, headers)

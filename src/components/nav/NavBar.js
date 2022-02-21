@@ -32,13 +32,8 @@ import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-<<<<<<< HEAD
-import { VERSION } from '../../config/constants'; 
-
-=======
 import { VERSION } from '../../config/constants';
 import { getConfigurationKey } from '../../helper';
->>>>>>> 8599a39ac (add approvals status on dashboard)
 class SideBar extends Component {
   constructor(props) {
     super(props)

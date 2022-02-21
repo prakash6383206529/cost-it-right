@@ -134,34 +134,6 @@ export default function OtherOperationReducer(state = initialState, action) {
                 loading: false,
                 operationList: action.payload
             }
-<<<<<<< HEAD
-        case GET_OPERATION_SURFACE_TREATMENT_DATA_LIST:
-            let tempST = action.payload
-            let surfaceTreatmentOperationData = []
-            tempST && tempST.map(item => {
-                if (item.IsSurfaceTreatmentOperation === true) {
-                    surfaceTreatmentOperationData.push(item)
-                }
-            })
-            return {
-                ...state,
-                loading: false,
-                operationList: surfaceTreatmentOperationData
-            }
-        case GET_OPERATION_INDIVIDUAL_DATA_LIST:
-            let tempO = action.payload
-            let OperationData = []
-            tempO && tempO.map(item => {
-                if (item.IsSurfaceTreatmentOperation === false) {
-                    OperationData.push(item)
-                }
-            })
-            return {
-                ...state,
-                loading: false,
-                operationList: OperationData
-            }
-=======
 
         case GET_OPERATION_APPROVAL_LIST:
             return {
@@ -171,7 +143,6 @@ export default function OtherOperationReducer(state = initialState, action) {
                 OperationApprovalList: action.payload
             }
 
->>>>>>> 570c25545 (operation approval work undergoing)
         default:
             return state;
     }

@@ -10,16 +10,10 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-<<<<<<< HEAD
-import { costingHeadObjs } from '../../../config/masterData';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-=======
 import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
->>>>>>> a10b07e8f (V1.1.252 + unused code removed)
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
 // import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
-import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';

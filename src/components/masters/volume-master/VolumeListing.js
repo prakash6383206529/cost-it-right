@@ -418,22 +418,8 @@ class VolumeListing extends Component {
       BulkUploadAccessibility,
       DownloadAccessibility
     } = this.state
-<<<<<<< HEAD
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      exportCSVBtn: this.createCustomExportCSVButton,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-=======
     const ExcelFile = ReactExport.ExcelFile;
 
->>>>>>> a10b07e8f (V1.1.252 + unused code removed)
 
 
     const defaultColDef = {

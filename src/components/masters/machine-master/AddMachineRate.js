@@ -20,7 +20,7 @@ import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, user
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC,MACHINE_MASTER_ID } from '../../../config/constants';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -64,13 +64,9 @@ class AddMachineRate extends Component {
       vendorName: [],
       selectedVendorPlants: [],
       selectedPlants: [],
-<<<<<<< HEAD
-
-=======
       isFinalApprovar: false,
       approvalObj: {},
       IsSendForApproval: false,
->>>>>>> 4ab0318d9 (Machine master Approval undegoing)
       machineType: [],
       isOpenMachineType: false,
 
