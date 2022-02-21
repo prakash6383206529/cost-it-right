@@ -77,7 +77,7 @@ function ProfitSimulation(props) {
         let tempRMBOP = 0
         let tempBOPCC = 0
         let tempRMCCBOP = 0
-        let tempE = 0
+        let value = 0
 
         let checkRMPercent_NOT_CHANGED = 0
         let checkCCPercent_NOT_CHANGED = 0
@@ -307,7 +307,7 @@ function ProfitSimulation(props) {
             if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0) {
                 temp = temp + 1
             } else {
-                tempE = tempE + 1
+                value = value + 1
             }
         })
 
@@ -319,7 +319,7 @@ function ProfitSimulation(props) {
                 Toaster.warning('Please fill CC');
                 return false
             } else if (tempBOP !== 0) {
-                Toaster.warning('Please fill BOM');
+                Toaster.warning('Please fill BOP');
                 return false
             } else if (tempRMCC !== 0) {
                 Toaster.warning('Please fill both RM and CC or Profit Percentage');

@@ -312,7 +312,6 @@ function OverheadSimulation(props) {
                 Toaster.warning(`Please fill all values RM, CC and BOP or Overhead Percentage`);
                 stopflow = true
             }
-
         })
         if (stopflow) {
             return false

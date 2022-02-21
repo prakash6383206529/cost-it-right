@@ -78,16 +78,16 @@ function SheetMetalBaicDrawer(props) {
   useEffect(() => {
     //setValue('ProcessCost', checkForDecimalAndNull(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '', getConfigurationKey().NoOfDecimalForPrice))
     if (props.calculatorData.UOMType === MASS) {
-      setQuantityState(rmFinishWeight)
+      setQuantityState(rmFinishWeight ? rmFinishWeight : 1)
       setValue('Quantity', rmFinishWeight ? checkForDecimalAndNull(rmFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
 
       // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
     } else if (props.calculatorData.UOMType === TIME) {
-      setQuantityState(WeightCalculatorRequest.Quantity)
+      setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
       setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
       setHide(true)
     } else {
-      setQuantityState(WeightCalculatorRequest.Quantity)
+      setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
       setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
     }
     // if (props.calculatorData.UOMType === DIMENSIONLESS) {
