@@ -850,12 +850,22 @@ export function getFilteredData(arr, id) {
       const listBop = arr && arr.filter((item => item.IsBOPAssociated === true))
       return listBop
 
+
+    case 3:   //CASE 3 FOR OPERATIONS
+
+      const listOperation = arr && arr.filter((item => item.IsOperationAssociated === true))
+      return listOperation
+
+    case 4:   //CASE 4 FOR MACHINE
+
+      const listMachine = arr && arr.filter((item => item.IsMachineAssociated === true))
+      return listMachine
+
     default:
       break;
 
 
   }
-
 
 
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, MACHINE_MASTER_ID } from '../../../config/constants';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
@@ -25,6 +25,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -169,10 +170,24 @@ class MachineRateListing extends Component {
         const rowData = props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
+
+
+        let isEditable = false
+
+        if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID)) {
+            if (EditAccessibility && !rowData.IsMachineAssociated) {
+                isEditable = true
+            } else {
+                isEditable = false
+            }
+        } else {
+            isEditable = EditAccessibility
+        }
+
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
@@ -324,6 +339,17 @@ class MachineRateListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
+
+
+    getFilterMachineData = () => {
+        if (this.props.isSimulation) {
+            return getFilteredData(this.props.machineDatalist, MACHINE_MASTER_ID)
+        } else {
+            return this.props.machineDatalist
+        }
+    }
+
+
     /**
     * @method render
     * @description Renders the component
@@ -444,7 +470,7 @@ class MachineRateListing extends Component {
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
                                     domLayout='autoHeight'
-                                    rowData={this.props.machineDatalist}
+                                    rowData={this.getFilterMachineData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
