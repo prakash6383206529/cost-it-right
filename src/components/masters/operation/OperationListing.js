@@ -15,9 +15,10 @@ import {
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
+import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -260,10 +261,22 @@ class OperationListing extends Component {
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
 
+        let isEditable = false
+
+        if (CheckApprovalApplicableMaster(OPERATIONS_ID)) {
+            if (EditAccessibility && !rowData.IsOperationAssociated) {
+                isEditable = true
+            } else {
+                isEditable = false
+            }
+        } else {
+            isEditable = EditAccessibility
+        }
+
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -514,6 +527,14 @@ class OperationListing extends Component {
     }
 
 
+    getFilterOperationData = () => {
+        if (this.props.isSimulation) {
+            return getFilteredData(this.state.tableData, OPERATIONS_ID)
+        } else {
+            return this.state.tableData
+        }
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -653,7 +674,7 @@ class OperationListing extends Component {
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                rowData={tableData}
+                                rowData={this.getFilterOperationData()}
                                 pagination={true}
 
                                 paginationPageSize={10}
