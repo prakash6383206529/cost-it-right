@@ -635,11 +635,11 @@ class AddFuel extends Component {
                               )}
                               <button
                                 type="button"
-                                className={"reset-btn mt30 ml5 pull-left"}
+                                className={"mr15 ml-3 mt30 add-cancel-btn cancel-btn"}
                                 disabled={isViewMode}
                                 onClick={this.rateTableReset}
                               >
-                                <div className={"plus"}></div>Cancel
+                                <div className={"cancel-icon"}></div>Cancel
                               </button>
 
                             </div>

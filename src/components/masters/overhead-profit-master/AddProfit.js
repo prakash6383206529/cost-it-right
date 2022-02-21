@@ -821,7 +821,7 @@ class AddProfit extends Component {
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <Col md="4">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
                             <AsyncSelect
                               name="vendorName"
                               ref={this.myRef}
