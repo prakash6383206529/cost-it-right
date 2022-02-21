@@ -21,7 +21,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredRMData, getOtherCostingSimulation, isUploadSimulation, userDetails } from '../../../helper';
+import { applyEditCondSimulation, getFilteredData, getOtherCostingSimulation, isUploadSimulation, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
