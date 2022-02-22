@@ -1012,8 +1012,9 @@ class AddMachineRate extends Component {
 
 
       } else {
-        this.props.reset()
+
         this.props.createMachine(formData, (res) => {
+          this.setState({ setDisable: false })
           if (res.data.Result) {
             Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS)
             //this.clearForm()

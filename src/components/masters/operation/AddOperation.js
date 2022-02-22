@@ -15,7 +15,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL,OPERATIONS_ID, ZBC,EMPTY_GUID } from '../../../config/constants';
+import { FILE_URL, OPERATIONS_ID, ZBC, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -646,8 +646,9 @@ class AddOperation extends Component {
           Toaster.warning('Please update the effective date')
         }
       } else {
-        this.props.reset()
+
         this.props.createOperationsAPI(formData, (res) => {
+          this.setState({ setDisable: false })
           if (res.data.Result) {
             Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
             //this.clearForm()
@@ -864,11 +865,11 @@ class AddOperation extends Component {
                             isDisabled={isEditFlag ? true : false} />
                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                           {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
+                            <div
+                              onClick={this.vendorToggler}
+                              className={"plus-icon-square  right"}
+                            ></div>
+                          )}
                         </Col>
 
                       )}
