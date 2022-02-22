@@ -192,7 +192,7 @@ function MachiningStockTable(props) {
     setValue('grossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setGrossWeight(GrossWeight)
    
-   
+    
   }
   
   const calculateTotalMachiningStock = (tableVal) =>{
@@ -414,7 +414,7 @@ function MachiningStockTable(props) {
         </Col>
 
        
-        <Col md="2">
+        <Col md="3">
                       <TextFieldHookForm
                         label={`Description`}
                         name={'description'}
@@ -441,7 +441,7 @@ function MachiningStockTable(props) {
                     </Col>
                     {!irregularMachiningStock&&
                     <>
-                    <Col md="3">
+                    <Col md="2">
                     <TextFieldHookForm
                       label={`Length(mm)`}
                       name={'Length'}
@@ -543,7 +543,7 @@ function MachiningStockTable(props) {
                    {squareMachiningStock&&
                   <>
                   
-                <Col md="3">
+                <Col md="2">
                     <TextFieldHookForm
                       label={`Number`}
                       name={'No'}
@@ -574,7 +574,7 @@ function MachiningStockTable(props) {
                   </Col>
                   
                 
-                  <Col md="3">
+                  <Col md="2">
                   <TextFieldHookForm
                     label={`Height(mm)`}
                     name={'Height'}
@@ -607,7 +607,7 @@ function MachiningStockTable(props) {
                 {rectangularMachiningStock&&
                 <>
                 
-                <Col md="3">
+                <Col md="2">
                     <TextFieldHookForm
                       label={`Number`}
                       name={'No'}
@@ -639,7 +639,7 @@ function MachiningStockTable(props) {
                  
                   
                 
-                <Col md="3">
+                <Col md="2">
                     <TextFieldHookForm
                       label={`Breadth (mm)`}
                       name={'Breadth'}
@@ -668,7 +668,7 @@ function MachiningStockTable(props) {
                       disabled={props.CostingViewMode || diableMachiningStock ? true : false}
                     />
                   </Col>
-                  <Col md="3">
+                  <Col md="2">
                   <TextFieldHookForm
                     label={`Height(mm)`}
                     name={'Height'}
@@ -821,6 +821,7 @@ function MachiningStockTable(props) {
           <Table className="table mb-0 forging-cal-table" size="sm">
             <thead>
               <tr>
+                <th>{`Description`}</th>
                 <th>{`Type of Machining Stock`}</th>
                 <th>{`Major Diameter (mm)`}</th>
                 <th>{`Minor Diameter (mm)`}</th>
@@ -840,6 +841,7 @@ function MachiningStockTable(props) {
                   return (
                     <Fragment>
                       <tr key={index}>
+                        <td> <div className='text-overflow' title={item.Description}>{item.Description !== null ?item.Description : '-'}</div></td>
                         <td>{item.TypesOfMachiningStock !== null ?item.TypesOfMachiningStock:'-'}</td>
                         <td>{checkForDecimalAndNull(item.MajorDiameter , getConfigurationKey().NoOfDecimalForInputOutput) !== null ?checkForDecimalAndNull(item.MajorDiameter , getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td> 
                         <td>{checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput)  !== null?checkForDecimalAndNull(item.MinorDiameter, getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
@@ -879,7 +881,7 @@ function MachiningStockTable(props) {
                 })}
               {tableData && tableData.length === 0 && (
                 <tr>
-                  <td colspan="4">
+                  <td colspan="15">
                     <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>
@@ -895,7 +897,7 @@ function MachiningStockTable(props) {
               //   {checkForDecimalAndNull(burningWeight, trim)}
               // </span>} */}
             <span className="w-50 d-inline-block">
-              {`Total Machining Stock:`}
+              {`Total Machining Stock: `}
               {checkForDecimalAndNull(calculateTotalMachiningStock(tableData),trim)}
             </span>
           </div>

@@ -159,8 +159,10 @@ function ColdForging(props) {
   const calculateInputLength = (netLossWeight = 0) =>{
     
     const BilletDiameter = checkForDecimalAndNull(getValues('BilletDiameter'), getConfigurationKey().NoOfDecimalForInputOutput)
-    const forgedWeight = checkForDecimalAndNull(getValues('forgedWeight'))   
+    const forgedWeight = forgeWeightValue
+    console.log(forgeWeightValue,'forgeWeightValue');
     const InputLength = (forgedWeight + netLossWeight)/(0.7857 * BilletDiameter * BilletDiameter * rmRowData.Density/1000000)
+    console.log('InputLength: ', InputLength);
     setDataSend(prevState => ({ ...prevState, InputLength: InputLength })) 
     setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
     setLostWeight(netLossWeight)
@@ -297,13 +299,15 @@ const calculateNetRmCostComponent = () =>{
     obj.NoOfPartsPerLength = dataSend.NoOfPartsPerLength
     obj.EndBitLength = dataSend.EndBitLength
     obj.EndBitLoss = dataSend.EndBitLoss
-    obj.InputWeight = dataSend.TotalInputWeight
+    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH gROSS WEIGHT KEY
     obj.GrossWeight = dataSend.TotalInputWeight
     obj.ScrapWeight = dataSend.ScrapWeight
     obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
     obj.ScrapCost = dataSend.ScrapCost
-    obj.NetRMCost = dataSend.NetRMCostComponent
+    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IOT WITH NETLANDED COST
     obj.NetLandedCost = dataSend.NetRMCostComponent 
+
+
     obj.LoggedInUserId = loggedInUserId()
 
     let tempArr = []
@@ -352,7 +356,10 @@ const calculateNetRmCostComponent = () =>{
     setTableVal(value)
   }
   const dropDown = [
- 
+    {
+      label: 'Scale Loss',
+      value: 5,
+    },
     {
       label: 'Bilet Heating Loss',
       value: 6,
@@ -398,21 +405,20 @@ const calculateNetRmCostComponent = () =>{
       value: 10,
     },
   ]
-  const LossMachine=(value)=>{
+  const LossMachineFunction=(value)=>{
     setDiableMachiningStock(value)
   }
-console.log(diableMachiningStock,'diableMachiningStock');
   return (
     <Fragment>
       <Row>
         <Col>
           <form noValidate className="form">
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>
                   
                   <Col md="12">
-                    <Row className={'mt15'}>
+                    <Row>
                       <Col md="3">
                         <TextFieldHookForm
                           label={`Finished Weight(kg)`}
@@ -457,7 +463,7 @@ console.log(diableMachiningStock,'diableMachiningStock');
                   </Col>
                 </Row>
                
-                <Col md="3">
+                <Col md="3" className='mt10 px-0'>
                   <TextFieldHookForm
                       label={`Forged Weight (Kg)`}
                       name={'forgedWeight'}
@@ -493,12 +499,14 @@ console.log(diableMachiningStock,'diableMachiningStock');
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                   rmRowData={props.rmRowData}
-                  LossMachine ={LossMachine}
+                  LossMachineFunction ={LossMachineFunction}
+                  isLossStandard = {true}
+
                 />
                 
               </div>
             </Col>
-            <Row>
+            <Row className='mt20'>
             <Col md="3">
                     <TextFieldHookForm
                       label={`Billet Diameter(mm)`}
@@ -658,9 +666,7 @@ console.log(diableMachiningStock,'diableMachiningStock');
                       disabled={true}
                     />
                   </Col>
- 
-                  </Row>
-                  <Row>
+
                   <Col md="3">
                   <TextFieldHookForm
                       label={`Total Input Weight (Kg)`}
