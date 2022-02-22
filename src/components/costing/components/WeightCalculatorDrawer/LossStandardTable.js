@@ -11,7 +11,7 @@ import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../.
 
 
 function LossStandardTable(props) {
-  const { rmRowData , LossMachine} = props
+  const { rmRowData , LossMachineFunction ,isLossStandard} = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -227,15 +227,15 @@ function LossStandardTable(props) {
    */
   const addRow = () => {
     const LossPercentage = checkForNull(getValues('LossPercentage'))   
-    const LossOfType = getValues('LossOfType').value
+    const LossOfType = getValues('LossOfType').label
     const FlashLength = checkForNull(getValues('FlashLength'))  
     const FlashThickness = checkForNull(getValues('FlashThickness'))    
     const FlashWidth = checkForNull(getValues('FlashWidth'))    
     const BarDiameter = checkForNull(getValues('BarDiameter'))  
     const BladeThickness = checkForNull(getValues('BladeThickness'))
-    const LossWeight = checkForDecimalAndNull(lossWeight, getConfigurationKey().NoOfDecimalForInputOutput)
+    const LossWeight = lossWeight
     
-    
+  console.log(lossWeight,'lossWeight');
 
     if (LossWeight && LossWeight === 0  ) {
       Toaster.warning("Please add data first.")
@@ -282,26 +282,32 @@ function LossStandardTable(props) {
     if (isEdit) {
       tempArray = Object.assign([...tableData], { [editIndex]: obj })
       setTableData(tempArray)
+      if(isLossStandard===true){
       if(tempArray.length===0){
-      //false
-      LossMachine(false)
+        LossMachineFunction(false)
       }
       else{
-        LossMachine(true)
-      }     
-  
+        LossMachineFunction(true)
+      }
+    } 
+     
+      
       setIsEdit(false)
     } else {
       // tempArray = [...tableData, obj]
       tempArray = tableData
       tempArray.push(obj)
       setTableData(tempArray)
-      if(tempArray.length===0){
-        LossMachine(false)
+      if(isLossStandard===true){
+        if(tempArray.length===0){
+          LossMachineFunction(false)
         }
         else{
-          LossMachine(true)
-        }  
+          LossMachineFunction(true)
+        }
+      } 
+   
+      
     
     }
 
@@ -421,13 +427,18 @@ function LossStandardTable(props) {
     props.tableValue(tempData)
 
     setTableData(tempData)
-    if(tempData.length===0){
-  
-      LossMachine(false)
+    if(isLossStandard===true){
+      if(tempData.length===0){
+      LossMachineFunction(false)
       }
       else{
-        LossMachine(true)
-      }  
+        LossMachineFunction(true)
+      }
+    } 
+      else{
+      isLossStandard(false)
+      }
+      
   
   }
 
@@ -449,13 +460,12 @@ if(value !== undefined && value !==0  && value !==''){
 
 }
 
-
   return (
     <Fragment>
-      <Row className={''}>
+      <Row className={'mb-3'}>
         <Col md="12">
           <div className="header-title">
-            <h5>{'Loss :'}</h5>
+            <h5>{'Loss:'}</h5>
           </div>
         </Col>
         <Col md="3">
@@ -487,7 +497,7 @@ if(value !== undefined && value !==0  && value !==''){
         </Col>
         {scaleandBiletLossType&&
         <>
-        <Col md="3">
+        <Col md="2">
           <TextFieldHookForm
             label={`Loss(%)`}
             name={'LossPercentage'}
@@ -519,7 +529,7 @@ if(value !== undefined && value !==0  && value !==''){
         </>}
         {barCuttingAllowanceLossType&&
         <>
-        <Col md="3">
+        <Col md="2">
                     <TextFieldHookForm
                       label={`Bar Diameter(mm)`}
                       name={'BarDiameter'}
@@ -550,7 +560,7 @@ if(value !== undefined && value !==0  && value !==''){
                   </Col>
                  
                   
-                  <Col md="3">
+                  <Col md="2" className='px-1'>
                     <TextFieldHookForm
                       label={`Blade Thickness(mm)`}
                       name={'BladeThickness'}
@@ -582,7 +592,7 @@ if(value !== undefined && value !==0  && value !==''){
                   </>}
          {flashLossType&&
          <>       
-        <Col md="3">
+        <Col className={`${!useFormula ? "co-md-2": "col-md-3"}`}>
           <SearchableSelectHookForm
             label={`Flash loss`}
             name={'FlashLoss'}
@@ -702,38 +712,38 @@ if(value !== undefined && value !==0  && value !==''){
                   </>}
                   {percentage&&
                   <>
-                  <Col md="3">
-          <TextFieldHookForm
-            label={`Loss(%)`}
-            name={'LossPercentage'}
-            Controller={Controller}
-            control={control}
-            register={register}
-            mandatory={false}
-            rules={{
-              required: false,
-              pattern: {
-                //value: /^[0-9]*$/i,
-                value: /^[0-9]\d*(\.\d+)?$/i,
-                message: 'Invalid Number.',
-              },
-              max: {
-                value: 100,
-                message: 'Percentage cannot be greater than 100'
-              },
-              // maxLength: 4,
-            }}
-            handleChange={()=>{}}
-            defaultValue={''}
-            className=""
-            customClassName={'withBorder'}
-            errors={errors.LossPercentage}
-            disabled={props.CostingViewMode}
-          />
-        </Col>
+                  <Col md="2">
+                  <TextFieldHookForm
+                    label={`Loss(%)`}
+                    name={'LossPercentage'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      max: {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={()=>{}}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.LossPercentage}
+                    disabled={props.CostingViewMode}
+                  />
+               </Col>
         </>}
             
-        <Col md="3">
+        <Col md="2">
           <TextFieldHookForm
             label={`Loss Weight`}
             name={'LossWeight'}
@@ -853,7 +863,7 @@ if(value !== undefined && value !==0  && value !==''){
                 })}
               {tableData && tableData.length === 0 && (
                 <tr>
-                  <td colspan="4">
+                  <td colspan="15">
                     <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>
@@ -865,11 +875,11 @@ if(value !== undefined && value !==0  && value !==''){
           <div className="col-md-12 text-right bluefooter-butn border">
             {props.isPlastic &&
               <span className="w-50 d-inline-block text-left">
-                {`Burning Loss Weight:`}
+                {`Burning Loss Weight: `}
                 {checkForDecimalAndNull(burningWeight, trim)}
               </span>}
             <span className="w-50 d-inline-block">
-              {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight:`}
+              {`${props.isPlastic ? 'Other' : 'Net'} Loss Weight: `}
               {checkForDecimalAndNull(findLostWeight(tableData), trim)}
             </span>
           </div>

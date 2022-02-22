@@ -426,7 +426,7 @@ class AddInterestRate extends Component {
                         <Col md="3" className='mb-4'>
 
                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader zero-based `} />}
+                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader interest-rate-vendor-loader `} />}
                           <AsyncSelect
                             name="vendorName"
                             ref={this.myRef}
