@@ -65,6 +65,7 @@ function RMSimulation(props) {
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
+        let isScrapRateGreaterThanBasiRate = false
         list && list.map((li) => {
 
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
@@ -74,10 +75,17 @@ function RMSimulation(props) {
             if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
                 basicScrapCount = basicScrapCount + 1
             }
+            if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                isScrapRateGreaterThanBasiRate = true
+            }
             return null;
         })
         if (basicRateCount === list.length && basicScrapCount === list.length) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
+            return false
+        }
+        if (isScrapRateGreaterThanBasiRate) {
+            Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
         setIsDisable(true)
@@ -191,7 +199,7 @@ function RMSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.NewBasicRate) :
+                        checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
@@ -223,7 +231,7 @@ function RMSimulation(props) {
             <>
                 {
                     isImpactedMaster ?
-                        row.NewScrapRate :
+                        checkForDecimalAndNull(row.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
                 }
             </>
@@ -267,7 +275,8 @@ function RMSimulation(props) {
     const beforeSaveCell = (cell, props) => {
         const cellValue = cell
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if ((row?.NewBasicRate === undefined ? row?.BasicRate : row?.NewBasicRate) < row?.NewScrapRate) {
+        if ((row?.NewBasicRate === undefined ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
+            (row?.NewScrapRate === undefined ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
@@ -530,11 +539,11 @@ function RMSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate' editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
                                                 <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>
