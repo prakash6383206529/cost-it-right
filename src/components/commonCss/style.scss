@@ -6915,4 +6915,9 @@ left: 17rem;
       }
     } 
  }
+ .master-summary-drawer {
+  .ag-grid-wrapper {
+    min-height: auto !important;
+  }
+}
   //<-----------END Zoom in zoom out header UI destroy prevent css------->
