@@ -533,6 +533,7 @@ export function uploadSimulationAttachmentByCategory(data, callback) {
             }).catch(error => {
                 callback(error.response)
                 dispatch({ type: API_FAILURE })
+                callback(error)
             })
     }
 }
