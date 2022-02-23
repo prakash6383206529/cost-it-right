@@ -6869,8 +6869,9 @@ left: 17rem;
  
 @media screen and (max-width:$middleDesktop) {
   .calculator {
-    width: 279px;
-    height: 400px;
+   
+    max-width: 280px;
+    min-width: 280px;
     .calculator-key {
       line-height: 65px;
       font-size: 1.625rem;

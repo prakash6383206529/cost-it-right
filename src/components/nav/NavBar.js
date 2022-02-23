@@ -31,7 +31,8 @@ import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { VERSION } from '../../config/constants';
-import { Calculator } from 'react-mac-calculator';
+import Calculator from "../common/Calculator/component/Calculator";
+import Draggable from 'react-draggable';
 
 class SideBar extends Component {
   constructor(props) {
@@ -137,7 +138,7 @@ class SideBar extends Component {
       dropdownOpen: !prevState.dropdownOpen,
     }));
   };
-  showCalculor =()=> {
+  showCalculator =()=> {
     this.setState({ isShowCal: !this.state.isShowCal })
   }
   /**
@@ -753,9 +754,13 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
-              <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={this.showCalculor}></button>
+              <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={this.showCalculator}></button>
               {this.state.isShowCal && <div className="calculator-wrapper">  
-              <Calculator />
+              <Draggable>
+                  <div>
+                     <Calculator />
+                  </div>
+               </Draggable>
               </div>}
         </div>
         {
