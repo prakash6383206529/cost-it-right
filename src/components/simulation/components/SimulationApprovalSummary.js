@@ -1132,7 +1132,7 @@ function SimulationApprovalSummary(props) {
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
-
+                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA}/></div> :""}
                                 </div>
                             }
                             {showViewAssemblyDrawer &&
