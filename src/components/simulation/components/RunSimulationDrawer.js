@@ -181,7 +181,7 @@ function RunSimulationDrawer(props) {
         const Rejection = selectedData.includes("Rejection")
         const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
         const PaymentTerms = selectedData.includes("Payment Terms")
-        const Inventory = selectedData.includes("Inventory")
+        const Inventory = selectedData.includes("ICC")
         const AdditionalDiscount = selectedData.includes("Additional Discount")
         const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
 
@@ -633,9 +633,9 @@ function RunSimulationDrawer(props) {
                                                         errors={errors.EffectiveDate}
                                                     />
                                                 </Col>
-                                                <Col md="12" className="mt-4 warning-text-container">
+                                                <Col md="12" className="mt-4 pt-1 warning-text-container">
                                                     <div className="warning-text">
-                                                        <WarningMessage dClass="mr-3" message={"Unselected norms won't be applied in future revisions"} />
+                                                        <WarningMessage dClass="mr-3 pt-2" message={"Unselected norms won't be applied in future revisions"} />
                                                     </div>
                                                 </Col>
                                             </Row>

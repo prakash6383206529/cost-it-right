@@ -9,12 +9,13 @@ import {
   setComponentDiscountOtherItemData, 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { LEVEL1 } from '../../../../../config/constants';
+import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function PartCompoment(props) {
+  console.log('propsof part: ', props);
   const { rmData, bopData, ccData, item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -25,6 +26,7 @@ function PartCompoment(props) {
   const { ComponentItemDiscountData, CloseOpenAccordion } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
+  console.log('costData: ', costData);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
 
@@ -38,6 +40,8 @@ function PartCompoment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
+          AssemCostingId: costData.CostingId,
+          subAsmCostingId:props.subAssembId !== null ? props.subAssembId:EMPTY_GUID
         }
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {

@@ -392,6 +392,7 @@ export function bulkUploadBOPDomesticZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -410,6 +411,7 @@ export function bulkUploadBOPDomesticVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -428,6 +430,7 @@ export function bulkUploadBOPImportZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -446,6 +449,7 @@ export function bulkUploadBOPImportVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -559,7 +563,7 @@ export function getBOPApprovalList(callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getBOPApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}`, headers);
+        const request = axios.get(`${API.getBOPApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=2`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 //

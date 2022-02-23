@@ -115,6 +115,7 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
                         // setMasterId(data.SimulationtechnologyId)
                         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
@@ -133,6 +134,7 @@ function VerifySimulation(props) {
                         }
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
+                        setSimulationTechnologyId(data.SimulationtechnologyId)
                         // setMasterId(data.SimulationtechnologyId)
                         // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
                         setHideRunButton(false)
@@ -276,6 +278,11 @@ function VerifySimulation(props) {
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cell != null && cell.length !== 0) ? cell : '-'
+    }
+
+    const poPriceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cell != null && cell.length !== 0) ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
     }
 
     const renderPlant = (props) => {
@@ -439,6 +446,7 @@ function VerifySimulation(props) {
         newSRFormatter: newSRFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
+        poPriceFormatter: poPriceFormatter
     };
 
     return (
@@ -506,7 +514,7 @@ function VerifySimulation(props) {
                                                 <AgGridColumn width={110} field="PartNo" headerName="Part No."></AgGridColumn>
                                                 <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
-                                                <AgGridColumn width={130} field="POPrice" headerName="Current PO Price"></AgGridColumn>
+                                                <AgGridColumn width={130} field="POPrice" headerName="Current PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
 
                                                 {isSurfaceTreatmentOrOperation === true &&
                                                     <>
@@ -517,23 +525,21 @@ function VerifySimulation(props) {
                                                     </>
                                                 }
 
-                                                {/* {isBOPDomesticOrImport === true &&
+                                                {isBOPDomesticOrImport === true &&
                                                     <>
                                                         <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
                                                         <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                                         <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
                                                     </>
-                                                } */}
+                                                }
 
-                                                {isBOPDomesticOrImport === true &&
+                                                {/* {isBOPDomesticOrImport === true &&
                                                     <>
                                                         <AgGridColumn width={130} field="ModelType" headerName="Model Type"></AgGridColumn>
                                                         <AgGridColumn width={130} field="OverheadApplicabilityType" headerName="Overhead Applicability Type"></AgGridColumn>
-                                                        {/* <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn> */}
-                                                    </>
-                                                }
+                                                             </>
+                                                } */}
                                                 {isMachineRate &&
                                                     <>
                                                         <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>

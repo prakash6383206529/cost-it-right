@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm } from 'redux-form'
+import { reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { focusOnError } from '../../layout/FormInputs'
 import Toaster from '../../common/Toaster'
@@ -132,7 +132,7 @@ class VolumeListing extends Component {
       showData: false,
       showPopup: false,
       deletedId: '',
-      isLoader:false
+      isLoader: false
 
     }
   }
@@ -142,7 +142,7 @@ class VolumeListing extends Component {
     this.props.getPlantSelectList(() => { })
     this.props.getFinancialYearSelectList(() => { })
     // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
+    this.props.getVendorWithVendorCodeSelectList(() => { })
     this.getTableListData()
   }
 
@@ -181,7 +181,7 @@ class VolumeListing extends Component {
    * @description Get user list data
    */
   getTableListData = (year = '', month = '', vendor_id = '', plant_id = '', costing_head = '') => {
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     let filterData = {
       year: year,
       month: month,
@@ -190,7 +190,7 @@ class VolumeListing extends Component {
       costing_head: costing_head
     }
     this.props.getVolumeDataList(filterData, (res) => {
-      this.setState({isLoader:false})
+      this.setState({ isLoader: false })
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
@@ -419,20 +419,7 @@ class VolumeListing extends Component {
     } = this.state
     const ExcelFile = ReactExport.ExcelFile;
 
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      exportCSVBtn: this.createCustomExportCSVButton,
-      onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    }
 
     const defaultColDef = {
       resizable: true,
@@ -463,7 +450,7 @@ class VolumeListing extends Component {
       <>
         <div className={`ag-grid-react container-fluid blue-before-inside ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp="go-to-top" />
-        {this.state.isLoader && <LoaderCustom />}
+          {this.state.isLoader && <LoaderCustom />}
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
               <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
@@ -527,7 +514,6 @@ class VolumeListing extends Component {
 
                       </>
 
-                      //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                     }
                     <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
@@ -540,13 +526,11 @@ class VolumeListing extends Component {
             </Row>
           </form>
 
-          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.volumeDataList && this.props.volumeDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.volumeDataList && this.props.volumeDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
-            <div
-              className="ag-theme-material"
-            >
+            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}

@@ -7,7 +7,7 @@ import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment } from '../actions/Simulation'
 import Dropzone from 'react-dropzone-uploader';
@@ -363,13 +363,12 @@ function SimulationApprovalSummary(props) {
             case RMIMPORT:
                 return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
             case SURFACETREATMENT:
-                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, dataForDownload.length > 0 ? dataForDownload : [])
-
+            case OPERATIONS:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADST, dataForDownload.length > 0 ? dataForDownload : [])
             default:
                 break;
         }
     }
-
 
     const returnExcelColumn = (data = [], TempData) => {
 
@@ -572,9 +571,9 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
-        if (String(SimulationTechnologyId) !== SURFACETREATMENT) {
+        if (String(SimulationTechnologyId) === SURFACETREATMENT) {
             temp = row.IsMultiple === true ? 'Multiple Surface Treatment' : row.OperationName
-        } else if (String(SimulationTechnologyId) !== OPERATIONS) {
+        } else if (String(SimulationTechnologyId) === OPERATIONS) {
             temp = row.IsMultiple === true ? 'Multiple Operation' : row.OperationName
         }
         return cell != null ? temp : '-';
@@ -759,7 +758,7 @@ function SimulationApprovalSummary(props) {
                                             </th>
 
                                             <th className="align-top">
-                                                <span className="d-block grey-text">{`Masters:`}</span>
+                                                <span className="d-block grey-text">{`Master:`}</span>
                                                 <span className="d-block">{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</span>
                                             </th>
                                             <th className="align-top">
@@ -797,7 +796,7 @@ function SimulationApprovalSummary(props) {
                             {/* {lastRevisionDataAccordian && */}
 
                             <div className="accordian-content w-100 px-3 impacted-min-height">
-                                {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} />}
+                                {showImpactedData && <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={simulationDetail.SimulationTechnologyId} viewCostingAndPartNo={false} lastRevision={false} />}
 
                             </div>
                             {/* } */}
@@ -892,7 +891,6 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
-                                                               
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>
                                                                 {
@@ -905,10 +903,10 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
                                                                 {
-                                                                    (String(SimulationTechnologyId) !== SURFACETREATMENT || String(SimulationTechnologyId) !== OPERATIONS) &&
+                                                                    (String(SimulationTechnologyId) === SURFACETREATMENT || String(SimulationTechnologyId) === OPERATIONS) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
@@ -1096,7 +1094,7 @@ function SimulationApprovalSummary(props) {
                             {lastRevisionDataAccordian &&
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
-                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} />}
+                                    {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
 
                                 </div>
                             }

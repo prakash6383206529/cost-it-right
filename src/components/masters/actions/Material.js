@@ -22,7 +22,9 @@ import {
     GET_RM_TYPE_DATALIST_SUCCESS,
     GET_RMTYPE_SELECTLIST_SUCCESS,
     GET_GRADE_BY_RMTYPE_SELECTLIST_SUCCESS,
+    GET_BOP_DOMESTIC_DATA_LIST,
     GET_RM_NAME_SELECTLIST,
+    GET_MACHINE_DATALIST_SUCCESS,
     GET_GRADELIST_BY_RM_NAME_SELECTLIST,
     GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
     GET_GRADE_SELECTLIST_SUCCESS,
@@ -34,6 +36,11 @@ import {
     GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
+    GET_OPERATION_COMBINED_DATA_LIST,
+    OPERATIONS_ID,
+    BOP_MASTER_ID,
+    RM_MASTER_ID,
+    MACHINE_MASTER_ID,
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
@@ -1035,7 +1042,7 @@ export function getVendorListByVendorType(isVendor, callback) {
  * @method getVendorWithVendorCodeSelectList
  * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
  */
-export function getVendorWithVendorCodeSelectList() {
+export function getVendorWithVendorCodeSelectList(callback) {
     return (dispatch) => {
         const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
         request.then((response) => {
@@ -1043,6 +1050,7 @@ export function getVendorWithVendorCodeSelectList() {
                 type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
                 payload: response.data.SelectList,
             });
+            callback(response)
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
@@ -1113,6 +1121,7 @@ export function createRMImport(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1240,6 +1249,7 @@ export function bulkUploadRMDomesticZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1258,6 +1268,7 @@ export function bulkUploadRMDomesticVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1294,6 +1305,7 @@ export function bulkUploadRMImportZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1312,6 +1324,7 @@ export function bulkUploadRMImportVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1330,6 +1343,7 @@ export function bulkUploadRMSpecification(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -1721,19 +1735,46 @@ export function approvalOrRejectRequestByMasterApprove(data, callback) {
  * @description getting summary of approval by approval id
  */
 
-export function getMasterApprovalSummary(tokenNo, approvalProcessId, callback) {
+export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, callback) {
+
+
     return (dispatch) => {
         const request = axios.get(
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, headers)
         request
             .then((response) => {
                 if (response.data.Result) {
-                    dispatch({
-                        type: GET_RM_DOMESTIC_LIST,
-                        payload: response.data.Data.ImpactedMasterDataList,
-                    })
-                    callback(response)
-                } else {
+
+                    if (Number(masterId) === RM_MASTER_ID) {
+                        dispatch({
+                            type: GET_RM_DOMESTIC_LIST,
+                            payload: response.data.Data.ImpactedMasterDataList,
+                        })
+                        callback(response)
+                    }
+                    else if (Number(masterId) === BOP_MASTER_ID) {
+                        dispatch({
+                            type: GET_BOP_DOMESTIC_DATA_LIST,
+                            payload: response.data.Data.ImpactedMasterDataListBOP,
+                        })
+                        callback(response)
+                    } else if (Number(masterId) === OPERATIONS_ID) {
+                        dispatch({
+                            type: GET_OPERATION_COMBINED_DATA_LIST,
+                            payload: response.data.Data.ImpactedMasterDataListOperation,
+                        })
+                        callback(response)
+                    } else if (Number(masterId) === MACHINE_MASTER_ID) {
+                        const value = response.data.Data.ImpactedMasterDataListMachine.filter((item) => item.EffectiveDateNew = item.EffectiveDate)
+
+                        dispatch({
+                            type: GET_MACHINE_DATALIST_SUCCESS,
+                            payload: value,
+                        })
+                        callback(response)
+                    }
+                }
+                else {
                     Toaster.error(MESSAGES.SOME_ERROR)
                 }
             })

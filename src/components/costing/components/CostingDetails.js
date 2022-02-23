@@ -14,7 +14,8 @@ import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlant
 import DayTime from '../../common/DayTimeWrapper'
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0, COSTING, APPROVED_BY_SIMULATION } from '../../../config/constants';
-import {   getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+import {
+  getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
   setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, getNCCExistingCosting, createNCCCosting, saveAssemblyBOPHandlingCharge,
@@ -62,9 +63,9 @@ function CostingDetails(props) {
   const [editRow, setEditRow] = useState({});
 
   const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
-  const [isNCCDrawerOpen,setIsNCCDrawerOpen]= useState(false)
+  const [isNCCDrawerOpen, setIsNCCDrawerOpen] = useState(false)
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
-  const [nccGrid,setNccGrid]= useState([])
+  const [nccGrid, setNccGrid] = useState([])
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
 
   const [stepOne, setStepOne] = useState(Object.keys(props.costingData).length > 0 ? false : true);
@@ -108,7 +109,7 @@ function CostingDetails(props) {
   const [titleObj, setTitleObj] = useState({})
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
-  
+
   const dispatch = useDispatch()
 
   const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
@@ -119,7 +120,7 @@ function CostingDetails(props) {
   const { topAndLeftMenuData } = useSelector(state => state.auth);
 
   useEffect(() => {
-    if( reactLocalStorage.get('location') === '/costing'){
+    if (reactLocalStorage.get('location') === '/costing') {
 
       setValue('Technology', '')
       setValue('Part', '')
@@ -170,7 +171,7 @@ function CostingDetails(props) {
   }, [partNumber.isChanged])
 
   useEffect(() => {
-    if (Object.keys(partNumber).length > 0 && partNumber.technologyName &&  reactLocalStorage.get('location') === '/costing') {
+    if (Object.keys(partNumber).length > 0 && partNumber.technologyName && reactLocalStorage.get('location') === '/costing') {
       applyPermission(topAndLeftMenuData, technology.label)
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
@@ -189,7 +190,7 @@ function CostingDetails(props) {
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
-            setValue('ShareOfBusiness', Data.Price)
+            setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
 
           }),
@@ -263,7 +264,7 @@ function CostingDetails(props) {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
       setInputLoader(true)
-      dispatch(getPartSelectListByTechnology(newValue.value, () => { 
+      dispatch(getPartSelectListByTechnology(newValue.value, () => {
         setInputLoader(false)
       }))
       setTechnology(newValue)
@@ -301,17 +302,17 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
-              
+
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
               setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
               setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
-              setValue('ShareOfBusiness', Data?.Price !== null ? Data.Price : '')
+              setValue('ShareOfBusiness', Data?.Price !== null ? checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice) : '')
               setEffectiveDate(DayTime(Data.EffectiveDate).isValid ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
               //  setEffectiveDate(DayTime(Data.EffectiveDate).format('dd/MM/yyyy'))
               setShowNextBtn(true)
-              setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
+              setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
             }),
             )
           } else {
@@ -375,7 +376,7 @@ function CostingDetails(props) {
         }
       }))
 
-      /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/ 
+      /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/
       // dispatch(getNCCExistingCosting(part.value,(res=>{
       //   if(res.data.Result){
       //     let Data = res.data.DataList
@@ -524,9 +525,9 @@ function CostingDetails(props) {
    * @description FOR OPENING DRAWER
   */
 
-const nccDrawerToggle=()=>{
-  setIsNCCDrawerOpen(true)
-}
+  const nccDrawerToggle = () => {
+    setIsNCCDrawerOpen(true)
+  }
 
   /**
    * @method closeNCCDrawer
@@ -793,7 +794,7 @@ const nccDrawerToggle=()=>{
         }
       }),
       )
-    } else if(type === NCC){
+    } else if (type === NCC) {
       let tempData = nccGrid[index]
 
       const data = {
@@ -834,7 +835,7 @@ const nccDrawerToggle=()=>{
       }),
       )
 
-      dispatch(createNCCCosting(data,(res)=>{
+      dispatch(createNCCCosting(data, (res) => {
         if (res.data.Result) {
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
@@ -847,7 +848,7 @@ const nccDrawerToggle=()=>{
         }
       }))
     }
-    
+
     else {
       Toaster.warning('SOB Should not be greater than 100.')
     }
@@ -1014,7 +1015,7 @@ const nccDrawerToggle=()=>{
       }))
     }
 
-    if(type === NCC){
+    if (type === NCC) {
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
@@ -1057,15 +1058,15 @@ const nccDrawerToggle=()=>{
           zbcCosting: getValues(`${zbcPlantGridFields}[${index}]CostingVersion`),
           vbcCosting: '',
         })
-      } 
-      else if(type === VBC) {
+      }
+      else if (type === VBC) {
         const tempcopyCostingData = vbcVendorGrid[index]
         setCopyCostingData(tempcopyCostingData)
         setCostingIdForCopy({
           zbcCosting: '',
           vbcCosting: getValues(`${vbcGridFields}[${index}]CostingVersion`),
         })
-      }else if(type === NCC){
+      } else if (type === NCC) {
         const tempcopyCostingData = nccGrid[index]
         setCopyCostingData(tempcopyCostingData)
         setCostingIdForCopy({
@@ -1085,7 +1086,7 @@ const nccDrawerToggle=()=>{
   const deleteItem = (Item, index, type) => {
     setShowPopup(true)
     setCostingObj({ item: Item, type: type, index: index })
-   
+
   }
 
   /**
@@ -1131,7 +1132,7 @@ const nccDrawerToggle=()=>{
         setVBCVendorGrid(tempArray)
         setValue(`vbcGridFields.${index}.CostingVersion`, '')
       }
-      
+
       if (type === NCC) {
         let tempData = nccGrid[index]
         let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId)
@@ -1174,7 +1175,7 @@ const nccDrawerToggle=()=>{
       setVBCVendorGrid(tempArr)
     }
 
-    if(type === NCC){
+    if (type === NCC) {
       let tempArr = nccGrid && nccGrid.filter((el, i) => {
         if (i === index) return false;
         return true;
@@ -1220,12 +1221,12 @@ const nccDrawerToggle=()=>{
 
     }))
 
-    dispatch(setRMCCData([],()=>{}))                            //THIS WILL CLEAR RM CC REDUCER
-    dispatch(setComponentItemData({},()=>{}))
+    dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+    dispatch(setComponentItemData({}, () => { }))
 
     dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
     dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
-    
+
 
     dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
     dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
@@ -1235,7 +1236,7 @@ const nccDrawerToggle=()=>{
 
     dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
 
-    dispatch(saveAssemblyBOPHandlingCharge({},()=>{}))
+    dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
 
     dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
@@ -1521,7 +1522,7 @@ const nccDrawerToggle=()=>{
 
   const zbcPlantGridFields = 'zbcPlantGridFields'
   const vbcGridFields = 'vbcGridFields'
-  const nccGridFields='nccGridFields'
+  const nccGridFields = 'nccGridFields'
 
   const bulkToggle = () => {
     SetIsBulkOpen(true)
@@ -1652,7 +1653,7 @@ const nccDrawerToggle=()=>{
                         />
                       </Col>
                       <Col className="col-md-15">
-                      {inputLoader  && <LoaderCustom customClass="input-loader"/>}
+                        {inputLoader && <LoaderCustom customClass="input-loader" />}
                         <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
@@ -1669,13 +1670,14 @@ const nccDrawerToggle=()=>{
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={technology.length === 0 ? true : false}
+                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
                         />
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly Name/Part Name"
                           name={"PartName"}
-                          title ={titleObj.partNameTitle}
+                          title={titleObj.partNameTitle}
                           Controller={Controller}
                           control={control}
                           //register={register({ required: "PartName is required." })} //Working for required and msg
@@ -1783,7 +1785,7 @@ const nccDrawerToggle=()=>{
                         <div className="form-group">
                           <label>Effective Date</label>
                           <div className="inputbox date-section">
-                            {}
+                            { }
                             <DatePicker
                               name="EffectiveDate"
                               selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -1949,7 +1951,7 @@ const nccDrawerToggle=()=>{
                     )}
 
                     {/* ****************************************NCC UI HERE************************************************************* */}
-              {IsOpenVendorSOBDetails && (
+                    {IsOpenVendorSOBDetails && (
                       <>
                         <Row className="align-items-center">
                           <Col md={'6'} className={"mb-2 mt-3"}>
@@ -1981,10 +1983,10 @@ const nccDrawerToggle=()=>{
                                 <tr>
                                   <th className="destination-plant">{`Plant`}</th>
                                   <th className='vendor'>{`Vendor`}</th>
-                              
+
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
-                                  <th className= "costing-price">{`Price`}</th>
+                                  <th className="costing-price">{`Price`}</th>
                                   <th className="costing-action">{`Actions`}</th>
                                 </tr>
                               </thead>
@@ -2001,9 +2003,9 @@ const nccDrawerToggle=()=>{
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.PlantName? `${item.PlantName}(${item.PlantCode})`: ''}</td>
-                                      <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})`:'-'}</td>
-                                    
+                                      <td>{item.PlantName ? `${item.PlantName}(${item.PlantCode})` : ''}</td>
+                                      <td>{item.VendorName ? `${item.VendorName}(${item.VendorCode})` : '-'}</td>
+
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}
@@ -2053,7 +2055,7 @@ const nccDrawerToggle=()=>{
                       </>
                     )}
 
-                  
+
                     {IsOpenVendorSOBDetails && (
                       <>
                         <Row className="align-items-center">
@@ -2089,7 +2091,7 @@ const nccDrawerToggle=()=>{
                                   <th className="share-of-business">{`SOB(%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                   <th className="costing-version">{`Costing Version`}</th>
                                   <th className="text-center costing-status">{`Status`}</th>
-                                  <th className= "costing-price">{`Price`}</th>
+                                  <th className="costing-price">{`Price`}</th>
                                   <th className="costing-action">{`Actions`}</th>
                                 </tr>
                               </thead>

@@ -6,7 +6,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
-  getTopAndLeftMenuData, ApprovalDashboard,
+  getTopAndLeftMenuData
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -30,7 +30,8 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { VERSION } from '../../config/constants';
+import { BOP_MASTER_ID, MACHINE_MASTER_ID, OPERATIONS_ID, RM_MASTER_ID, VERSION } from '../../config/constants';
+import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../helper';
 import Calculator from "../common/Calculator/component/Calculator";
 import Draggable from 'react-draggable';
 
@@ -161,15 +162,12 @@ class SideBar extends Component {
       case "Dashboard":
         return this.renderDashboard(module);
       case "Master":
-        this.props.ApprovalDashboard(this.commonObj = { RMApprovalDashboard: true });
         return this.renderMaster(module);
       case "Additional Masters":
         return this.renderAdditionalMaster(module);
       case "Costing":
-        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, CostingsApprovalDashboard: true });
         return this.renderCosting(module);
       case "Simulation":
-        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, AmendmentsApprovalDashboard: true });
         return this.renderSimulation(module);
       case "Reports And Analytics":
         return this.renderReportAnalytics(module);
@@ -795,6 +793,5 @@ export default connect(mapStateToProps, {
   getPermissionByUser,
   getModuleIdByPathName,
   getMenu,
-  getTopAndLeftMenuData,
-  ApprovalDashboard,
+  getTopAndLeftMenuData
 })(SideBar)

@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
 import { debounce } from 'lodash'
 import ScrollToTop from '../../common/ScrollToTop'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const gridOptions = {};
 
@@ -56,7 +57,7 @@ function SimulationApprovalListing(props) {
     const [simulationDetail, setSimulationDetail] = useState([])
     const [isLoader, setIsLoader] = useState(false)
     const isSmApprovalListing = props.isSmApprovalListing;
-    const colRow =[{field:'ApprovalNumber'}]
+    const colRow = [{ field: 'ApprovalNumber' }]
 
     const { register, handleSubmit, control, setValue, formState: { errors }, getValues } = useForm({
         mode: 'onBlur',
@@ -92,7 +93,7 @@ function SimulationApprovalListing(props) {
         }
         setIsLoader(true)
         dispatch(getSimulationApprovalList(filterData, (res) => {
-            if(res.data.Result){
+            if (res.data.Result) {
                 setIsLoader(false)
             }
         }))
@@ -135,6 +136,15 @@ function SimulationApprovalListing(props) {
             </Fragment>
         )
     }
+
+    /**
+    * @method hyphenFormatter
+    */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+    }
+
 
     const createdOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -383,6 +393,7 @@ function SimulationApprovalListing(props) {
         setApproveDrawer(false)
         getTableData()
         //setRejectDrawer(false)
+        setSelectedRowData([])
     }
 
     if (redirectCostingSimulation === true) {
@@ -467,7 +478,8 @@ function SimulationApprovalListing(props) {
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         reasonFormatter: reasonFormatter,
-        conditionFormatter: conditionFormatter
+        conditionFormatter: conditionFormatter,
+        hyphenFormatter: hyphenFormatter
     };
 
     return (
@@ -478,11 +490,11 @@ function SimulationApprovalListing(props) {
                     < div className={`ag-grid-react`}>
                         <form onSubmit={handleSubmit(onSubmit)} noValidate>
                             {!isSmApprovalListing && <h1 className="mb-0">Simulation History</h1>}
-                            {isLoader &&<LoaderCustom customClass={"simulation-history-loader"} />}
+                            {isLoader && <LoaderCustom customClass={"simulation-history-loader"} />}
                             <ScrollToTop pointProp={"history-go-to-top"} />
                             <Row className="pt-4 blue-before">
 
-                              
+
                                 <Col md="2" lg="2" className="search-user-block mb-3">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <button
@@ -503,7 +515,7 @@ function SimulationApprovalListing(props) {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${simualtionApprovalList && simualtionApprovalList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${simualtionApprovalList && simualtionApprovalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
@@ -535,15 +547,15 @@ function SimulationApprovalListing(props) {
 
 
                                 >
-                                    
+
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     {isSmApprovalListing && <AgGridColumn field="Status" headerClass="justify-content-center" cellClass="text-center" headerName='Status' cellRenderer='statusFormatter'></AgGridColumn>}
-                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head"></AgGridColumn>
+                                    <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="LinkingTokenNumber" headerName='Linking Token No' ></AgGridColumn>}
-                                    
+
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor" cellRenderer='renderVendor'></AgGridColumn>

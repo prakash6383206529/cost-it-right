@@ -267,7 +267,7 @@ function ViewOverheadProfit(props) {
                                 </td>
                                 <td>
                                   {viewProfitData.ProfitCCTotalCost
-                                    ? viewProfitData.ProfitCCTotalCost
+                                    ? checkForDecimalAndNull(viewProfitData.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice)
                                     : "-"}
                                 </td>
                               </tr>
@@ -283,7 +283,7 @@ function ViewOverheadProfit(props) {
                                 </td>
                                 <td>
                                   {viewProfitData.ProfitCombinedTotalCost
-                                    ? viewProfitData.ProfitCombinedTotalCost
+                                    ? checkForDecimalAndNull(viewProfitData.ProfitCombinedTotalCost, initialConfiguration.NoOfDecimalForPrice)
                                     : "-"}
                                 </td>
                               </tr>
@@ -302,7 +302,7 @@ function ViewOverheadProfit(props) {
                   </Col>
                 </Row>
               </div>
-                  <br />
+              <br />
               <div>
                 <Row className="px-3">
                   <Col md="10">
@@ -360,7 +360,7 @@ function ViewOverheadProfit(props) {
                 </Row>
               </div>
 
-                  <br />
+              <br />
 
               <div>
                 <Row className="px-3">
@@ -402,7 +402,7 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
-                
+
                 </Row>
               </div>
 

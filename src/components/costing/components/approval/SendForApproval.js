@@ -67,18 +67,18 @@ const SendForApproval = (props) => {
       if (!res.data.Data.IsFinalApprovar) {
 
         dispatch(getAllApprovalDepartment((res) => {
-          const Data = res.data.SelectList
+          const Data = res?.data?.SelectList
           const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
 
-          setSelectedDepartment({ label: departObj[0].Text, value: departObj[0].Value })
-          setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+          setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
+          setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
 
           let tempDropdownList = []
 
           dispatch(
             getAllApprovalUserFilterByDepartment({
               LoggedInUserId: userData.LoggedInUserId,
-              DepartmentId: departObj[0].Value,
+              DepartmentId: departObj[0]?.Value,
               TechnologyId: partNo.technologyId,
               ReasonId: 0 // key only for minda
             }, (res) => {
@@ -598,7 +598,7 @@ const SendForApproval = (props) => {
                           <Col md="4">
                             <div className="form-group">
                               <label>Variance</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'green-value' : 'red-value'}`}>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.variance < 0 ? 'red-value' : 'green-value'}`}>
                                 {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>

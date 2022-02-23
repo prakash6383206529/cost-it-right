@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces,minLength10,alphaNumeric,vlidatePhoneNumber,maxLength71,maxLength7 ,maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -335,7 +335,7 @@ class AddZBCPlant extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>
-                        {isEditFlag ? "Update f Plant" : "Add ZBC Plant"}
+                        {isEditFlag ? "Update Plant" : "Add ZBC Plant"}
                       </h3>
                     </div>
                     <div
@@ -351,7 +351,7 @@ class AddZBCPlant extends Component {
                       name={"PlantName"}
                       type="text"
                       placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=""
@@ -407,9 +407,9 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                          validate={[postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
                           component={renderText}
-                          maxLength={10}
+                          maxLength={12}
                           className=""
                           customClassName={"withBorder"}
                           disabled={isViewMode}
@@ -421,9 +421,9 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength5 , checkWhiteSpaces]}
                           component={renderText}
-                          maxLength={3}
+                          maxLength={5}
                           className=""
                           customClassName={"withBorder"}
                           disabled={isViewMode}

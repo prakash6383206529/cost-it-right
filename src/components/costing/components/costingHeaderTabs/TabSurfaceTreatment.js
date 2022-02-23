@@ -29,6 +29,7 @@ function TabSurfaceTreatment(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
+        AssemCostingId: costData.CostingId
       }
       dispatch(getSurfaceTreatmentTabData(data, true, () => { }))
     }

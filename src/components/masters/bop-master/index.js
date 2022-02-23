@@ -8,12 +8,11 @@ import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
 import BOPApproval from './BOPApproval';
 
-import { BOP, MASTERS } from '../../../config/constants';
+import { BOP, BOP_MASTER_ID, MASTERS } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
-import { loggedInUserId } from '../../../helper/auth';
 import SOBListing from './SOBListing';
 import ScrollToTop from '../../common/ScrollToTop';
+import { CheckApprovalApplicableMaster } from "../../../helper";
 
 class BOPMaster extends Component {
   constructor(props) {
@@ -187,18 +186,18 @@ class BOPMaster extends Component {
 
 
 
-                <NavItem>
+                {CheckApprovalApplicableMaster(BOP_MASTER_ID) && <NavItem>
                   <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                     Approval Status
                   </NavLink>
-                </NavItem>
+                </NavItem>}
 
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
 
 
-                {this.state.activeTab == 1 && (
+                {Number(this.state.activeTab) === 1 && (
                   <TabPane tabId="1">
                     <BOPDomesticListing
                       displayForm={this.displayDomesticForm}
@@ -209,11 +208,12 @@ class BOPMaster extends Component {
                       ViewAccessibility={this.state.ViewAccessibility}
                       BulkUploadAccessibility={this.state.BulkUploadAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
+                      isMasterSummaryDrawer={false}
                     />
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 2 && (
+                {Number(this.state.activeTab) === 2 && (
                   <TabPane tabId="2">
                     <BOPImportListing
                       displayForm={this.displayImportForm}
@@ -228,7 +228,7 @@ class BOPMaster extends Component {
                   </TabPane>
                 )}
 
-                {this.state.activeTab == 3 &&
+                {Number(this.state.activeTab) === 3 &&
                   <TabPane tabId="3">
                     <SOBListing
                       displayForm={this.displayImportForm}
@@ -243,7 +243,7 @@ class BOPMaster extends Component {
 
 
 
-                {this.state.activeTab == 4 &&
+                {Number(this.state.activeTab) === 4 &&
                   <TabPane tabId="4">
                     <BOPApproval
                       AddAccessibility={this.state.AddAccessibility}

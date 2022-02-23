@@ -68,9 +68,9 @@ class InterestRateListing extends Component {
   componentDidMount() {
 
     this.applyPermission(this.props.topAndLeftMenuData)
-    this.setState({isLoader:true})
+    this.setState({ isLoader: true })
     setTimeout(() => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
       this.props.getICCAppliSelectList(() => { })
       this.props.getPaymentTermsAppliSelectList(() => { })
       this.getTableListData()
@@ -266,7 +266,7 @@ class InterestRateListing extends Component {
   * @description Renders Costing head
   */
   costingHeadFormatter = (props) => {
-    console.log('props: ', props);
+
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue;
   }
@@ -413,25 +413,11 @@ class InterestRateListing extends Component {
       costingHeadFormatter: this.costingHeadFormatter,
       hyphenFormatter: this.hyphenFormatter
     };
-    const options = {
-      clearSearch: true,
-      noDataText: (this.props.interestRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={EMPTY_DATA} />),
-      //exportCSVText: 'Download Excel',
-      //onExportToCSV: this.onExportToCSV,
-      // exportCSVBtn: this.createCustomExportCSVButton,
-      // onExportToCSV: this.handleExportCSVButtonClick,
-      //paginationShowsTotal: true,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
 
-    };
 
     return (
       <>
-       
+
         <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp='go-to-top' />
           <form
@@ -505,13 +491,11 @@ class InterestRateListing extends Component {
           </form>
 
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <=0 ?"overlay-contain": ""}`}>
+          <div className={`ag-grid-wrapper height-width-wrapper ${this.props.interestRateDataList && this.props.interestRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
-            <div
-              className="ag-theme-material"
-            >
+            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}

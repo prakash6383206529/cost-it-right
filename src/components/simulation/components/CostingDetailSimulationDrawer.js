@@ -149,11 +149,11 @@ function CostingDetailSimulationDrawer(props) {
                                             <>
                                                 <Col md="3">
                                                     <label>Old Surface Treatment</label>
-                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label className={`${pricesDetail.OldNetSurfaceTreatmentCost > pricesDetail.NewNetSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldNetSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
                                                     <label>New Surface Treatment</label>
-                                                    <label className={`${pricesDetail.OldSurfaceTreatmentCost > pricesDetail.NewSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
+                                                    <label className={`${pricesDetail.OldNetSurfaceTreatmentCost > pricesDetail.NewNetSurfaceTreatmentCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewNetSurfaceTreatmentCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
                                         }
@@ -161,20 +161,18 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(master) === Number(OPERATIONS) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Old Oper Rate</label>
+                                                    <label>Old Operation Rate</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.OldOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>New Oper Rate</label>
+                                                    <label>New Operation Rate</label>
                                                     <label className={`${pricesDetail.OldOperationCost > pricesDetail.NewOperationCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail.NewOperationCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
                                         }
                                     </Row>
                                 }
-
-                                <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} simulationDrawer={true} />
-
+                                <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} master={master} />
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">

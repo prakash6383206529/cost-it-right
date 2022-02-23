@@ -63,12 +63,13 @@ function AddAssemblyOperation(props) {
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
+
       "CostingDetailId": "00000000-0000-0000-0000-000000000000",
       "PartId": item.PartId,
       "PartNumber": item.PartNumber,
       "PartTypeId": item.PartTypeId,
       "Type": item.PartType,
-
+      "SubAssemblyCostingId":item.SubAssemblyCostingId,
       "PlantId": costData.PlantId,
       "VendorId": costData.VendorId,
       "VendorCode": costData.VendorCode,
@@ -138,6 +139,7 @@ function AddAssemblyOperation(props) {
   
             let subAssemblyObj = {
               "CostingId": item.CostingId,
+              "SubAssemblyCostingId":item.SubAssemblyCostingId,
               "CostingNumber": "", // Need to find out how to get it.
               "TotalRawMaterialsCostWithQuantity": item.PartType=== 'Part' ?item.CostingPartDetails?.TotalRawMaterialsCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
               "TotalBoughtOutPartCostWithQuantity":item.PartType=== 'Part' ?item.CostingPartDetails?.TotalBoughtOutPartCost * item.CostingPartDetails.Quantity :item.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,

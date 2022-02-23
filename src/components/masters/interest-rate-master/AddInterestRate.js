@@ -16,6 +16,9 @@ import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { debounce } from 'lodash';
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
+
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
@@ -31,6 +34,7 @@ class AddInterestRate extends Component {
 
       isEditFlag: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected: false,
       InterestRateId: '',
       effectiveDate: '',
       Data: [],
@@ -38,7 +42,8 @@ class AddInterestRate extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
+      disablePopup: false,
+      inputLoader: false,
     }
   }
   /**
@@ -56,7 +61,6 @@ class AddInterestRate extends Component {
    */
   componentDidMount() {
     this.props.getICCAppliSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList()
     this.props.getPaymentTermsAppliSelectList(() => { })
     this.getDetail()
   }
@@ -112,6 +116,8 @@ class AddInterestRate extends Component {
   */
   onPressVendor = () => {
     this.setState({ IsVendor: !this.state.IsVendor, });
+    this.setState({ inputLoader: true })
+    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
   }
 
   /**
@@ -120,7 +126,7 @@ class AddInterestRate extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
     } else {
       this.setState({ vendorName: [], })
     }
@@ -249,6 +255,16 @@ class AddInterestRate extends Component {
     const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
+
+    if (vendorName.length <= 0) {
+
+      if (IsVendor) {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
+    }
+    this.setState({ isVendorNameNotSelected: false })
+
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
 
@@ -263,7 +279,7 @@ class AddInterestRate extends Component {
       else {
 
       }
-      this.setState({ setDisable: true })
+      this.setState({ setDisable: true, disablePopup: false })
       let updateData = {
         VendorInterestRateId: InterestRateId,
         ModifiedBy: loggedInUserId(),
@@ -337,6 +353,27 @@ class AddInterestRate extends Component {
     }
     const { handleSubmit, } = this.props;
     const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -386,31 +423,20 @@ class AddInterestRate extends Component {
                     </Row>
                     <Row>
                       {this.state.IsVendor && (
-                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                name="VendorName"
-                                type="text"
-                                label="Vendor Name"
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("VendorNameList")}
-                                validate={
-                                  this.state.vendorName == null ||
-                                    this.state.vendorName.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleVendorName
-                                }
-                                valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </div>
-                          </div>
+                        <Col md="3" className='mb-4'>
+
+                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader interest-rate-vendor-loader `} />}
+                          <AsyncSelect
+                            name="vendorName"
+                            ref={this.myRef}
+                            key={this.state.updateAsyncDropdown}
+                            loadOptions={promiseOptions}
+                            onChange={(e) => this.handleVendorName(e)}
+                            noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                            value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                          {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
                         </Col>
                       )}
                     </Row>
