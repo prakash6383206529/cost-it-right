@@ -213,6 +213,14 @@ class AddMachineRate extends Component {
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
   }
 
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false, setDisable: false })
+    if (type === 'submit') {
+
+      this.cancel()
+    }
+  }
   /**
   * @method getDetails
   * @description Used to get Details
