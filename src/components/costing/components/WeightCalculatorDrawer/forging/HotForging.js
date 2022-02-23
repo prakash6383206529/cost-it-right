@@ -414,12 +414,12 @@ const calculateNetRmCostComponent = () =>{
       <Row>
         <Col>
           <form noValidate className="form">
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={'px-0'}>
               <div className="border px-3 pt-3">
                 <Row>
                   
                   <Col md="12">
-                    <Row className={'mt15'}>
+                    <Row>
                       <Col md="3">
                         <TextFieldHookForm
                           label={`Finished Weight(kg)`}
@@ -464,7 +464,7 @@ const calculateNetRmCostComponent = () =>{
                   </Col>
                 </Row>
                
-                <Col md="3">
+                <Col md="3" className='mt10 px-0'>
                   <TextFieldHookForm
                       label={`Forged Weight (Kg)`}
                       name={'forgedWeight'}
@@ -509,7 +509,7 @@ const calculateNetRmCostComponent = () =>{
                 
               </div>
             </Col>
-            <Row>
+            <Row className='mt25'>
             <Col md="3">
                     <TextFieldHookForm
                       label={`Billet Diameter(mm)`}
@@ -669,9 +669,6 @@ const calculateNetRmCostComponent = () =>{
                       disabled={true}
                     />
                   </Col>
- 
-                  </Row>
-                  <Row>
                   <Col md="3">
                   <TextFieldHookForm
                       label={`Total Input Weight (Kg)`}
