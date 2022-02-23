@@ -442,7 +442,7 @@ function CostingSummary(props) {
                           handleChange={handlePartChange}
                           errors={errors.Part}
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
-                        /> 
+                        /> */}
                       </Col>
 
                       <Col className="col-md-15">
