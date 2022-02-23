@@ -57,11 +57,8 @@ function LossStandardTable(props) {
   const [isDisable , setIsDisable] = useState(false)
   const [isBarBlade, setIsBarBlade] = useState(false)
   const [isFlashParametersDisable, setIsFlashParametersDisable] = useState(false)
-  const [isNonFerrousParameters, setIsNonFerrousParameters] = useState(false)
-
 
   useEffect(() => {
-    
     setTableData(props.sendTable ? props.sendTable : [])
     
     if(props?.sendTable?.length===0){
@@ -75,56 +72,34 @@ function LossStandardTable(props) {
   const handleLossOfType = (value) =>{
     setPercentage(false)
     setUseformula(false)
-    
-    if((value.label==="Scale Loss") || (value.label==="Bilet Heating Loss")){
 
-      setScaleandBiletLossType(true)
-      setIsDisable(true)
-    }
-    else 
-    {
-      setScaleandBiletLossType(false)
-    }
     if((value.label==="Bar Cutting Allowance")){
-      setBarCuttingAllowanceLossType(true) 
+     setBarCuttingAllowanceLossType(true) 
      setIsDisable(false)
     }
-    else
-    {
-      setBarCuttingAllowanceLossType(false) 
-    }
-   if((value.label==="Flash Loss")){
+    else if((value.label==="Flash Loss")){
 
-     setFlashLossType(true)
-     setIsDisable(false)
-   }
-   else{
-     setFlashLossType(false)
-   }
-   if ((value.label==="Melting Loss")||(value.label==="Fetling Loss")||(value.label==="Grinding Loss")||(value.label==="Rejection Allowance")||(value.label==="Processing Allowance")||(value.label==="Machining Loss")){
-    setIsNonFerrousParameters(true)
-   }
-   else{
-    setIsNonFerrousParameters(false)
-   }
+      setFlashLossType(true)
+      setIsDisable(false)
+    }
+    else{
+      setBarCuttingAllowanceLossType(false) 
+      setFlashLossType(false)
+      setPercentage(true)
+    }
   }
+
   const handleFlashloss = (value) =>{
     if((value.label==="Use Formula")){
 
       setUseformula(true)
       setIsDisable(true)
+      setPercentage(false) 
     }
     else 
     {
-      setUseformula(false)
-    }
-    if((value.label==="Percentage")){
       setPercentage(true)
-      setIsDisable(true)
-    }
-    else
-    {
-      setPercentage(false) 
+      setUseformula(false)
     }
   }
 
@@ -135,21 +110,16 @@ function LossStandardTable(props) {
    */
   const calculateLossWeight = () => {
     const LossPercentage = checkForNull(getValues('LossPercentage'))
-
     const inputWeight = props.weightValue
     const LossWeight = (inputWeight * LossPercentage) / 100
 
-    
-
     setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-
     setLossWeight(LossWeight)
   }
 
   const calculateForgeLossWeight = (value) => {
    
-    const LossPercentage = checkForNull(getValues('LossPercentage'))
-    
+    const LossPercentage = checkForNull(getValues('LossPercentage')) 
     const FlashLength = checkForNull(getValues('FlashLength'))
     const FlashThickness = checkForNull(getValues('FlashThickness'))
     const FlashWidth = checkForNull(getValues('FlashWidth'))
@@ -173,8 +143,7 @@ function LossStandardTable(props) {
       }else{
         setIsBarBlade(false)
       }
-    }
-    
+    }   
     if((FlashLength !== undefined && FlashLength !==0) || (FlashThickness !== undefined && FlashThickness !==0)  || (FlashWidth !== undefined && FlashWidth !==0)){
       setIsDisable(true)
       setIsFlashParametersDisable(false)
@@ -320,9 +289,6 @@ function LossStandardTable(props) {
           LossMachineFunction(true)
         }
       } 
-   
-      
-    
     }
 
     if (LossOfType === 2) {
@@ -725,71 +691,37 @@ if(value !== undefined && value !==0  && value !==''){
                   </>}
                   {percentage&&
                   <>
-                  <Col md="3">
-          <TextFieldHookForm
-            label={`Loss(%)`}
-            name={'LossPercentage'}
-            Controller={Controller}
-            control={control}
-            register={register}
-            mandatory={false}
-            rules={{
-              required: false,
-              pattern: {
-                //value: /^[0-9]*$/i,
-                value: /^[0-9]\d*(\.\d+)?$/i,
-                message: 'Invalid Number.',
-              },
-              max: {
-                value: 100,
-                message: 'Percentage cannot be greater than 100'
-              },
-              // maxLength: 4,
-            }}
-            handleChange={()=>{}}
-            defaultValue={''}
-            className=""
-            customClassName={'withBorder'}
-            errors={errors.LossPercentage}
-            disabled={props.CostingViewMode}
-          />
-        </Col>
-        </>}
-        {isNonFerrousParameters&&
-        <>
-        <Col md="3">
-          <TextFieldHookForm
-            label={`Loss(%)`}
-            name={'LossPercentage'}
-            Controller={Controller}
-            control={control}
-            register={register}
-            mandatory={false}
-            rules={{
-              required: false,
-              pattern: {
-                //value: /^[0-9]*$/i,
-                value: /^[0-9]\d*(\.\d+)?$/i,
-                message: 'Invalid Number.',
-              },
-              max: {
-                value: 100,
-                message: 'Percentage cannot be greater than 100'
-              },
-              // maxLength: 4,
-            }}
-            handleChange={()=>{}}
-            defaultValue={''}
-            className=""
-            customClassName={'withBorder'}
-            errors={errors.LossPercentage}
-            disabled={props.CostingViewMode}
-          />
-        </Col>
-        </>}
-        
-            
-        <Col md="3">
+                  <Col md="2">
+                  <TextFieldHookForm
+                    label={`Loss(%)`}
+                    name={'LossPercentage'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      max: {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={()=>{}}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.LossPercentage}
+                    disabled={props.CostingViewMode}
+                  />
+               </Col>
+        </>}       
+        <Col md="2">
           <TextFieldHookForm
             label={`Loss Weight`}
             name={'LossWeight'}
@@ -930,166 +862,7 @@ if(value !== undefined && value !==0  && value !==''){
             </span>
           </div>
         </Col>
-
-        {/* <Row>
-            <Col md="12">
-              <Row className={'mt15'}>
-                <Col md="3">
-                  <TextFieldHookForm
-                    label={`Net Forging Weight(UOM)`}
-                    name={'netForgingWeight'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.netForgingWeight}
-                    disabled={true}
-                  />
-                </Col>
-                <Col md="3">
-                  <TextFieldHookForm
-                    label={`Raw Material Cost/Component`}
-                    name={'rawMaterialCost'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.rawMaterialCost}
-                    disabled={true}
-                  />
-                </Col>
-                <Col md="3">
-                  <TextFieldHookForm
-                    label={`Scrap Weight Recovery`}
-                    name={'scrapWeightRecovery'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.scrapWeightRecovery}
-                    disabled={true}
-                  />
-                </Col>
-                <Col md="3">
-                  <TextFieldHookForm
-                    label={`Scrap Cost`}
-                    name={'scrapCost'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: false,
-                    //   pattern: {
-                    //     value: /^[0-9\b]+$/i,
-                    //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.scrapCost}
-                    disabled={true}
-                  />
-                </Col>
-
-                <Col md="3">
-                  <TextFieldHookForm
-                    label={`Material Cost`}
-                    name={'materialCost'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: false,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.materialCost}
-                    disabled={true}
-                  />
-                </Col>
-                <Col md="3">
-                  <TextFieldHookForm
-                    label={`Input RM Weight(UOM)`}
-                    name={'rmWeight'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.rmWeight}
-                    disabled={true}
-                  />
-                </Col>
-              </Row>
-            </Col>
-          </Row> */}
       </Row>
-
     </Fragment>
   )
 }
