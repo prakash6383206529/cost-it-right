@@ -471,7 +471,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  */
 export function setRMCCData(TabData, callback) {
 
-
+console.log("COMING IN DISPATCH",TabData);
 
   return (dispatch) => {
     dispatch({

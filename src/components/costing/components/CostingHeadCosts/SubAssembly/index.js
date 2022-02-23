@@ -11,7 +11,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
-  console.log('item of subassembly: ', item);
+  
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);
@@ -133,9 +133,9 @@ function AssemblyPart(props) {
   */
   return (
     <>
-      <tr className="costing-highlight-row accordian-row">
+      <tr className="costing-highlight-row accordian-row"  key={item.PartId}>
         <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
-          <td>
+          <td >
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.PartType!=="Sub Assembly"  && item.PartType!=="Assembly" && "L1"}`}>
               <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>

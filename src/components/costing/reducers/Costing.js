@@ -292,6 +292,7 @@ export default function costingReducer(state = initialState, action) {
       };
     case SET_RMCC_TAB_DATA:
       const tempRMData = [...action.payload]
+      console.log('tempRMData from reducer: ', tempRMData);
       
       return {
         ...state,
@@ -578,6 +579,9 @@ export default function costingReducer(state = initialState, action) {
       case SET_ARRAY_FOR_COSTING:          
 
       let tempArray = [...state.setArrayForCosting,action.payload]
+      // let uniqueArr = _.uniqBy(tempArray, function (o) {
+      //   return o.CostingId;
+      // });
       return {
         ...state,
         loading:false,
