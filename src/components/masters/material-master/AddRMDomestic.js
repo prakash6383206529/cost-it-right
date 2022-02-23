@@ -395,7 +395,7 @@ class AddRMDomestic extends Component {
           const Data = res.data.Data
 
 
-          
+
           this.setState({ DataToChange: Data }, () => { })
           this.setState({ inputLoader: true })
           if (Data.IsVendor) {
@@ -434,7 +434,7 @@ class AddRMDomestic extends Component {
                   return plantArray
                 })
 
-            
+
                 let vendorPlantArray = []
                 Data && Data.VendorPlant.map((item) => {
                   vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId, })
@@ -457,7 +457,7 @@ class AddRMDomestic extends Component {
                   Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
                   selectedPlants: plantArray,
                   Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
-                  vendorName:Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
+                  vendorName: Data.Vendor !== undefined ? { label: Data.VendorName, value: Data.Vendor } : [],
                   selectedVendorPlants: vendorPlantArray,
                   HasDifferentSource: Data.HasDifferentSource,
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
@@ -964,7 +964,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
     const { initialConfiguration } = this.props
     this.setState({ setDisable: true, disablePopup: false })
     if (vendorName.length <= 0) {
@@ -1024,7 +1024,7 @@ class AddRMDomestic extends Component {
 
           }
         })
-        // } else {
+      } else {
 
         if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined) && DataToChange.RawMaterialCode === values.Code) {
 
@@ -1034,7 +1034,7 @@ class AddRMDomestic extends Component {
         if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
           Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
             values.cutOffPrice === undefined) || uploadAttachements === false)) {
-              this.setState({ showPopup: true, updatedObj: requestData })
+          this.setState({ showPopup: true, updatedObj: requestData })
         }
       }
     }
@@ -1162,7 +1162,7 @@ class AddRMDomestic extends Component {
 
 
       });
-      
+
     return (
       <>
         {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
@@ -1405,30 +1405,30 @@ class AddRMDomestic extends Component {
                           </Col>
 
                           <Col md="4" className='mb-4'>
-                         
-                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
-                           <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
-                           <div className="fullinput-icon">
-                           <AsyncSelect 
-                           name="DestinationSupplierId" 
-                           ref={this.myRef} 
-                           key={this.state.updateAsyncDropdown} 
-                           loadOptions={promiseOptions}
-                           onChange={(e) => this.handleVendorName(e)} 
-                           value={this.state.vendorName} 
-                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                           isDisabled={isEditFlag || isViewFlag} 
-                           />
-                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                           </div>
-                           {!isEditFlag && (
+
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="fullinput-icon">
+                                <AsyncSelect
+                                  name="DestinationSupplierId"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={promiseOptions}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                  isDisabled={isEditFlag || isViewFlag}
+                                />
+                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              </div>
+                              {!isEditFlag && (
                                 <div
                                   onClick={this.vendorToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
-                           </div>
+                            </div>
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">

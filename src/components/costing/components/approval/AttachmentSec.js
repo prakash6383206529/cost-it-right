@@ -36,6 +36,7 @@ function AttachmentSec(props) {
     const [IsOpen, setIsOpen] = useState(false);
 
     const [initialFiles, setInitialFiles] = useState([]);
+    const [isDisable, setIsDisable] = useState(false)
 
     const { attachmentsData } = useSelector((state) => state.simulation)
 
@@ -44,6 +45,10 @@ function AttachmentSec(props) {
         let obj = [...files, ...supplierFiles, ...invoiceFiles, ...otherFiles, ...attachmentFiles]
         dispatch(setAttachmentFileData(obj, () => { }))
     }, [files, supplierFiles, invoiceFiles, otherFiles, attachmentFiles, IsOpen])
+
+    useEffect(() => {
+        props.callbackFunctionForDisableSaveButton(isDisable)
+    }, [isDisable])
 
     //  const setAttachmentForSimulation = 
 
@@ -79,9 +84,21 @@ function AttachmentSec(props) {
         return { url: 'https://httpbin.org/post', }
     }
 
+    /**
+    * @method setDisableFalseFunctionImpactSheet
+    * @description setDisableFalseFunctionImpactSheet
+    */
+    const setDisableFalseFunctionImpactSheet = () => {
+        const loop = Number(dropzoneImpactSheet.current.files.length) - Number(files.length)
+        if (Number(loop) === 1) {
+            setIsDisable(false)
+        }
+    }
+
     // called every time a file's `status` changes
     const handleChangeStatus = ({ meta, file }, status) => {
 
+        setIsDisable(true)
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -97,7 +114,8 @@ function AttachmentSec(props) {
             data.append('Folder', IMPACT_SHEET)
 
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                let Data = res.data[0]
+                setDisableFalseFunctionImpactSheet()
+                let Data = res?.data[0]
                 files.push(Data)
                 setFiles(files)
                 setIsOpen(!IsOpen)
@@ -105,20 +123,36 @@ function AttachmentSec(props) {
         }
 
         if (status === 'rejected_file_type') {
+            setDisableFalseFunctionImpactSheet()
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            setDisableFalseFunctionImpactSheet()
             dropzoneImpactSheet.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
+            setDisableFalseFunctionImpactSheet()
             dropzoneImpactSheet.current.files.pop()
             Toaster.warning("Something went wrong")
         }
     }
 
 
+    /**
+    * @method setDisableFalseFunctionsupplierFiles
+    * @description setDisableFalseFunctionsupplierFiles
+    */
+    const setDisableFalseFunctionsupplierFiles = () => {
+        const loop = Number(dropzoneSupplierConfirm.current.files.length) - Number(supplierFiles.length)
+        if (Number(loop) === 1) {
+            setIsDisable(false)
+        }
+    }
+
     const handleChangeSupplierConfirmationStatus = ({ meta, file }, status) => {
+
+        setIsDisable(true)
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -134,7 +168,8 @@ function AttachmentSec(props) {
             data.append('Folder', SUPPLIER_CONFRIM)
 
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                let Data = res.data[0]
+                setDisableFalseFunctionsupplierFiles()
+                let Data = res?.data[0]
                 supplierFiles.push(Data)
                 setSupplierFiles(supplierFiles)
                 setIsOpen(!IsOpen)
@@ -144,19 +179,33 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            setDisableFalseFunctionsupplierFiles()
             dropzoneSupplierConfirm.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
+            setDisableFalseFunctionsupplierFiles()
             dropzoneSupplierConfirm.current.files.pop()
             Toaster.warning("Something went wrong")
         }
     }
 
 
+    /**
+    * @method setDisableFalseFunctioninvoiceFiles
+    * @description setDisableFalseFunctioninvoiceFiles
+    */
+    const setDisableFalseFunctioninvoiceFiles = () => {
+        const loop = Number(dropzoneInvoiceBackup.current.files.length) - Number(invoiceFiles.length)
+        if (Number(loop) === 1) {
+            setIsDisable(false)
+        }
+    }
+
     const handleChangeInvoiceBackupStatus = ({ meta, file }, status) => {
 
+        setIsDisable(true)
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -171,7 +220,8 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', INVOICE_BACKUP)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                let Data = res.data[0]
+                setDisableFalseFunctioninvoiceFiles()
+                let Data = res?.data[0]
                 invoiceFiles.push(Data)
                 setInvoiceFiles(invoiceFiles)
                 setIsOpen(!IsOpen)
@@ -181,17 +231,33 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            setDisableFalseFunctioninvoiceFiles()
             dropzoneInvoiceBackup.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
+            setDisableFalseFunctioninvoiceFiles()
             dropzoneInvoiceBackup.current.files.pop()
             Toaster.warning("Something went wrong")
         }
     }
+
+
+    /**
+    * @method setDisableFalseFunctionotherFiles
+    * @description setDisableFalseFunctionotherFiles
+    */
+    const setDisableFalseFunctionotherFiles = () => {
+        const loop = Number(dropzoneOthers.current.files.length) - Number(otherFiles.length)
+        if (Number(loop) === 1) {
+            setIsDisable(false)
+        }
+    }
+
     const handleOtherChangeStatus = ({ meta, file }, status) => {
 
+        setIsDisable(true)
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -206,7 +272,8 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', OTHER)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                let Data = res.data[0]
+                setDisableFalseFunctionotherFiles()
+                let Data = res?.data[0]
                 otherFiles.push(Data)
                 setOtherFiles(otherFiles)
                 setIsOpen(!IsOpen)
@@ -216,17 +283,33 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            setDisableFalseFunctionotherFiles()
             dropzoneOthers.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
+            setDisableFalseFunctionotherFiles()
             dropzoneOthers.current.files.pop()
             Toaster.warning("Something went wrong")
         }
     }
+
+
+    /**
+    * @method setDisableFalseFunctionattachmentFiles
+    * @description setDisableFalseFunctionattachmentFiles
+    */
+    const setDisableFalseFunctionattachmentFiles = () => {
+        const loop = Number(dropzoneAttachments.current.files.length) - Number(attachmentFiles.length)
+        if (Number(loop) === 1) {
+            setIsDisable(false)
+        }
+    }
+
     const handleChangeAttachment = ({ meta, file }, status) => {
 
+        setIsDisable(true)
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -241,7 +324,8 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', ATTACHMENTS)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                let Data = res.data[0]
+                setDisableFalseFunctionattachmentFiles()
+                let Data = res?.data[0]
                 attachmentFiles.push(Data)
                 setAttachmentFiles(attachmentFiles)
                 setIsOpen(!IsOpen)
@@ -251,11 +335,13 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            setDisableFalseFunctionattachmentFiles()
             dropzoneAttachments.current.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
+            setDisableFalseFunctionattachmentFiles()
             dropzoneAttachments.current.files.pop()
             Toaster.warning("Something went wrong")
         }

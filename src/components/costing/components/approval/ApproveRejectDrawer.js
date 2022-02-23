@@ -24,7 +24,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments,setSelectedRowsDataEmpty } = props
+  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, setSelectedRowsDataEmpty } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -42,7 +42,6 @@ function ApproveRejectDrawer(props) {
   const [tokenDropdown, setTokenDropdown] = useState(true)
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
-  const [disableSubmitButton, setDisableSubmitbutton] = useState(false)
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
 
@@ -264,14 +263,14 @@ function ApproveRejectDrawer(props) {
             }
 
             if (status !== undefined && status === 200) {
-              setDisableSubmitbutton(false)
+              setIsDisable(false)
             } else {
-              setDisableSubmitbutton(true)
+              setIsDisable(true)
             }
             // if (status !== undefined && (status === 400 || status === 412 || status === 500)) {
-            //   setDisableSubmitbutton(true)
+            //   setIsDisable(true)
             // } else {
-            //   setDisableSubmitbutton(false)
+            //   setIsDisable(false)
             // }
             setLoader(false)
           }))
@@ -595,6 +594,10 @@ function ApproveRejectDrawer(props) {
     }
   }
 
+  const callbackFunctionForDisableSaveButton = (value) => {
+    setIsDisable(value)
+  }
+
   return (
     <>
 
@@ -790,7 +793,13 @@ function ApproveRejectDrawer(props) {
 
                 {
                   isSimulation && type === 'Sender' && !isSimulationApprovalListing &&
-                  <AttachmentSec token={simulationDetail?.TokenNo} type={type} Attachements={simulationDetail?.Attachements} showAttachment={false} />
+                  <AttachmentSec
+                    token={simulationDetail?.TokenNo}
+                    type={type}
+                    Attachements={simulationDetail?.Attachements}
+                    showAttachment={false}
+                    callbackFunctionForDisableSaveButton={callbackFunctionForDisableSaveButton}
+                  />
                 }
 
               </Row>
@@ -810,7 +819,7 @@ function ApproveRejectDrawer(props) {
                     type="button"
                     className="submit-button  save-btn"
                     onClick={onSubmit}
-                    disabled={disableSubmitButton || isDisable}
+                    disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}
