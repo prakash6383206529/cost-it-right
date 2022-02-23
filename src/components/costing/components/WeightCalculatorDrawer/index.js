@@ -6,10 +6,8 @@ import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
 import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, DIE_CASTING, CORRUGATEDBOX } from '../../../../config/masterData'
-// import HPDC from './dieCasting/HPDC'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import RubberCalciTab from './rubber'
-
 import CorrugatedBox from './CorrugatedBox';
 import NonFerrousCalculator from './dieCasting'
 
