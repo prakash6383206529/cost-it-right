@@ -88,9 +88,9 @@ class OperationsMaster extends Component {
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>Manage Operation</NavLink>
                                     </NavItem>
 
-                                    {/* <NavItem>
+                                    <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>Approval Status</NavLink>
-                                    </NavItem> */}
+                                    </NavItem>
 
                                 </Nav>
 
