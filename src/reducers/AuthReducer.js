@@ -36,8 +36,8 @@ import {
     GET_MASTER_SELECT_LIST,
     MASTER_LEVEL_DATALIST_API,
     GET_MASTER_LEVEL_BY_MASTERID,
-    RM_APPROVAL_DASHBOARD,
-
+    COSTINGS_APPROVAL_DASHBOARD,
+    AMENDMENTS_APPROVAL_DASHBOARD,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -322,16 +322,20 @@ export default function authReducer(state = initialState, action) {
                 error: true,
                 masterLevelDataList: action.payload
             };
-        case RM_APPROVAL_DASHBOARD:
+        case COSTINGS_APPROVAL_DASHBOARD:
             return {
                 ...state,
                 loading: false,
                 error: true,
-                RMApprovalDashboard: action.payload
+                CostingsApprovalDashboard: action.payload
             };
-
-
-
+        case AMENDMENTS_APPROVAL_DASHBOARD:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                AmendmentsApprovalDashboard: action.payload
+            };
         default:
             return state;
     }
