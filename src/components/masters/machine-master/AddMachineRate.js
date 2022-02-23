@@ -215,7 +215,7 @@ class AddMachineRate extends Component {
 
 
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false })
+    this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
 
       this.cancel()

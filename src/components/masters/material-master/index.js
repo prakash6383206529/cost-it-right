@@ -5,20 +5,19 @@ import RMListing from './RMListing';
 import SpecificationListing from './SpecificationListing';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
-import { getRowMaterialDataAPI } from '../actions/Material';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
 import RMImportListing from './RMImportListing';
 
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
+import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RMApproval from './RMApproval';
 import ScrollToTop from '../../common/ScrollToTop';
-import { getConfigurationKey } from '../../../helper';
+import { CheckApprovalApplicableMaster } from '../../../helper';
 
 
 
@@ -243,7 +242,7 @@ function RowMaterialMaster(props) {
                             </NavItem>}
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
-                            {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
+                            {(ViewRMAccessibility && CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                 {/* {ViewRMAccessibility && <NavItem> */}
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
@@ -258,7 +257,7 @@ function RowMaterialMaster(props) {
 
 
 
-                            {activeTab == 1 && ViewRMAccessibility &&
+                            {Number(activeTab) === 1 &&
                                 <TabPane tabId="1">
                                     <RMDomesticListing
                                         formToggle={displayDomesticForm}
@@ -272,7 +271,7 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 2 && ViewRMAccessibility &&
+                            {Number(activeTab) === 2 &&
                                 <TabPane tabId="2">
                                     <RMImportListing
                                         formToggle={displayImportForm}
@@ -286,7 +285,7 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 3 && ViewRMAccessibility &&
+                            {Number(activeTab) === 3 &&
                                 <TabPane tabId="3">
                                     <SpecificationListing
                                         toggle={toggle}
@@ -300,7 +299,7 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 4 && ViewRMAccessibility &&
+                            {Number(activeTab) === 4 &&
                                 <TabPane tabId="4">
                                     <RMListing
                                         AddAccessibility={AddAccessibility}
@@ -309,7 +308,7 @@ function RowMaterialMaster(props) {
                                         DownloadAccessibility={DownloadAccessibility}
                                     />
                                 </TabPane>}
-                            {activeTab == 5 && ViewRMAccessibility &&
+                            {Number(activeTab) === 5 &&
                                 <TabPane tabId="5">
                                     {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
