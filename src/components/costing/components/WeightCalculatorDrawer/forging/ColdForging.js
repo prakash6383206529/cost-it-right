@@ -160,9 +160,9 @@ function ColdForging(props) {
     
     const BilletDiameter = checkForDecimalAndNull(getValues('BilletDiameter'), getConfigurationKey().NoOfDecimalForInputOutput)
     const forgedWeight = forgeWeightValue
-    console.log(forgeWeightValue,'forgeWeightValue');
+    
     const InputLength = (forgedWeight + netLossWeight)/(0.7857 * BilletDiameter * BilletDiameter * rmRowData.Density/1000000)
-    console.log('InputLength: ', InputLength);
+    
     setDataSend(prevState => ({ ...prevState, InputLength: InputLength })) 
     setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
     setLostWeight(netLossWeight)
@@ -216,7 +216,7 @@ function ColdForging(props) {
 
     const calculateTotalInputWeight = (netLossWeight = 0) => {
       
-      const forgedWeight = checkForDecimalAndNull(getValues('forgedWeight'))     
+      const forgedWeight = forgeWeightValue  
       const EndBitLoss = checkForNull(getValues('EndBitLoss'))     
       const TotalInputWeight = forgedWeight + netLossWeight + EndBitLoss
       setDataSend(prevState => ({ ...prevState, TotalInputWeight: TotalInputWeight }))
@@ -357,10 +357,6 @@ const calculateNetRmCostComponent = () =>{
   }
   const dropDown = [
     {
-      label: 'Scale Loss',
-      value: 5,
-    },
-    {
       label: 'Bilet Heating Loss',
       value: 6,
     },
@@ -408,7 +404,7 @@ const calculateNetRmCostComponent = () =>{
   const LossMachineFunction=(value)=>{
     setDiableMachiningStock(value)
   }
-console.log(diableMachiningStock,'diableMachiningStock');
+
   return (
     <Fragment>
       <Row>
@@ -501,7 +497,9 @@ console.log(diableMachiningStock,'diableMachiningStock');
                   tableValue={tableData}
                   rmRowData={props.rmRowData}
                   LossMachineFunction ={LossMachineFunction}
+                  isPlastic={false}
                   isLossStandard = {true}
+                  isNonFerrous={false}
 
                 />
                 
