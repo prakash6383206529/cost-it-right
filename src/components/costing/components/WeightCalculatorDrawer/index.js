@@ -5,11 +5,9 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, DIECASTING, CORRUGATEDBOX } from '../../../../config/masterData'
-// import HPDC from './dieCasting/HPDC'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, DIE_CASTING, CORRUGATEDBOX } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import RubberCalciTab from './rubber'
-
 import CorrugatedBox from './CorrugatedBox';
 import NonFerrousCalculator from './dieCasting'
 
@@ -112,7 +110,7 @@ function OpenWeightCalculator(props) {
           toggleDrawer={toggleDrawer}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />)
-      case DIECASTING:
+      case DIE_CASTING:
         return (<NonFerrousCalculator
 
           rmRowData={props.rmRowData}
