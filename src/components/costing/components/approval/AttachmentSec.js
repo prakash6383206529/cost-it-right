@@ -47,7 +47,9 @@ function AttachmentSec(props) {
     }, [files, supplierFiles, invoiceFiles, otherFiles, attachmentFiles, IsOpen])
 
     useEffect(() => {
-        props.callbackFunctionForDisableSaveButton(isDisable)
+        if (!props?.isSimulationSummary) {
+            props?.callbackFunctionForDisableSaveButton(isDisable)
+        }
     }, [isDisable])
 
     //  const setAttachmentForSimulation = 
