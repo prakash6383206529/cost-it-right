@@ -20,7 +20,7 @@ import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, user
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL, ZBC,MACHINE_MASTER_ID } from '../../../config/constants';
+import { FILE_URL, ZBC, MACHINE_MASTER_ID } from '../../../config/constants';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -328,6 +328,17 @@ class AddMachineRate extends Component {
       remarks: e.target.value
     })
   }
+
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false })
+    this.setState({ setDisable: false })
+    if (type === 'submit') {
+
+      this.cancel()
+    }
+  }
+
 
   /**
   * @method renderListing
@@ -1001,8 +1012,9 @@ class AddMachineRate extends Component {
 
 
       } else {
-        this.props.reset()
+
         this.props.createMachine(formData, (res) => {
+          this.setState({ setDisable: false })
           if (res.data.Result) {
             Toaster.success(MESSAGES.MACHINE_ADD_SUCCESS)
             //this.clearForm()

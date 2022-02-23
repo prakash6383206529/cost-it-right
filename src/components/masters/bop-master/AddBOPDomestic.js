@@ -173,6 +173,7 @@ class AddBOPDomestic extends Component {
 
   closeApprovalDrawer = (e = '', type) => {
     this.setState({ approveDrawer: false })
+    this.setState({ setDisable: false })
     if (type === 'submit') {
 
       this.cancel()
@@ -732,7 +733,7 @@ class AddBOPDomestic extends Component {
 
 
 
-     
+
     }
   }, 500)
 
@@ -988,11 +989,11 @@ class AddBOPDomestic extends Component {
                               isDisabled={isEditFlag ? true : false} />
                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
+                              <div
+                                onClick={this.vendorToggler}
+                                className={"plus-icon-square  right"}
+                              ></div>
+                            )}
                           </Col>
                           {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                             <Col md="3">
