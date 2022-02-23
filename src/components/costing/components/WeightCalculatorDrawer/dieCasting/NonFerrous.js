@@ -182,6 +182,7 @@ NonFerrous(props) {
 
     const onSubmit = () => {
         let obj = {}
+        obj.LayoutType = activeTab === '1'?'GDC':activeTab ==='2'?'LPDC':'HPDC'
         obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         obj.IsChangeApplied = true //Need to make it dynamic
         obj.PartId = costData.PartId
@@ -351,7 +352,7 @@ NonFerrous(props) {
 
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Casting Weight(kg)`}
+                                        label={`Casting Weight(${activeTab=='3'?`before machining`:`kg`})`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}

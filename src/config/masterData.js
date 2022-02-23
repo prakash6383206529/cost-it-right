@@ -1803,7 +1803,7 @@ export const ELECTRONICS = 17
 export const HARDWARE = 18
 export const RIVET = 19
 export const PLATING = 21
-export const DIECASTING = 23
+export const DIE_CASTING = 23
 
 
 
