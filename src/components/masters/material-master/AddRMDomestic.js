@@ -1047,7 +1047,6 @@ class AddRMDomestic extends Component {
       //   }
       // })
       else {
-        console.log('else: ');
 
         if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
           && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
