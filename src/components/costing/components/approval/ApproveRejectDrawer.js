@@ -799,6 +799,7 @@ function ApproveRejectDrawer(props) {
                     Attachements={simulationDetail?.Attachements}
                     showAttachment={false}
                     callbackFunctionForDisableSaveButton={callbackFunctionForDisableSaveButton}
+                    isSimulationSummary={false}
                   />
                 }
 

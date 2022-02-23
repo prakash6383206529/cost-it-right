@@ -496,7 +496,7 @@ function SimulationApprovalSummary(props) {
         let roudOffOld = 0, rounfOffNew = 0
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
-        return cell != null ? checkForDecimalAndNull(cell,getConfigurationKey().NoOfDecimalForPrice) : ''
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const POVarianceFormatter = (props) => {
@@ -550,7 +550,7 @@ function SimulationApprovalSummary(props) {
         return (
             <>
                 <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
-                    {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
+                {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
 
 
             </>
@@ -708,7 +708,7 @@ function SimulationApprovalSummary(props) {
         }
         return temp
     }
-    
+
     const rePush = () => {
         let pushObj = {}
         let temp = []
@@ -733,7 +733,7 @@ function SimulationApprovalSummary(props) {
             {showListing === false &&
                 <>
                     {loader && <LoaderCustom />}
-                      <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
 
                         {recordInsertStatusBox &&
                             <div className="error-box-container">
@@ -742,7 +742,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteInsertStatusBox}
-                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross }
+                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
                         }
@@ -754,7 +754,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteAmendmentStatusBox}
-                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross}
+                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
 
@@ -1106,7 +1106,13 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'Attachments:'}</div>
                             </Col>
                             <Col md="12" className="pr-0">
-                                <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} showAttachment={true} />
+                                <AttachmentSec
+                                    token={simulationDetail.TokenNo}
+                                    type={type}
+                                    Attachements={simulationDetail.Attachements}
+                                    showAttachment={true}
+                                    isSimulationSummary={true}
+                                />
                             </Col>
                         </Row>
                         <Row className="mb-4 reset-btn-container">
