@@ -9,7 +9,8 @@ import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
 import OperationApproval from './OperationApproval';
 import ScrollToTop from '../../common/ScrollToTop';
-import { getConfigurationKey } from '../../../helper';
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import { OPERATIONS_ID } from '../../../config/constants';
 
 class OperationsMaster extends Component {
     constructor(props) {
@@ -85,12 +86,16 @@ class OperationsMaster extends Component {
                                 <Nav tabs className="subtabs mt-0">
 
                                     <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>Manage Operation</NavLink>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                            Manage Operation
+                                        </NavLink>
                                     </NavItem>
 
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>Approval Status</NavLink>
-                                    </NavItem>
+                                    {CheckApprovalApplicableMaster(OPERATIONS_ID) && <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                            Approval Status
+                                        </NavLink>
+                                    </NavItem>}
 
                                 </Nav>
 
@@ -98,7 +103,7 @@ class OperationsMaster extends Component {
 
 
 
-                                    {this.state.activeTab == 1 &&
+                                    {Number(this.state.activeTab) === 1 &&
                                         <TabPane tabId="1">
                                             <OperationListing
                                                 formToggle={this.displayOperationForm}
@@ -113,7 +118,7 @@ class OperationsMaster extends Component {
                                         </TabPane>}
 
 
-                                    {this.state.activeTab == 2 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                                    {Number(this.state.activeTab) === 2 &&
                                         <TabPane tabId="2">
                                             <OperationApproval
                                                 AddAccessibility={this.state.AddAccessibility}
