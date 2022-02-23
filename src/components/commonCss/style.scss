@@ -6853,9 +6853,41 @@ left: 17rem;
   table tr:first-child td{
     border-top: none;
   }
+<<<<<<< HEAD
   .conversion-cost {
     .text-overflow {
       max-width: 100%;
+=======
+ 
+@media screen and (max-width:$middleDesktop) {
+  .calculator {
+   
+    max-width: 280px;
+    min-width: 280px;
+    .calculator-key {
+      line-height: 65px;
+      font-size: 1.625rem;
+      width: 70px;
+      height: 60px;
+    }
+    .calculator-keypad {
+      height: 300px;
+      .input-keys {
+        width: 210px;
+      }
+    }
+    .digit-keys {
+        width: 210px;
+        .calculator-key {
+          &.key-dot {
+            font-size: 0.75rem;
+            padding-top: 0;
+          }
+          &.key-0 {
+            width: 140px;
+         }
+      } 
+>>>>>>> 2239fc88f (Add standard calculator *dont cherry pick anywhere)
     }
   }
 }
