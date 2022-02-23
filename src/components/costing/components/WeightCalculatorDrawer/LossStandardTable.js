@@ -8,10 +8,11 @@ import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey , checkPercentageValue} from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../../actions/Costing'; 
+import { ins } from 'react-dom-factories'
 
 
 function LossStandardTable(props) {
-  const { rmRowData , LossMachineFunction ,isLossStandard} = props
+  const { rmRowData , LossMachineFunction ,isLossStandard ,isNonFerrous} = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -34,9 +35,13 @@ function LossStandardTable(props) {
   useEffect(() => {
     calculateLossWeight()
     calculateForgeLossWeight()
+  if(isNonFerrous===true){
+    props.LossDropDown()
+  }
   }, [fieldValues])
 
   const { dropDownMenu } = props
+  
 
   const [tableData, setTableData] = useState([])
   const [isEdit, setIsEdit] = useState(false)
@@ -52,6 +57,7 @@ function LossStandardTable(props) {
   const [isDisable , setIsDisable] = useState(false)
   const [isBarBlade, setIsBarBlade] = useState(false)
   const [isFlashParametersDisable, setIsFlashParametersDisable] = useState(false)
+  const [isNonFerrousParameters, setIsNonFerrousParameters] = useState(false)
 
 
   useEffect(() => {
@@ -95,6 +101,12 @@ function LossStandardTable(props) {
    else{
      setFlashLossType(false)
    }
+   if ((value.label==="Melting Loss")||(value.label==="Fetling Loss")||(value.label==="Grinding Loss")||(value.label==="Rejection Allowance")||(value.label==="Processing Allowance")||(value.label==="Machining Loss")){
+    setIsNonFerrousParameters(true)
+   }
+   else{
+    setIsNonFerrousParameters(false)
+   }
   }
   const handleFlashloss = (value) =>{
     if((value.label==="Use Formula")){
@@ -115,6 +127,7 @@ function LossStandardTable(props) {
       setPercentage(false) 
     }
   }
+
 
   /**
    * @method calculateLossWeight
@@ -227,7 +240,7 @@ function LossStandardTable(props) {
    */
   const addRow = () => {
     const LossPercentage = checkForNull(getValues('LossPercentage'))   
-    const LossOfType = getValues('LossOfType').label
+    const LossOfType = getValues('LossOfType').value
     const FlashLength = checkForNull(getValues('FlashLength'))  
     const FlashThickness = checkForNull(getValues('FlashThickness'))    
     const FlashWidth = checkForNull(getValues('FlashWidth'))    
@@ -235,9 +248,10 @@ function LossStandardTable(props) {
     const BladeThickness = checkForNull(getValues('BladeThickness'))
     const LossWeight = lossWeight
     
-  console.log(lossWeight,'lossWeight');
+  
 
-    if (LossWeight && LossWeight === 0  ) {
+  
+    if ( LossWeight === 0 || LossWeight === null|| LossWeight === NaN || LossOfType===''|| LossOfType===undefined) {
       Toaster.warning("Please add data first.")
       return false;
     }
@@ -344,6 +358,7 @@ function LossStandardTable(props) {
     setIsEdit(true)
     setEditIndex(index)
     const tempObj = tableData[index]
+    
     setOldNetWeight(tempObj.LossWeight)
     setValue('LossPercentage', tempObj.LossPercentage)
     setValue('FlashLength', tempObj.FlashLength)
@@ -386,6 +401,7 @@ function LossStandardTable(props) {
     setValue('BladeThickness', '')
     setValue('LossOfType', '')
     setValue('LossWeight', '')
+    setValue('FlashLoss', '')
 
   }
   /**
@@ -435,11 +451,6 @@ function LossStandardTable(props) {
         LossMachineFunction(true)
       }
     } 
-      else{
-      isLossStandard(false)
-      }
-      
-  
   }
 
   const getLossTypeName = (number) => {
@@ -495,6 +506,7 @@ if(value !== undefined && value !==0  && value !==''){
             disabled={props.CostingViewMode}
           />
         </Col>
+        
         {scaleandBiletLossType&&
         <>
         <Col md="2">
@@ -527,6 +539,7 @@ if(value !== undefined && value !==0  && value !==''){
           />
         </Col>
         </>}
+        
         {barCuttingAllowanceLossType&&
         <>
         <Col md="2">
@@ -742,6 +755,39 @@ if(value !== undefined && value !==0  && value !==''){
                   />
                </Col>
         </>}
+        {isNonFerrousParameters&&
+        <>
+        <Col md="3">
+          <TextFieldHookForm
+            label={`Loss(%)`}
+            name={'LossPercentage'}
+            Controller={Controller}
+            control={control}
+            register={register}
+            mandatory={false}
+            rules={{
+              required: false,
+              pattern: {
+                //value: /^[0-9]*$/i,
+                value: /^[0-9]\d*(\.\d+)?$/i,
+                message: 'Invalid Number.',
+              },
+              max: {
+                value: 100,
+                message: 'Percentage cannot be greater than 100'
+              },
+              // maxLength: 4,
+            }}
+            handleChange={()=>{}}
+            defaultValue={''}
+            className=""
+            customClassName={'withBorder'}
+            errors={errors.LossPercentage}
+            disabled={props.CostingViewMode}
+          />
+        </Col>
+        </>}
+        
             
         <Col md="2">
           <TextFieldHookForm
@@ -806,11 +852,11 @@ if(value !== undefined && value !==0  && value !==''){
             <thead>
               <tr>
                 <th>{`Type of Loss`}</th>
-                <th>{`Flash Length`}</th>
-                <th>{`Flash Thickness`}</th>
-                <th>{`Flash Width`}</th>
-                <th>{`Bar Diameter`}</th>
-                <th>{`Blade Thickness`}</th>
+                {isLossStandard&&<th>{`Flash Length`}</th>}
+                {isLossStandard&& <th>{`Flash Thickness`}</th>}
+                {isLossStandard&&<th>{`Flash Width`}</th>}
+                {isLossStandard&&<th>{`Bar Diameter`}</th>}
+                 {isLossStandard&&<th>{`Blade Thickness`}</th>}
                 <th>{`Loss(%)`}</th>
                 <th>{`Loss Weight`}</th>
                 <th>{`Actions`}</th>
@@ -822,12 +868,12 @@ if(value !== undefined && value !==0  && value !==''){
                   return (
                     <Fragment>
                       <tr key={index}>
-                        <td>{getLossTypeName(item.LossOfType)!== null ?item.LossOfType:'-'}</td>
-                        <td>{checkForDecimalAndNull(item.FlashLength,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.FlashLength,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
-                        <td>{checkForDecimalAndNull(item.FlashThickness,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.FlashThickness,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
-                        <td>{checkForDecimalAndNull(item.FlashWidth,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.FlashWidth,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
-                        <td>{checkForDecimalAndNull(item.BarDiameter,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.BarDiameter,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
-                        <td>{checkForDecimalAndNull(item.BladeThickness,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.BladeThickness,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
+                        <td>{item.LossOfType !==null ? getLossTypeName(item.LossOfType):'-'} </td>
+                        {isLossStandard&& <td>{checkForDecimalAndNull(item.FlashLength,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.FlashLength,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>}
+                         {isLossStandard&&<td>{checkForDecimalAndNull(item.FlashThickness,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.FlashThickness,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>}
+                         {isLossStandard&& <td>{checkForDecimalAndNull(item.FlashWidth,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.FlashWidth,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>}
+                         {isLossStandard&& <td>{checkForDecimalAndNull(item.BarDiameter,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.BarDiameter,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>}
+                         {isLossStandard&&<td>{checkForDecimalAndNull(item.BladeThickness,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.BladeThickness,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>}
                         <td>{checkForDecimalAndNull(item.LossPercentage,getConfigurationKey().NoOfDecimalForInputOutput)!== null ?checkForDecimalAndNull(item.LossPercentage,getConfigurationKey().NoOfDecimalForInputOutput):'-'}</td>
                         <td>
                           {checkForDecimalAndNull(item.LossWeight,getConfigurationKey().NoOfDecimalForInputOutput)}

@@ -5,11 +5,14 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, Non_Ferrous_HPDC, CORRUGATEDBOX } from '../../../../config/masterData'
-import HPDC from './HPDC'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, DIECASTING, CORRUGATEDBOX } from '../../../../config/masterData'
+// import HPDC from './dieCasting/HPDC'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
-import RubberCalciTab from './Rubber'
+import RubberCalciTab from './rubber'
+
 import CorrugatedBox from './CorrugatedBox';
+import NonFerrousCalculator from './dieCasting'
+
 
 
 function OpenWeightCalculator(props) {
@@ -20,7 +23,7 @@ function OpenWeightCalculator(props) {
     const { CostingPartDetails } = item
     const { IsApplyMasterBatch, MasterBatchTotal, MasterBatchPercentage } = CostingPartDetails
     appyMasterBatch = (IsApplyMasterBatch === null ||IsApplyMasterBatch === false) ? false :true
-    console.log('appyMasterBatch: ', appyMasterBatch);
+    
     if (appyMasterBatch) {
 
       const RMRate = calculatePercentageValue(rmRowData.RMRate, (100 - MasterBatchPercentage));
@@ -109,8 +112,9 @@ function OpenWeightCalculator(props) {
           toggleDrawer={toggleDrawer}
           CostingViewMode={CostingViewMode ? CostingViewMode : false}
         />)
-      case Non_Ferrous_HPDC:
-        return (<HPDC
+      case DIECASTING:
+        return (<NonFerrousCalculator
+
           rmRowData={props.rmRowData}
           isEditFlag={props.isEditFlag}
           toggleDrawer={toggleDrawer}
@@ -150,7 +154,7 @@ function OpenWeightCalculator(props) {
                 <div
                   onClick={(e) => toggleDrawer(e)}
                   className={'close-button right'}
-                ></div>
+                ></div>``
               </Col>
             </Row>
             <Row className="mt-4 mb-4 pb-2">

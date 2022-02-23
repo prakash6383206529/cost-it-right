@@ -321,6 +321,8 @@ function Plastic(props) {
                 burningLoss={setBurningAllowance}
                 burningValue={WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== null ? WeightCalculatorRequest.BurningValue : ''}
                 isPlastic={true}
+                isLossStandard = {false}
+                isNonFerrous={false}
               />
 
               <Row className={'mt25'}>
