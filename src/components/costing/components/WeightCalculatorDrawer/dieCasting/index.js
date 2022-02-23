@@ -12,25 +12,26 @@ import {
 } from 'reactstrap'
 import classnames from 'classnames'
 import Drawer from '@material-ui/core/Drawer'
-import ColdForging from './ColdForging'
-import HotForging from './HotForging'
+import NonFerrous from './NonFerrous'
 
-function ForgingCalculator(props) {
+
+function NonFerrousCalculator(props) {
   const { rmRowData } = props
   
   const getTabno = (layout) => {
     switch (layout) {
-      case 'Hot':
+      case 'GDC':
         return '1'
-      case 'Cold':
+      case 'LPDC':
         return '2'
+      case 'HPDC':
+        return '3'
       default:
         break;
     }
     console.log(layout,'layout');
   }
   const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
-
   /**
    * @method toggleDrawer
    * @description TOGGLE DRAWER
@@ -57,6 +58,7 @@ function ForgingCalculator(props) {
 
   return (
     <Fragment>
+
       <Row>
         <Col>
           <Nav tabs className="subtabs cr-subtabs-head forging-tabs  nav nav-tabs">
@@ -68,7 +70,7 @@ function ForgingCalculator(props) {
                 }}
                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
               >
-                Hot Forging
+                GDC
               </NavLink>
             </NavItem>
             <NavItem>
@@ -79,26 +81,56 @@ function ForgingCalculator(props) {
                 }}
                 disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
               >
-                Cold Forging
+                 LPDC
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === '3' })}
+                onClick={() => {
+                  toggle('3')
+                }}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
+
+              >
+                 HPDC
               </NavLink>
             </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
             {activeTab === '1' && (
               <TabPane tabId="1">
-                <HotForging
+                <NonFerrous
                   rmRowData={props.rmRowData}
                   toggleDrawer={props.toggleDrawer}
                   CostingViewMode={props.CostingViewMode}
+                  activeTab={activeTab}
+                  isHpdc={false}
+                  isEditFlag={props.isEditFlag}
                 />
               </TabPane>
             )}
-            {activeTab === '2' && (
+             {activeTab === '2' && (
               <TabPane tabId="2">
-                <ColdForging
+                <NonFerrous
                   rmRowData={props.rmRowData}
                   toggleDrawer={props.toggleDrawer}
                   CostingViewMode={props.CostingViewMode}
+                  activeTab={activeTab}
+                  isHpdc={false}
+                  isEditFlag={props.isEditFlag}
+                />
+              </TabPane>
+            )}
+            {activeTab === '3' && (
+              <TabPane tabId="3">
+                <NonFerrous
+                  rmRowData={props.rmRowData}
+                  toggleDrawer={props.toggleDrawer}
+                  CostingViewMode={props.CostingViewMode}
+                  activeTab={activeTab}
+                  isHpdc={true}
+                  isEditFlag={props.isEditFlag}
                 />
               </TabPane>
             )}
@@ -108,4 +140,4 @@ function ForgingCalculator(props) {
     </Fragment>
   )
 }
-export default ForgingCalculator
+export default NonFerrousCalculator
