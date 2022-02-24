@@ -213,9 +213,9 @@ function RMApproval(props) {
                 {
                     row.Status !== DRAFT ?
                         <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={row.Status !== DRAFT ? 'link' : ''}>
-                            {row.ApprovalNumber === 0 ? '-' : row.ApprovalNumber}
+                            {row.ApprovalNumber || row.ApprovalNumber === 0 ? row.ApprovalNumber : "-"}
                         </div> :
-                        row.ApprovalNumber === 0 ? '-' : row.ApprovalNumber
+                        row.ApprovalNumber || row.ApprovalNumber === 0 ? row.ApprovalNumber : "-"
                 }
             </Fragment>
         )
