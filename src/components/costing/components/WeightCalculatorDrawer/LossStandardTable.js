@@ -324,7 +324,7 @@ function LossStandardTable(props) {
     setIsEdit(true)
     setEditIndex(index)
     const tempObj = tableData[index]
-    console.log('tempObj: ', tempObj);
+    
     
     setOldNetWeight(tempObj.LossWeight)
     setValue('LossPercentage', tempObj.LossPercentage)
@@ -351,7 +351,7 @@ function LossStandardTable(props) {
 
     }
     else if (tempObj.LossOfType===8){
-      console.log("COMING IN BAR ALLOW ELSE IF");
+      
       setUseformula(false)
       setPercentage(false)
       setBarCuttingAllowanceLossType(true)
