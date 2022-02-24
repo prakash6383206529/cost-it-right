@@ -48,12 +48,12 @@ class LevelsListing extends Component {
 			rowData: null,
 			sideBar: { toolPanels: ['columns'] },
 			showData: false,
-			showPopup:false,
-            deletedId:'',
-			cellData:{},
-            cellValue:'',
-            showPopupToggle:false,
-			isLoader:false
+			showPopup: false,
+			deletedId: '',
+			cellData: {},
+			cellValue: '',
+			showPopupToggle: false,
+			isLoader: false
 
 		}
 	}
@@ -83,14 +83,14 @@ class LevelsListing extends Component {
 	}
 
 	getLevelsListData = () => {
-		this.setState({isLoader:true})
+		this.setState({ isLoader: true })
 		this.props.getAllLevelAPI(res => {
 			if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
 				this.setState({
 					tableData: Data,
 				},
-				()=>this.setState({isLoader:false}))
+					() => this.setState({ isLoader: false }))
 			}
 		});
 	}
@@ -197,7 +197,7 @@ class LevelsListing extends Component {
 	* @description confirm delete level
 	*/
 	deleteItem = (Id) => {
-		this.setState({showPopup:true, deletedId:Id })
+		this.setState({ showPopup: true, deletedId: Id })
 	}
 
 	/**
@@ -211,15 +211,15 @@ class LevelsListing extends Component {
 				this.getLevelsListData()
 			}
 		});
-		this.setState({showPopup:false})
+		this.setState({ showPopup: false })
 	}
-	onPopupConfirm =() => {
+	onPopupConfirm = () => {
 		this.confirmDeleteItem(this.state.deletedId);
-	   
+
 	}
-	closePopUp= () =>{
-		this.setState({showPopup:false})
-	  }
+	closePopUp = () => {
+		this.setState({ showPopup: false })
+	}
 	renderPaginationShowsTotal(start, to, total) {
 		return <GridTotalFormate start={start} to={to} total={total} />
 	}
@@ -263,7 +263,7 @@ class LevelsListing extends Component {
 		//     }
 		// })
 	}
- 
+
 	/**
 	 * @method statusButtonFormatter
 	 * @description Renders buttons
@@ -338,7 +338,7 @@ class LevelsListing extends Component {
 
 	onPageSizeChanged = (newPageSize) => {
 		var value = document.getElementById('page-size').value;
-		this.state.gridApi.paginationSetPageSize(Number(value));
+		this.state.gridApi.paginationSetPageSize(Number(newPageSize));
 	};
 
 	onFilterTextBoxChanged(e) {
@@ -495,8 +495,8 @@ class LevelsListing extends Component {
 					</>
 				</div>
 				{
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`}  />
-                }
+					this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`} />
+				}
 			</div>
 		);
 	}
