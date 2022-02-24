@@ -69,19 +69,19 @@ NonFerrous(props) {
           
             {
                 label: 'Melting Loss',
-                value: 5,
+                value: 9,
             },
             {
                 label: 'Fetling Loss',
-                value: 6,
+                value: 10,
             },
             {
                 label: 'Grinding Loss',
-                value: 7,
+                value: 11,
             },
             {
                 label: 'Rejection Allowance',
-                value: 4,
+                value: 12,
             },
         ] 
        
@@ -90,15 +90,15 @@ NonFerrous(props) {
         dropDown = [
             {
                 label: 'Processing Allowance',
-                value: 1,
+                value: 13,
             },
             {
                 label: 'Machining Loss',
-                value: 3,
+                value: 14,
             },
             {
                 label: 'Rejection Allowance',
-                value: 4,
+                value: 12,
             },
         ]
         
