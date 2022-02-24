@@ -171,7 +171,7 @@ class AddBOPDomestic extends Component {
 
 
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false })
+    this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
 
       this.cancel()
@@ -974,27 +974,27 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
-                           <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
-                           <div className="fullinput-icon">
-                           <AsyncSelect 
-                           name="vendorName" 
-                           ref={this.myRef} 
-                           key={this.state.updateAsyncDropdown} 
-                           loadOptions={promiseOptions} 
-                           onChange={(e) => this.handleVendorName(e)} 
-                           value={this.state.vendorName} 
-                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                           isDisabled={isEditFlag ? true : false} />
-                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                           </div>
-                           {!isEditFlag && (
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="fullinput-icon">
+                                <AsyncSelect
+                                  name="vendorName"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={promiseOptions}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                  isDisabled={isEditFlag ? true : false} />
+                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              </div>
+                              {!isEditFlag && (
                                 <div
                                   onClick={this.vendorToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
-                           </div>
+                            </div>
                           </Col>
                           {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                             <Col md="3">
@@ -1255,7 +1255,7 @@ class AddBOPDomestic extends Component {
                             (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                disabled={isViewMode || setDisable}
+                                disabled={isViewMode}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}

@@ -25,7 +25,7 @@ function MachiningStockTable(props) {
   const [squareMachiningStock, setSquareMachiningStock] = useState(false)
   const [irregularMachiningStock, setIrregularMachiningStock] = useState(false)
   const [disable, setDisable] = useState(true)
- console.log(diableMachiningStock,'diableMachiningStock');
+ 
 
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
@@ -69,10 +69,10 @@ function MachiningStockTable(props) {
   const [netWeight, setNetWeight] = useState(props.netWeight !== '' ? props.netWeight : 0)
 
   const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
-  console.log('forgingCalculatorMachiningStockSectionValue: ', forgingCalculatorMachiningStockSectionValue);
+  
  
   useEffect(() => {
-    // console.log(forgingCalculatorMachiningStockSectionValue,'forgingCalculatorMachiningStockSectionValue');
+    // 
   }, [forgingCalculatorMachiningStockSectionValue])
 
 
@@ -222,7 +222,7 @@ function MachiningStockTable(props) {
     const GrossWeight = checkForNull(grossWeight)  
     const Volume = checkForNull(forgingVolume)
  
-    if ((GrossWeight && GrossWeight === 0 )||(Volume && Volume === 0)) {
+    if ((GrossWeight && (GrossWeight === 0 || GrossWeight === null ))||(Volume && (Volume === 0 || Volume === null)) || MachiningStock=== '' || Description===''){
       Toaster.warning("Please add data first.")
       return false;
     }
