@@ -137,7 +137,7 @@ function CorrugatedBox(props) {
 
         let data1 = {
             cuttingAllowance: getValues('cutting_allowance'),
-            widthSheet: getValues('width_sheet')
+            widthSheet: dataSend.widthSheetWithDecimal
 
         }
         if (data1.cuttingAllowance) {
@@ -163,7 +163,7 @@ function CorrugatedBox(props) {
 
 
         let data = {
-            widthSheet: getValues('width_sheet'),
+            widthSheet: dataSend.widthSheetWithDecimal,
             cuttingAllowanceForLength: getValues('cuttingAllowanceForLength'),
         }
 
@@ -186,8 +186,8 @@ function CorrugatedBox(props) {
     const setFinalGrossWeight = () => {
 
         let data = {
-            width_inc_cutting: getValues('width_inc_cutting'),
-            length_inc_cutting_allowance: getValues('length_inc_cutting_allowance'),
+            width_inc_cutting: dataSend.widthIncCuttingDecimal,
+            length_inc_cutting_allowance: dataSend.LengthCuttingAllowance,
             no_of_ply: getValues('no_of_ply'),
             gsm: getValues('gsm')
 
