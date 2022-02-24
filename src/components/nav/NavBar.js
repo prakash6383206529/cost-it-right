@@ -6,7 +6,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getModuleIdByPathName, getMenu,
-  getTopAndLeftMenuData, ApprovalDashboard,
+  getTopAndLeftMenuData
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -30,8 +30,11 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { VERSION } from '../../config/constants';
-import { getConfigurationKey } from '../../helper';
+import { BOP_MASTER_ID, MACHINE_MASTER_ID, OPERATIONS_ID, RM_MASTER_ID, VERSION } from '../../config/constants';
+import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../helper';
+import Calculator from "../common/Calculator/component/Calculator";
+import Draggable from 'react-draggable';
+
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -44,7 +47,8 @@ class SideBar extends Component {
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      isShowCal:false
     };
   }
 
@@ -135,7 +139,9 @@ class SideBar extends Component {
       dropdownOpen: !prevState.dropdownOpen,
     }));
   };
-
+  showCalculator =()=> {
+    this.setState({ isShowCal: !this.state.isShowCal })
+  }
   /**
    * @method mobile menu open
    */
@@ -156,16 +162,12 @@ class SideBar extends Component {
       case "Dashboard":
         return this.renderDashboard(module);
       case "Master":
-        this.props.ApprovalDashboard(this.commonObj = { RMApprovalDashboard: getConfigurationKey().IsMasterApprovalAppliedConfigure, BOPApprovalDashboard: getConfigurationKey().IsMasterApprovalAppliedConfigure, MachineApprovalDashboard:getConfigurationKey().IsMasterApprovalAppliedConfigure });
         return this.renderMaster(module);
       case "Additional Masters":
-        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, OperationApprovalDashboard: getConfigurationKey().IsMasterApprovalAppliedConfigure });
         return this.renderAdditionalMaster(module);
       case "Costing":
-        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, CostingsApprovalDashboard: getConfigurationKey().IsMasterApprovalAppliedConfigure });
         return this.renderCosting(module);
       case "Simulation":
-        this.props.ApprovalDashboard(this.commonObj = { ...this.commonObj, AmendmentsApprovalDashboard: getConfigurationKey().IsMasterApprovalAppliedConfigure });
         return this.renderSimulation(module);
       case "Reports And Analytics":
         return this.renderReportAnalytics(module);
@@ -177,7 +179,7 @@ class SideBar extends Component {
         return null
     }
   };
-  
+
   /**
    * @method setLeftMenu
    * @description Used to set left menu and Redirect to first menu.
@@ -384,6 +386,7 @@ class SideBar extends Component {
                   </ul>
                 </div>
               </li>
+             
             </>
           );
         }
@@ -749,11 +752,19 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
-
+              <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={this.showCalculator}></button>
+              {this.state.isShowCal && <div className="calculator-wrapper">  
+              <Draggable>
+                  <div>
+                     <Calculator />
+                  </div>
+               </Draggable>
+              </div>}
         </div>
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
+      
       </nav>
     )
   }
@@ -782,6 +793,5 @@ export default connect(mapStateToProps, {
   getPermissionByUser,
   getModuleIdByPathName,
   getMenu,
-  getTopAndLeftMenuData,
-  ApprovalDashboard,
+  getTopAndLeftMenuData
 })(SideBar)
