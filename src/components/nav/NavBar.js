@@ -32,6 +32,9 @@ import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { BOP_MASTER_ID, MACHINE_MASTER_ID, OPERATIONS_ID, RM_MASTER_ID, VERSION } from '../../config/constants';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../helper';
+import Calculator from "../common/Calculator/component/Calculator";
+import Draggable from 'react-draggable';
+
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -44,7 +47,8 @@ class SideBar extends Component {
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      isShowCal:false
     };
   }
 
@@ -135,7 +139,9 @@ class SideBar extends Component {
       dropdownOpen: !prevState.dropdownOpen,
     }));
   };
-
+  showCalculator =()=> {
+    this.setState({ isShowCal: !this.state.isShowCal })
+  }
   /**
    * @method mobile menu open
    */
@@ -380,6 +386,7 @@ class SideBar extends Component {
                   </ul>
                 </div>
               </li>
+             
             </>
           );
         }
@@ -745,11 +752,19 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
-
+              <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={this.showCalculator}></button>
+              {this.state.isShowCal && <div className="calculator-wrapper">  
+              <Draggable>
+                  <div>
+                     <Calculator />
+                  </div>
+               </Draggable>
+              </div>}
         </div>
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
+      
       </nav>
     )
   }
