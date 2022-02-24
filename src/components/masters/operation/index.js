@@ -88,9 +88,9 @@ class OperationsMaster extends Component {
                                         <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>Manage Operation</NavLink>
                                     </NavItem>
 
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>Approval Status</NavLink>
-                                    </NavItem>
+                                    </NavItem> */}
 
                                 </Nav>
 
@@ -113,7 +113,7 @@ class OperationsMaster extends Component {
                                         </TabPane>}
 
 
-                                    {this.state.activeTab == 2 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                                    {/* {this.state.activeTab == 2 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
                                         <TabPane tabId="2">
                                             <OperationApproval
                                                 AddAccessibility={this.state.AddAccessibility}
@@ -121,7 +121,7 @@ class OperationsMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
-                                        </TabPane>}
+                                        </TabPane>} */}
 
                                 </TabContent>
                             </div>

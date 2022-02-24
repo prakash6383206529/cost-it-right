@@ -187,12 +187,12 @@ class BOPMaster extends Component {
                 </NavItem>
 
 
-
+                {/* 
                 <NavItem>
                   <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
                     Approval Status
                   </NavLink>
-                </NavItem>
+                </NavItem> */}
 
               </Nav>
 
@@ -245,7 +245,7 @@ class BOPMaster extends Component {
 
 
 
-                {this.state.activeTab == 4 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                {/* {this.state.activeTab == 4 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
                   <TabPane tabId="4">
                     <BOPApproval
                       AddAccessibility={this.state.AddAccessibility}
@@ -253,7 +253,7 @@ class BOPMaster extends Component {
                       DeleteAccessibility={this.state.DeleteAccessibility}
                       DownloadAccessibility={this.state.DownloadAccessibility}
                     />
-                  </TabPane>}
+                  </TabPane>} */}
 
               </TabContent>
             </Col>

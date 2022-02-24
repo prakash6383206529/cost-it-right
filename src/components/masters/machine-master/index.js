@@ -202,11 +202,11 @@ class MachineMaster extends Component {
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
-                                    <NavItem>
+                                    {/* <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                             Approval Status
                                         </NavLink>
-                                    </NavItem>
+                                    </NavItem> */}
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
@@ -237,7 +237,7 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
-                                    {this.state.activeTab == 3 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                                    {/* {this.state.activeTab == 3 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
                                         <TabPane tabId="3">
                                             <MachineApproval
                                                 AddAccessibility={this.state.AddAccessibility}
@@ -245,7 +245,7 @@ class MachineMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
-                                        </TabPane>}
+                                        </TabPane>} */}
 
                                 </TabContent>
                             </div>
