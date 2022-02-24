@@ -226,7 +226,14 @@ function MachiningStockTable(props) {
       return false;
     }
 
-
+  //  // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+  //   if (!isEdit) {
+  //     const isExist = tableData.findIndex(el => ( el.TypesOfMachiningStockId === MachiningStock?.value))
+  //     if (isExist !== -1) {
+  //       Toaster.warning('Already added, Please select another Machining stock type.')
+  //       return false;
+  //     }
+  //   }
 
     let tempArray = []
     let NetWeight
@@ -801,7 +808,7 @@ function MachiningStockTable(props) {
                 type="submit"
                 className={'user-btn mt30 pull-left'}
                 onClick={addRow}
-                disabled={props.CostingViewMode}
+                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
               >
                 <div className={'plus'}></div>ADD
               </button>
@@ -854,13 +861,13 @@ function MachiningStockTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
-                                disabled={props.CostingViewMode}
+                                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
                                 type={'button'}
-                                disabled={props.CostingViewMode}
+                                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
                                 onClick={() => deleteRow(index)}
                               />
                             </React.Fragment>
