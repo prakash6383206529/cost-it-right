@@ -1,17 +1,18 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../CostingDetailStepTwo'
+import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch } from 'react-redux'
-import {  TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
-import LossStandardTable from './LossStandardTable'
-import { saveRawMaterialCalciData } from '../../actions/CostWorking'
-import { KG } from '../../../../config/constants'
-import Toaster from '../../../common/Toaster'
+import {  TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
+import LossStandardTable from '../LossStandardTable'
+import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
+import { KG } from '../../../../../config/constants'
+import Toaster from '../../../../common/Toaster'
 
 
-function HPDC(props) {
+function                                                                         
+NonFerrous(props) {
 
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
@@ -36,16 +37,10 @@ function HPDC(props) {
 
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
-    const [dataToSend, setDataToSend] = useState({
-        burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
-        grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
-        scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
-        rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RMCost !== undefined ? WeightCalculatorRequest.RMCost : '',
-        scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
-        materialCost: WeightCalculatorRequest && WeightCalculatorRequest.NetRMCost !== undefined ? WeightCalculatorRequest.NetRMCost : '',
-    })
+    const [dataToSend, setDataToSend] = useState({})
+    const [nonFerrousDropDown , setNonFerrousDropDown] = useState(false)
 
-    const { rmRowData } = props
+    const { rmRowData , activeTab , isHpdc} = props
 
 
 
@@ -60,22 +55,58 @@ function HPDC(props) {
         name: ['shotWeight', 'burningPercent', 'cavity', 'finishedWeight', 'recovery', 'castingWeight'],
     })
 
- 
-    const dropDown = [
-        {
-            label: 'Processing Allowance',
-            value: 1,
-        },
-        {
-            label: 'Machining Loss',
-            value: 3,
-        },
-        {
-            label: 'Rejection Allowance',
-            value: 4,
-        },
-    ]
+  const tableData = (value = []) => {
 
+        setTableVal(value)
+    }
+  const LossDropDown=()=>{
+      let dropDown = []
+      
+      
+      if(activeTab === '1'|| activeTab=== '2'){
+         
+        dropDown = [
+          
+            {
+                label: 'Melting Loss',
+                value: 5,
+            },
+            {
+                label: 'Fetling Loss',
+                value: 6,
+            },
+            {
+                label: 'Grinding Loss',
+                value: 7,
+            },
+            {
+                label: 'Rejection Allowance',
+                value: 4,
+            },
+        ] 
+       
+      }
+      else{
+        dropDown = [
+            {
+                label: 'Processing Allowance',
+                value: 1,
+            },
+            {
+                label: 'Machining Loss',
+                value: 3,
+            },
+            {
+                label: 'Rejection Allowance',
+                value: 4,
+            },
+        ]
+        
+      }
+      setNonFerrousDropDown(dropDown)
+    //   return nonFerrousDropDown
+  
+  }
     useEffect(() => {
         burningValue()
         handlGrossWeight()
@@ -151,6 +182,7 @@ function HPDC(props) {
 
     const onSubmit = () => {
         let obj = {}
+        obj.LayoutType = activeTab === '1'?'GDC':activeTab ==='2'?'LPDC':'HPDC'
         obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
         obj.IsChangeApplied = true //Need to make it dynamic
         obj.PartId = costData.PartId
@@ -200,10 +232,7 @@ function HPDC(props) {
        
     }
 
-    const tableData = (value = []) => {
 
-        setTableVal(value)
-    }
     const onCancel = () => {
         props.toggleDrawer('')
     }
@@ -225,6 +254,8 @@ function HPDC(props) {
                             </Row>
 
                             <Row className={''}>
+                                {isHpdc&&
+                                <>
                                 <Col md="3" >
                                     <TextFieldHookForm
                                         label={`Shot Weight(Kg)`}
@@ -317,10 +348,11 @@ function HPDC(props) {
                                         disabled={true}
                                     />
                                 </Col>
+                                </>}
 
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Casting Weight(before machining)`}
+                                        label={`Casting Weight(${activeTab=='3'?`before machining`:`kg`})`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
@@ -348,13 +380,18 @@ function HPDC(props) {
                             </Row>
 
                             <LossStandardTable
-                                dropDownMenu={dropDown}
+                                dropDownMenu={nonFerrousDropDown}
                                 CostingViewMode={props.CostingViewMode}
                                 calculation={calculateRemainingCalculation}
                                 weightValue={Number(getValues('castingWeight'))}
                                 netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
                                 sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
                                 tableValue={tableData}
+                                isLossStandard = {false}
+                                LossDropDown={LossDropDown}
+                                isPlastic={false}
+                                isNonFerrous={true}
+
                             />
 
                             <Row className={'mt25'}>
@@ -534,4 +571,4 @@ function HPDC(props) {
     );
 }
 
-export default HPDC;
+export default NonFerrous;

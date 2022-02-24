@@ -1208,6 +1208,13 @@ input.form-control{
   opacity: 1;
   background-size: contain;
 }
+.backspace{
+  width: 32px;
+  height: 32px;
+  background: transparent url("../../assests/images/backspace.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  background-size: contain;
+}
 
 .compare-arrows{
   margin-right: 5px;
@@ -6878,11 +6885,72 @@ left: 17rem;
   }
 }
 // <----Overhead and profit css----->
+.cal-btn {
+  position: fixed;
+  bottom: 60px;
+  right: 4px;
+}
 .BOM-Drawer {
   .drawer-wrapper {
     width: 400px;
   }
 }
+
+// <-------START Calculator css--------->
+.calculator-wrapper {
+  position: fixed;
+  bottom: 10px;
+  right: 33px;
+  z-index: 15;
+  .calculator {
+    .operator-keys {
+      background: linear-gradient( 180deg ,#256bd1 0,#256bd1);
+    }
+    .calculator-display {
+      background: #edf0f5;
+      color: #3d4465;
+      font-size: 3em;
+      line-height: 90px;
+  }
+  button:disabled {
+    border: none;
+  }
+  }
+ 
+@media screen and (max-width:$middleDesktop) {
+  .calculator {
+   
+    max-width: 280px;
+    min-width: 280px;
+    .calculator-key {
+      line-height: 65px;
+      font-size: 1.625rem;
+      width: 70px;
+      height: 60px;
+    }
+    .calculator-keypad {
+      height: 300px;
+      .input-keys {
+        width: 210px;
+      }
+    }
+    .digit-keys {
+        width: 210px;
+        .calculator-key {
+          &.key-dot {
+            font-size: 0.75rem;
+            padding-top: 0;
+          }
+          &.key-0 {
+            width: 140px;
+         }
+      } 
+    }
+  }
+}
+}
+// <-------END Calculator css--------->
+
 // <-------------START Hover and 2 row clip css----------->
 .drawer-wrapper {
   .text-overflow {
