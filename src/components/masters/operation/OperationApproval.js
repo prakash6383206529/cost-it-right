@@ -162,6 +162,7 @@ function OperationApproval(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
 
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
