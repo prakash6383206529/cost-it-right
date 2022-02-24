@@ -6951,7 +6951,7 @@ left: 17rem;
 }
 // <-------END Calculator css--------->
 
-// <-------------START Hover and 2 row clip css----------->
+// <-------------START Hover text overflow and show on hover css----------->
 .drawer-wrapper {
   .text-overflow {
     max-width: 130px;
@@ -6973,7 +6973,14 @@ left: 17rem;
     }
   }
 }
-// <-------------END Hover and 2 row clip css----------->
+.one-line-overflow {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  white-space: nowrap;
+}
+// <-------------END Hover text overflow and show on hover  css----------->
 
 // <-------START simulation-label-container css-------->
 .simulation-label-container {
@@ -7052,7 +7059,7 @@ left: 17rem;
   }
 .calculator-drawer {
   .drawer-wrapper {
-    width: 1140px;
+    width: 1100px;
     table {
       th {
         vertical-align: middle;
@@ -7064,3 +7071,4 @@ left: 17rem;
 .inputwith-icon.async-select {
   min-height:45px !important;
   }
+
