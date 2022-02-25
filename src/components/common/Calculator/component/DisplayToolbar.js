@@ -1,5 +1,7 @@
 import React from 'react';
-import Backspace from '../../../../assests/images/backspace.svg'
+import Backspace from '../../../../assests/images/backspace.svg';
+import Keypad from '../../../../assests/images/keypad-icon.svg';
+import History from '../../../../assests/images/history-icon.svg';
 const DisplayToolbar= (props)=> {
     
     const onTextareaChanged=()=> {
@@ -14,7 +16,7 @@ const DisplayToolbar= (props)=> {
           <textarea className="display-input" id="display" rows="1" onChange={onTextareaChanged} value={props.input}></textarea>
         </form>
         <div className="toolbar">
-          <div className="toolbar-item" id="view-history" onClick={props.onHistory}>{props.isShowHistory ? "Keypad" : "History"}</div>
+          <div className="toolbar-item" id="view-history" onClick={props.onHistory}><img src={props.isShowHistory ? Keypad : History} /></div>
           <div>
             <span className="toolbar-item" onClick={props.onBackspace} id="backspace"><img src={Backspace} alt='backspace'/></span>
           </div>

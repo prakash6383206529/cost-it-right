@@ -199,8 +199,10 @@ class Calculator extends React.Component {
 
   onClearHistory() {
     this.setState({
-      history: []
+      history: [],
+      isShowHistory:false
     });
+
   }
 
   onHistoryItemClicked({ target }) {

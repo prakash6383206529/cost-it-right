@@ -939,7 +939,7 @@ input.form-control{
 .CalculatorIcon {
   width: 32px;
   height: 20px;
-  background: transparent url("../../assests/images/tool.svg") 0% 0% no-repeat padding-box;
+  background: #fff url("../../assests/images/tool.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
   cursor: pointer;
@@ -1768,7 +1768,8 @@ button.user-btn.pull-right {
  .cr-sw-level{color:#A4ABC5;display: inline-block;padding-left: 10px;}
  .switch .cr-sw-level .cr-switch-icon{position: relative;top:5px;}
  .cr-cl-icon.CalculatorIcon {
-  width: 19px;height: 19px;}
+  width: 18px;
+  height: 20px;}
  .col-xs-15,
 .col-sm-15,
 .col-md-15,
@@ -6888,7 +6889,8 @@ left: 17rem;
 .cal-btn {
   position: fixed;
   bottom: 60px;
-  right: 4px;
+  left: 5px;
+  margin: 0;
 }
 .BOM-Drawer {
   .drawer-wrapper {
@@ -6899,8 +6901,8 @@ left: 17rem;
 // <-------START Calculator css--------->
 .calculator-wrapper {
   position: fixed;
-  bottom: 10px;
-  right: 33px;
+  bottom: 33px;
+  left: 18%;
   z-index: 15;
   .calculator {
     .operator-keys {
@@ -6951,7 +6953,7 @@ left: 17rem;
 }
 // <-------END Calculator css--------->
 
-// <-------------START Hover and 2 row clip css----------->
+// <-------------START Hover text overflow and show on hover css----------->
 .drawer-wrapper {
   .text-overflow {
     max-width: 130px;
@@ -6973,7 +6975,14 @@ left: 17rem;
     }
   }
 }
-// <-------------END Hover and 2 row clip css----------->
+.one-line-overflow {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  white-space: nowrap;
+}
+// <-------------END Hover text overflow and show on hover  css----------->
 
 // <-------START simulation-label-container css-------->
 .simulation-label-container {
@@ -7052,7 +7061,7 @@ left: 17rem;
   }
 .calculator-drawer {
   .drawer-wrapper {
-    width: 1140px;
+    width: 1100px;
     table {
       th {
         vertical-align: middle;
@@ -7064,3 +7073,4 @@ left: 17rem;
 .inputwith-icon.async-select {
   min-height:45px !important;
   }
+
