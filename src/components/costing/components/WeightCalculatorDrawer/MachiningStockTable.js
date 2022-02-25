@@ -227,7 +227,6 @@ function MachiningStockTable(props) {
     }
 
 
-
     let tempArray = []
     let NetWeight
     if (isEdit) {
@@ -801,7 +800,7 @@ function MachiningStockTable(props) {
                 type="submit"
                 className={'user-btn mt30 pull-left'}
                 onClick={addRow}
-                disabled={props.CostingViewMode}
+                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
               >
                 <div className={'plus'}></div>ADD
               </button>
@@ -854,13 +853,13 @@ function MachiningStockTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
-                                disabled={props.CostingViewMode}
+                                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
                                 type={'button'}
-                                disabled={props.CostingViewMode}
+                                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
                                 onClick={() => deleteRow(index)}
                               />
                             </React.Fragment>
