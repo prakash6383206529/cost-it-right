@@ -473,8 +473,8 @@ export const ZBCOperation = [
     { label: 'Description', value: 'Description', },
     { label: 'Plant', value: 'Plant', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'Plant', value: 'Plant', }, //*
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'Rate', value: 'Rate', }, //*
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
@@ -489,11 +489,11 @@ export const ZBCOperationTempData = [
         'Description': 'Description Text',
         'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
+        'Plant': 'Systematix01 1',
         'UOM': 'Litre',
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
         'Remark': 'Remark Text',
     }
 ]
