@@ -140,9 +140,6 @@ function ColdForging(props) {
   const calculateForgeWeight = () => {
     
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    if (!finishedWeight || !totalMachiningStock) {
-      return ''
-    }
     const forgedWeight =  finishedWeight + totalMachiningStock
 
     let obj = dataSend

@@ -592,7 +592,7 @@ function RawMaterialCost(props) {
       const GrossWeight = grossWeight
       const RecoveryPercentage = weightData.RecoveryPercentage
 
-      const scrapWeight = weightData.scrapWeight ? weightData.scrapWeight : checkForNull(GrossWeight - FinishWeight)
+      const scrapWeight = weightData.ScrapWeight ? weightData.ScrapWeight : checkForNull(GrossWeight - FinishWeight)
       const ScrapCost = FinishWeight !== 0 ? scrapWeight * checkForNull(tempData.ScrapRate) : 0;
       const CutOffRMC = tempData.IsCutOffApplicable ? (GrossWeight * checkForNull(tempData.CutOffPrice)) - ScrapCost : 0;
 
