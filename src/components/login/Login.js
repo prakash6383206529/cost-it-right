@@ -12,7 +12,7 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
-import logo from '../../assests/images/logo/re-logo.svg';
+import logo from '../../assests/images/logo/company-logo.svg';
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import errorImg from '../../assests/images/box.png'
 import { VERSION } from '../../config/constants'
