@@ -188,13 +188,13 @@ function Simulation(props) {
     const renderModule = (value) => {
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<RMDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<RMImportListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case MACHINERATE:
                 return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
             case BOPIMPORT:
                 return (<BOPImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case EXCHNAGERATE:
