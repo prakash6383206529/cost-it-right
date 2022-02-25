@@ -40,7 +40,7 @@ function ViewOverheadProfit(props) {
     props.closeDrawer('')
   }
 
-
+console.log(viewOverheadData,"viewOverheadData")
   return (
     <>
       <Drawer
@@ -94,7 +94,7 @@ function ViewOverheadProfit(props) {
                     <thead>
                       <tr>
                         <th>{`Overhead On`}</th>
-                        <th>{`Percentage(%)`}</th>
+                        <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' :'Percentage(%)'}</th>
                         <th>{`Cost (Applicability)`}</th>
                         <th>{`Overhead`}</th>
 
@@ -203,7 +203,7 @@ function ViewOverheadProfit(props) {
                         { }
                         <tr>
                           <th>{`Profit On`}</th>
-                          <th>{`Percentage(%)`}</th>
+                          <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' :'Percentage(%)'}</th>
                           <th>{`Cost (Applicability)`}</th>
                           <th>{`Profit`}</th>
 

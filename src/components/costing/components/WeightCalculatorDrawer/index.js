@@ -5,11 +5,12 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, DIE_CASTING, CORRUGATEDBOX } from '../../../../config/masterData'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGINING, DIE_CASTING, CORRUGATEDBOX ,Ferrous_Casting} from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import RubberCalciTab from './rubber'
 import CorrugatedBox from './CorrugatedBox';
 import NonFerrousCalculator from './dieCasting'
+import Ferrous from './Ferrous'
 
 
 
@@ -129,6 +130,16 @@ function OpenWeightCalculator(props) {
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
           />
         )
+        case Ferrous_Casting:
+          return (
+            <Ferrous
+              rmRowData={props.rmRowData}
+              isEditFlag={props.isEditFlag}
+              toggleDrawer={toggleDrawer}
+              CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            />
+          )
+
       default:
         break;
     }
@@ -152,12 +163,12 @@ function OpenWeightCalculator(props) {
                 <div
                   onClick={(e) => toggleDrawer(e)}
                   className={'close-button right'}
-                ></div>``
+                ></div>
               </Col>
             </Row>
             <Row className="mt-4 mb-4 pb-2">
               <Col md="12 d-flex weight-calculator-headings">
-                <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue">{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>
+                <div className="d-inline-block "><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue one-line-overflow" title={rmRowData.RMName}>{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></div>
                 <div className="d-inline-block "><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</span></div>
                 <div className="d-inline-block "><span className="grey-text d-block">Density(g/cm){<sup>3</sup>}):</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></div>
                 <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></div>

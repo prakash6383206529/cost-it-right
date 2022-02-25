@@ -8,8 +8,6 @@ import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey , checkPercentageValue} from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../../actions/Costing'; 
-import { ins } from 'react-dom-factories'
-
 
 function LossStandardTable(props) {
   const { rmRowData , LossMachineFunction ,isLossStandard ,isNonFerrous} = props
@@ -76,11 +74,13 @@ function LossStandardTable(props) {
     if((value.label==="Bar Cutting Allowance")){
      setBarCuttingAllowanceLossType(true) 
      setIsDisable(false)
+     setFlashLossType(false)
     }
     else if((value.label==="Flash Loss")){
 
       setFlashLossType(true)
       setIsDisable(false)
+      setBarCuttingAllowanceLossType(false) 
     }
     else{
       setBarCuttingAllowanceLossType(false) 
@@ -325,6 +325,7 @@ function LossStandardTable(props) {
     setEditIndex(index)
     const tempObj = tableData[index]
     
+    
     setOldNetWeight(tempObj.LossWeight)
     setValue('LossPercentage', tempObj.LossPercentage)
     setValue('FlashLength', tempObj.FlashLength)
@@ -340,14 +341,26 @@ function LossStandardTable(props) {
       setFlashLossType(true)
       setUseformula(true)
       setPercentage(false)
+      setBarCuttingAllowanceLossType(false)
     }
-    else if((tempObj.LossOfType.value===7 && tempObj.FlashLoss==="Percentage"))
+    else if((tempObj.LossOfType===7 && tempObj.FlashLoss==="Percentage"))
     {
       setPercentage(true)
       setUseformula(false)
+      setBarCuttingAllowanceLossType(false)
+
+    }
+    else if (tempObj.LossOfType===8){
+      
+      setUseformula(false)
+      setPercentage(false)
+      setBarCuttingAllowanceLossType(true)
     }
     else{
+      setPercentage(true)
       setFlashLossType(false)
+      setUseformula(false)
+      setBarCuttingAllowanceLossType(false)
     }
   }
 
