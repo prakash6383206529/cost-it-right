@@ -842,18 +842,18 @@ class AddProfit extends Component {
                           <>
                             <Col md="4">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                                    {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
-                                    <AsyncSelect
-                                      name="vendorName"
-                                      ref={this.myRef}
-                                      key={this.state.updateAsyncDropdown}
-                                      loadOptions={promiseOptions}
-                                      onChange={(e) => this.handleVendorName(e)}
-                                      value={this.state.vendorName}
-                                      noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                                      isDisabled={isEditFlag ? true : false} />
-                                    {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                                    </Col>
+                                {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
+                                <AsyncSelect
+                                  name="vendorName"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={promiseOptions}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                  isDisabled={isEditFlag ? true : false} />
+                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              </Col>
                             <Col md="4" >
                               <Field
                                 name="Plant"

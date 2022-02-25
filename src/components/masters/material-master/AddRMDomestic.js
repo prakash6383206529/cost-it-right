@@ -339,9 +339,15 @@ class AddRMDomestic extends Component {
 
   handleScrapRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
-
-
     if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
+      Toaster.warning("Scrap rate should not be greater than basic rate")
+      return false
+    }
+  }
+
+  handleBasicRate = (newValue, actionMeta) => {
+    const { fieldsObj } = this.props
+    if (Number(newValue.target.value) < Number(fieldsObj.ScrapRate)) {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
@@ -975,10 +981,15 @@ class AddRMDomestic extends Component {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
       UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
-    const { initialConfiguration } = this.props
+    const { initialConfiguration, fieldsObj } = this.props
     this.setState({ setDisable: true, disablePopup: false })
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    if (Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) {
+      this.setState({ setDisable: false })
+      Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -1046,6 +1057,7 @@ class AddRMDomestic extends Component {
       //   }
       // })
       else {
+        console.log('else: ');
 
         if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
           && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
@@ -1435,30 +1447,30 @@ class AddRMDomestic extends Component {
                           </Col>
 
                           <Col md="4" className='mb-4'>
-                         
-                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based':'zero-based'} `}/>}
-                           <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
-                           <div className="fullinput-icon">
-                           <AsyncSelect 
-                           name="DestinationSupplierId" 
-                           ref={this.myRef} 
-                           key={this.state.updateAsyncDropdown} 
-                           loadOptions={promiseOptions}
-                           onChange={(e) => this.handleVendorName(e)} 
-                           value={this.state.vendorName} 
-                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                           isDisabled={isEditFlag || isViewFlag} 
-                           />
-                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                           </div>
-                           {!isEditFlag && (
+
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="fullinput-icon">
+                                <AsyncSelect
+                                  name="DestinationSupplierId"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={promiseOptions}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                  isDisabled={isEditFlag || isViewFlag}
+                                />
+                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              </div>
+                              {!isEditFlag && (
                                 <div
                                   onClick={this.vendorToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
-                           </div>
+                            </div>
                           </Col>
                           {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
@@ -1566,10 +1578,9 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
-                              // onChange={this.handleBasicRate}
+                              onChange={this.handleBasicRate}
                               required={true}
                               disabled={isViewFlag}
-
                               className=" "
                               customClassName=" withBorder"
                               maxLength={'15'}
@@ -1958,7 +1969,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth } = state
-  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost')
+  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost', 'ScrapRate')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,

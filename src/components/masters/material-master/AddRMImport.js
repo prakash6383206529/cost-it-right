@@ -26,7 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, SHEET_METAL ,EMPTY_GUID} from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, SHEET_METAL, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -326,6 +326,7 @@ class AddRMImport extends Component {
   * @description called
   */
   handleCurrency = (newValue) => {
+
     if (newValue && newValue !== '') {
       if (newValue.label === INR) {
         this.setState({ currencyValue: 1, showCurrency: false, })
@@ -382,6 +383,7 @@ class AddRMImport extends Component {
         })
       }
     }
+
   }
 
   /**
@@ -946,7 +948,8 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue } = this.state;
+
 
     const { initialConfiguration } = this.props;
     this.setState({ setDisable: true, disablePopup: false })
@@ -986,6 +989,7 @@ class AddRMImport extends Component {
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
+        ScrapRateInINR: currency === INR ? (this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) : ((this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) * currencyValue),
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
@@ -1045,6 +1049,7 @@ class AddRMImport extends Component {
 
 
     } else {
+
       this.setState({ setDisable: true })
       const formData = {
         RawMaterialId: RawMaterialID,
@@ -1061,6 +1066,7 @@ class AddRMImport extends Component {
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
+        ScrapRateInINR: currency === INR ? (this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) : ((this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) * currencyValue),
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
@@ -1355,7 +1361,7 @@ class AddRMImport extends Component {
                                 mendatory={true}
                                 disabled={isViewFlag}
                                 className="multiselect-with-border"
-                                
+
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>)
@@ -1410,17 +1416,22 @@ class AddRMImport extends Component {
                           <Col md="4" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
                             {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
-                            <AsyncSelect
-                              name="DestinationSupplierId"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
-                              onChange={(e) => this.handleVendorName(e)}
-                              value={this.state.vendorName}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={isEditFlag || isViewFlag} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                            {!isEditFlag && (<div   onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>  )}
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="fullinput-icon">
+                                <AsyncSelect
+                                  name="DestinationSupplierId"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={promiseOptions}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                  isDisabled={isEditFlag || isViewFlag} />
+
+                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              </div>
+                              {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
+                            </div>
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
@@ -1719,7 +1730,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag}
                               maxLength="512"
                               rows="10"
-                             
+
 
                             />
                           </Col>

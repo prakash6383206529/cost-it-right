@@ -804,11 +804,11 @@ export function findLostWeight(tableVal) {
       sum = sum + item.LossWeight
     }
   })
-  
+
   return sum
 }
 
-//THIS FUNCTION TO CHECK WHETHER RM APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
+//THIS FUNCTION TO CHECK WHETHER MASTER APPROVAL IS APPLICALBE AND ON WHICH MASTER IT IS APPLICABLE (ApprovalMasterArrayList COMING FROM PAGE INIT)
 export function CheckApprovalApplicableMaster(number) {
   const isApproval = getConfigurationKey().ApprovalMasterArrayList.includes(number) && getConfigurationKey().IsMasterApprovalAppliedConfigure
   return isApproval

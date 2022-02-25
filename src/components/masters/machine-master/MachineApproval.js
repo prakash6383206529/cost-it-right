@@ -13,6 +13,7 @@ import { loggedInUserId, userDetails } from '../../../helper'
 import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval';
 import Toaster from '../../common/Toaster'
+import DayTime from '../../common/DayTimeWrapper'
 
 
 
@@ -112,6 +113,10 @@ function MachineApproval(props) {
         )
     }
 
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
 
 
     const onRowSelect = () => {
@@ -170,7 +175,7 @@ function MachineApproval(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+        gridApi.paginationSetPageSize(Number(newPageSize));
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -181,6 +186,7 @@ function MachineApproval(props) {
 
         statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
+        effectiveDateRenderer: effectiveDateFormatter,
 
     };
 
@@ -253,7 +259,7 @@ function MachineApproval(props) {
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     {/* <AgGridColumn width="140" field="UOM" headerName="Basic Rate(INR)"></AgGridColumn>
                                     <AgGridColumn width="140" field="BasicRate" headerName="Net Cost(INR)"></AgGridColumn> */}
-                                    <AgGridColumn width="140" field="EffectiveDate" headerName="Effective Date"></AgGridColumn>
+                                    <AgGridColumn width="140" field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' ></AgGridColumn>
 
 
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
