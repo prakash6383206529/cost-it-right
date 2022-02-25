@@ -1235,7 +1235,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, alphabetsOnlyForName, maxLength25, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[required, minLength3,alphabetsOnlyForName, maxLength25, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1249,7 +1249,7 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[minLength3, maxLength25, alphabetsOnlyForName, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[minLength3, maxLength25, alphabetsOnlyForName,checkWhiteSpaces]}
                           component={renderText}
                           required={false}
                           // maxLength={26}
