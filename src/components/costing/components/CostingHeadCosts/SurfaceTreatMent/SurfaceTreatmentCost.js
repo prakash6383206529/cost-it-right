@@ -297,7 +297,7 @@ function SurfaceTreatmentCost(props) {
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
                               <button className="SaveIcon mt15 mr-2" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mt15" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => CancelItem(index)} />
+                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
                             </td>
                           </tr>
                           :
