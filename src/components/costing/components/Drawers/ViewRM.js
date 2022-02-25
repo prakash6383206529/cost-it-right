@@ -74,7 +74,6 @@ function ViewRM(props) {
     setWeightCalculatorDrawer(false)
   }
 
-  // CHECK CONSOLE AND FIX THE LISTING OF MASTER BATCH
   return (
     <>
       <Drawer
