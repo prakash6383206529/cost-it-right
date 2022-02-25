@@ -69,10 +69,11 @@ function ViewRM(props) {
   /**
    * @method closeWeightDrawer
    * @description CLOSING WEIGHT DRAWER
-  */
+   */
   const closeWeightDrawer = (e = "") => {
     setWeightCalculatorDrawer(false)
   }
+
   return (
     <>
       <Drawer
@@ -93,6 +94,10 @@ function ViewRM(props) {
                 ></div>
               </Col>
             </Row>
+            <Col md="12">
+              <div className="left-border mt-4 mb-3">Raw Material</div>
+            </Col>
+
             <Col>
               <Table className="table cr-brdr-main" size="sm">
                 <thead>
@@ -137,8 +142,8 @@ function ViewRM(props) {
                         <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                         <td>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>
-                        <div className='text-overflow' title={item.Remark}>
-                          {item?.Remark ? item.Remark : "-"}</div>
+                          <div className='text-overflow' title={item.Remark}>
+                            {item?.Remark ? item.Remark : "-"}</div>
                         </td>
 
                       </tr>
@@ -154,6 +159,39 @@ function ViewRM(props) {
                 </tbody>
               </Table>
             </Col>
+            {viewCostingData[props.index].isApplyMasterBatch &&
+              <>
+                < Col md="12">
+                  <div className="left-border mt-4 mb-3">Master Batch</div>
+                </Col>
+                <Col>
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th>{`MB Name`}</th>
+                        <th>{`MB Rate`}</th>
+                        <th>{`Percentage`}</th>
+                        <th>{`Effective MB Rate`}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr key={index}>
+                        <td>{viewCostingData[props.index].masterBatchRMName}</td>
+                        <td>{checkForDecimalAndNull(viewCostingData[props.index].masterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(viewCostingData[props.index].masterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(viewCostingData[props.index].masterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                      </tr>
+                      {viewRM.length === 0 && (
+                        <tr>
+                          <td colSpan={13}>
+                            <NoContentFound title={EMPTY_DATA} />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </Col>
+              </>}
 
             {weightCalculatorDrawer && (
               <WeightCalculator

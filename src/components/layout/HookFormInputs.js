@@ -370,34 +370,34 @@ export const RadioHookForm = (field) => {
         <label className="label-container">
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
-       
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          {...register}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, onBlur, value, name } }) => {
-            return (
-              <input
-                {...field}
-                {...register}
-                type="radio"
-                name={name}
-                checked={defaultValue}
-                // className={InputClassName}
-                disabled={isDisabled}
-                value={value}
-                onChange={(e) => {
-                  handleChange(e);
-                  onChange(e)
-                }}
-              />
-            )
-          }
-          }
-        />
-         </label>
+
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            {...register}
+            defaultValue={defaultValue}
+            render={({ field: { onChange, onBlur, value, name } }) => {
+              return (
+                <input
+                  {...field}
+                  {...register}
+                  type="radio"
+                  name={name}
+                  checked={defaultValue}
+                  // className={InputClassName}
+                  disabled={isDisabled}
+                  value={value}
+                  onChange={(e) => {
+                    handleChange(e);
+                    onChange(e)
+                  }}
+                />
+              )
+            }
+            }
+          />
+        </label>
         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
       </div>
     </>
@@ -444,7 +444,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
-              noOptionsMessage={({inputValue}) => !inputValue ? NoOptionMessage : "No results found"}
+              noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
             />
           )
 
@@ -459,3 +459,5 @@ export const AsyncSearchableSelectHookForm = (field) => {
     </div>
   )
 }
+
+
