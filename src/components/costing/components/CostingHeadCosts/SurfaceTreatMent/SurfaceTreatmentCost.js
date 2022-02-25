@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
@@ -9,9 +9,12 @@ import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import { gridDataAdded } from '../../../actions/Costing';
+import { ViewCostingContext } from '../../CostingDetails'
 
 function SurfaceTreatmentCost(props) {
-  
+
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   const { register, control, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -40,7 +43,7 @@ function SurfaceTreatmentCost(props) {
     if (props.IsAssemblyCalculation) {
       props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     } else {
-      
+
       props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     }
     // }, 100)
@@ -48,12 +51,12 @@ function SurfaceTreatmentCost(props) {
   }, [gridData]);
 
 
-  useEffect(()=>{
-    if(props?.data && props.data.length >0){
+  useEffect(() => {
+    if (props?.data && props.data.length > 0) {
 
       setGridData(props.data)
     }
-  },[props.data])
+  }, [props.data])
 
   /**
   * @method DrawerToggle
@@ -194,6 +197,7 @@ function SurfaceTreatmentCost(props) {
               <button
                 type="button"
                 className={'user-btn'}
+                disabled={CostingViewMode ? true : false}
                 onClick={DrawerToggle}>
                 <div className={'plus'}></div>SURFACE T.</button>
             </Col>
@@ -249,7 +253,7 @@ function SurfaceTreatmentCost(props) {
                                     handleSurfaceAreaChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].SurfaceArea : ''}
-                                  disabled={false}
+                                  disabled={CostingViewMode ? true : false}
                                 />
                               }
                             </td>
@@ -284,7 +288,7 @@ function SurfaceTreatmentCost(props) {
                                         handleLabourQuantityChange(e, index)
                                       }}
                                       errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                      disabled={false}
+                                      disabled={CostingViewMode ? true : false}
                                     />
                                     :
                                     '-'
@@ -292,8 +296,8 @@ function SurfaceTreatmentCost(props) {
                               </td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
-                              <button className="SaveIcon mt15 mr-2" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
+                              <button className="SaveIcon mt15 mr-2" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => SaveItem(index)} />
+                              <button className="CancelIcon mt15" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => CancelItem(index)} />
                             </td>
                           </tr>
                           :
@@ -308,8 +312,8 @@ function SurfaceTreatmentCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                             <td>
-                              <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
+                              <button className="Edit mt15 mr-2" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => editItem(index)} />
+                              <button className="Delete mt15" type={'button'} disabled={CostingViewMode ? true : false} onClick={() => deleteItem(index, item.OperationId)} />
                             </td>
                           </tr>
                       )

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
@@ -6,11 +6,13 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { getUOMSelectList } from '../../../../../actions/Common'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function TransportationCost(props) {
   const { data, item } = props;
-  console.log('data: ', data);
 
+
+  const CostingViewMode = useContext(ViewCostingContext);
   const defaultValues = {
     UOM: data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [],
     Rate: data && data.Rate !== undefined ? data.Rate : 0,
@@ -29,7 +31,7 @@ function TransportationCost(props) {
   const [Rate, setRate] = useState('')
   const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState()
-  const [transportCost,setTransportCost] = useState('')
+  const [transportCost, setTransportCost] = useState('')
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -40,27 +42,27 @@ function TransportationCost(props) {
   //   name: ['TransportationCost'],
   // });
 
-  useEffect(()=>{
-    
-    if(props?.data && Object.keys(props.data).length >0){
-console.log(props.data,"DATA");
-     setValue('UOM',data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [])
-     setValue('Quantity',data && data.Quantity !== undefined ? data.Quantity : 0)
-     setValue('Rate', data && data.Rate !== undefined ? data.Rate : 0)
-  setValue('TransportationCost',data && data.TransportationCost !== undefined ? checkForDecimalAndNull(data.TransportationCost,initialConfiguration.NoOfDecimalForPrice) : 0)
-  // setRate(data && data.Rate !== undefined ? data.Rate : 0)
-  // setUOM(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
-  // setQuantity(data && data.Quantity !== undefined ? data.Quantity : 0)
-  setTransportationType(data && data.UOM !== undefined ? data.UOM : '')
-  // setTransportCost(data && data.TransportationCost !== undefined ? data.TransportationCost : 0)
+  useEffect(() => {
+
+    if (props?.data && Object.keys(props.data).length > 0) {
+
+      setValue('UOM', data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [])
+      setValue('Quantity', data && data.Quantity !== undefined ? data.Quantity : 0)
+      setValue('Rate', data && data.Rate !== undefined ? data.Rate : 0)
+      setValue('TransportationCost', data && data.TransportationCost !== undefined ? checkForDecimalAndNull(data.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0)
+      // setRate(data && data.Rate !== undefined ? data.Rate : 0)
+      // setUOM(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
+      // setQuantity(data && data.Quantity !== undefined ? data.Quantity : 0)
+      setTransportationType(data && data.UOM !== undefined ? data.UOM : '')
+      // setTransportCost(data && data.TransportationCost !== undefined ? data.TransportationCost : 0)
     }
-  },[props.data])
+  }, [props.data])
 
   useEffect(() => {
     let tempObj = {
       TransporationDetailId: '',
       UOM: getValues('UOM') ? getValues('UOM').label : '',
-      UOMId: getValues('UOM') ? getValues('UOM').value: '',
+      UOMId: getValues('UOM') ? getValues('UOM').value : '',
       Rate: getValues('Rate'),
       Quantity: getValues('Quantity'),
       TransportationCost: transportCost,
@@ -77,7 +79,7 @@ console.log(props.data,"DATA");
       props.setTransportationCost(tempObj, Params)
     }
 
-  }, [uom, Rate, Quantity,transportCost]);
+  }, [uom, Rate, Quantity, transportCost]);
 
   useEffect(() => {
     dispatch(getUOMSelectList(() => { }))
@@ -106,7 +108,7 @@ console.log(props.data,"DATA");
   const handleRateChange = (event) => {
     if (!isNaN(event.target.value)) {
       const Quantity = getValues('Quantity')
-    
+
       if (TransportationType === 'Percentage') {
         setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
@@ -131,7 +133,7 @@ console.log(props.data,"DATA");
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
       const Rate = getValues('Rate')
-   
+
 
       if (Rate !== '') {
         const cost = Rate * event.target.value;
@@ -148,10 +150,10 @@ console.log(props.data,"DATA");
     }
   }
 
-  const handleTransportChange=(event)=>{
-    if(!isNaN(event.target.value)){
+  const handleTransportChange = (event) => {
+    if (!isNaN(event.target.value)) {
       setTransportCost(event.target.value)
-        setValue('TransportationCost',event.target.value)
+      setValue('TransportationCost', event.target.value)
     }
     else {
       Toaster.warning('Please enter valid number.')
@@ -223,6 +225,7 @@ console.log(props.data,"DATA");
                   options={renderListing('UOM')}
                   mandatory={false}
                   handleChange={handleUOMChange}
+                  disabled={CostingViewMode ? true : false}
                   errors={errors.UOM}
                 />
               </Col>
@@ -250,7 +253,7 @@ console.log(props.data,"DATA");
                     handleRateChange(e)
                   }}
                   errors={errors && errors.Rate}
-                  disabled={TransportationType === 'Fixed' ? true : false}
+                  disabled={TransportationType === 'Fixed' || CostingViewMode ? true : false}
                 />
               </Col>
               <Col md="3">
@@ -277,7 +280,7 @@ console.log(props.data,"DATA");
                     handleQuantityChange(e)
                   }}
                   errors={errors && errors.Quantity}
-                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') ? true : false}
+                  disabled={(TransportationType === 'Fixed' || TransportationType === 'Percentage') || CostingViewMode ? true : false}
                 />
 
               </Col>
@@ -304,7 +307,7 @@ console.log(props.data,"DATA");
                     handleTransportChange(e)
                   }}
                   errors={errors && errors.TransportationCost}
-                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') ? true : false}
+                  disabled={(TransportationType !== 'Fixed' || TransportationType === 'Percentage') || CostingViewMode ? true : false}
                 />
 
               </Col>
