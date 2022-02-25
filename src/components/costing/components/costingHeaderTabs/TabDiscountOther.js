@@ -10,6 +10,7 @@ import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { maxLength512 } from '../../../../helper/validation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
@@ -1157,7 +1158,13 @@ function TabDiscountOther(props) {
                         register={register}
                         rows={6}
                         mandatory={false}
-                        rules={{}}
+                        rules={{
+
+                          maxLength: {
+                            value: 500,
+                            message: "Remark should be less than 500 words"
+                          },
+                        }}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
