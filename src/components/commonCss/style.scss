@@ -6874,6 +6874,7 @@ left: 17rem;
    
     max-width: 280px;
     min-width: 280px;
+    right: -65px;
     .calculator-key {
       line-height: 65px;
       font-size: 1.625rem;
@@ -7026,3 +7027,11 @@ left: 17rem;
   min-height:45px !important;
   }
 
+  // <----------Corrugated box labels UI------------>
+.corrugated-box-label-wrapper {
+  label {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+  }
+}
