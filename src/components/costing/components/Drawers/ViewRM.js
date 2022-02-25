@@ -73,7 +73,6 @@ function ViewRM(props) {
   const closeWeightDrawer = (e = "") => {
     setWeightCalculatorDrawer(false)
   }
-  console.log('viewCostingData[props.index]: ', viewCostingData[props.index]);
 
   // CHECK CONSOLE AND FIX THE LISTING OF MASTER BATCH
   return (
