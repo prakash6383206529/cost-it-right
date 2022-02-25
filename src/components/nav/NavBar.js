@@ -27,13 +27,14 @@ import activeUser from '../../assests/images/user-active.svg'
 import activeAudit from '../../assests/images/audit-active.svg'
 import Logo from '../../assests/images/logo/re-logo.jpg'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
-import userPic from '../../assests/images/user-pic.png'
-import UserImg from '../../assests/images/user.png'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { BOP_MASTER_ID, MACHINE_MASTER_ID, OPERATIONS_ID, RM_MASTER_ID, VERSION } from '../../config/constants';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../helper';
+// import Calculator from "../common/Calculator/component/Calculator";
+// import Draggable from 'react-draggable';
+
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -46,7 +47,8 @@ class SideBar extends Component {
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      isShowCal:false
     };
   }
 
@@ -137,7 +139,9 @@ class SideBar extends Component {
       dropdownOpen: !prevState.dropdownOpen,
     }));
   };
-
+  showCalculator =()=> {
+    this.setState({ isShowCal: !this.state.isShowCal })
+  }
   /**
    * @method mobile menu open
    */
@@ -182,9 +186,6 @@ class SideBar extends Component {
    */
   setLeftMenu = (ModuleId) => {
     reactLocalStorage.set("ModuleId", ModuleId);
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      this.setState({ isLeftMenuRendered: true });
-    });
   };
 
 
@@ -385,6 +386,7 @@ class SideBar extends Component {
                   </ul>
                 </div>
               </li>
+             
             </>
           );
         }
@@ -511,12 +513,12 @@ class SideBar extends Component {
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  pathname: '/simulation', //COMMENT FOR NOW
+                  pathname: el.LandingPageURL, //COMMENT FOR NOW
                   // pathname: '/simulation',
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
-                    PageURL: "/simulation",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -546,7 +548,6 @@ class SideBar extends Component {
                       )
                     })
                   }
-
                   {/* <li>
                     <Link
                       className="dropdown-item "
@@ -689,7 +690,7 @@ class SideBar extends Component {
               <div className="navbar-collapse offcanvas-collapse" id="">
                 <ul className="navbar-nav ml-auto">
                   <li className="nav-item d-xl-inline-block version">
-                   {VERSION}
+                    {VERSION}
                   </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
@@ -751,10 +752,19 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
+              {/* <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={this.showCalculator}></button>
+              {this.state.isShowCal && <div className="calculator-wrapper">  
+              <Draggable>
+                  <div>
+                     <Calculator />
+                  </div>
+               </Draggable>
+              </div>} */}
         </div>
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }
+      
       </nav>
     )
   }
