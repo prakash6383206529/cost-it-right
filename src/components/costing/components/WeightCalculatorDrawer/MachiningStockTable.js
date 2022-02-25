@@ -7,12 +7,8 @@ import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey } from '../../../../helper'
 import Toaster from '../../../common/Toaster'
-import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../../actions/Costing';
-import values from 'redux-form/lib/values'
-import { sum } from 'lodash'
 function MachiningStockTable(props) {
 
-  //   
   const { rmRowData, diableMachiningStock } = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
@@ -25,7 +21,7 @@ function MachiningStockTable(props) {
   const [squareMachiningStock, setSquareMachiningStock] = useState(false)
   const [irregularMachiningStock, setIrregularMachiningStock] = useState(false)
   const [disable, setDisable] = useState(true)
-
+  const [disableMachineType, setDisableMachineType] = useState(false)
 
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
@@ -56,7 +52,10 @@ function MachiningStockTable(props) {
 
   const handleVolumeChange = () => {
 
-    calculateforgingVolumeAndWeight()
+    setTimeout(() => {
+      
+      calculateforgingVolumeAndWeight()
+    }, 500);
 
   }
 
@@ -87,26 +86,31 @@ function MachiningStockTable(props) {
     if ((value.label === "Circular") || (value.label === "Semi Circular") || (value.label === "Quarter Circular")) {
 
       setCircularMachiningStock(true)
-    }
-    else {
-      setCircularMachiningStock(false)
+      setSquareMachiningStock(false)
+      setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
     }
 
-    if (value.label === "Square") {
+   else if (value.label === "Square") {
       setSquareMachiningStock(true)
-    }
-    else {
-      setSquareMachiningStock(false)
-    }
-    if (value.label === "Rectangular") {
-      setRectangularMachiningStock(true)
-    }
-    else {
+      setCircularMachiningStock(false)
       setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
     }
-    if (value.label === "Irregular") {
-      setDisable(false)
+   
+   else if (value.label === "Rectangular") {
+      setRectangularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setIrregularMachiningStock(false)
+
+    }
+   else if (value.label === "Irregular") {
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setRectangularMachiningStock(false)
       setIrregularMachiningStock(true)
+      setDisable(false)
     }
     else {
       setIrregularMachiningStock(false)
@@ -124,7 +128,7 @@ function MachiningStockTable(props) {
     const Height = checkForNull(getValues('Height'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-    const forgingV = getValues('forgingVolume')
+    const forgingV = checkForNull(getValues('forgingVolume'))
 
     let Volume = 0;
     let GrossWeight = 0;
@@ -175,10 +179,10 @@ function MachiningStockTable(props) {
         Volume = (Length * Breadth * Height)
         GrossWeight = (Volume * No * rmRowData.Density) / 1000000
         break;
-      case 'Irregular':
-
-
+      case 'Irregular': 
         Volume = forgingV
+        
+
         GrossWeight = (forgingV * No * rmRowData.Density) / 1000000
         break;
       default:
@@ -217,10 +221,9 @@ function MachiningStockTable(props) {
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-
     const GrossWeight = checkForNull(grossWeight)
     const Volume = checkForNull(forgingVolume)
-
+    setDisableMachineType(false)
     if ((GrossWeight && (GrossWeight === 0 || GrossWeight === null)) || (Volume && (Volume === 0 || Volume === null)) || MachiningStock === '' || Description === '') {
       Toaster.warning("Please add data first.")
       return false;
@@ -317,13 +320,42 @@ function MachiningStockTable(props) {
     setValue('majorDiameter', tempObj.MajorDiameter)
     setValue('minorDiameter', tempObj.MinorDiameter)
     setValue('Length', tempObj.Length)
-    setValue('height', tempObj.Height)
+    setValue('Height', tempObj.Height)
     setValue('Breadth', tempObj.Breadth)
     setValue('No', tempObj.No)
     setValue('MachiningStock', { label: tempObj.TypesOfMachiningStock, value: tempObj.TypesOfMachiningStockId })
     setValue('grossWeight', tempObj.GrossWeight)
     setValue('forgingVolume', tempObj.Volume)
     setValue('description', tempObj.Description)
+
+    if(tempObj.TypesOfMachiningStock==='Circular' || tempObj.TypesOfMachiningStock==='Semi Circular'||tempObj.TypesOfMachiningStock==='Quarter Circular'){
+      setDisableMachineType(true)
+      setCircularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else if(tempObj.TypesOfMachiningStock==='Square'){
+      setDisableMachineType(true)
+      setSquareMachiningStock(true)
+      setCircularMachiningStock(false)
+      setRectangularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else if (tempObj.TypesOfMachiningStock==='Rectangular'){
+      setDisableMachineType(true)
+      setRectangularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setIrregularMachiningStock(false)
+    }
+    else{
+      setDisableMachineType(true)
+      setIrregularMachiningStock(true)
+      setSquareMachiningStock(false)
+      setCircularMachiningStock(false)
+      setRectangularMachiningStock(false)
+    }
   }
 
   /**
@@ -337,13 +369,14 @@ function MachiningStockTable(props) {
     setValue('majorDiameter', '')
     setValue('minorDiameter', '')
     setValue('Length', '')
-    setValue('height', '')
+    setValue('Height', '')
     setValue('Breadth', '')
     setValue('No', '')
     setValue('MachiningStock', '')
     setValue('grossWeight', '')
     setValue('forgingVolume', '')
     setValue('description', '')
+    setDisableMachineType(false)
 
   }
   /**
@@ -368,7 +401,7 @@ function MachiningStockTable(props) {
       }
       return true
     })
-
+  
 
     props.tableValue(tempData)
     setTableData(tempData)
@@ -408,7 +441,7 @@ function MachiningStockTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.MachiningStock}
-            disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+            disabled={props.CostingViewMode || diableMachiningStock || disableMachineType ? true : false}
           />
         </Col>
 
@@ -423,12 +456,10 @@ function MachiningStockTable(props) {
             mandatory={true}
             rules={{
               required: true,
-              //   pattern: {
-              //     //value: /^[0-9]*$/i,
-              //     value: /^[0-9]\d*(\.\d+)?$/i,
-              //     message: 'Invalid Number.',
-              //   },
-              //   // maxLength: 4,
+              maxLength: {
+                value: 200,
+                message: 'Length should not be more than 200'
+              },
             }}
             handleChange={() => { }}
             defaultValue={''}
