@@ -471,6 +471,7 @@ export const ZBCOperation = [
     { label: 'OperationName', value: 'OperationName', }, //*
     { label: 'OperationCode', value: 'OperationCode', },
     { label: 'Description', value: 'Description', },
+    { label: 'Plant', value: 'Plant', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'Plant', value: 'Plant', }, //*
     { label: 'UOM', value: 'UOM', }, //*
@@ -486,6 +487,7 @@ export const ZBCOperationTempData = [
         'OperationName': 'Crushing',
         'OperationCode': 'Crushing123',
         'Description': 'Description Text',
+        'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
         'Plant': 'Systematix01 1',
         'UOM': 'Litre',

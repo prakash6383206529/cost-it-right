@@ -140,9 +140,6 @@ function HotForging(props) {
   const calculateForgeWeight = () => {
     
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    if (!finishedWeight || !totalMachiningStock) {
-      return ''
-    }
     const forgedWeight =  finishedWeight + totalMachiningStock
 
     let obj = dataSend
@@ -379,6 +376,7 @@ const calculateNetRmCostComponent = () =>{
     }))
   }
    const TotalMachiningStock = (value) =>{
+     
 
     setTotalMachiningStock(value)
    }

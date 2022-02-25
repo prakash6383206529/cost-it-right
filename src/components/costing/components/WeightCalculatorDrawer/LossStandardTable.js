@@ -14,6 +14,7 @@ function LossStandardTable(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
+  const [disableLossType, setDisableLossType] = useState(false)
   
   const dispatch = useDispatch()
 
@@ -216,7 +217,7 @@ function LossStandardTable(props) {
     const BarDiameter = checkForNull(getValues('BarDiameter'))  
     const BladeThickness = checkForNull(getValues('BladeThickness'))
     const LossWeight = lossWeight
-    
+    setDisableLossType(false)
   
 
   
@@ -338,6 +339,7 @@ function LossStandardTable(props) {
     setValue('FlashLoss', { label:tempObj.FlashLoss, value: tempObj.FlashLossId })
     
     if((tempObj.LossOfType ===7 && tempObj.FlashLoss==="Use Formula")){
+      setDisableLossType(true)
       setFlashLossType(true)
       setUseformula(true)
       setPercentage(false)
@@ -345,18 +347,20 @@ function LossStandardTable(props) {
     }
     else if((tempObj.LossOfType===7 && tempObj.FlashLoss==="Percentage"))
     {
+      setDisableLossType(true)
       setPercentage(true)
       setUseformula(false)
       setBarCuttingAllowanceLossType(false)
 
     }
     else if (tempObj.LossOfType===8){
-      
+      setDisableLossType(true)
       setUseformula(false)
       setPercentage(false)
       setBarCuttingAllowanceLossType(true)
     }
     else{
+      setDisableLossType(true)
       setPercentage(true)
       setFlashLossType(false)
       setUseformula(false)
@@ -381,6 +385,7 @@ function LossStandardTable(props) {
     setValue('LossOfType', '')
     setValue('LossWeight', '')
     setValue('FlashLoss', '')
+    setDisableLossType(false)
 
   }
   /**
@@ -482,7 +487,7 @@ if(value !== undefined && value !==0  && value !==''){
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={props.CostingViewMode}
+            disabled={props.CostingViewMode || disableLossType}
           />
         </Col>
         
