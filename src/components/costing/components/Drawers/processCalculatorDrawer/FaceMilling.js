@@ -35,6 +35,7 @@ function FaceMilling(props) {
     toothFeed: WeightCalculatorRequest && WeightCalculatorRequest.ToothFeed !== undefined ? WeightCalculatorRequest.ToothFeed : '',
     clampingPercentage: WeightCalculatorRequest && WeightCalculatorRequest.ClampingPercentage !== undefined ? WeightCalculatorRequest.ClampingPercentage : '',
     clampingValue: WeightCalculatorRequest && WeightCalculatorRequest.ClampingValue !== undefined ? WeightCalculatorRequest.ClampingValue : '',
+    toothNo: WeightCalculatorRequest && WeightCalculatorRequest.ToothNo !== undefined ? WeightCalculatorRequest.ToothNo : '',
   }
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
     mode: 'onChange',
@@ -43,7 +44,7 @@ function FaceMilling(props) {
   })
   const fieldValues = useWatch({
     control,
-    name: ['cutterDiameter', 'cutLengthOfArea', 'areaWidth', 'removedMaterial', 'doc', 'cuttingSpeed', 'toothFeed', 'clampingPercentage'],
+    name: ['cutterDiameter', 'cutLengthOfArea', 'areaWidth', 'removedMaterial', 'doc', 'cuttingSpeed', 'toothFeed', 'clampingPercentage', 'toothNo'],
   })
 
   useEffect(() => {
@@ -59,10 +60,6 @@ function FaceMilling(props) {
   const { technology, process, calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
-  useEffect(() => {
-    const toothNo = 3 // Need to make it dynamic from API
-    setValue('toothNo', toothNo)
-  }, [])
 
   const onDocChange = () => {
     const removedMaterial = getValues('removedMaterial')
@@ -405,7 +402,7 @@ function FaceMilling(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.toothNo}
-                        disabled={true}
+                        disabled={false}
                       />
                     </Col>
                     <Col md="3">
@@ -419,7 +416,7 @@ function FaceMilling(props) {
                         rules={{
                           required: false,
                           pattern: {
-                            value: /^[0-9\b]+$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
                           // maxLength: 4,
