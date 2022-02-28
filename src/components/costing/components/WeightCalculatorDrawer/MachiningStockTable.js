@@ -71,7 +71,7 @@ function MachiningStockTable(props) {
 
 
   useEffect(() => {
-    // 
+
   }, [forgingCalculatorMachiningStockSectionValue])
 
 
@@ -195,6 +195,8 @@ function MachiningStockTable(props) {
     setValue('grossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setGrossWeight(GrossWeight)
 
+    
+    
 
   }
 
@@ -213,6 +215,10 @@ function MachiningStockTable(props) {
    * @description For updating and adding row
    */
   const addRow = () => {
+    const GrossWeight = checkForNull(grossWeight)  
+    
+    const Volume = checkForNull(forgingVolume)
+    
     const Description = getValues('description')
     const MajorDiameter = checkForNull(getValues('majorDiameter'))
     const MinorDiameter = checkForNull(getValues('minorDiameter'))
@@ -221,22 +227,15 @@ function MachiningStockTable(props) {
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-    const GrossWeight = checkForNull(grossWeight)
-    const Volume = checkForNull(forgingVolume)
+
     setDisableMachineType(false)
-    if ((GrossWeight && (GrossWeight === 0 || GrossWeight === null)) || (Volume && (Volume === 0 || Volume === null)) || MachiningStock === '' || Description === '') {
-      Toaster.warning("Please add data first.")
+
+  
+    if ( GrossWeight === 0  || Volume === 0  || MachiningStock === '' || Description === '') {
+      
+      Toaster.warning("Please fill all the mandatory fields first.")
       return false;
     }
-
-  //  // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-  //   if (!isEdit) {
-  //     const isExist = tableData.findIndex(el => ( el.TypesOfMachiningStockId === MachiningStock?.value))
-  //     if (isExist !== -1) {
-  //       Toaster.warning('Already added, Please select another Machining stock type.')
-  //       return false;
-  //     }
-  //   }
 
     let tempArray = []
     let NetWeight
@@ -441,7 +440,7 @@ function MachiningStockTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.MachiningStock}
-            disabled={props.CostingViewMode || diableMachiningStock || disableMachineType ? true : false}
+            disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableMachineType ? true : false}
           />
         </Col>
 
@@ -466,7 +465,7 @@ function MachiningStockTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.description}
-            disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+            disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
           />
         </Col>
         {!irregularMachiningStock &&
@@ -496,7 +495,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Length}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               />
             </Col>
           </>}
@@ -531,7 +530,7 @@ function MachiningStockTable(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.majorDiameter}
-                  disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
                 />
               </Col>
             )}
@@ -562,7 +561,7 @@ function MachiningStockTable(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.minorDiameter}
-                  disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
                 />
               </Col>
 
@@ -599,7 +598,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               />
             </Col>
 
@@ -630,7 +629,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Height}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               />
             </Col>
           </>}
@@ -663,7 +662,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               />
             </Col>
 
@@ -695,7 +694,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Breadth}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               />
             </Col>
             <Col md="2">
@@ -724,7 +723,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Height}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               />
             </Col>
 
@@ -757,7 +756,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               />
             </Col>
           </>}
@@ -839,7 +838,7 @@ function MachiningStockTable(props) {
                 type="submit"
                 className={'user-btn mt30 pull-left'}
                 onClick={addRow}
-                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
               >
                 <div className={'plus'}></div>ADD
               </button>
@@ -892,13 +891,13 @@ function MachiningStockTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
-                                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
                                 type={'button'}
-                                disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
                                 onClick={() => deleteRow(index)}
                               />
                             </React.Fragment>

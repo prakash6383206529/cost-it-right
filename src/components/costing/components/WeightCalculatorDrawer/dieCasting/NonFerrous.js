@@ -208,7 +208,7 @@ NonFerrous(props) {
         obj.MachiningScrapWeight = getValues('machiningScrapWeight')
         obj.CastingWeight = getValues('castingWeight')
         obj.RecoveryPercentage = getValues('recovery')
-        obj.GrossWeight = dataToSend.grossWeight
+        obj.GrossWeight = dataToSend.totalGrossWeight
         obj.FinishWeight = getValues('finishedWeight')
         obj.ScrapWeight = dataToSend.scrapWeight
         obj.RMCost = dataToSend.rmCost
