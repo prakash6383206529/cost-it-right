@@ -143,6 +143,7 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
+    console.log(props.calculatorData.UOMType,"props.calculatorData.UOMTypeprops.calculatorData.UOMType",props.CostingViewMode);
     const efficiency = checkForNull(getValues('Efficiency'))
     const quantity = checkForNull(getValues('Quantity'))
     const cavity = checkForNull(getValues('Cavity'))
@@ -152,43 +153,49 @@ function SheetMetalBaicDrawer(props) {
     // const cavity = getValues('Cavity')
     // 
     const rate = props.calculatorData.MHR
+    if(!props.CostingViewMode){
 
-    switch (props.calculatorData.UOMType) {
-      case MASS:
-        setDisabled(true)
-        cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return true
-      case TIME:
-        //This need to be done later
-        cost = rate / (quantity === 0 ? 1 : quantity);
-
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return;
-      case DIMENSIONLESS:
-        setDisabled(true)
-        cost = ((100 / efficiency) * (rate / (quantity === 0 ? 1 : quantity))) / cavity
-
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return true
-      case VOLUMETYPE:
-        setDisabled(true)
-        cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return true
-      // case SHOTS:
-      //   setDisabled(true)
-      //   cost = (1 / efficiency) * (rate / quantity)
-      //   setProcessCost(cost)
-      //   setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-      // return true
-      default:
-        break;
+      switch (props.calculatorData.UOMType) {
+        case MASS:
+          setDisabled(true)
+          cost = ((100 / efficiency) * (quantity === 0 ? 1 : quantity) * rate) / cavity
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
+        case TIME:
+          console.log("COMING IN TIME");
+          //This need to be done later
+          cost = rate / (quantity === 0 ? 1 : quantity);
+          console.log('cost: ', cost);
+  
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return;
+        case DIMENSIONLESS:
+          setDisabled(true)
+          cost = ((100 / efficiency) * (rate )) / cavity
+  
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
+        case VOLUMETYPE:
+          setDisabled(true)
+          cost = ((100 / efficiency) * ((quantity === 0 ? 1 : quantity) * rate)) / cavity
+          setProcessCost(cost)
+          setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+          return true
+        // case SHOTS:
+        //   setDisabled(true)
+        //   cost = (1 / efficiency) * (rate / quantity)
+        //   setProcessCost(cost)
+        //   setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+        // return true
+        default:
+          console.log("COMING IN BY DEFAULT");
+          break;
+      }
     }
+
 
   }
 
@@ -207,9 +214,10 @@ function SheetMetalBaicDrawer(props) {
       const cycleTime = checkForNull(getValues('CycleTime'))
       const efficiency = checkForNull(getValues('Efficiency'))
 
-      const prodPerHrs = checkForDecimalAndNull((cavity * 3600 * efficiency) / (cycleTime * 100), initialConfiguration.NoOfDecimalForPrice)
+      const prodPerHrs =(cavity * 3600 * efficiency) / (cycleTime * 100)
 
-      setValue('Quantity', prodPerHrs)
+      setValue('Quantity', checkForDecimalAndNull(prodPerHrs,getConfigurationKey().NoOfDecimalForInputOutput))
+      setQuantityState(prodPerHrs)
       setProdHr(prodPerHrs)
 
 
@@ -345,7 +353,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   <Col md="4">
                     <TextFieldHookForm
-                      label={props.calculatorData.UOMType === MASS ? `Finished Weight` : props.calculatorData.UOMType === TIME ? `Production / Hour` : `Quantity`}
+                      label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Production / Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}
