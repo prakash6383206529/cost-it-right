@@ -1780,6 +1780,7 @@ function TabRMCC(props) {
                                       setOperationCost={setOperationCost}
                                       setOtherOperationCost={setOtherOperationCost}
                                       setToolCost={setToolCost}
+                                      subAssembId={item.CostingId}
                                     />
                                   </>
                                 )
