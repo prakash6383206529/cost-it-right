@@ -10,11 +10,12 @@ import Toaster from '../../../common/Toaster'
 import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../../actions/Costing'; 
 
 function LossStandardTable(props) {
-  const { rmRowData , LossMachineFunction ,isLossStandard ,isNonFerrous} = props
+  const { rmRowData , isLossStandard ,isNonFerrous} = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
   const [disableLossType, setDisableLossType] = useState(false)
+  const [disableFlashType, setDisableFlashType] = useState(false)
   
   const dispatch = useDispatch()
 
@@ -28,7 +29,7 @@ function LossStandardTable(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['LossOfType', 'LossPercentage', 'FlashLength', 'FlashThickness' ,'FlashWidth', 'BarDiameter', 'BladeThickness', 'FlashLoss' ],
+    name: [ 'LossPercentage', 'FlashLength', 'FlashThickness' ,'FlashWidth', 'BarDiameter', 'BladeThickness', ],
   })
 
   useEffect(() => {
@@ -54,16 +55,20 @@ function LossStandardTable(props) {
   const [useFormula , setUseformula] = useState(false)
   const [percentage , setPercentage] = useState(false)
   const [isDisable , setIsDisable] = useState(false)
+  
   const [isBarBlade, setIsBarBlade] = useState(false)
+  
   const [isFlashParametersDisable, setIsFlashParametersDisable] = useState(false)
 
   useEffect(() => {
     setTableData(props.sendTable ? props.sendTable : [])
     
+    
     if(props?.sendTable?.length===0){
       dispatch(setForgingCalculatorMachiningStockSection(false))
     }
     else{
+      
       dispatch(setForgingCalculatorMachiningStockSection(true))
     }
   }, [])
@@ -84,6 +89,7 @@ function LossStandardTable(props) {
       setBarCuttingAllowanceLossType(false) 
     }
     else{
+      setIsDisable(true)
       setBarCuttingAllowanceLossType(false) 
       setFlashLossType(false)
       setPercentage(true)
@@ -91,14 +97,17 @@ function LossStandardTable(props) {
   }
 
   const handleFlashloss = (value) =>{
+    
     if((value.label==="Use Formula")){
 
       setUseformula(true)
-      setIsDisable(true)
+      setIsDisable(false)
       setPercentage(false) 
     }
     else 
     {
+      
+      setIsDisable(true)
       setPercentage(true)
       setUseformula(false)
     }
@@ -127,14 +136,18 @@ function LossStandardTable(props) {
     const BarDiameter = checkForNull(getValues('BarDiameter'))
     const BladeThickness = checkForNull(getValues('BladeThickness'))
     const LossOfType = getValues('LossOfType')
-    
-    if((LossOfType?.label==="Scale Loss") || (LossOfType?.label==="Bilet Heating Loss")){
+    const FlashLoss = getValues('FlashLoss')
+
+  if((LossOfType?.label==="Scale Loss") || (LossOfType?.label==="Bilet Heating Loss")){
+     
       setIsDisable(true)
-    }
-    else{
+   }
+  else if(LossOfType?.label==="Bar Cutting Allowance"){
     if((BarDiameter !== undefined && BarDiameter !==0) || (BladeThickness !== undefined && BladeThickness !==0) ){
-      setIsBarBlade(false)
+      
       setIsDisable(true)
+      setIsBarBlade(false)
+   
     }else{
       
       setIsDisable(false)
@@ -144,20 +157,26 @@ function LossStandardTable(props) {
       }else{
         setIsBarBlade(false)
       }
-    }   
-    if((FlashLength !== undefined && FlashLength !==0) || (FlashThickness !== undefined && FlashThickness !==0)  || (FlashWidth !== undefined && FlashWidth !==0)){
-      setIsDisable(true)
-      setIsFlashParametersDisable(false)
-    }else{ 
-      setIsDisable(false)
-      if(getValues('LossWeight') !==undefined && getValues('LossWeight') !== 0){
-        setIsFlashParametersDisable(true)
-      }else{
-        setIsFlashParametersDisable(false)
-      }
     }
   }
-    const FlashLoss = getValues('FlashLoss')
+  else if(LossOfType?.label==="Flash Loss")  {
+
+    if((FlashLength !== undefined && FlashLength !==0) || (FlashThickness !== undefined && FlashThickness !==0)  || (FlashWidth !== undefined && FlashWidth !==0)){
+        
+        setIsDisable(true)
+        setIsFlashParametersDisable(false)
+      }else{ 
+        
+        setIsDisable(false)
+        if(getValues('LossWeight') !==undefined && getValues('LossWeight') !== 0){
+          setIsFlashParametersDisable(true)
+        }else{
+          setIsFlashParametersDisable(false)
+        }
+      }
+  } 
+  
+   
     
     const forgeWeight = props.forgeValue
     let LossWeight = 0;
@@ -209,6 +228,7 @@ function LossStandardTable(props) {
    * @description For updating and adding row
    */
   const addRow = () => {
+    const LossWeight = checkForNull(lossWeight)
     const LossPercentage = checkForNull(getValues('LossPercentage'))   
     const LossOfType = getValues('LossOfType').value
     const FlashLength = checkForNull(getValues('FlashLength'))  
@@ -216,12 +236,12 @@ function LossStandardTable(props) {
     const FlashWidth = checkForNull(getValues('FlashWidth'))    
     const BarDiameter = checkForNull(getValues('BarDiameter'))  
     const BladeThickness = checkForNull(getValues('BladeThickness'))
-    const LossWeight = lossWeight
     setDisableLossType(false)
+    setFlashLossType(false)
   
 
   
-    if ( LossWeight === 0 || LossWeight === null|| LossWeight === NaN || LossOfType===''|| LossOfType===undefined) {
+    if ( LossWeight === 0 || LossOfType==='') {
       Toaster.warning("Please add data first.")
       return false;
     }
@@ -265,31 +285,13 @@ function LossStandardTable(props) {
     }
     if (isEdit) {
       tempArray = Object.assign([...tableData], { [editIndex]: obj })
-      setTableData(tempArray)
-      if(isLossStandard===true){
-      if(tempArray.length===0){
-        LossMachineFunction(false)
-      }
-      else{
-        LossMachineFunction(true)
-      }
-    } 
-     
-      
-      setIsEdit(false)
+      setTableData(tempArray)   
+      //setIsEdit(false)
     } else {
       // tempArray = [...tableData, obj]
       tempArray = tableData
       tempArray.push(obj)
       setTableData(tempArray)
-      if(isLossStandard===true){
-        if(tempArray.length===0){
-          LossMachineFunction(false)
-        }
-        else{
-          LossMachineFunction(true)
-        }
-      } 
     }
 
     if (LossOfType === 2) {
@@ -325,8 +327,6 @@ function LossStandardTable(props) {
     setIsEdit(true)
     setEditIndex(index)
     const tempObj = tableData[index]
-    
-    
     setOldNetWeight(tempObj.LossWeight)
     setValue('LossPercentage', tempObj.LossPercentage)
     setValue('FlashLength', tempObj.FlashLength)
@@ -337,9 +337,10 @@ function LossStandardTable(props) {
     setValue('LossOfType', { label: getLossTypeName(tempObj.LossOfType), value: tempObj.LossOfType })
     setValue('LossWeight', tempObj.LossWeight)
     setValue('FlashLoss', { label:tempObj.FlashLoss, value: tempObj.FlashLossId })
-    
+    setDisableFlashType(true)
+    setDisableLossType(true)
+
     if((tempObj.LossOfType ===7 && tempObj.FlashLoss==="Use Formula")){
-      setDisableLossType(true)
       setFlashLossType(true)
       setUseformula(true)
       setPercentage(false)
@@ -347,20 +348,18 @@ function LossStandardTable(props) {
     }
     else if((tempObj.LossOfType===7 && tempObj.FlashLoss==="Percentage"))
     {
-      setDisableLossType(true)
+      setIsDisable(true)
       setPercentage(true)
       setUseformula(false)
       setBarCuttingAllowanceLossType(false)
 
     }
     else if (tempObj.LossOfType===8){
-      setDisableLossType(true)
       setUseformula(false)
       setPercentage(false)
       setBarCuttingAllowanceLossType(true)
     }
     else{
-      setDisableLossType(true)
       setPercentage(true)
       setFlashLossType(false)
       setUseformula(false)
@@ -386,6 +385,7 @@ function LossStandardTable(props) {
     setValue('LossWeight', '')
     setValue('FlashLoss', '')
     setDisableLossType(false)
+    setDisableFlashType(false)
 
   }
   /**
@@ -427,14 +427,7 @@ function LossStandardTable(props) {
     props.tableValue(tempData)
 
     setTableData(tempData)
-    if(isLossStandard===true){
-      if(tempData.length===0){
-      LossMachineFunction(false)
-      }
-      else{
-        LossMachineFunction(true)
-      }
-    } 
+
   }
 
   const getLossTypeName = (number) => {
@@ -487,7 +480,7 @@ if(value !== undefined && value !==0  && value !==''){
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={props.CostingViewMode || disableLossType}
+            disabled={props.CostingViewMode || disableLossType }
           />
         </Col>
         
@@ -613,7 +606,7 @@ if(value !== undefined && value !==0  && value !==''){
             className=""
             customClassName={'withBorder'}
             errors={errors.FlashLoss}
-            disabled={props.CostingViewMode}
+            disabled={props.CostingViewMode|| disableFlashType}
           />
         </Col>
         </>}
