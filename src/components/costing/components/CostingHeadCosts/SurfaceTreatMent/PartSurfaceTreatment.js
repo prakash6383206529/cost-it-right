@@ -63,8 +63,8 @@ function PartSurfaceTreatment(props) {
     item.CostingPartDetails.SurfaceTreatmentDetails = []
     item.CostingPartDetails.TransportationDetails = []
   }
- // console.log(CostingViewMode)
-  console.log(!item.CostingPartDetails.NetSurfaceTreatmentCost)
+ // 
+  
 
   /**
    * @method render
