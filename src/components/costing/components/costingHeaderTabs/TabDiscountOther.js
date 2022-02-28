@@ -20,6 +20,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
+import { debounce } from 'lodash'
 
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -62,7 +63,6 @@ function TabDiscountOther(props) {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
-        console.log(DiscountCostData, "DiscountCostData");
         setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', DiscountCostData !== undefined && DiscountCostData.HundiOrDiscountPercentage !== null ? DiscountCostData.HundiOrDiscountPercentage : '')
         setValue('HundiOrDiscountValue', DiscountCostData !== undefined && DiscountCostData.DiscountCostType === 'Percentage' ? DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)) : DiscountCostData?.HundiOrDiscountValue)
@@ -99,7 +99,6 @@ function TabDiscountOther(props) {
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
-    console.log("COMING IN DISCOUNT COST DATA");
     setTimeout(() => {
 
       let updatedFiles = files.map((file) => {
@@ -645,7 +644,7 @@ function TabDiscountOther(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
+  const onSubmit = debounce((values, val, gotoNextValue) => {
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -749,14 +748,14 @@ function TabDiscountOther(props) {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentDiscountOtherItemData({}, () => { }))
-          if (GoToNext) {
+          if (gotoNextValue) {
             props.toggle('2')
             history.push('/costing-summary')
           }
         }
       }))
     }
-  }
+  }, 500)
 
   const handleOherCostApplicabilityChange = (value) => {
     setOtherCostApplicability(value)
@@ -811,7 +810,6 @@ function TabDiscountOther(props) {
                 <form
                   noValidate
                   className="form"
-                  onSubmit={handleSubmit(onSubmit)}
                 >
                   <Row className="mx-0">
                     <Col md="2">
@@ -1209,18 +1207,18 @@ function TabDiscountOther(props) {
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button
-                        type={"submit"}
+                        type="button"
                         className="submit-button mr5 save-btn"
-                        onClick={() => setGoToNext(false)}
+                        onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
                       >
                         <div className={"save-icon"}></div>
                         {"Save"}
                       </button>}
 
                       {!CostingViewMode && <button
-                        type="submit"
+                        type="button"
                         className="submit-button save-btn"
-                        onClick={() => setGoToNext(true)}
+                        onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                       >
                         {"Next"}
                         <div className={"next-icon"}></div>
