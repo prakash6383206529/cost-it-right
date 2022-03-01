@@ -59,7 +59,7 @@ class AddRMImport extends Component {
       Category: [],
       Technology: [],
       selectedPlants: [],
-      IsFinancialDataChanged: false,
+      IsFinancialDataChanged: true,
 
       vendorName: [],
       VendorCode: '',
@@ -80,7 +80,6 @@ class AddRMImport extends Component {
       IsVendor: false,
       files: [],
       errors: [],
-      isFinalUserEdit: false,
 
       isRMDrawerOpen: false,
       isOpenGrade: false,
@@ -364,11 +363,6 @@ class AddRMImport extends Component {
   }
 
 
-  handleFinancialDataChange = () => {
-
-    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
-
-  }
 
   handleNetCost = () => {
 
@@ -377,11 +371,11 @@ class AddRMImport extends Component {
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
 
 
-    if (Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
+    if (this.state.isEditFlag && Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
 
-      this.setState({ IsFinancialDataChanged: false, isFinalUserEdit: true })
-    } else {
-      this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
+      this.setState({ IsFinancialDataChanged: false })
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
 
     }
 
@@ -432,7 +426,9 @@ class AddRMImport extends Component {
       return false
     }
 
-    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
+    if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
   }
 
   /**
@@ -499,7 +495,7 @@ class AddRMImport extends Component {
                 const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
                 this.setState({
-                  isFinalUserEdit: true,
+                  IsFinancialDataChanged: false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -1634,7 +1630,7 @@ class AddRMImport extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isViewFlag || this.state.isFinalUserEdit}
+                                  disabled={isViewFlag || !this.state.IsFinancialDataChanged}
 
                                 />
                               </div>

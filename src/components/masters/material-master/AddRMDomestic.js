@@ -74,7 +74,6 @@ class AddRMDomestic extends Component {
       effectiveDate: '',
       minEffectiveDate: '',
       remarks: '',
-      isFinalUserEdit: false,
 
       isShowForm: false,
       IsVendor: false,
@@ -103,7 +102,7 @@ class AddRMDomestic extends Component {
       source: '',
       showExtraCost: false,
       approveDrawer: false,
-      IsFinancialDataChanged: false,
+      IsFinancialDataChanged: true,
       approvalObj: {},
       uploadAttachements: true,
       isFinalApprovar: false,
@@ -357,7 +356,10 @@ class AddRMDomestic extends Component {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
-    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
+
+    if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
 
   }
 
@@ -382,11 +384,11 @@ class AddRMDomestic extends Component {
     const { fieldsObj } = this.props
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FrieghtCharge ? fieldsObj.FrieghtCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
 
-    if (Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
+    if (this.state.isEditFlag && Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
 
-      this.setState({ IsFinancialDataChanged: false, isFinalUserEdit: true })
-    } else {
-      this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
+      this.setState({ IsFinancialDataChanged: false })
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
 
     }
 
@@ -491,7 +493,7 @@ class AddRMDomestic extends Component {
                 this.setState({ minEffectiveDate: Data.EffectiveDate })
 
                 this.setState({
-                  isFinalUserEdit: true,
+                  IsFinancialDataChanged: false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -1107,33 +1109,7 @@ class AddRMDomestic extends Component {
       else {
         this.setState({ showPopup: true, updatedObj: requestData })
       }
-      // if (isDateChange) {
-      // this.props.updateRMDomesticAPI(requestData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-      //     this.clearForm()
 
-      //   }
-      // })
-
-      // else {
-
-      //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
-      //     && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
-      //     && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
-      //     && DataToChange.RawMaterialCode === values.Code) {
-
-      //     this.cancel()
-      //     return false
-      //   }
-      //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-      //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-      //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
-      //     this.setState({ showPopup: true, updatedObj: requestData })
-      //   }
-
-      // }
     }
 
 
@@ -1202,6 +1178,7 @@ class AddRMDomestic extends Component {
         if (isSourceChange) {
           this.setState({ approveDrawer: true, approvalObj: formData })
           this.setState({ setDisable: false })
+          return
 
         } else {
 
@@ -1801,7 +1778,7 @@ class AddRMDomestic extends Component {
                                 className="form-control"
 
 
-                                disabled={isViewFlag || this.state.isFinalUserEdit}
+                                disabled={isViewFlag || !this.state.IsFinancialDataChanged}
 
                               />
                             </div>
