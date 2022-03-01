@@ -74,12 +74,12 @@ class AddRMDomestic extends Component {
       effectiveDate: '',
       minEffectiveDate: '',
       remarks: '',
-      isFinalUserEdit: false,
 
       isShowForm: false,
       IsVendor: false,
       files: [],
       errors: [],
+
 
       isRMDrawerOpen: false,
       isOpenGrade: false,
@@ -101,6 +101,7 @@ class AddRMDomestic extends Component {
       isSourceChange: false,
       source: '',
       approveDrawer: false,
+      IsFinancialDataChanged: true,
       approvalObj: {},
       uploadAttachements: true,
       isFinalApprovar: false,
@@ -222,6 +223,7 @@ class AddRMDomestic extends Component {
     this.setState({ Category: newValue })
   }
 
+
   /**
    * @method handleTechnologyChange
    * @description Use to handle technology change
@@ -310,6 +312,17 @@ class AddRMDomestic extends Component {
 
   }
 
+
+  handleCutOffPrice = (newValue) => {
+
+    if (newValue && newValue !== '') {
+
+      this.setState({ isSourceChange: true })
+
+    }
+
+  }
+
   handleSource = (newValue, actionMeta) => {
 
     if (newValue && newValue !== '') {
@@ -337,7 +350,20 @@ class AddRMDomestic extends Component {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
+
+    if (this.state.isEditFlag) {
+
+      if (Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange.ScrapRate) && Number(this.state.netLandedCost) === Number(this.state.DataToChange?.NetLandedCost)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+
+      }
+
+    }
   }
+
+
 
   handleBasicRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
@@ -345,6 +371,7 @@ class AddRMDomestic extends Component {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
+
   }
 
   /**
@@ -356,6 +383,16 @@ class AddRMDomestic extends Component {
     const { initialConfiguration } = this.props
     const { fieldsObj } = this.props
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FrieghtCharge ? fieldsObj.FrieghtCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
+
+    if (this.state.isEditFlag && Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
+
+      this.setState({ IsFinancialDataChanged: false })
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
+
+
     this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
     this.setState({ netLandedCost: netCost })
   }
@@ -381,6 +418,7 @@ class AddRMDomestic extends Component {
   handleMessageChange = (e) => {
     this.setState({
       remarks: e.target.value,
+      isSourceChange: true
     })
   }
 
@@ -453,7 +491,7 @@ class AddRMDomestic extends Component {
                 this.setState({ minEffectiveDate: Data.EffectiveDate })
 
                 this.setState({
-                  isFinalUserEdit: this.state.isFinalApprovar ? true : false,
+                  IsFinancialDataChanged: false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -494,7 +532,7 @@ class AddRMDomestic extends Component {
       this.setState({
         isEditFlag: false,
         isLoader: false,
-        RawMaterialID: '',
+        RawMaterialID: EMPTY_GUID,
       })
       this.props.getRawMaterialDetailsAPI('', false, (res) => { })
     }
@@ -971,7 +1009,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, IsFinancialDataChanged } = this.state
     const { initialConfiguration, fieldsObj } = this.props
     this.setState({ setDisable: true, disablePopup: false })
     if (vendorName.length <= 0) {
@@ -1020,12 +1058,39 @@ class AddRMDomestic extends Component {
       IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
       CutOffPrice: values.cutOffPrice,
       IsCutOffApplicable: values.cutOffPrice < values.NetLandedCost ? true : false,
-      RawMaterialCode: values.Code
+      RawMaterialCode: values.Code,
+      IsFinancialDataChanged: isDateChange ? true : false
     }
-    if (isEditFlag && this.state.isFinalApprovar) {
-      this.setState({ updatedObj: requestData })
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
+      //this.setState({ updatedObj: requestData })
 
       //DONT DELETE COMMENTED CODE BELOW
+
+      if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+        && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
+        && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
+        && DataToChange.RawMaterialCode === values.Code) {
+
+        this.cancel()
+        return false
+      }
+
+
+      if (IsFinancialDataChanged) {
+
+        if (isDateChange) {
+          this.setState({ showPopup: true, updatedObj: requestData })
+          return
+
+        } else {
+
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
+        }
+
+      }
+
 
       if (isSourceChange) {
         this.props.updateRMDomesticAPI(requestData, (res) => {
@@ -1037,32 +1102,10 @@ class AddRMDomestic extends Component {
           }
         })
       }
-      // if (isDateChange) {
-      // this.props.updateRMDomesticAPI(requestData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-      //     this.clearForm()
-
-      //   }
-      // })
       else {
-
-        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
-          && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
-          && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
-          && DataToChange.RawMaterialCode === values.Code) {
-
-          this.cancel()
-          return false
-        }
-        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-          Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-            values.cutOffPrice === undefined) || uploadAttachements === false)) {
-          this.setState({ showPopup: true, updatedObj: requestData })
-        }
-
+        this.setState({ showPopup: true, updatedObj: requestData })
       }
+
     }
 
     else {
@@ -1070,6 +1113,7 @@ class AddRMDomestic extends Component {
       let formData = {}
       // const formData = {
       formData.RawMaterialId = RawMaterialID
+      formData.IsFinancialDataChanged = isDateChange ? true : false
       formData.IsVendor = IsVendor
       formData.RawMaterial = RawMaterial.value
       formData.RMGrade = RMGrade.value
@@ -1109,13 +1153,47 @@ class AddRMDomestic extends Component {
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
-        if (isDateChange) {
-          this.setState({ approveDrawer: true, approvalObj: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange) {
+            this.setState({ approveDrawer: true, approvalObj: formData })
+            return
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
         }
-        else {
+
+
+        if (isSourceChange) {
+          this.setState({ approveDrawer: true, approvalObj: formData })
           this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
+          return
+
+        } else {
+
+
+          if (isEditFlag) {
+
+            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
+              && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
+              && DataToChange.RawMaterialCode === values.Code) {
+
+              this.cancel()
+              return false
+            }
+
+          }
+          this.setState({ approveDrawer: true, approvalObj: formData })
         }
+
+
       } else {
         this.props.createRMDomestic(formData, (res) => {
           this.setState({ setDisable: false })
@@ -1129,6 +1207,8 @@ class AddRMDomestic extends Component {
 
     }
   }
+
+
   onPopupConfirm = () => {
     this.setState({ disablePopup: true })
     this.props.updateRMDomesticAPI(this.state.updatedObj, (res) => {
@@ -1553,6 +1633,7 @@ class AddRMDomestic extends Component {
                               component={renderText}
                               required={false}
                               disabled={isViewFlag}
+                              onChange={this.handleCutOffPrice}
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1655,7 +1736,7 @@ class AddRMDomestic extends Component {
                                 className="form-control"
 
 
-                                disabled={isViewFlag || this.state.isFinalUserEdit}
+                                disabled={isViewFlag || !this.state.IsFinancialDataChanged}
 
                               />
                             </div>
