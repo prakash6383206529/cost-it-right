@@ -1260,7 +1260,7 @@ class AddRMImport extends Component {
                               </div>
                               {!isEditFlag && (
                                 <div
-                                  onClick={this.vendorToggler}
+                                  onClick={this.rmToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
