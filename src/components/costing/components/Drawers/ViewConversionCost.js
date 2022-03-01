@@ -106,7 +106,6 @@ function ViewConversionCost(props) {
 
 
   const getWeightData = (index) => {
-    setIndex(index)
 
     if (costingProcessCost[index].ProcessCalculationId === '00000000-0000-0000-0000-000000000000') {
       Toaster.warning('Data is not avaliabe for calculator')
@@ -232,7 +231,7 @@ function ViewConversionCost(props) {
                                     <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                                     <td>{item.UOM ? item.UOM : '-'}</td>
                                     <td>{item.MHR ? item.MHR : '-'}</td>
-                                    <td>{item?.ProductionPerHour ? item.ProductionPerHour:'-'}</td>
+                                    <td>{item?.ProductionPerHour ? item.ProductionPerHour : '-'}</td>
                                     <td><button
                                       className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                                       type={"button"}
