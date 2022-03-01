@@ -419,7 +419,12 @@ class AddRMImport extends Component {
     }
 
     if (this.state.isEditFlag) {
-      this.setState({ IsFinancialDataChanged: true })
+
+      if (Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange.ScrapRate) && Number(this.state.netCost) === Number(this.state.DataToChange?.NetLandedCost)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+      }
     }
   }
 
