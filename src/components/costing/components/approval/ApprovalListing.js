@@ -21,6 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../../common/LoaderCustom'
 import { Redirect } from 'react-router'
 import WarningMessage from '../../../common/WarningMessage'
+import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 
 const gridOptions = {};
 
@@ -362,6 +363,7 @@ function ApprovalListing(props) {
 
   return (
     <Fragment>
+      <CalculatorWrapper />
       {
         !showApprovalSumary &&
         <div className={` ${!isApproval && 'container-fluid'} approval-listing-page`}>
