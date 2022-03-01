@@ -225,12 +225,6 @@ class AddRMDomestic extends Component {
   }
 
 
-
-  handleNetLandedCostChange = () => {
-
-    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
-  }
-
   /**
    * @method handleTechnologyChange
    * @description Use to handle technology change
@@ -363,21 +357,6 @@ class AddRMDomestic extends Component {
 
 
 
-  handleFreightCost = () => {
-
-    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
-
-  }
-
-
-
-  handleShearingCost = () => {
-
-    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
-
-  }
-
-
   handleBasicRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
     if (Number(newValue.target.value) < Number(fieldsObj.ScrapRate)) {
@@ -385,7 +364,6 @@ class AddRMDomestic extends Component {
       return false
     }
 
-    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
   }
 
   /**
@@ -397,6 +375,16 @@ class AddRMDomestic extends Component {
     const { initialConfiguration } = this.props
     const { fieldsObj } = this.props
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FrieghtCharge ? fieldsObj.FrieghtCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
+
+    if (Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
+
+      this.setState({ IsFinancialDataChanged: false, isFinalUserEdit: true })
+    } else {
+      this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
+
+    }
+
+
     this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
     this.setState({ netLandedCost: netCost })
   }
@@ -1711,7 +1699,6 @@ class AddRMDomestic extends Component {
                               required={false}
                               className=""
                               customClassName=" withBorder"
-                              onChange={this.handleFreightCost}
                               maxLength="15"
                               disabled={isViewFlag}
                             />
@@ -1727,7 +1714,6 @@ class AddRMDomestic extends Component {
                               required={false}
                               className=""
                               customClassName=" withBorder"
-                              onChange={this.handleShearingCost}
                               maxLength="15"
                               disabled={isViewFlag}
 
@@ -1744,7 +1730,6 @@ class AddRMDomestic extends Component {
                               component={renderText}
                               required={false}
                               disabled={true}
-                              onChange={this.handleNetLandedCostChange}
                               isViewFlag={true}
                               className=" "
                               customClassName=" withBorder"
