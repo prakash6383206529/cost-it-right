@@ -354,9 +354,15 @@ class AddRMDomestic extends Component {
     }
 
     if (this.state.isEditFlag) {
-      this.setState({ IsFinancialDataChanged: true })
-    }
 
+      if (Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange.ScrapRate) && Number(this.state.netLandedCost) === Number(this.state.DataToChange?.NetLandedCost)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+
+      }
+
+    }
   }
 
 
