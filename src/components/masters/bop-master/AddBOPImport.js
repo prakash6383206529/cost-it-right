@@ -1033,7 +1033,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
                             <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
                               <div className="fullinput-icon">
                                 <AsyncSelect
