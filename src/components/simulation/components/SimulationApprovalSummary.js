@@ -39,6 +39,7 @@ import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import _ from 'lodash'
+import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -725,6 +726,7 @@ function SimulationApprovalSummary(props) {
         <>
             {showListing === false &&
                 <>
+                <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
                         <Errorbox customClass={errorBoxClass()} errorText={status} />

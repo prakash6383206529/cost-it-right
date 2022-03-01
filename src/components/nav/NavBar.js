@@ -768,14 +768,6 @@ class SideBar extends Component {
               </nav>
             </div>
           )}
-              <button className="CalculatorIcon cr-cl-icon cal-btn" type="buton" title="Calculator" onClick={this.showCalculator}></button>
-              {this.state.isShowCal && <div className="calculator-wrapper">  
-              <Draggable>
-                  <div>
-                     <Calculator />
-                  </div>
-               </Draggable>
-              </div>}
         </div>
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
