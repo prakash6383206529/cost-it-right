@@ -100,7 +100,12 @@ function HotForging(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+  const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
 
+
+  useEffect(() => {
+  
+  }, [forgingCalculatorMachiningStockSectionValue])
   const fieldValues = useWatch({
     control,
     name: ['finishedWeight', 'BilletDiameter' , 'BilletLength' , 'ScrapRecoveryPercentage'],
@@ -116,7 +121,6 @@ function HotForging(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
-  const [diableMachiningStock,setDiableMachiningStock]= useState(false)
   
 
   const costData = useContext(costingInfoContext)
@@ -139,11 +143,15 @@ function HotForging(props) {
    */
   const calculateForgeWeight = () => {
     
+    
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    if (!finishedWeight || !totalMachiningStock) {
-      return ''
-    }
+    
+    
+    
     const forgedWeight =  finishedWeight + totalMachiningStock
+    
+
+    
 
     let obj = dataSend
     obj.forgedWeight = forgedWeight
@@ -151,6 +159,8 @@ function HotForging(props) {
     setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration.NoOfDecimalForInputOutput))
 
     setForgeWeightValue(forgedWeight)
+    
+
   }
 
  
@@ -343,12 +353,12 @@ const calculateNetRmCostComponent = () =>{
     obj.NoOfPartsPerLength = dataSend.NoOfPartsPerLength
     obj.EndBitLength = dataSend.EndBitLength
     obj.EndBitLoss = dataSend.EndBitLoss
-    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH gROSS WEIGHT KEY
+    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH GROSS WEIGHT KEY
     obj.GrossWeight = dataSend.TotalInputWeight
     obj.ScrapWeight = dataSend.ScrapWeight
     obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
     obj.ScrapCost = dataSend.ScrapCost
-    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IOT WITH NETLANDED COST
+    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IT WITH NETLANDED COST
     obj.NetLandedCost = dataSend.NetRMCostComponent 
 
 
@@ -379,6 +389,7 @@ const calculateNetRmCostComponent = () =>{
     }))
   }
    const TotalMachiningStock = (value) =>{
+     
 
     setTotalMachiningStock(value)
    }
@@ -454,9 +465,7 @@ const calculateNetRmCostComponent = () =>{
       value: 10,
     },
   ]
-  const LossMachineFunction=(value)=>{
-    setDiableMachiningStock(value)
-  }
+
   return (
     <Fragment>
       <Row>
@@ -494,7 +503,7 @@ const calculateNetRmCostComponent = () =>{
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.finishedWeight}
-                          disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                          disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
                         />
                       </Col>
                       
@@ -502,12 +511,11 @@ const calculateNetRmCostComponent = () =>{
                     <MachiningStockTable
                       dropDownMenu={machineDropDown}
                       CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
-                      netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                      netWeight={WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock !== null ? WeightCalculatorRequest.TotalMachiningStock : ''}
                       sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators?.length > 0 ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : []) : []}
                       tableValue={tableData1}
                       rmRowData={props.rmRowData}
                       calculation = {TotalMachiningStock}
-                      diableMachiningStock={diableMachiningStock}
                     />
                   </Col>
                 </Row>
@@ -546,7 +554,6 @@ const calculateNetRmCostComponent = () =>{
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                   rmRowData={props.rmRowData}
-                  LossMachineFunction ={LossMachineFunction}
                   isPlastic={false}
                   isLossStandard = {true}
                   isNonFerrous={false}
