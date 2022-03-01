@@ -368,6 +368,15 @@ class AddRMImport extends Component {
     const { currency, effectiveDate } = this.state
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
 
+
+    if (Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
+
+      this.setState({ IsFinancialDataChanged: false, isFinalUserEdit: true })
+    } else {
+      this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
+
+    }
+
     if (currency === INR) {
       this.setState({ currencyValue: 1, netCost: checkForNull(netCost * this.state.currencyValue) }, () => {
         this.props.change('NetLandedCost', checkForDecimalAndNull(netCost * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
@@ -382,12 +391,18 @@ class AddRMImport extends Component {
           else {
             this.setState({ showWarning: false })
           }
+
+
           this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
+
+
+
         })
       }
     }
+
 
   }
 
@@ -1633,7 +1648,6 @@ class AddRMImport extends Component {
                               component={renderText}
                               required={true}
                               disabled={isViewFlag ? true : false}
-                              onChange={this.handleFinancialDataChange}
                               maxLength="15"
                               className=" "
                               customClassName=" withBorder"
@@ -1667,7 +1681,6 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
-                              onChange={this.handleFinancialDataChange}
                               disabled={isViewFlag}
                             />
                           </Col>
@@ -1683,7 +1696,6 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
-                              onChange={this.handleFinancialDataChange}
                               disabled={isViewFlag}
                             />
                           </Col> */}
@@ -1967,7 +1979,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost');
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
