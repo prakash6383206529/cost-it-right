@@ -13,6 +13,7 @@ import MachineApproval from "../masters/machine-master/MachineApproval";
 import classnames from 'classnames';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper";
 import { BOP_MASTER_ID, MACHINE_MASTER_ID, OPERATIONS_ID, RM_MASTER_ID } from "../../config/constants";
+import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 
 
 function Dashboard(props) {
@@ -41,6 +42,7 @@ function Dashboard(props) {
         !hideDash &&
         <>
           <div className="dashboard-page w-100">
+            <CalculatorWrapper />
             <Row>
               <Col md="12">
                 <h1>Dashboard</h1>
