@@ -58,6 +58,7 @@ class AddRMImport extends Component {
       Category: [],
       Technology: [],
       selectedPlants: [],
+      IsFinancialDataChanged: false,
 
       vendorName: [],
       VendorCode: '',
@@ -349,6 +350,18 @@ class AddRMImport extends Component {
 
   };
 
+  handleCutOfChange = () => {
+    this.setState({ isSourceChange: true })
+
+  }
+
+
+  handleFinancialDataChange = () => {
+
+    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
+
+  }
+
   handleNetCost = () => {
 
     const { fieldsObj } = this.props
@@ -384,7 +397,8 @@ class AddRMImport extends Component {
   */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value
+      remarks: e.target.value,
+      isSourceChange: true
     })
   }
 
@@ -394,6 +408,8 @@ class AddRMImport extends Component {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
+
+    this.setState({ IsFinancialDataChanged: true, isFinalUserEdit: false })
   }
 
   /**
@@ -457,7 +473,7 @@ class AddRMImport extends Component {
                 const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
                 this.setState({
-                  isFinalUserEdit: this.state.isFinalApprovar ? true : false,
+                  isFinalUserEdit: true,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -937,7 +953,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
 
     const { initialConfiguration } = this.props;
     this.setState({ setDisable: true, disablePopup: false })
@@ -988,15 +1004,41 @@ class AddRMImport extends Component {
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: false,
-        RawMaterialCode: values.Code
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code,
+        IsFinancialDataChanged: isDateChange ? true : false
       }
       //DONT DELETE COMMENTED CODE BELOW
 
 
 
-      if (isSourceChange) {
 
+      if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+        Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+        String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+          values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+        this.cancel()
+        return false
+      }
+
+
+      if (IsFinancialDataChanged) {
+
+        if (isDateChange) {
+          this.setState({ showPopup: true, updatedObj: requestData })
+          return
+
+        } else {
+
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
+        }
+
+      }
+
+
+      if (isSourceChange) {
         this.props.updateRMImportAPI(requestData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
@@ -1006,32 +1048,24 @@ class AddRMImport extends Component {
           }
         })
       }
-      // if (isDateChange) {
-      // this.props.updateRMImportAPI(requestData, (res) => {
-      //   this.setState({ setDisable: false })
-      //   if (res?.data?.Result) {
-      //     Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-      //     this.clearForm()
-
-      //   }
-      // })
-
       else {
-        if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-          Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-          String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-            values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-          this.cancel()
-          return false
-        }
-        if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-          Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-            values.cutOffPrice === undefined) || uploadAttachements === false)) {
-          this.setState({ showPopup: true, updatedObj: requestData })
-        }
-
+        this.setState({ showPopup: true, updatedObj: requestData })
       }
 
+
+      // else {
+      //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+      //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+      //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+      //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+      //     this.cancel()
+      //     return false
+      //   }
+      //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+      //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+      //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
+      //     this.setState({ showPopup: true, updatedObj: requestData })
+      //   }
 
 
 
@@ -1040,6 +1074,7 @@ class AddRMImport extends Component {
       this.setState({ setDisable: true })
       const formData = {
         RawMaterialId: RawMaterialID,
+        IsFinancialDataChanged: isDateChange ? true : false,
         IsVendor: IsVendor,
         RawMaterial: RawMaterial.value,
         RMGrade: RMGrade.value,
@@ -1079,13 +1114,44 @@ class AddRMImport extends Component {
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
-        if (isDateChange) {
-          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange) {
+            this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+            return
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
         }
-        else {
+
+        if (isSourceChange) {
+          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
           this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
+
+        } else {
+
+          if (isEditFlag) {
+
+
+            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+              Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+              String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+                values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+              this.cancel()
+              return false
+            }
+          }
+
+          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+
         }
+
 
       } else {
 
@@ -1554,6 +1620,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag}
                               className=" "
                               customClassName=" withBorder"
+                              onChange={this.handleCutOfChange}
                             />
                           </Col> */}
                           <Col md="4">
@@ -1566,6 +1633,7 @@ class AddRMImport extends Component {
                               component={renderText}
                               required={true}
                               disabled={isViewFlag ? true : false}
+                              onChange={this.handleFinancialDataChange}
                               maxLength="15"
                               className=" "
                               customClassName=" withBorder"
@@ -1599,6 +1667,7 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
+                              onChange={this.handleFinancialDataChange}
                               disabled={isViewFlag}
                             />
                           </Col>
@@ -1614,6 +1683,7 @@ class AddRMImport extends Component {
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
+                              onChange={this.handleFinancialDataChange}
                               disabled={isViewFlag}
                             />
                           </Col> */}

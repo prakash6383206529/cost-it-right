@@ -1108,8 +1108,7 @@ class AddRMDomestic extends Component {
         })
       }
       else {
-        this.cancel()
-        return false
+        this.setState({ showPopup: true, updatedObj: requestData })
       }
       // if (isDateChange) {
       // this.props.updateRMDomesticAPI(requestData, (res) => {
@@ -1206,8 +1205,21 @@ class AddRMDomestic extends Component {
           this.setState({ setDisable: false })
 
         } else {
-          this.cancel()
-          return false
+
+
+          if (isEditFlag) {
+
+            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate
+              && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark
+              && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
+              && DataToChange.RawMaterialCode === values.Code) {
+
+              this.cancel()
+              return false
+            }
+
+          }
+          this.setState({ approveDrawer: true, approvalObj: formData })
         }
 
 
