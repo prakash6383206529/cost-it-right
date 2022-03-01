@@ -6891,6 +6891,7 @@ left: 17rem;
   bottom: 60px;
   left: 5px;
   margin: 0;
+  z-index: 1400;
 }
 .BOM-Drawer {
   .drawer-wrapper {
@@ -6903,7 +6904,7 @@ left: 17rem;
   position: fixed;
   bottom: 33px;
   left: 18%;
-  z-index: 15;
+  z-index: 1400;
   .calculator {
     .operator-keys {
       background: linear-gradient( 180deg ,#256bd1 0,#256bd1);
@@ -6921,7 +6922,6 @@ left: 17rem;
  
 @media screen and (max-width:$middleDesktop) {
   .calculator {
-   
     max-width: 280px;
     min-width: 280px;
     right: -65px;
@@ -6948,6 +6948,20 @@ left: 17rem;
             width: 140px;
          }
       } 
+    }
+  }
+}
+@media screen and (min-width:$middleDesktop) {
+  .calculator {
+    right: -20px;
+  }
+}
+@-moz-document url-prefix() { 
+  .calculator {
+    .display-toolbar {
+      .display {
+        margin-bottom:-15px;
+      }
     }
   }
 }
