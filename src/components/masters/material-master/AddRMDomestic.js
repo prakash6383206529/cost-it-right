@@ -1075,7 +1075,7 @@ class AddRMDomestic extends Component {
       JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '' ,// THIS KEY FOR CIRCLE SCRAP COST
       IsFinancialDataChanged: isDateChange ? true : false
     }
-    if (isEditFlag && this.state.isFinalApprovar) {
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
       //this.setState({ updatedObj: requestData })
 
       //DONT DELETE COMMENTED CODE BELOW

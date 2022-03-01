@@ -991,7 +991,7 @@ class AddRMImport extends Component {
       return vendorPlantArray;
     })
 
-    if (isEditFlag && this.state.isFinalApprovar) {
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
