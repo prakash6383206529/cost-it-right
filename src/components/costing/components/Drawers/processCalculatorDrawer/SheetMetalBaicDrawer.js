@@ -45,7 +45,7 @@ function SheetMetalBaicDrawer(props) {
   const [hide, setHide] = useState(false)
   const [cavity, setCavity] = useState(Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1 : 1)
   const [prodHr, setProdHr] = useState('')
-  const [quantityState, setQuantityState] = useState('')
+  const [quantityState, setQuantityState] = useState( Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1)
 
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
 
@@ -79,18 +79,20 @@ function SheetMetalBaicDrawer(props) {
 
   useEffect(() => {
     //setValue('ProcessCost', checkForDecimalAndNull(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '', getConfigurationKey().NoOfDecimalForPrice))
-    if (props.calculatorData.UOMType === MASS) {
-      setQuantityState(rmFinishWeight ? rmFinishWeight : 1)
-      setValue('Quantity', rmFinishWeight ? checkForDecimalAndNull(rmFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
-
-      // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
-    } else if (props.calculatorData.UOMType === TIME) {
-      setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
-      setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
-      setHide(true)
-    } else {
-      setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
-      setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
+    if(!props.CostingViewMode){
+      if (props.calculatorData.UOMType === MASS) {
+        setQuantityState(rmFinishWeight ? rmFinishWeight : 1)
+        setValue('Quantity', rmFinishWeight ? checkForDecimalAndNull(rmFinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
+  
+        // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
+      } else if (props.calculatorData.UOMType === TIME) {
+        setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
+        setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
+        setHide(true)
+      } else {
+        setQuantityState(Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : 1)
+        setValue('Quantity', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Quantity, getConfigurationKey().NoOfDecimalForInputOutput) : 1)
+      }
     }
     // if (props.calculatorData.UOMType === DIMENSIONLESS) {
     //   setValue('Cavity', props.WeightCalculatorRequest.Cavity ? props.WeightCalculatorRequest.Cavity : 1)
@@ -143,7 +145,7 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
-    console.log(props.calculatorData.UOMType,"props.calculatorData.UOMTypeprops.calculatorData.UOMType",props.CostingViewMode);
+    
     const efficiency = checkForNull(getValues('Efficiency'))
     const quantity = checkForNull(getValues('Quantity'))
     const cavity = checkForNull(getValues('Cavity'))
@@ -163,10 +165,10 @@ function SheetMetalBaicDrawer(props) {
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
           return true
         case TIME:
-          console.log("COMING IN TIME");
+          
           //This need to be done later
           cost = rate / (quantity === 0 ? 1 : quantity);
-          console.log('cost: ', cost);
+          
   
           setProcessCost(cost)
           setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
@@ -191,7 +193,7 @@ function SheetMetalBaicDrawer(props) {
         //   setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         // return true
         default:
-          console.log("COMING IN BY DEFAULT");
+          
           break;
       }
     }
@@ -209,7 +211,7 @@ function SheetMetalBaicDrawer(props) {
   }
 
   const handleProductionPerHour = () => {
-    if (props.calculatorData.UOMType === TIME) {
+    if (props.calculatorData.UOMType === TIME && props.CostingViewMode === false) {
       const cavity = checkForNull(getValues('Cavity'))
       const cycleTime = checkForNull(getValues('CycleTime'))
       const efficiency = checkForNull(getValues('Efficiency'))
@@ -225,14 +227,17 @@ function SheetMetalBaicDrawer(props) {
   }
 
   const checlPercentageForEfficiency = (e) => {
-    if (checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")) {
-      setValue('Efficiency', e.target.value)
-    } else {
+    if(!props.CostingViewMode){
 
-      setTimeout(() => {
-
-        setValue('Efficiency', 100)
-      }, 100);
+      if (checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")) {
+        setValue('Efficiency', e.target.value)
+      } else {
+  
+        setTimeout(() => {
+  
+          setValue('Efficiency', 100)
+        }, 100);
+      }
     }
     // setValue('Efficiency', checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.") ? e.target.value : 100)
   }
