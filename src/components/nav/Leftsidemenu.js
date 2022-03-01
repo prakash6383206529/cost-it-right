@@ -7,6 +7,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import "./LeftMenu.scss";
 import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
 import { getTopAndLeftMenuData } from '../../actions/auth/AuthActions';
+import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 
 class Leftmenu extends Component {
 	constructor(props) {
@@ -70,6 +71,7 @@ class Leftmenu extends Component {
 
 					</div>
 				</div>
+				<CalculatorWrapper />
 			</>
 		)
 	}
