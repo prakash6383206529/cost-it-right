@@ -74,20 +74,8 @@ function Ferrous(props) {
 
     useEffect(() => {
         burningValue()
-        handlGrossWeight()
         calculateRemainingCalculation(lostWeight)
     }, [fieldValues])
-
-   
-
-    const handlGrossWeight = () => {
-        const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostWeight
-        const updatedValue = dataToSend
-        updatedValue.grossWeight = grossWeight
-        setDataToSend(updatedValue)
-        setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-
-    }
 
     const calculateRemainingCalculation = (lostSum = 0) => {
 
