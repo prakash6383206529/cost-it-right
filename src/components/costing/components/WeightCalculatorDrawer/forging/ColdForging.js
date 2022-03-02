@@ -121,8 +121,7 @@ function ColdForging(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
-  const [disableAll , setDisableAll] = useState(WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
-
+  const [disableAll , setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length>0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
   const costData = useContext(costingInfoContext)
   useEffect(() => {
     calculateForgeWeight()

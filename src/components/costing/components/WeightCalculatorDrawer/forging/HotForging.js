@@ -109,7 +109,9 @@ function HotForging(props) {
   const fieldValues = useWatch({
     control,
     name: ['finishedWeight', 'BilletDiameter' , 'BilletLength' , 'ScrapRecoveryPercentage'],
+    
   })
+  console.log(fieldValues,'fieldValues');
 
   const dispatch = useDispatch()
   const [inputWeightValue, setInputWeightValue] = useState(0)
@@ -121,7 +123,7 @@ function HotForging(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
-  const [disableAll , setDisableAll] = useState(WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
+  const [disableAll , setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length>0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
 
   const costData = useContext(costingInfoContext)
   useEffect(() => {
@@ -471,9 +473,8 @@ const calculateNetRmCostComponent = () =>{
     },
   ]
   const handleFinishWeight = (value)=>{
-    
-    
-    if(value.target.value===0 || value.target.value===''){
+    console.log('value: ', value);
+    if(value.target.value===0 || value.target.value==="" || value.target.value===null){
       setDisableAll(true)
     }
     else{
