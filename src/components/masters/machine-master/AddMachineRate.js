@@ -960,7 +960,7 @@ class AddMachineRate extends Component {
 
           if (isDateChange) {
             this.setState({ showPopup: true, updatedObj: requestData })
-            return
+            return false
 
           } else {
 
@@ -1039,7 +1039,7 @@ class AddMachineRate extends Component {
 
           if (isDateChange) {
             this.setState({ approveDrawer: true, approvalObj: finalObj })
-            return
+            return false
 
           } else {
 
