@@ -66,7 +66,6 @@ class AddBOPDomestic extends Component {
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
-      isFinalUserEdit: false,
 
       effectiveDate: '',
       minEffectiveDate: '',
@@ -74,6 +73,7 @@ class AddBOPDomestic extends Component {
       files: [],
       isFinalApprovar: false,
       approvalObj: {},
+      IsFinancialDataChanged: true,
 
       NetLandedCost: '',
       DataToCheck: [],
@@ -133,6 +133,8 @@ class AddBOPDomestic extends Component {
       this.handleCalculation()
     }
   }
+
+
 
   /**
   * @method onPressVendor
@@ -224,8 +226,8 @@ class AddBOPDomestic extends Component {
 
 
             this.setState({
+              IsFinancialDataChanged: false,
               isEditFlag: true,
-              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
               // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
@@ -453,6 +455,15 @@ class AddBOPDomestic extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1; // MAY BE USED LATER IF USED IN CALCULATION
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
+
+    if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
+
+      this.setState({ IsFinancialDataChanged: false })
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
+
     //COMMENTED FOR MINDA
     // const NetLandedCost = checkForNull(BasicRate) //THIS IS ONLY FOR MINDA
     this.setState({
@@ -606,7 +617,7 @@ class AddBOPDomestic extends Component {
 
     const { IsVendor, BOPCategory, selectedPlants, vendorName,
 
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -621,22 +632,23 @@ class AddBOPDomestic extends Component {
       return false;
     }
 
-    if (isEditFlag && this.state.isFinalApprovar) {
+    // if (isEditFlag && this.state.isFinalApprovar) {
+
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
 
-
-      if (DataToCheck.IsVendor) {
-        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-          this.cancel()
-          return false;
-        }
-      }
-      else if (Boolean(DataToCheck.IsVendor) === false) {
-        if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
-          this.cancel()
-          return false;
-        }
-      }
+      // if (DataToCheck.IsVendor) {
+      //   if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
+      //     this.cancel()
+      //     return false;
+      //   }
+      // }
+      // else if (Boolean(DataToCheck.IsVendor) === false) {
+      //   if ((Number(DataToCheck.BasicRate) === Number(values.BasicRate)) && uploadAttachements) {
+      //     this.cancel()
+      //     return false;
+      //   }
+      // }
       this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
@@ -655,11 +667,36 @@ class AddBOPDomestic extends Component {
         UnitOfMeasurementId: UOM.value,
         IsForcefulUpdated: true,
         NumberOfPieces: values.NumberOfPieces,
-      }
-      if (isEditFlag) {
-        this.setState({ showPopup: true, updatedObj: requestData })
+        IsFinancialDataChanged: isDateChange ? true : false
       }
 
+
+
+      if (IsFinancialDataChanged) {
+
+        if (isDateChange) {
+          this.setState({ showPopup: true, updatedObj: requestData })
+          return
+
+        } else {
+
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
+        }
+
+      }
+
+
+
+      if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
+        this.cancel()
+        return false;
+      } else {
+
+        this.setState({ showPopup: true, updatedObj: requestData })
+        return
+      }
 
 
     } else {
@@ -673,6 +710,7 @@ class AddBOPDomestic extends Component {
       this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
+        IsFinancialDataChanged: isDateChange ? true : false,
         BoughtOutPartId: BOPID,
         IsVendor: IsVendor,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
@@ -707,12 +745,30 @@ class AddBOPDomestic extends Component {
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
-        if (isDateChange) {
-          this.setState({ approveDrawer: true, approvalObj: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange) {
+            this.setState({ approveDrawer: true, approvalObj: formData })
+            return
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
         }
-        else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
+
+
+        if ((DataToCheck.Remark) === (values.Remark) && uploadAttachements) {
+          this.cancel()
+          return false;
+        } else {
+
+          this.setState({ approveDrawer: true, approvalObj: formData })
+          return
         }
 
 
@@ -1081,7 +1137,7 @@ class AddBOPDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || this.state.isFinalUserEdit}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged}
                               //minDate={moment()}
                               />
                             </div>
