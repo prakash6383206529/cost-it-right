@@ -8,8 +8,8 @@ import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey } from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../../actions/Costing';
-import values from 'redux-form/lib/values'
-import { sum } from 'lodash'
+
+
 function MachiningStockTable(props) {
 
   //   
@@ -25,7 +25,7 @@ function MachiningStockTable(props) {
   const [squareMachiningStock, setSquareMachiningStock] = useState(false)
   const [irregularMachiningStock, setIrregularMachiningStock] = useState(false)
   const [disable, setDisable] = useState(true)
-
+  const [disableMachineType, setDisableMachineType] = useState(false)
 
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
