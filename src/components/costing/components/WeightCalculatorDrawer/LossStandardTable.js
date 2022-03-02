@@ -241,7 +241,7 @@ function LossStandardTable(props) {
       return false
     }
   
-  console.log(errors,"errors in add row");
+  
   
     if ( LossWeight === 0 || LossOfType==='') {
       Toaster.warning("Please add data first.")
