@@ -72,6 +72,7 @@ function SheetMetalBaicDrawer(props) {
     if (props.calculatorData.UOMType !== TIME) {
       calculateProcessCost()
     }
+    setQuantityState(getValues('Quantity'))
   }, [quantFieldValue])
 
 
@@ -80,14 +81,14 @@ function SheetMetalBaicDrawer(props) {
 
     if (!props.CostingViewMode && props.calculatorData.UOMType === MASS) {
 
-      let quantityValue
+      let quantityValue = 1
 
-      if (WeightCalculatorRequest.Quantity === 0) {
-        quantityValue = WeightCalculatorRequest.Quantity
-      } else if ((WeightCalculatorRequest.Quantity === null || WeightCalculatorRequest.Quantity === undefined) &&
-        (rmFinishWeight === null || rmFinishWeight === undefined || rmFinishWeight === '')) {
+      if ((WeightCalculatorRequest.Quantity === null || WeightCalculatorRequest.Quantity === undefined || WeightCalculatorRequest.Quantity === '')
+        && (rmFinishWeight === undefined || rmFinishWeight === null)) {
         quantityValue = 1
-      } else if (WeightCalculatorRequest.Quantity === null || WeightCalculatorRequest.Quantity === undefined) {
+      } else if (WeightCalculatorRequest.Quantity !== null || WeightCalculatorRequest.Quantity !== undefined || WeightCalculatorRequest.Quantity !== '') {
+        quantityValue = WeightCalculatorRequest.Quantity
+      } else {
         quantityValue = rmFinishWeight
       }
       setQuantityState(quantityValue)
@@ -135,13 +136,12 @@ function SheetMetalBaicDrawer(props) {
     obj.CycleTime = value.CycleTime
     obj.Efficiency = value.Efficiency
     obj.Cavity = value.Cavity
-    obj.Quantity = WeightCalculatorRequest.UnitType === TIME ? checkForNull(processCost) / checkForNull(props.calculatorData.MHR) : quantityState
+    obj.Quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(processCost) / checkForNull(props.calculatorData.MHR)) : Number(quantityState)
     obj.ProcessCost = processCost
     obj.LoggedInUserId = loggedInUserId()
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
-    obj.PartPerHour = quantityState
-
+    obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : '-'
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
@@ -256,7 +256,6 @@ function SheetMetalBaicDrawer(props) {
   // const quantity = (e) => {
   //   setQuantity(e.target.value)
   // }
-
   return (
     <Fragment>
       <Row>
