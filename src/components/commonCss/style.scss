@@ -4472,6 +4472,7 @@ body{
   font-size: 16px;
   width: 100%;
   display: inline-block;
+  word-break: break-all;
   &.success{
     background-color: #DBF4E2;
     border-color: #DBF4E2;
