@@ -491,7 +491,10 @@ NonFerrous(props) {
                                     />
                                 </Col>
                             </Row>
+                           
                             <Row className={''}>
+                            {isHpdc&&
+                                <>
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`RM Cost`}
@@ -508,6 +511,7 @@ NonFerrous(props) {
                                         disabled={true}
                                     />
                                 </Col>
+                                </>} 
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Scrap Cost`}
