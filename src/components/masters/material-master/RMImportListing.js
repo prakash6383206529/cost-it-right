@@ -38,7 +38,7 @@ const gridOptions = {};
 
 
 function RMImportListing(props) {
-  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation } = props;
+  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility } = props;
 
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
@@ -217,7 +217,7 @@ function RMImportListing(props) {
     }
     return (
       <>
-        <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />
+        {ViewRMAccessibility && <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
         {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
         {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
