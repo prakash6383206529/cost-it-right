@@ -1252,7 +1252,7 @@ class AddMachineRate extends Component {
                             validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : [])}
                             className="multiselect-with-border"
                             valueDescription={this.state.selectedTechnology}
-                            disabled={isViewFlag ? true : isViewMode}
+                            disabled={isViewFlag || isEditFlag ? true : isViewMode}
                           //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                           />
                         </Col>
