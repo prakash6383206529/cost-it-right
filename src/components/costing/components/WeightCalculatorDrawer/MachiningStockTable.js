@@ -227,7 +227,7 @@ function MachiningStockTable(props) {
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-  console.log(Description,'Description');
+  
     setDisableMachineType(false)
     if(Object.keys(errors).length>0||'finishedWeight' in hotcoldErrors >0){
       return false

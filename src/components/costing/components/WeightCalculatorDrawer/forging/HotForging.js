@@ -170,13 +170,13 @@ function HotForging(props) {
    */
 
   const calculateInputLength = () =>{
-    console.log('lostWeight: ', lostWeight);
+    
     const BilletDiameter = getValues('BilletDiameter')
-    console.log('BilletDiameter: ', BilletDiameter);
+    
     const forgedWeight = forgeWeightValue
-    console.log('forgeWeightValue: ', forgeWeightValue);
+    
     const InputLength = (forgedWeight + lostWeight)/(0.7857 * Math.pow(BilletDiameter, 2) * rmRowData.Density/1000000)
-    console.log('InputLength: ', InputLength);
+    
     let obj = dataSend
     obj.InputLength = InputLength
     setDataSend(obj)
@@ -416,7 +416,7 @@ const calculateNetRmCostComponent = () =>{
   }
 
   const setLoss = (value)=>{
-    console.log('value in SET LOSS: ', value);
+    
     
     setLostWeight(value)
   }
@@ -471,8 +471,8 @@ const calculateNetRmCostComponent = () =>{
     },
   ]
   const handleFinishWeight = (value)=>{
-    console.log("finnish");
-    console.log(value.target.value,'value');
+    
+    
     if(value.target.value===0 || value.target.value===''){
       setDisableAll(true)
     }
@@ -481,7 +481,7 @@ const calculateNetRmCostComponent = () =>{
     }
   }
 
-console.log(errors,'errors');
+
   return (
     <Fragment>
       <Row>
