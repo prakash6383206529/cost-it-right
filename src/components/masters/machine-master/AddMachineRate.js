@@ -72,12 +72,12 @@ class AddMachineRate extends Component {
 
       processName: [],
       isOpenProcessDrawer: false,
-      isFinalUserEdit: false,
 
       processGrid: [],
       processGridEditIndex: '',
       isEditIndex: false,
       machineRate: '',
+      IsFinancialDataChanged: true,
 
       remarks: '',
       files: [],
@@ -269,7 +269,7 @@ class AddMachineRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
+              IsFinancialDataChanged: false,
               // isLoader: false,
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
@@ -602,6 +602,8 @@ class AddMachineRate extends Component {
       MachineRate: MachineRate,
     })
 
+
+    this.setState({ IsFinancialDataChanged: true })
     this.setState({
       processGrid: tempArray,
       processName: [],
@@ -641,6 +643,7 @@ class AddMachineRate extends Component {
 
     let tempData = processGrid[processGridEditIndex];
     if (MachineRate !== tempData.MachineRate || UOM.value !== tempData.UnitOfMeasurementId || processName.value !== tempData.ProcessId) {
+      this.setState({ IsFinancialDataChanged: true })
       this.setState({ DropdownChange: false })
     }
     tempData = {
@@ -869,7 +872,7 @@ class AddMachineRate extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements, isDateChange } = this.state;
+      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
 
     if (vendorName.length <= 0) {
@@ -896,7 +899,10 @@ class AddMachineRate extends Component {
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-    if (this.state.isEditFlag && this.state.isFinalApprovar) {
+
+
+    // if (this.state.isEditFlag && this.state.isFinalApprovar) {
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(MACHINE_MASTER_ID) !== true)) {
 
 
       // if (DropdownChange) {
@@ -919,6 +925,7 @@ class AddMachineRate extends Component {
         // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
         let requestData = {
           MachineId: MachineID,
+          IsFinancialDataChanged: isDateChange ? true : false,
           IsVendor: IsVendor,
           IsDetailedEntry: false,
           VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -937,6 +944,24 @@ class AddMachineRate extends Component {
           IsForcefulUpdated: true,
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         }
+
+
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange) {
+            this.setState({ showPopup: true, updatedObj: requestData })
+            return false
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
+        }
+
+
         if (isEditFlag) {
           if (DropdownChange && uploadAttachements) {
             this.cancel();
@@ -961,6 +986,7 @@ class AddMachineRate extends Component {
       this.setState({ setDisable: true })
       const formData = {
         IsSendForApproval: this.state.IsSendForApproval,
+        IsFinancialDataChanged: isDateChange ? true : false,
         MachineId: MachineID,
         IsVendor: IsVendor,
         VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -997,16 +1023,33 @@ class AddMachineRate extends Component {
 
 
 
-
       if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
-        if (isDateChange) {
-          this.setState({ approveDrawer: true, approvalObj: finalObj })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange) {
+            this.setState({ approveDrawer: true, approvalObj: finalObj })
+            return false
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
         }
-        else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
+
+
+        if (isEditFlag) {
+          if (DropdownChange && uploadAttachements) {
+            this.cancel();
+            return false
+          }
+          this.setState({ setDisable: true })
+          this.setState({ approveDrawer: true, approvalObj: finalObj })
         }
+
 
 
       } else {
@@ -1366,7 +1409,7 @@ class AddMachineRate extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || this.state.isFinalUserEdit}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged}
                               />
                             </div>
                           </div>
