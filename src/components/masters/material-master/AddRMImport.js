@@ -26,7 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, SHEET_METAL ,EMPTY_GUID} from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, SHEET_METAL, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -326,6 +326,7 @@ class AddRMImport extends Component {
   * @description called
   */
   handleCurrency = (newValue) => {
+
     if (newValue && newValue !== '') {
       if (newValue.label === INR) {
         this.setState({ currencyValue: 1, showCurrency: false, })
@@ -949,6 +950,7 @@ class AddRMImport extends Component {
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue } = this.state;
 
+
     const { initialConfiguration } = this.props;
     this.setState({ setDisable: true, disablePopup: false })
 
@@ -987,7 +989,7 @@ class AddRMImport extends Component {
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
-        ScrapRateInINR: currency === INR ? values.ScrapRate : (values.ScrapRate * currencyValue),
+        ScrapRateInINR: currency === INR ? (this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) : ((this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) * currencyValue),
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
@@ -1064,7 +1066,7 @@ class AddRMImport extends Component {
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate, //THIS KEY FOR JALI SCRAP COST AND SCRAP COST
-        ScrapRateInINR: currency === INR ? values.ScrapRate : (values.ScrapRate * currencyValue),
+        ScrapRateInINR: currency === INR ? (this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) : ((this.state.showExtraCost ? values.JaliScrapCost : values.ScrapRate) * currencyValue),
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
@@ -1359,7 +1361,7 @@ class AddRMImport extends Component {
                                 mendatory={true}
                                 disabled={isViewFlag}
                                 className="multiselect-with-border"
-                                
+
                               // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>)
@@ -1728,7 +1730,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag}
                               maxLength="512"
                               rows="10"
-                             
+
 
                             />
                           </Col>
