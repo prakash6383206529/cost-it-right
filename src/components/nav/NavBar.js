@@ -753,6 +753,7 @@ class SideBar extends Component {
             </div>
           )}
         </div>
+        
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
         }

@@ -42,6 +42,7 @@ import ViewAssembly from './ViewAssembly';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import imgGreencross from '../../../assests/images/greenCross.png';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
+
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 
 const gridOptions = {};

@@ -42,7 +42,10 @@ function ApprovalSummary(props) {
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
+   
     approvalSummaryHandler()
+
+
   }, [])
 
   const approvalSummaryHandler = () => {
