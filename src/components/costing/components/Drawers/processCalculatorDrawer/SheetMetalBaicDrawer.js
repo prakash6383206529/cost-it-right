@@ -158,7 +158,7 @@ function SheetMetalBaicDrawer(props) {
     const efficiency = checkForNull(getValues('Efficiency'))
     const quantityValues = checkForNull(getValues('Quantity'))
 
-    const quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(quantityState)) : Number(checkForNull(quantityValues))   // TIME then state -> nito usewatch
+    const quantity = props.calculatorData.UOMType === TIME ? Number(checkForNull(quantityState)) : Number(checkForNull(quantityValues))
     const cavity = checkForNull(getValues('Cavity'))
     let cost
 
