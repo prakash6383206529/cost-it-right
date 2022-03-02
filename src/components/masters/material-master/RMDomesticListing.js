@@ -37,7 +37,8 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply,ViewRMAccessibility } = props;
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
+
 
 
 
@@ -58,7 +59,8 @@ function RMDomesticListing(props) {
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
-
+    const [editTable, setEditTable] = useState(EditAccessibility)
+    const [viewAction, setViewAction] = useState(ViewRMAccessibility)
 
 
 
@@ -211,21 +213,21 @@ function RMDomesticListing(props) {
 
 
         if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
-            if (EditAccessibility && !rowData.IsRMAssociated) {
+            if (editTable && !rowData.IsRMAssociated) {
                 isEditbale = true
             } else {
                 isEditbale = false
             }
         } else {
-            isEditbale = EditAccessibility
+            isEditbale = editTable
         }
 
         return (
             <>
-            
-              
-{ViewRMAccessibility && <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData , false)} />}
+
+
+                {viewAction && < button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+                {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
                 {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )

@@ -262,6 +262,7 @@ function RowMaterialMaster(props) {
                                         formToggle={displayDomesticForm}
                                         getDetails={getDetails}
                                         toggle={toggle}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
@@ -277,6 +278,7 @@ function RowMaterialMaster(props) {
                                         formToggle={displayImportForm}
                                         getDetails={getDetailsImport}
                                         toggle={toggle}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
