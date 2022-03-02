@@ -6248,6 +6248,14 @@ body{
          padding-left: 10px;
          padding-right: 10px;
       }
+      @media  screen and (max-width:$miniDesktop) {
+        th:first-child {
+          min-width: 125px;
+        }
+        .crud-label {
+          min-width: 84px;
+        }
+      }
     }
   }
 }
@@ -7075,6 +7083,7 @@ left: 17rem;
     }
   }
 .calculator-drawer {
+  z-index: 1301 !important;
   .drawer-wrapper {
     width: 1100px;
     table {
