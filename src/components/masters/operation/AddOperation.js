@@ -617,7 +617,7 @@ class AddOperation extends Component {
         if (isDateChange) {
           this.setState({ showPopup: true, updatedObj: updateData })
           this.setState({ setDisable: true })
-          return
+          return false
 
         } else {
 
@@ -636,7 +636,7 @@ class AddOperation extends Component {
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
         this.setState({ setDisable: true })
-        return
+        return false
       }
 
 
@@ -684,7 +684,7 @@ class AddOperation extends Component {
           if (isDateChange) {
             this.setState({ approveDrawer: true, approvalObj: formData })
             this.setState({ setDisable: true })
-            return
+            return false
 
           } else {
 

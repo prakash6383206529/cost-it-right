@@ -744,7 +744,7 @@ class AddBOPImport extends Component {
 
         if (isDateChange) {
           this.setState({ showPopup: true, updatedObj: requestData })
-          return
+          return false
 
         } else {
 
@@ -758,7 +758,7 @@ class AddBOPImport extends Component {
 
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
-        return
+        return false
       }
 
 
@@ -809,7 +809,7 @@ class AddBOPImport extends Component {
 
           if (isDateChange) {
             this.setState({ approveDrawer: true, approvalObj: formData })
-            return
+            return false
 
           } else {
 
@@ -838,7 +838,7 @@ class AddBOPImport extends Component {
 
         if (isEditFlag) {
           this.setState({ showPopup: true, updatedObj: formData })
-          return
+          return false
         }
 
 
