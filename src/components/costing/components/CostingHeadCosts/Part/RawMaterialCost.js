@@ -133,7 +133,7 @@ function RawMaterialCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
-
+      let tempArray=[]
       if (isMultipleRMAllow(costData.ETechnologyType)) {
         let rowArray = rowData && rowData.map(el => {
           return {
@@ -156,6 +156,7 @@ function RawMaterialCost(props) {
         })
 
         setGridData([...gridData, ...rowArray])
+        tempArray = [...gridData, ...rowArray]
         selectedIds([...gridData, ...rowArray])
       } else {
         let tempObj = {
@@ -176,9 +177,16 @@ function RawMaterialCost(props) {
           IsCutOffApplicable: rowData.IsCutOffApplicable,
         }
         setGridData([...gridData, tempObj])
+        tempArray= [...gridData, tempObj]
       }
       dispatch(gridDataAdded(true))
-
+      tempArray && tempArray.map((item,index)=>{
+        setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      })
     }
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
@@ -613,6 +621,7 @@ function RawMaterialCost(props) {
       }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
+
       setGridData(tempArr)
       setTimeout(() => {
 
@@ -647,6 +656,14 @@ function RawMaterialCost(props) {
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
+    })
+
+ tempArr && tempArr.map((item,index)=>{
+      setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     })
     setGridData(tempArr)
 
