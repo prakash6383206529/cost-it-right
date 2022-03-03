@@ -154,7 +154,41 @@ function ViewRM(props) {
                   )}
                 </tbody>
               </Table>
-            </Col>
+            </Col> 
+            
+            {viewCostingData[props.index].isApplyMasterBatch &&
+              <>
+                < Col md="12">
+                  <div className="left-border mt-4 mb-3">Master Batch</div>
+                </Col>
+                <Col>
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th>{`MB Name`}</th>
+                        <th>{`MB Rate`}</th>
+                        <th>{`Percentage`}</th>
+                        <th>{`Effective MB Rate`}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr key={index}>
+                        <td>{viewCostingData[props.index].masterBatchRMName}</td>
+                        <td>{checkForDecimalAndNull(viewCostingData[props.index].masterBatchRMPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(viewCostingData[props.index].masterBatchPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(viewCostingData[props.index].masterBatchTotal, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                      </tr>
+                      {viewRM.length === 0 && (
+                        <tr>
+                          <td colSpan={13}>
+                            <NoContentFound title={EMPTY_DATA} />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </Col>
+              </>}
 
             {weightCalculatorDrawer && (
               <WeightCalculator
