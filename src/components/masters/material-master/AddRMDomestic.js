@@ -1462,6 +1462,7 @@ class AddRMDomestic extends Component {
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
                                 mendatory={true}
+                                disabled={isViewFlag}
                                 className="multiselect-with-border"
                               />
                             </Col>)
