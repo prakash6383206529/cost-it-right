@@ -40,6 +40,7 @@ function TabDiscountOther(props) {
   const [GoToNext, setGoToNext] = useState(false);
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
+  const [isDisable, setIsDisable] = useState(false)
 
 
   const dispatch = useDispatch()
@@ -57,6 +58,7 @@ function TabDiscountOther(props) {
   const [discountObj, setDiscountObj] = useState({})
   const [otherCostApplicability, setOtherCostApplicability] = useState([])
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
+  const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const costingHead = useSelector(state => state.comman.costingHead)
 
   useEffect(() => {
@@ -190,6 +192,7 @@ function TabDiscountOther(props) {
             
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
+            setNetPoPriceCurrencyState(OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
             setValue('SANumber', OtherCostDetails.SANumber !== null ? OtherCostDetails.SANumber : '')
@@ -257,6 +260,7 @@ function TabDiscountOther(props) {
 
       if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+        setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
       }
 
 
@@ -501,6 +505,7 @@ function TabDiscountOther(props) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
           setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))
@@ -517,6 +522,7 @@ function TabDiscountOther(props) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
           setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))
@@ -568,6 +574,17 @@ function TabDiscountOther(props) {
     return { url: 'https://httpbin.org/post', }
   }
 
+  /**
+ * @method setDisableFalseFunction
+ * @description setDisableFalseFunction
+ */
+  const setDisableFalseFunction = () => {
+    const loop = Number(dropzone.current.files.length) - Number(files.length)
+    if (Number(loop) === 1) {
+      setIsDisable(false)
+    }
+  }
+
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
 
@@ -578,10 +595,12 @@ function TabDiscountOther(props) {
       setIsOpen(!IsOpen)
     }
 
+    setIsDisable(true)
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
       dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunction()
         if ('response' in res) {
           status = res && res?.response?.status
           dropzone.current.files.pop()
@@ -600,11 +619,13 @@ function TabDiscountOther(props) {
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      setDisableFalseFunction()
       dropzone.current.files.pop()
       Toaster.warning("File size greater than 20 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunction()
       dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -679,22 +700,22 @@ function TabDiscountOther(props) {
         "NetOtherCost": DiscountCostData.AnyOtherCost,
         "OtherCostDetails": {
           "OtherCostDetailId": '',
-          "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
+          "HundiOrDiscountPercentage": getValues('HundiOrDiscountPercentage'),
           "HundiOrDiscountValue": DiscountCostData.HundiOrDiscountValue,
           "AnyOtherCost": DiscountCostData.AnyOtherCost,
-          "TotalOtherCost": values.TotalOtherCost,
+          "TotalOtherCost": DiscountCostData.AnyOtherCost,
           "TotalDiscount": DiscountCostData.HundiOrDiscountValue,
           "IsChangeCurrency": IsCurrencyChange,
           "NetPOPriceINR": netPOPrice,
-          "NetPOPriceOtherCurrency": values.NetPOPriceOtherCurrency,
+          "NetPOPriceOtherCurrency": netPoPriceCurrencyState,
           "CurrencyId": currency.value,
           "Currency": currency.label,
-          "Remark": values.Remarks,
-          "OtherCostDescription": values.OtherCostDescription,
+          "Remark": getValues('Remarks'),
+          "OtherCostDescription": getValues('OtherCostDescription'),
           "CurrencyExchangeRate": CurrencyExchangeRate,
           "EffectiveDate": effectiveDate,
-          "OtherCostPercentage": values.PercentageOtherCost,
-          "PercentageOtherCost": values.PercentageOtherCost,
+          "OtherCostPercentage": getValues('PercentageOtherCost'),
+          "PercentageOtherCost": getValues('PercentageOtherCost'),
           "OtherCostType": otherCostType.value,
           "SANumber": values.SANumber,
           "LineNumber": values.LineNumber,
@@ -1249,6 +1270,7 @@ function TabDiscountOther(props) {
                         type="button"
                         className="submit-button mr5 save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                        disabled={isDisable}
                       >
                         <div className={"save-icon"}></div>
                         {"Save"}
@@ -1258,6 +1280,7 @@ function TabDiscountOther(props) {
                         type="button"
                         className="submit-button save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
+                        disabled={isDisable}
                       >
                         {"Next"}
                         <div className={"next-icon"}></div>
