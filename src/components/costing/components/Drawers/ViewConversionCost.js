@@ -231,7 +231,6 @@ function ViewConversionCost(props) {
                                     <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                                     <td>{item.UOM ? item.UOM : '-'}</td>
                                     <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                                    {console.log('item?.ProductionPerHour: ', item?.ProductionPerHour)}
                                     <td>{item.MHR ? item.MHR : '-'}</td>
                                     <td><button
                                       className="CalculatorIcon cr-cl-icon mr-auto ml-0"
