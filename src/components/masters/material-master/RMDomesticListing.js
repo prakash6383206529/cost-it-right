@@ -217,7 +217,7 @@ function RMDomesticListing(props) {
                 isEditbale = false
             }
         } else {
-            isEditbale = editTable
+            isEditbale = editTable                            //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
         }
 
         return (
@@ -226,7 +226,7 @@ function RMDomesticListing(props) {
 
                 {viewAction && < button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {isEditbale && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
