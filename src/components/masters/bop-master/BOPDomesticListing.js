@@ -172,7 +172,7 @@ class BOPDomesticListing extends Component {
             } else {
                 isEditbale = false
             }
-        } else {
+        } else {                                               //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
             isEditbale = EditAccessibility
         }
 
@@ -180,7 +180,7 @@ class BOPDomesticListing extends Component {
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isEditbale && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };

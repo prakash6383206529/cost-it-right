@@ -176,7 +176,7 @@ class BOPImportListing extends Component {
             } else {
                 isEditable = false
             }
-        } else {
+        } else {                                             //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
             isEditable = EditAccessibility
         }
 
@@ -186,7 +186,7 @@ class BOPImportListing extends Component {
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isEditable && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
