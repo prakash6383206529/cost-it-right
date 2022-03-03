@@ -221,6 +221,7 @@ class BOPImportListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
 
         let isEditable = false
+        let isDeleteButton = false
 
         if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
             if (EditAccessibility && !rowData.IsBOPAssociated) {
@@ -228,9 +229,20 @@ class BOPImportListing extends Component {
             } else {
                 isEditable = false
             }
-        } else {                                             //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
+        } else {
             isEditable = EditAccessibility
         }
+
+        if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
+            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+        } else {
+            isDeleteButton = DeleteAccessibility
+        }
+
 
 
 
@@ -238,7 +250,7 @@ class BOPImportListing extends Component {
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isEditable && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };

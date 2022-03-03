@@ -263,6 +263,7 @@ class OperationListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
 
         let isEditable = false
+        let isDeleteButton = false
 
         if (CheckApprovalApplicableMaster(OPERATIONS_ID)) {
             if (EditAccessibility && !rowData.IsOperationAssociated) {
@@ -271,14 +272,26 @@ class OperationListing extends Component {
                 isEditable = false
             }
         } else {
-            isEditable = EditAccessibility               //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
+            isEditable = EditAccessibility
         }
+
+
+        if (CheckApprovalApplicableMaster(OPERATIONS_ID)) {
+            if (DeleteAccessibility && !rowData.IsOperationAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+        } else {
+            isDeleteButton = DeleteAccessibility
+        }
+
 
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isEditable && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
