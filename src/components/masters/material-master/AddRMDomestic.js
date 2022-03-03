@@ -74,6 +74,7 @@ class AddRMDomestic extends Component {
 
       UOM: [],
       effectiveDate: '',
+      oldDate: '',
       minEffectiveDate: '',
       remarks: '',
 
@@ -509,6 +510,7 @@ class AddRMDomestic extends Component {
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
                   effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                  oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                   remarks: Data.Remark,
                   files: Data.FileList,
                   singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
@@ -1010,7 +1012,7 @@ class AddRMDomestic extends Component {
     //  
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, IsFinancialDataChanged } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, IsFinancialDataChanged } = this.state
     const { initialConfiguration, fieldsObj } = this.props
     this.setState({ setDisable: true, disablePopup: false })
     if (vendorName.length <= 0) {
@@ -1077,9 +1079,10 @@ class AddRMDomestic extends Component {
       }
 
 
+
       if (IsFinancialDataChanged) {
 
-        if (isDateChange) {
+        if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: requestData })
           return
 
@@ -1156,7 +1159,7 @@ class AddRMDomestic extends Component {
 
         if (IsFinancialDataChanged) {
 
-          if (isDateChange) {
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
             return
 
