@@ -197,15 +197,13 @@ class Level extends Component {
 
       let arrayOfTechnology = []
       const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
-      let tempArr = myArray && myArray.map((item) => {
-        return item.substring(0, item.indexOf('='))
-      })
-      for (let i = 1; i <= tempArr.length; i++) {
+      myArray && myArray.map((item) => {
         let tempObj = {}
-        tempObj.label = tempArr[i - 1]
-        tempObj.value = i
+        let temp = item.split('=')
+        tempObj.label = temp[0]
+        tempObj.value = temp[1]
         arrayOfTechnology.push(tempObj)
-      }
+      })
       return arrayOfTechnology
     }
 
