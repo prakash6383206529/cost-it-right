@@ -17,6 +17,7 @@ function SheetMetalBaicDrawer(props) {
 
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  console.log('WeightCalculatorRequest: fffff', WeightCalculatorRequest);
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const defaultValues = {

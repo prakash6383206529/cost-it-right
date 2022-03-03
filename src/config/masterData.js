@@ -472,7 +472,6 @@ export const ZBCOperation = [
     { label: 'OperationCode', value: 'OperationCode', },
     { label: 'Description', value: 'Description', },
     { label: 'PlantCode', value: 'PlantCode', }, //*
-    { label: 'Plant', value: 'Plant', }, //*
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
@@ -487,7 +486,6 @@ export const ZBCOperationTempData = [
         'OperationCode': 'Crushing123',
         'Description': 'Description Text',
         'PlantCode': 'Systematix01',
-        'Plant': 'Systematix01 1',
         'UOM': 'Litre',
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
