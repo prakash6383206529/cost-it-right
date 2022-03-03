@@ -166,21 +166,34 @@ class BOPDomesticListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
 
         let isEditbale = false
+        let isDeleteButton = false
         if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
             if (EditAccessibility && !rowData.IsBOPAssociated) {
                 isEditbale = true
             } else {
                 isEditbale = false
             }
-        } else {                                               //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
+        } else {
             isEditbale = EditAccessibility
+        }
+
+
+
+        if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
+            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+        } else {
+            isDeleteButton = DeleteAccessibility
         }
 
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isEditbale && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isDeleteButton && <button className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };

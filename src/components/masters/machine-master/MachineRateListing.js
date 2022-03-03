@@ -175,6 +175,7 @@ class MachineRateListing extends Component {
 
 
         let isEditable = false
+        let isDeleteButton = false
 
         if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID)) {
             if (EditAccessibility && !rowData.IsMachineAssociated) {
@@ -184,14 +185,25 @@ class MachineRateListing extends Component {
             }
         } else {
             isEditable = EditAccessibility
-        }                                          //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
+        }
+
+
+        if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID)) {
+            if (DeleteAccessibility && !rowData.IsMachineAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+        } else {
+            isDeleteButton = DeleteAccessibility
+        }
 
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing mr-2" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
-                {isEditable && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };

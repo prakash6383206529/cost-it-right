@@ -205,21 +205,35 @@ function RMImportListing(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     let isEditbale = false
+    let isDeleteButton = false
 
     if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
       if (EditAccessibility && !rowData.IsRMAssociated) {
         isEditbale = true
       } else {
-        isEditbale = false                                //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
+        isEditbale = false
       }
     } else {
       isEditbale = EditAccessibility
     }
+
+    if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+      if (DeleteAccessibility && !rowData.IsRMAssociated) {
+        isDeleteButton = true
+      } else {
+        isDeleteButton = false
+      }
+    } else {
+      isDeleteButton = DeleteAccessibility
+    }
+
+
+
     return (
       <>
         {ViewRMAccessibility && <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
         {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-        {isEditbale && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+        {isDeleteButton && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
   };
