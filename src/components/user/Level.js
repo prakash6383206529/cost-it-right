@@ -48,6 +48,7 @@ class Level extends Component {
     this.getLevelMappingDetail()
     this.props.getSimulationTechnologySelectList(() => { })
     this.props.getMastersSelectList(() => { })
+
   }
 
   /**
@@ -190,6 +191,22 @@ class Level extends Component {
         temp.push({ label: item.Text, value: item.Value })
       });
       return temp;
+    }
+
+    if (label === 'masterTechnology') {
+
+      let arrayOfTechnology = []
+      const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
+      let tempArr = myArray && myArray.map((item) => {
+        return item.substring(0, item.indexOf('='))
+      })
+      for (let i = 1; i <= tempArr.length; i++) {
+        let tempObj = {}
+        tempObj.label = tempArr[i - 1]
+        tempObj.value = i
+        arrayOfTechnology.push(tempObj)
+      }
+      return arrayOfTechnology
     }
 
   }
@@ -597,7 +614,7 @@ class Level extends Component {
                             label="Technology/Heads"
                             className="w-100"
                             component={searchableSelect}
-                            options={this.searchableSelectType('technology')}
+                            options={this.searchableSelectType('masterTechnology')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={(this.state.technology == null || this.state.technology.length === 0) ? [required] : []}
                             placeholder={"Select"}
