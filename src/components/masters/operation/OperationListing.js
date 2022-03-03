@@ -271,14 +271,14 @@ class OperationListing extends Component {
                 isEditable = false
             }
         } else {
-            isEditable = EditAccessibility
+            isEditable = EditAccessibility               //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
         }
 
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isEditable && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -534,7 +534,7 @@ class OperationListing extends Component {
             return this.state.tableData
         }
     }
-  
+
     /**
     * @method render
     * @description Renders the component

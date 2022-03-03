@@ -211,7 +211,7 @@ function RMImportListing(props) {
       if (EditAccessibility && !rowData.IsRMAssociated) {
         isEditbale = true
       } else {
-        isEditbale = false
+        isEditbale = false                                //EDIT AND DELETE BUTTON WILL HAVE SAME CONDITION
       }
     } else {
       isEditbale = EditAccessibility
@@ -220,7 +220,7 @@ function RMImportListing(props) {
       <>
         {ViewRMAccessibility && <button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
         {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-        {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+        {isEditbale && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
   };
