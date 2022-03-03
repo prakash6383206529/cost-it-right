@@ -68,6 +68,7 @@ class AddBOPImport extends Component {
       isFinalApprovar: false,
       approveDrawer: false,
       IsFinancialDataChanged: true,
+      oldDate: '',
 
       UOM: [],
       isOpenUOM: false,
@@ -244,6 +245,7 @@ class AddBOPImport extends Component {
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Display, value: uomObject.Value } : [],
             }, () => this.setState({ isLoader: false }))
@@ -684,7 +686,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, BOPCategory, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -742,7 +744,7 @@ class AddBOPImport extends Component {
 
       if (IsFinancialDataChanged) {
 
-        if (isDateChange) {
+        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: requestData })
           return false
 
@@ -807,7 +809,7 @@ class AddBOPImport extends Component {
 
         if (IsFinancialDataChanged) {
 
-          if (isDateChange) {
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
             return false
 
