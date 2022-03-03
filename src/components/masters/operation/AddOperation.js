@@ -43,6 +43,7 @@ class AddOperation extends Component {
 
       vendorName: [],
       selectedVendorPlants: [],
+      oldDate: '',
       UOM: [],
       isViewMode: this.props?.data?.isViewMode ? true : false,
       isDateChange: false,
@@ -380,6 +381,7 @@ class AddOperation extends Component {
               files: Data.Attachements,
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
               effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               dataToChange: Data
             })
@@ -449,6 +451,7 @@ class AddOperation extends Component {
       this.setState({ files: tempArr })
     }
 
+
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
@@ -460,6 +463,8 @@ class AddOperation extends Component {
         this.setState({ files: files })
       })
     }
+
+
 
     if (status === 'rejected_file_type') {
       this.setDisableFalseFunction()
@@ -556,7 +561,7 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
     const { initialConfiguration, filedObj } = this.props;
     const userDetail = userDetails()
 
@@ -616,7 +621,7 @@ class AddOperation extends Component {
 
       if (IsFinancialDataChanged) {
 
-        if (isDateChange) {
+        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: updateData })
           this.setState({ setDisable: true })
           return false
@@ -683,7 +688,7 @@ class AddOperation extends Component {
 
         if (IsFinancialDataChanged) {
 
-          if (isDateChange) {
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
             this.setState({ setDisable: true })
             return false

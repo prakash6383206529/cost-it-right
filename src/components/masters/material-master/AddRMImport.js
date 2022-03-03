@@ -69,6 +69,7 @@ class AddRMImport extends Component {
 
       HasDifferentSource: false,
       sourceLocation: [],
+      oldDate: '',
 
       UOM: [],
       currency: [],
@@ -516,6 +517,7 @@ class AddRMImport extends Component {
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
                   effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                  oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,
@@ -980,7 +982,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
 
 
     const { initialConfiguration } = this.props;
@@ -1053,7 +1055,7 @@ class AddRMImport extends Component {
 
       if (IsFinancialDataChanged) {
 
-        if (isDateChange) {
+        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
           this.setState({ showPopup: true, updatedObj: requestData })
           return
 
@@ -1149,7 +1151,7 @@ class AddRMImport extends Component {
 
         if (IsFinancialDataChanged) {
 
-          if (isDateChange) {
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
             return
 
