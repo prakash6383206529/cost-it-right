@@ -43,6 +43,7 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import imgGreencross from '../../../assests/images/greenCross.png';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
+import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -732,6 +733,7 @@ function SimulationApprovalSummary(props) {
         <>
             {showListing === false &&
                 <>
+                <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
 
@@ -1132,7 +1134,7 @@ function SimulationApprovalSummary(props) {
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
-
+                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA}/></div> :""}
                                 </div>
                             }
                             {showViewAssemblyDrawer &&

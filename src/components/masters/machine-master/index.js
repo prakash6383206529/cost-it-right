@@ -7,10 +7,11 @@ import AddMachineRate from './AddMachineRate';
 import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
 import { checkPermission } from '../../../helper/util';
-import { MACHINE, MASTERS, } from '../../../config/constants';
+import { MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
 import MachineApproval from './MachineApproval';
 import ScrollToTop from '../../common/ScrollToTop';
 import { getConfigurationKey } from '../../../helper';
+import { CheckApprovalApplicableMaster } from "../../../helper";
 
 class MachineMaster extends Component {
     constructor(props) {
@@ -202,18 +203,18 @@ class MachineMaster extends Component {
                                             Manage Process
                                         </NavLink>
                                     </NavItem>
-                                    {/* <NavItem>
+                                    {CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && <NavItem>
                                         <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                                             Approval Status
                                         </NavLink>
-                                    </NavItem> */}
+                                    </NavItem>}
                                 </Nav>
 
                                 <TabContent activeTab={this.state.activeTab}>
 
 
 
-                                    {this.state.activeTab == 1 &&
+                                    {Number(this.state.activeTab) === 1 &&
                                         <TabPane tabId="1">
                                             <MachineRateListing
                                                 displayForm={this.displayForm}
@@ -228,7 +229,7 @@ class MachineMaster extends Component {
                                             />
                                         </TabPane>}
 
-                                    {this.state.activeTab == 2 &&
+                                    {Number(this.state.activeTab) === 2 &&
                                         <TabPane tabId="2">
                                             <ProcessListing
                                                 AddAccessibility={this.state.AddAccessibility}
@@ -237,7 +238,7 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
                                         </TabPane>}
-                                    {/* {this.state.activeTab == 3 && getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+                                    {Number(this.state.activeTab) === 3 &&
                                         <TabPane tabId="3">
                                             <MachineApproval
                                                 AddAccessibility={this.state.AddAccessibility}
@@ -247,11 +248,11 @@ class MachineMaster extends Component {
                                             />
                                         </TabPane>} */}
 
-                                </TabContent>
-                            </div>
-                        </Col>
-                    </Row>
-                </div>
+                                </TabContent >
+                            </div >
+                        </Col >
+                    </Row >
+                </div >
             </>
         );
     }

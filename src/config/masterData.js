@@ -472,8 +472,8 @@ export const ZBCOperation = [
     { label: 'OperationCode', value: 'OperationCode', },
     { label: 'Description', value: 'Description', },
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'Plant', value: 'Plant', }, //*
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'Rate', value: 'Rate', }, //*
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
@@ -487,11 +487,11 @@ export const ZBCOperationTempData = [
         'OperationCode': 'Crushing123',
         'Description': 'Description Text',
         'PlantCode': 'Systematix01',
+        'Plant': 'Systematix01 1',
         'UOM': 'Litre',
         'Rate': 50,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "IsSurfaceTreatmentOperation": "Yes or No",
-        'LabourRate': 5,
         'Remark': 'Remark Text',
     }
 ]
@@ -1777,6 +1777,8 @@ export const ELECTRONICS = 17
 export const HARDWARE = 18
 export const RIVET = 19
 export const PLATING = 21
+export const DIE_CASTING = 23
+
 
 
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
@@ -2388,8 +2390,8 @@ export const SLOTCUTTING = 'Slot Cutting'
 export const CHAMFERINGMILLER = 'Chamfering Miller'
 export const ENDMILL = 'End Mill'
 
-export const getTechnology = [1, 8, 7, 2, 4, 20]
-export const technologyForDensity = [1, 7]
+export const getTechnology = [1, 8, 7, 2, 4, 20, 23, 6]
+export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['1', '2', '3', '6', '7', '9']
 

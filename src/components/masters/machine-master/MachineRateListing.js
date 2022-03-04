@@ -148,6 +148,8 @@ class MachineRateListing extends Component {
     }
     onPopupConfirm = () => {
         this.confirmDelete(this.state.deletedId);
+        this.setState({ showPopup: false })
+
     }
     closePopUp = () => {
         this.setState({ showPopup: false })

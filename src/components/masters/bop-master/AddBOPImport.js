@@ -61,13 +61,14 @@ class AddBOPImport extends Component {
       isOpenVendor: false,
       isVendorNameNotSelected: false,
       IsSendForApproval: false,
-      isFinalUserEdit: false,
-
       vendorName: [],
       selectedVendorPlants: [],
       approvalObj: {},
       minEffectiveDate: '',
       sourceLocation: [],
+      isFinalApprovar: false,
+      approveDrawer: false,
+      IsFinancialDataChanged: true,
 
       UOM: [],
       isOpenUOM: false,
@@ -175,7 +176,7 @@ class AddBOPImport extends Component {
 
 
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false })
+    this.setState({ approveDrawer: false, setDisable: false })
     if (type === 'submit') {
       //this.clearForm()
       this.cancel()
@@ -234,7 +235,7 @@ class AddBOPImport extends Component {
 
             this.setState({
               isEditFlag: true,
-              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
+              IsFinancialDataChanged: false,
               // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
@@ -490,6 +491,15 @@ class AddBOPImport extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+
+
+    if (this.state.isEditFlag && Number(checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))) {
+      this.setState({ IsFinancialDataChanged: false })
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
+
     this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
     this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
@@ -675,7 +685,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, BOPCategory, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
     if (vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -691,18 +701,18 @@ class AddBOPImport extends Component {
       return false;
     }
 
-    if (this.state.isFinalApprovar && isEditFlag) {
-
+    // if (this.state.isFinalApprovar && isEditFlag) {
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
       if (DataToChange.IsVendor) {
         if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
+          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
           this.cancel()
           return false;
         }
       }
       if (Boolean(DataToChange.IsVendor) === false) {
-        if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && uploadAttachements) {
+        if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
           this.cancel()
           return false;
         }
@@ -727,9 +737,29 @@ class AddBOPImport extends Component {
         NetLandedCostConversion: netLandedConverionCost,
         IsForcefulUpdated: true,
         NumberOfPieces: values.NumberOfPieces,
+        IsFinancialDataChanged: isDateChange ? true : false
       }
+
+
+      if (IsFinancialDataChanged) {
+
+        if (isDateChange) {
+          this.setState({ showPopup: true, updatedObj: requestData })
+          return false
+
+        } else {
+
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
+        }
+
+      }
+
+
       if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: requestData })
+        return false
       }
 
 
@@ -768,19 +798,48 @@ class AddBOPImport extends Component {
         VendorPlant: getConfigurationKey().IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
-        NetLandedCostConversion: netLandedConverionCost
+        NetLandedCostConversion: netLandedConverionCost,
+        IsFinancialDataChanged: isDateChange ? true : false
       }
 
 
 
       if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
-        if (isDateChange) {
-          this.setState({ approveDrawer: true, approvalObj: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange) {
+            this.setState({ approveDrawer: true, approvalObj: formData })
+            return false
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
         }
-        else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
+
+
+        if (DataToChange.IsVendor) {
+          if (DropdownChange && String(DataToChange.Source) === String(values.Source) && Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) &&
+            Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+            this.cancel()
+            return false;
+          }
+        }
+        if (Boolean(DataToChange.IsVendor) === false) {
+          if (Number(DataToChange.NumberOfPieces) === Number(values.NumberOfPieces) && Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+            this.cancel()
+            return false;
+          }
+        }
+
+
+        if (isEditFlag) {
+          this.setState({ showPopup: true, updatedObj: formData })
+          return false
         }
 
 
@@ -1032,23 +1091,27 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3" className='mb-4'>
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
-                            <AsyncSelect
-                              name="vendorName"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
-                              onChange={(e) => this.handleVendorName(e)}
-                              value={this.state.vendorName}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={isEditFlag ? true : false} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                            {!isEditFlag && (
+                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="fullinput-icon">
+                                <AsyncSelect
+                                  name="vendorName"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={promiseOptions}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                  isDisabled={isEditFlag ? true : false} />
+                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              </div>
+                              {!isEditFlag && (
                                 <div
                                   onClick={this.vendorToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
                               )}
+                            </div>
                           </Col>
                           {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                             <Col md="3">
@@ -1148,7 +1211,7 @@ class AddBOPImport extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || this.state.isFinalUserEdit}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged}
                               //minDate={moment()}
                               />
                             </div>

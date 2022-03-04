@@ -100,7 +100,12 @@ function HotForging(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+  const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
 
+
+  useEffect(() => {
+  
+  }, [forgingCalculatorMachiningStockSectionValue])
   const fieldValues = useWatch({
     control,
     name: ['finishedWeight', 'BilletDiameter' , 'BilletLength' , 'ScrapRecoveryPercentage'],
@@ -108,65 +113,74 @@ function HotForging(props) {
 
   const dispatch = useDispatch()
   const [inputWeightValue, setInputWeightValue] = useState(0)
-  const [forgeWeightValue, setForgeWeightValue] = useState(0)
+  const [forgeWeightValue, setForgeWeightValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight ? WeightCalculatorRequest.ForgedWeight : 0)
   const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
-  const [inputLengthValue, setInputLengthValue] = useState(0)
+  const [inputLengthValue, setInputLengthValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.InputLength ? WeightCalculatorRequest.InputLength : 0)
   const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
   const [tableV, setTableV] = useState(WeightCalculatorRequest && WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators !== null ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : [])
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
-  const [totalMachiningStock, setTotalMachiningStock] = useState('')
-  const [diableMachiningStock,setDiableMachiningStock]= useState(false)
-  
+  const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
+  const [disableAll , setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length>0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
 
   const costData = useContext(costingInfoContext)
   useEffect(() => {
     calculateForgeWeight()
-    calculateInputLength(lostWeight)
+    calculateInputLength()
     calculateNoOfPartsPerLength()
     calculateEndBitLength() 
     calculateEndBitLoss()
-    calculateTotalInputWeight(lostWeight)
+    calculateTotalInputWeight()
     calculateScrapWeight()
     calculateScrapCost()
     calculateNetRmCostComponent()
 
-  }, [fieldValues])
-    
+  }, [fieldValues,lostWeight])
+
   /**
    * @method calculateForgeWeight
    * @description calculate forge weight
    */
   const calculateForgeWeight = () => {
     
+    
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    if (!finishedWeight || !totalMachiningStock) {
-      return ''
-    }
+    
     const forgedWeight =  finishedWeight + totalMachiningStock
+    
 
-    setDataSend(prevState => ({ ...prevState, forgedWeight: forgedWeight }))
+    
+
+    let obj = dataSend
+    obj.forgedWeight = forgedWeight
+    setDataSend(obj)
     setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration.NoOfDecimalForInputOutput))
+
     setForgeWeightValue(forgedWeight)
+    
+
   }
 
  
 /**
    * @method calculateInputLength
-   * @description calculate Input Lengtht
+   * @description calculate Input Length
    */
 
-  const calculateInputLength = (netLossWeight = 0) =>{
+  const calculateInputLength = () =>{
     
-    const BilletDiameter = checkForDecimalAndNull(getValues('BilletDiameter'), getConfigurationKey().NoOfDecimalForInputOutput)
+    const BilletDiameter = getValues('BilletDiameter')
+    
     const forgedWeight = forgeWeightValue
-    console.log(forgeWeightValue,'forgeWeightValue');
-    const InputLength = (forgedWeight + netLossWeight)/(0.7857 * BilletDiameter * BilletDiameter * rmRowData.Density/1000000)
-    console.log('InputLength: ', InputLength);
-    setDataSend(prevState => ({ ...prevState, InputLength: InputLength })) 
-    setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
-    setLostWeight(netLossWeight)
-    setInputLengthValue(InputLength)
+    
+    const InputLength = (forgedWeight + lostWeight)/(0.7857 * Math.pow(BilletDiameter, 2) * rmRowData.Density/1000000)
+    
+    let obj = dataSend
+    obj.InputLength = InputLength
+    setDataSend(obj)
+     setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
+
+    //setInputLengthValue(InputLength)
   }
   /**
    * @method calculateNoOfPartsPerLength
@@ -175,11 +189,16 @@ function HotForging(props) {
 
   const calculateNoOfPartsPerLength = () =>{
     const BilletLength = checkForDecimalAndNull(getValues('BilletLength'), getConfigurationKey().NoOfDecimalForInputOutput)
-    const InputLength = checkForNull(getValues('InputLength'))
+    const InputLength = dataSend.InputLength
     const NoOfPartsPerLength = parseInt(BilletLength/InputLength)
     
-    setDataSend(prevState => ({ ...prevState, NoOfPartsPerLength: NoOfPartsPerLength }))
+    let obj = dataSend
+    obj.NoOfPartsPerLength = NoOfPartsPerLength
+      
+   setDataSend(obj)
+
     setValue('NoOfPartsPerLength', checkForDecimalAndNull(NoOfPartsPerLength, getConfigurationKey().NoOfDecimalForPrice))
+
   }
 
    /**
@@ -188,11 +207,14 @@ function HotForging(props) {
    */
     const calculateEndBitLength = () => {
       const BilletLength = checkForNull(getValues('BilletLength'))
-      const InputLength = checkForNull(getValues('InputLength'))
-      const NoOfPartsPerLength = checkForNull(getValues('NoOfPartsPerLength'))
+      const InputLength = dataSend.InputLength
+      const NoOfPartsPerLength = dataSend.NoOfPartsPerLength
       const EndBitLength = BilletLength-(InputLength*NoOfPartsPerLength)
-      setDataSend(prevState => ({ ...prevState, EndBitLength: EndBitLength }))
+      let obj = dataSend
+      obj.EndBitLength = EndBitLength
+      setDataSend(obj)
       setValue('EndBitLength', checkForDecimalAndNull(EndBitLength, getConfigurationKey().NoOfDecimalForPrice))
+
     }
 
     
@@ -202,11 +224,23 @@ function HotForging(props) {
    */
   const calculateEndBitLoss= () =>{
     const BilletDiameter = checkForNull(getValues('BilletDiameter'))
-    const EndBitLength = checkForNull(getValues('EndBitLength'))
-    const NoOfPartsPerLength = checkForNull(getValues('NoOfPartsPerLength'))
+ 
+    const EndBitLength = dataSend.EndBitLength
+  
+    const NoOfPartsPerLength = dataSend.NoOfPartsPerLength
+ 
     const EndBitLoss = (0.7857*BilletDiameter*BilletDiameter*EndBitLength*(rmRowData.Density/1000000)/NoOfPartsPerLength)
-    setDataSend(prevState => ({ ...prevState, EndBitLoss: EndBitLoss }))
-    setValue('EndBitLoss', checkForDecimalAndNull(EndBitLoss, getConfigurationKey().NoOfDecimalForPrice))
+  
+ 
+    let obj = dataSend
+    obj.EndBitLoss = EndBitLoss
+  
+      
+      setDataSend(obj)
+   
+      
+ setValue('EndBitLoss', checkForDecimalAndNull(EndBitLoss, getConfigurationKey().NoOfDecimalForPrice))
+
   }
 
    /**
@@ -214,14 +248,21 @@ function HotForging(props) {
    * @description Calculate Total Input Weight
    */
 
-    const calculateTotalInputWeight = (netLossWeight = 0) => {
+    const calculateTotalInputWeight = () => {
       
-      const forgedWeight = checkForDecimalAndNull(getValues('forgedWeight'))     
-      const EndBitLoss = checkForNull(getValues('EndBitLoss'))     
-      const TotalInputWeight = forgedWeight + netLossWeight + EndBitLoss
-      setDataSend(prevState => ({ ...prevState, TotalInputWeight: TotalInputWeight }))
-      setValue('TotalInputWeight', checkForDecimalAndNull(TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput))
-      setLostWeight(netLossWeight)
+      
+      const forgedWeight = forgeWeightValue  
+      
+      const EndBitLoss =  dataSend.EndBitLoss  
+      const TotalInputWeight = forgedWeight + lostWeight + EndBitLoss
+      
+    let obj = dataSend
+    obj.TotalInputWeight = TotalInputWeight
+      
+      setDataSend(obj)
+  
+     setValue('TotalInputWeight', checkForDecimalAndNull(TotalInputWeight, initialConfiguration.NoOfDecimalForInputOutput))  
+
     }
  
   /**
@@ -230,14 +271,19 @@ function HotForging(props) {
    *
    */
   const calculateScrapWeight = () => {
-    const TotalInputWeight = checkForNull(getValues('TotalInputWeight')) 
+    const TotalInputWeight =  dataSend.TotalInputWeight
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     if (!finishedWeight || !TotalInputWeight) {
       return ''
     }
     const ScrapWeight = TotalInputWeight - finishedWeight
-    setDataSend(prevState => ({ ...prevState, ScrapWeight: ScrapWeight }))
-    setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
+    let obj = dataSend
+    obj.ScrapWeight = ScrapWeight
+      
+      setDataSend(obj)
+  
+     setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput))
+
   }
   /**
    * @method calculateScrapCost
@@ -245,10 +291,15 @@ function HotForging(props) {
    */
   const calculateScrapCost = () => {
     const ScrapRecoveryPercentage = checkForNull(getValues('ScrapRecoveryPercentage'))
-    const ScrapWeight = checkForNull(getValues('ScrapWeight'))
+    const ScrapWeight = dataSend.ScrapWeight
     const ScrapCost = (ScrapWeight * ScrapRecoveryPercentage* rmRowData.ScrapRate)/100
-    setDataSend(prevState => ({ ...prevState, ScrapCost: ScrapCost }))
-    setValue('ScrapCost', checkForDecimalAndNull(ScrapCost, getConfigurationKey().NoOfDecimalForPrice))
+    let obj = dataSend
+    obj.ScrapCost = ScrapCost
+      
+      setDataSend(obj)
+    
+     setValue('ScrapCost', checkForDecimalAndNull(ScrapCost, getConfigurationKey().NoOfDecimalForPrice))
+
     
   }
   
@@ -258,12 +309,17 @@ function HotForging(props) {
    */
 
 const calculateNetRmCostComponent = () =>{
-  const TotalInputWeight = checkForNull(getValues('TotalInputWeight'))
-  const ScrapCost = checkForNull(getValues('ScrapCost'))
+  const TotalInputWeight = dataSend.TotalInputWeight
+  const ScrapCost = dataSend.ScrapCost
   const NetRMCostComponent = (TotalInputWeight * rmRowData.RMRate-ScrapCost)
+  let obj = dataSend
+  obj.NetRMCostComponent = NetRMCostComponent
+    
+    setDataSend(obj)
   
-  setDataSend(prevState => ({ ...prevState, NetRMCostComponent: NetRMCostComponent }))
+ 
   setValue('NetRMCostComponent', checkForDecimalAndNull(NetRMCostComponent, getConfigurationKey().NoOfDecimalForPrice))
+
 }
 
   /**
@@ -299,12 +355,12 @@ const calculateNetRmCostComponent = () =>{
     obj.NoOfPartsPerLength = dataSend.NoOfPartsPerLength
     obj.EndBitLength = dataSend.EndBitLength
     obj.EndBitLoss = dataSend.EndBitLoss
-    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH gROSS WEIGHT KEY
+    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH GROSS WEIGHT KEY
     obj.GrossWeight = dataSend.TotalInputWeight
     obj.ScrapWeight = dataSend.ScrapWeight
     obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
     obj.ScrapCost = dataSend.ScrapCost
-    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IOT WITH NETLANDED COST
+    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IT WITH NETLANDED COST
     obj.NetLandedCost = dataSend.NetRMCostComponent 
 
 
@@ -354,6 +410,12 @@ const calculateNetRmCostComponent = () =>{
   const tableData = (value = []) => {
 
     setTableVal(value)
+  }
+
+  const setLoss = (value)=>{
+    
+    
+    setLostWeight(value)
   }
   const dropDown = [
     {
@@ -405,16 +467,24 @@ const calculateNetRmCostComponent = () =>{
       value: 10,
     },
   ]
-  const LossMachineFunction=(value)=>{
-    setDiableMachiningStock(value)
+  const handleFinishWeight = (value)=>{
+    
+    
+    if(value.target.value===0 || value.target.value===''){
+      setDisableAll(true)
+    }
+    else{
+    setDisableAll(false)
+    }
   }
-console.log(diableMachiningStock,'diableMachiningStock');
+
+
   return (
     <Fragment>
       <Row>
-        <Col>
-          <form noValidate className="form">
-            <Col md="12" className={'mt25'}>
+        <Col> 
+          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+            <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>
                   
@@ -431,22 +501,17 @@ console.log(diableMachiningStock,'diableMachiningStock');
                           rules={{
                             required: true,
                             pattern: {
-
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.',
-                            },
-                            maxLength: {
-                              value: 8,
-                              message: 'Length should not be more than 8'
+                              value: /^\d{0,4}(\.\d{0,7})?$/i,
+                              message: 'Maximum length for interger is 4 and for decimal is 7',
                             },
 
                           }}
-                          handleChange={() => { }}
+                          handleChange={handleFinishWeight}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.finishedWeight}
-                          disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                          disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false} 
                         />
                       </Col>
                       
@@ -454,12 +519,14 @@ console.log(diableMachiningStock,'diableMachiningStock');
                     <MachiningStockTable
                       dropDownMenu={machineDropDown}
                       CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
-                      netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                      netWeight={WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock !== null ? WeightCalculatorRequest.TotalMachiningStock : ''}
                       sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators?.length > 0 ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : []) : []}
                       tableValue={tableData1}
                       rmRowData={props.rmRowData}
                       calculation = {TotalMachiningStock}
-                      diableMachiningStock={diableMachiningStock}
+                      hotcoldErrors={errors}
+                      disableAll ={disableAll}
+                      
                     />
                   </Col>
                 </Row>
@@ -492,22 +559,23 @@ console.log(diableMachiningStock,'diableMachiningStock');
                 <LossStandardTable
                   dropDownMenu={dropDown}
                   CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
-                  calculation={calculateInputLength}
-                  calculation={calculateTotalInputWeight}
                   forgeValue = {forgeWeightValue}
-                  lengthValue={inputLengthValue}
-                  netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                  calculation={setLoss}
+                  netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                   rmRowData={props.rmRowData}
-                  LossMachineFunction ={LossMachineFunction}
+                  isPlastic={false}
                   isLossStandard = {true}
+                  isNonFerrous={false}
+                  disableAll ={disableAll}
+
 
                 />
                 
               </div>
             </Col>
-            <Row>
+            <Row className='mt20'>
             <Col md="3">
                     <TextFieldHookForm
                       label={`Billet Diameter(mm)`}
@@ -519,22 +587,17 @@ console.log(diableMachiningStock,'diableMachiningStock');
                       rules={{
                         required: true,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{0,3}(\.\d{0,5})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 5',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.BilletDiameter}
-                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                      disabled={props.CostingViewMode|| disableAll ? true : false}
+
                     />
                   </Col>
                   <Col md="3">
@@ -548,22 +611,17 @@ console.log(diableMachiningStock,'diableMachiningStock');
                       rules={{
                         required: true,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{0,3}(\.\d{0,5})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 5',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.BilletLength}
-                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                      disabled={props.CostingViewMode|| disableAll ? true : false}
+
                     />
                   </Col>
                   <Col md="3">
@@ -667,9 +725,6 @@ console.log(diableMachiningStock,'diableMachiningStock');
                       disabled={true}
                     />
                   </Col>
- 
-                  </Row>
-                  <Row>
                   <Col md="3">
                   <TextFieldHookForm
                       label={`Total Input Weight (Kg)`}
@@ -746,7 +801,7 @@ console.log(diableMachiningStock,'diableMachiningStock');
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.ScrapRecoveryPercentage}
-                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                      disabled={props.CostingViewMode|| disableAll ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -814,7 +869,7 @@ console.log(diableMachiningStock,'diableMachiningStock');
               </button>
               <button
                 type="submit"
-                onClick={onSubmit}
+                // onClick={(e)=>{handleSubmit(onSubmit)}}
                 disabled={props.CostingViewMode ? props.CostingViewMode : false}
                 className="btn-primary save-btn"
               >

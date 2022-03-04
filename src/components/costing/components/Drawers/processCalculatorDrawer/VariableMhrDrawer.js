@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
 import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC, FACING, DRILLING, TURNING, CHAMFERING, SIDEFACEMILING, SLOTCUTTING, CHAMFERINGMILLER, ENDMILL, FACEMILING } from '../../../../../config/masterData'
-import HPDC from '../../WeightCalculatorDrawer/HPDC'
+
 import { HOUR, TIME } from '../../../../../config/constants'
 
 function VariableMhrDrawer(props) {

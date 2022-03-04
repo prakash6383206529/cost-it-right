@@ -15,6 +15,7 @@ import PushButtonDrawer from './PushButtonDrawer'
 import { Errorbox } from '../../../common/ErrorBox'
 import { Redirect } from 'react-router'
 import LoaderCustom from '../../../common/LoaderCustom';
+import CalculatorWrapper from '../../../common/Calculator/CalculatorWrapper'
 
 function ApprovalSummary(props) {
   const { approvalNumber, approvalProcessId } = props.location.state
@@ -41,7 +42,10 @@ function ApprovalSummary(props) {
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   useEffect(() => {
+   
     approvalSummaryHandler()
+
+
   }, [])
 
   const approvalSummaryHandler = () => {
@@ -122,6 +126,7 @@ function ApprovalSummary(props) {
   return (
 
     <>
+    <CalculatorWrapper />
       {
         showListing === false &&
         <>
