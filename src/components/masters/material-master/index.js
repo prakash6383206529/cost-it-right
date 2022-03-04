@@ -257,7 +257,7 @@ function RowMaterialMaster(props) {
 
 
 
-                            {Number(activeTab) === 1 &&
+                            {Number(activeTab) === 1 && ViewRMAccessibility &&
                                 <TabPane tabId="1">
                                     <RMDomesticListing
                                         formToggle={displayDomesticForm}

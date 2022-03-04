@@ -58,6 +58,7 @@ class AddMachineRate extends Component {
       isViewMode: this.props?.editDetails?.isViewMode ? true : false,
       minEffectiveDate: '',
       isDateChange: false,
+      oldDate: '',
 
       selectedTechnology: [],
       isVendorNameNotSelected: false,
@@ -283,7 +284,8 @@ class AddMachineRate extends Component {
               remarks: Data.Remark,
               // Description: Data.Description,
               files: Data.Attachements,
-              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : ''
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -873,7 +875,7 @@ class AddMachineRate extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
+      remarks, machineType, files, processGrid, isViewFlag, DropdownChange, effectiveDate, oldDate, uploadAttachements, isDateChange, IsFinancialDataChanged } = this.state;
 
 
     if (vendorName.length <= 0) {
@@ -949,7 +951,7 @@ class AddMachineRate extends Component {
 
         if (IsFinancialDataChanged) {
 
-          if (isDateChange) {
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ showPopup: true, updatedObj: requestData })
             return false
 
@@ -1028,7 +1030,7 @@ class AddMachineRate extends Component {
 
         if (IsFinancialDataChanged) {
 
-          if (isDateChange) {
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: finalObj })
             return false
 

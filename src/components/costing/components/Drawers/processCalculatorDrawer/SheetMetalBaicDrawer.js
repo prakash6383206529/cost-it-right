@@ -84,9 +84,10 @@ function SheetMetalBaicDrawer(props) {
       let quantityValue = 1
 
       if ((WeightCalculatorRequest.Quantity === null || WeightCalculatorRequest.Quantity === undefined || WeightCalculatorRequest.Quantity === '')
-        && (rmFinishWeight === undefined || rmFinishWeight === null)) {
+        && (rmFinishWeight === undefined || rmFinishWeight === null || rmFinishWeight === '')) {
         quantityValue = 1
-      } else if (WeightCalculatorRequest.Quantity !== null || WeightCalculatorRequest.Quantity !== undefined || WeightCalculatorRequest.Quantity !== '') {
+      } else if ((WeightCalculatorRequest.Quantity !== null && WeightCalculatorRequest.Quantity !== undefined
+        && WeightCalculatorRequest.Quantity !== '') && (rmFinishWeight === undefined || rmFinishWeight === null || rmFinishWeight === '')) {
         quantityValue = WeightCalculatorRequest.Quantity
       } else {
         quantityValue = rmFinishWeight
