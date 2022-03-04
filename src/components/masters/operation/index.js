@@ -126,7 +126,7 @@ class OperationsMaster extends Component {
                                                 DeleteAccessibility={this.state.DeleteAccessibility}
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                             />
-                                        </TabPane>} */}
+                                        </TabPane>}
 
                                 </TabContent >
                             </div >
