@@ -195,6 +195,7 @@ class BulkUpload extends Component {
             Toaster.warning('Please select a file to upload.')
             return false
         }
+
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
