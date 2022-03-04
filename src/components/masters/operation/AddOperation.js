@@ -257,7 +257,7 @@ class AddOperation extends Component {
   * @method handleUOM
   * @description called
   */
-  handleUOM = (newValue, actionMeta) => {
+  handleUOM = (newValue) => {
     if (newValue && newValue !== '') {
 
       this.setState({ UOM: newValue, })
@@ -702,7 +702,7 @@ class AddOperation extends Component {
         }
 
 
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.Value === oldUOM.Value && uploadAttachements) {
           this.cancel()
           return false
         } else {
