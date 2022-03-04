@@ -47,6 +47,8 @@ class Level extends Component {
     this.getLevelDetail()
     this.getLevelMappingDetail()
     this.props.getSimulationTechnologySelectList(() => { })
+    this.props.getMastersSelectList(() => { })
+
   }
 
   /**
@@ -181,7 +183,6 @@ class Level extends Component {
       });
       return temp;
     }
-
   }
 
   /**

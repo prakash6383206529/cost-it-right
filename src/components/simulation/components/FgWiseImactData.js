@@ -2,7 +2,7 @@ import { Row, Col } from 'reactstrap'
 import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFgWiseImpactData } from '../actions/Simulation'
-import { checkForDecimalAndNull } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
@@ -62,7 +62,7 @@ export function Fgwiseimactdata(props) {
                 <Col md="12">
                     {/* {impactType} */}
                     <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
-                        <table className="table cr-brdr-main accordian-table-with-arrow">
+                    <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
                                 {loader && <LoaderCustom />}
                                 <tr>
@@ -73,8 +73,8 @@ export function Fgwiseimactdata(props) {
                                     <th><span>New Cost/pc</span></th>
                                     <th><span>Quantity</span></th>
                                     <th><span>Impact/Pc</span></th>
-
-
+                                    <th><span>SOB(%)</span></th>
+                                    <th><span>Impact/Pc(with SOB)</span></th>
                                     <th><span>Volume/Year</span></th>
                                     <th><span>Impact/Quater</span></th>
                                     <th className="second-last-child"><span>Impact/Year</span></th>
@@ -96,9 +96,12 @@ export function Fgwiseimactdata(props) {
                                             <td><span>{'-'}</span></td>
                                             <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
 
+                                            <td><span>{checkForNull(item?.VendorSOBPercentage)}</span></td>
+                                            {/* //Impact/Pc(with SOB) */}
+                                            <td><span>{item?.VendorSOBImpactPerPiece}</span></td> 
                                             <td><span>{item.VolumePerYear == null ? "" : item.VolumePerYear}</span></td>
-                                            <td><span>{checkForDecimalAndNull(item.ImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                            <td colSpan="2"><span> {checkForDecimalAndNull(item.ImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.VendorSOBImpactPerQuater, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            <td colSpan="2"><span> {checkForDecimalAndNull(item.VendorSOBImpactPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                             {/* <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
 
                                         </tr>

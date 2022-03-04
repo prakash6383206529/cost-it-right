@@ -100,7 +100,12 @@ function ColdForging(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+  const { forgingCalculatorMachiningStockSectionValue } = useSelector(state => state.costing)
 
+
+  useEffect(() => {
+  
+  }, [forgingCalculatorMachiningStockSectionValue])
   const fieldValues = useWatch({
     control,
     name: ['finishedWeight', 'BilletDiameter' , 'BilletLength' , 'ScrapRecoveryPercentage'],
@@ -116,8 +121,7 @@ function ColdForging(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [dataSend, setDataSend] = useState({})
   const [totalMachiningStock, setTotalMachiningStock] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock ? WeightCalculatorRequest.TotalMachiningStock : 0)
-  const [diableMachiningStock,setDiableMachiningStock]= useState(false)
-  
+  const [disableAll , setDisableAll] = useState(Object.keys(WeightCalculatorRequest).length>0 && WeightCalculatorRequest && WeightCalculatorRequest.finishedWeight !== null ? false : true)
 
   const costData = useContext(costingInfoContext)
   useEffect(() => {
@@ -132,18 +136,22 @@ function ColdForging(props) {
     calculateNetRmCostComponent()
 
   }, [fieldValues,lostWeight])
-    
+
   /**
    * @method calculateForgeWeight
    * @description calculate forge weight
    */
   const calculateForgeWeight = () => {
     
+    
     const finishedWeight = checkForNull(getValues('finishedWeight'))
-    if (!finishedWeight || !totalMachiningStock) {
-      return ''
-    }
+    
+    
+    
     const forgedWeight =  finishedWeight + totalMachiningStock
+    
+
+    
 
     let obj = dataSend
     obj.forgedWeight = forgedWeight
@@ -151,6 +159,8 @@ function ColdForging(props) {
     setValue('forgedWeight', checkForDecimalAndNull(forgedWeight, initialConfiguration.NoOfDecimalForInputOutput))
 
     setForgeWeightValue(forgedWeight)
+    
+
   }
 
  
@@ -160,15 +170,19 @@ function ColdForging(props) {
    */
 
   const calculateInputLength = () =>{
+    
     const BilletDiameter = getValues('BilletDiameter')
+    
     const forgedWeight = forgeWeightValue
-    const InputLength = (forgedWeight + lostWeight)/(0.7857 * BilletDiameter * BilletDiameter * rmRowData.Density/1000000)
+    
+    const InputLength = (forgedWeight + lostWeight)/(0.7857 * Math.pow(BilletDiameter, 2) * rmRowData.Density/1000000)
+    
     let obj = dataSend
     obj.InputLength = InputLength
     setDataSend(obj)
      setValue('InputLength', checkForDecimalAndNull(InputLength, getConfigurationKey().NoOfDecimalForInputOutput))
 
-    setInputLengthValue(InputLength)
+    //setInputLengthValue(InputLength)
   }
   /**
    * @method calculateNoOfPartsPerLength
@@ -343,12 +357,12 @@ const calculateNetRmCostComponent = () =>{
     obj.NoOfPartsPerLength = dataSend.NoOfPartsPerLength
     obj.EndBitLength = dataSend.EndBitLength
     obj.EndBitLoss = dataSend.EndBitLoss
-    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH gROSS WEIGHT KEY
+    obj.InputWeight = dataSend.TotalInputWeight // BIND IT WITH GROSS WEIGHT KEY
     obj.GrossWeight = dataSend.TotalInputWeight
     obj.ScrapWeight = dataSend.ScrapWeight
     obj.RecoveryPercentage = getValues('ScrapRecoveryPercentage')
     obj.ScrapCost = dataSend.ScrapCost
-    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IOT WITH NETLANDED COST
+    obj.NetRMCost = dataSend.NetRMCostComponent // BIND IT WITH NETLANDED COST
     obj.NetLandedCost = dataSend.NetRMCostComponent 
 
 
@@ -379,6 +393,7 @@ const calculateNetRmCostComponent = () =>{
     }))
   }
    const TotalMachiningStock = (value) =>{
+     
 
     setTotalMachiningStock(value)
    }
@@ -402,9 +417,11 @@ const calculateNetRmCostComponent = () =>{
 
   const setLoss = (value)=>{
     
+    
     setLostWeight(value)
   }
   const dropDown = [
+  
     {
       label: 'Bilet Heating Loss',
       value: 6,
@@ -450,16 +467,24 @@ const calculateNetRmCostComponent = () =>{
       value: 10,
     },
   ]
-  const LossMachineFunction=(value)=>{
-    setDiableMachiningStock(value)
+  const handleFinishWeight = (value)=>{
+    
+    
+    if(value.target.value===0 || value.target.value===''){
+      setDisableAll(true)
+    }
+    else{
+    setDisableAll(false)
+    }
   }
+
 
   return (
     <Fragment>
       <Row>
-        <Col>
-          <form noValidate className="form">
-            <Col md="12" className={'mt25'}>
+        <Col> 
+          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+            <Col md="12" className='px-0'>
               <div className="border px-3 pt-3">
                 <Row>
                   
@@ -476,22 +501,17 @@ const calculateNetRmCostComponent = () =>{
                           rules={{
                             required: true,
                             pattern: {
-
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.',
-                            },
-                            maxLength: {
-                              value: 8,
-                              message: 'Length should not be more than 8'
+                              value: /^\d{0,4}(\.\d{0,7})?$/i,
+                              message: 'Maximum length for interger is 4 and for decimal is 7',
                             },
 
                           }}
-                          handleChange={() => { }}
+                          handleChange={handleFinishWeight}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.finishedWeight}
-                          disabled={props.CostingViewMode || diableMachiningStock ? true : false}
+                          disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false} 
                         />
                       </Col>
                       
@@ -499,12 +519,14 @@ const calculateNetRmCostComponent = () =>{
                     <MachiningStockTable
                       dropDownMenu={machineDropDown}
                       CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
-                      netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                      netWeight={WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningStock !== null ? WeightCalculatorRequest.TotalMachiningStock : ''}
                       sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators?.length > 0 ? WeightCalculatorRequest.CostingRawMaterialForgingWeightCalculators : []) : []}
                       tableValue={tableData1}
                       rmRowData={props.rmRowData}
                       calculation = {TotalMachiningStock}
-                      diableMachiningStock={diableMachiningStock}
+                      hotcoldErrors={errors}
+                      disableAll ={disableAll}
+                      
                     />
                   </Col>
                 </Row>
@@ -543,10 +565,11 @@ const calculateNetRmCostComponent = () =>{
                   sendTable={WeightCalculatorRequest ? (WeightCalculatorRequest.LossOfTypeDetails?.length > 0 ? WeightCalculatorRequest.LossOfTypeDetails : []) : []}
                   tableValue={tableData}
                   rmRowData={props.rmRowData}
-                  LossMachineFunction ={LossMachineFunction}
                   isPlastic={false}
                   isLossStandard = {true}
                   isNonFerrous={false}
+                  disableAll ={disableAll}
+
 
                 />
                 
@@ -564,22 +587,17 @@ const calculateNetRmCostComponent = () =>{
                       rules={{
                         required: true,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{0,3}(\.\d{0,5})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 5',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.BilletDiameter}
-                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                      disabled={props.CostingViewMode|| disableAll ? true : false}
+
                     />
                   </Col>
                   <Col md="3">
@@ -593,22 +611,17 @@ const calculateNetRmCostComponent = () =>{
                       rules={{
                         required: true,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{0,3}(\.\d{0,5})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 5',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.BilletLength}
-                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                      disabled={props.CostingViewMode|| disableAll ? true : false}
+
                     />
                   </Col>
                   <Col md="3">
@@ -791,7 +804,7 @@ const calculateNetRmCostComponent = () =>{
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.ScrapRecoveryPercentage}
-                      disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                      disabled={props.CostingViewMode|| disableAll ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -859,7 +872,7 @@ const calculateNetRmCostComponent = () =>{
               </button>
               <button
                 type="submit"
-                onClick={onSubmit}
+                // onClick={(e)=>{handleSubmit(onSubmit)}}
                 disabled={props.CostingViewMode ? props.CostingViewMode : false}
                 className="btn-primary save-btn"
               >

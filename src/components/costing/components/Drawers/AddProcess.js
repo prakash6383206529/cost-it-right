@@ -20,6 +20,7 @@ function AddProcess(props) {
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [selectedIds, setSelectedIds] = useState(props.Ids);
+  const [selectedMachineIds,setSelectedMachineIds] = useState(props.MachineIds)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [rowData, setRowData] = useState(null);
@@ -209,7 +210,7 @@ function AddProcess(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.ProcessId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.ProcessId) || !selectedMachineIds.includes(rowNode.data.MachineRateId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();

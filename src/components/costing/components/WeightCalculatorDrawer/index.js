@@ -137,6 +137,7 @@ function OpenWeightCalculator(props) {
               isEditFlag={props.isEditFlag}
               toggleDrawer={toggleDrawer}
               CostingViewMode={CostingViewMode ? CostingViewMode : false}
+              item={item}
             />
           )
 

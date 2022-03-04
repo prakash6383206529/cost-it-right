@@ -10,6 +10,7 @@ import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { maxLength512 } from '../../../../helper/validation'
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
@@ -19,6 +20,7 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { ViewCostingContext } from '../CostingDetails';
 import { useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
+import { debounce } from 'lodash'
 
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -38,7 +40,8 @@ function TabDiscountOther(props) {
   const [GoToNext, setGoToNext] = useState(false);
   const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
-  
+  const [isDisable, setIsDisable] = useState(false)
+
 
   const dispatch = useDispatch()
   let history = useHistory();
@@ -50,18 +53,18 @@ function TabDiscountOther(props) {
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData,CostingDataList } = useSelector(state => state.costing)
-  const [totalCost,setTotalCost] = useState(0)
-  const [discountObj,setDiscountObj] = useState({})
-  const [otherCostApplicability,setOtherCostApplicability] = useState([])
-  const [discountCostApplicability,setDiscountCostApplicability] = useState([])
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList } = useSelector(state => state.costing)
+  const [totalCost, setTotalCost] = useState(0)
+  const [discountObj, setDiscountObj] = useState({})
+  const [otherCostApplicability, setOtherCostApplicability] = useState([])
+  const [discountCostApplicability, setDiscountCostApplicability] = useState([])
+  const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const costingHead = useSelector(state => state.comman.costingHead)
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       if (props.activeTab !== '6') {
-        console.log(DiscountCostData,"DiscountCostData");
         setValue('NetPOPriceINR', DiscountCostData !== undefined && checkForDecimalAndNull((netPOPrice - netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
         setValue('HundiOrDiscountPercentage', DiscountCostData !== undefined && DiscountCostData.HundiOrDiscountPercentage !== null ? DiscountCostData.HundiOrDiscountPercentage : '')
         setValue('HundiOrDiscountValue', DiscountCostData !== undefined && DiscountCostData.DiscountCostType === 'Percentage' ? DiscountCostData !== undefined && (netPOPrice * calculatePercentage(DiscountCostData.HundiOrDiscountPercentage)) : DiscountCostData?.HundiOrDiscountValue)
@@ -98,7 +101,6 @@ function TabDiscountOther(props) {
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
-    console.log("COMING IN DISCOUNT COST DATA");
     setTimeout(() => {
 
       let updatedFiles = files.map((file) => {
@@ -189,6 +191,7 @@ function TabDiscountOther(props) {
 
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
+            setNetPoPriceCurrencyState(OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
             setOtherCostApplicability({label:OtherCostDetails.OtherCostApplicability,value:OtherCostDetails.OtherCostApplicabilityId})
@@ -254,6 +257,7 @@ function TabDiscountOther(props) {
 
       if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+        setNetPoPriceCurrencyState(DiscountCostData && netPOPrice / ExchangeRateData.CurrencyExchangeRate)
       }
 
       
@@ -498,6 +502,7 @@ function TabDiscountOther(props) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
           setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))
@@ -514,6 +519,7 @@ function TabDiscountOther(props) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
           setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+          setNetPoPriceCurrencyState(NetPOPriceINR / Data.CurrencyExchangeRate)
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))
@@ -565,6 +571,17 @@ function TabDiscountOther(props) {
     return { url: 'https://httpbin.org/post', }
   }
 
+  /**
+ * @method setDisableFalseFunction
+ * @description setDisableFalseFunction
+ */
+  const setDisableFalseFunction = () => {
+    const loop = Number(dropzone.current.files.length) - Number(files.length)
+    if (Number(loop) === 1) {
+      setIsDisable(false)
+    }
+  }
+
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
 
@@ -575,10 +592,12 @@ function TabDiscountOther(props) {
       setIsOpen(!IsOpen)
     }
 
+    setIsDisable(true)
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
       dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunction()
         if ('response' in res) {
           status = res && res?.response?.status
           dropzone.current.files.pop()
@@ -597,11 +616,13 @@ function TabDiscountOther(props) {
     if (status === 'rejected_file_type') {
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      setDisableFalseFunction()
       dropzone.current.files.pop()
       Toaster.warning("File size greater than 20 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunction()
       dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -644,7 +665,7 @@ function TabDiscountOther(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
+  const onSubmit = debounce((values, val, gotoNextValue) => {
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]
@@ -676,22 +697,22 @@ function TabDiscountOther(props) {
         "NetOtherCost": DiscountCostData.AnyOtherCost,
         "OtherCostDetails": {
           "OtherCostDetailId": '',
-          "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
+          "HundiOrDiscountPercentage": getValues('HundiOrDiscountPercentage'),
           "HundiOrDiscountValue": DiscountCostData.HundiOrDiscountValue,
           "AnyOtherCost": DiscountCostData.AnyOtherCost,
-          "TotalOtherCost": values.TotalOtherCost,
+          "TotalOtherCost": DiscountCostData.AnyOtherCost,
           "TotalDiscount": DiscountCostData.HundiOrDiscountValue,
           "IsChangeCurrency": IsCurrencyChange,
           "NetPOPriceINR": netPOPrice,
-          "NetPOPriceOtherCurrency": values.NetPOPriceOtherCurrency,
+          "NetPOPriceOtherCurrency": netPoPriceCurrencyState,
           "CurrencyId": currency.value,
           "Currency": currency.label,
-          "Remark": values.Remarks,
-          "OtherCostDescription": values.OtherCostDescription,
+          "Remark": getValues('Remarks'),
+          "OtherCostDescription": getValues('OtherCostDescription'),
           "CurrencyExchangeRate": CurrencyExchangeRate,
           "EffectiveDate": effectiveDate,
-          "OtherCostPercentage":  values.PercentageOtherCost,
-          "PercentageOtherCost": values.PercentageOtherCost,
+          "OtherCostPercentage": getValues('PercentageOtherCost'),
+          "PercentageOtherCost": getValues('PercentageOtherCost'),
           "OtherCostType": otherCostType.value,
           "DiscountCostType": hundiscountType.value,
           "OtherCostApplicabilityId": otherCostApplicability.value,
@@ -748,14 +769,14 @@ function TabDiscountOther(props) {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentDiscountOtherItemData({}, () => { }))
-          if (GoToNext) {
+          if (gotoNextValue) {
             props.toggle('2')
             history.push('/costing-summary')
           }
         }
       }))
     }
-  }
+  }, 500)
 
   const handleOherCostApplicabilityChange = (value)=>{
     setOtherCostApplicability(value)
@@ -810,7 +831,6 @@ function TabDiscountOther(props) {
                 <form
                   noValidate
                   className="form"
-                  onSubmit={handleSubmit(onSubmit)}
                 >
                   <Row className="mx-0">
                     <Col md="2">
@@ -1118,7 +1138,13 @@ function TabDiscountOther(props) {
                         register={register}
                         rows={6}
                         mandatory={false}
-                        rules={{}}
+                        rules={{
+
+                          maxLength: {
+                            value: 500,
+                            message: "Remark should be less than 500 words"
+                          },
+                        }}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
@@ -1202,18 +1228,20 @@ function TabDiscountOther(props) {
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
                       {!CostingViewMode && <button
-                        type={"submit"}
+                        type="button"
                         className="submit-button mr5 save-btn"
-                        onClick={() => setGoToNext(false)}
+                        onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                        disabled={isDisable}
                       >
                         <div className={"save-icon"}></div>
                         {"Save"}
                       </button>}
 
                       {!CostingViewMode && <button
-                        type="submit"
+                        type="button"
                         className="submit-button save-btn"
-                        onClick={() => setGoToNext(true)}
+                        onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
+                        disabled={isDisable}
                       >
                         {"Next"}
                         <div className={"next-icon"}></div>

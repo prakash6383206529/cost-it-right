@@ -208,7 +208,7 @@ NonFerrous(props) {
         obj.MachiningScrapWeight = getValues('machiningScrapWeight')
         obj.CastingWeight = getValues('castingWeight')
         obj.RecoveryPercentage = getValues('recovery')
-        obj.GrossWeight = dataToSend.grossWeight
+        obj.GrossWeight = dataToSend.totalGrossWeight
         obj.FinishWeight = getValues('finishedWeight')
         obj.ScrapWeight = dataToSend.scrapWeight
         obj.RMCost = dataToSend.rmCost
@@ -491,7 +491,10 @@ NonFerrous(props) {
                                     />
                                 </Col>
                             </Row>
+                           
                             <Row className={''}>
+                            {isHpdc&&
+                                <>
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`RM Cost`}
@@ -508,6 +511,7 @@ NonFerrous(props) {
                                         disabled={true}
                                     />
                                 </Col>
+                                </>} 
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Scrap Cost`}
