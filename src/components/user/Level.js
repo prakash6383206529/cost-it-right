@@ -163,12 +163,16 @@ class Level extends Component {
 
     // RENDER WHEN SIMULATION TECHNOLOGY LIST IN USE
     if (label === 'technology' && this.state.levelType === 'Simulation') {
-      simulationTechnologyList && simulationTechnologyList.map(item => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
+      let arrayOfTechnology = []
+      const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
+      myArray && myArray.map((item) => {
+        let tempObj = {}
+        let temp = item.split('=')
+        tempObj.label = temp[0]
+        tempObj.value = temp[1]
+        arrayOfTechnology.push(tempObj)
+      })
+      return arrayOfTechnology
     }
 
     if (label === 'level') {
@@ -183,21 +187,6 @@ class Level extends Component {
       });
       return temp;
     }
-
-    if (label === 'masterTechnology') {
-
-      let arrayOfTechnology = []
-      const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
-      myArray && myArray.map((item) => {
-        let tempObj = {}
-        let temp = item.split('=')
-        tempObj.label = temp[0]
-        tempObj.value = temp[1]
-        arrayOfTechnology.push(tempObj)
-      })
-      return arrayOfTechnology
-    }
-
   }
 
   /**
@@ -602,7 +591,7 @@ class Level extends Component {
                             label="Technology/Heads"
                             className="w-100"
                             component={searchableSelect}
-                            options={this.searchableSelectType('masterTechnology')}
+                            options={this.searchableSelectType('technology')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={(this.state.technology == null || this.state.technology.length === 0) ? [required] : []}
                             placeholder={"Select"}
