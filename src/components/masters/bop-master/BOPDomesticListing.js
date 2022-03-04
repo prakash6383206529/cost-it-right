@@ -439,7 +439,7 @@ class BOPDomesticListing extends Component {
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
-                    
+
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
@@ -556,7 +556,7 @@ class BOPDomesticListing extends Component {
                         isOpen={isBulkUpload}
                         closeDrawer={this.closeBulkUploadDrawer}
                         isEditFlag={false}
-                        fileName={'BOPDomestic'}
+                        fileName={'InsertDomestic'}
                         isZBCVBCTemplate={true}
                         messageLabel={'BOP Domestic'}
                         anchor={'right'}
