@@ -8,21 +8,19 @@ import { useSelector } from 'react-redux';
 
 function ViewPackagingAndFreight(props) {
 
-  const { packagingData, freightData } = props.packagingAndFreightCost
+  const { packagingData, freightData } = props.packagingAndFreightCost;
+  const { isPDFShow } = props
 
-  const [viewPackaging, setViewPackaging] = useState([])
-  const [viewFrieght, setViewFrieght] = useState([])
+  const [viewPackaging, setViewPackaging] = useState(packagingData)
+  const [viewFrieght, setViewFrieght] = useState(freightData)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-  useEffect(() => {
-    setViewPackaging(packagingData)
-    setViewFrieght(freightData)
-  }, [])
   /**
     * @method toggleDrawer
     * @description closing drawer
     */
+
   const toggleDrawer = (event) => {
     if (
       event.type === 'keydown' &&
@@ -32,32 +30,10 @@ function ViewPackagingAndFreight(props) {
     }
     props.closeDrawer('')
   }
-
-  return (
-    <>
-      <Drawer
-        anchor={props.anchor}
-        open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
-      >
-        <Container>
-          <div className={'drawer-wrapper drawer-1500px'}>
-            <Row className="drawer-heading">
-              <Col>
-                <div className={'header-wrapper left'}>
-                  <h3>{'View Packaging & Freight Cost:'}</h3>
-                </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}
-                ></div>
-              </Col>
-            </Row>
-
-            <div className="px-3"
-            // className="cr-process-costwrap"
-            >
-              <Row>
+  
+  const packageTableData = ()=> {
+       return <>
+               <Row>
                 <Col md="12">
                   <div className="left-border">{'Packaging:'}</div>
                 </Col>
@@ -102,10 +78,11 @@ function ViewPackagingAndFreight(props) {
                   </Table>
                 </Col>
               </Row>
-
-              <br />
-              <div>
-                <Row>
+        </>
+  }
+  const freightTableData = ()=> {
+    return <>
+              <Row>
                   <Col md="8">
                     <div className="left-border">{'Freight:'}</div>
                   </Col>
@@ -139,7 +116,7 @@ function ViewPackagingAndFreight(props) {
                               </tr>
                             )
                           })}
-                        {viewFrieght.length === 0 && (
+                        {viewFrieght?.length === 0 && (
                           <tr>
                             <td colSpan={9}>
                               <NoContentFound title={EMPTY_DATA} />
@@ -150,11 +127,42 @@ function ViewPackagingAndFreight(props) {
                     </Table>
                   </Col>
                 </Row>
+        </>
+  }
+
+  return (
+    <>
+      {!isPDFShow ? <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+      // onClose={(e) => toggleDrawer(e)}
+      >
+        <Container>
+          <div className={'drawer-wrapper drawer-1500px'}>
+            <Row className="drawer-heading">
+              <Col>
+                <div className={'header-wrapper left'}>
+                  <h3>{'View Packaging & Freight Cost:'}</h3>
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  className={'close-button right'}
+                ></div>
+              </Col>
+            </Row>
+
+            <div className="px-3">
+              {packageTableData()}
+              <div>
+               {freightTableData()}
               </div>
             </div>
           </div>
         </Container>
-      </Drawer>
+      </Drawer>: <>
+      <div>{ freightData?.length !== 0 && freightTableData()}</div> 
+      <div>{viewPackaging?.length !== 0 && packageTableData()}</div>
+      </>}
     </>
   )
 }
