@@ -67,8 +67,11 @@ function VariableMhrDrawer(props) {
   }
 
   const getProcessComponent = (process) => {
+    
     if (technology === MACHINING) {
-      if (calculatorData.UOMType !== TIME) {
+      
+      if (calculatorData.UOMType === TIME) {
+        
         switch (process) {
           case FACING:
             return (
