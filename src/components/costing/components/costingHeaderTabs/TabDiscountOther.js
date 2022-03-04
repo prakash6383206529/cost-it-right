@@ -147,7 +147,7 @@ function TabDiscountOther(props) {
             "PercentageOtherCost": getValues('PercentageOtherCost'),
             "OtherCostType": otherCostType.value,
             "SANumber": getValues('SANumber'),
-            "LineNumber":getValues('LineNumber'),
+            "LineNumber": getValues('LineNumber'),
             "DiscountCostType": hundiscountType.value,
             "OtherCostApplicabilityId": otherCostApplicability.value,
             "OtherCostApplicability": otherCostApplicability.label,
@@ -189,14 +189,14 @@ function TabDiscountOther(props) {
             setValue('PercentageOtherCost', OtherCostDetails.PercentageOtherCost !== null ? OtherCostDetails.PercentageOtherCost : '')
             setValue('OtherCostType', OtherCostDetails.OtherCostType !== null ? { label: OtherCostDetails.OtherCostType, value: OtherCostDetails.OtherCostType } : '')
             setValue('HundiDiscountType', OtherCostDetails.DiscountCostType !== null ? { label: OtherCostDetails.DiscountCostType, value: OtherCostDetails.DiscountCostType } : '')
-            
+
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setNetPoPriceCurrencyState(OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(DayTime(OtherCostDetails.EffectiveDate).isValid() ? DayTime(OtherCostDetails.EffectiveDate) : '')
             setValue('SANumber', OtherCostDetails.SANumber !== null ? OtherCostDetails.SANumber : '')
-            setValue('LineNumber', OtherCostDetails.LineNumber !== null ? OtherCostDetails.LineNumber : '')          
+            setValue('LineNumber', OtherCostDetails.LineNumber !== null ? OtherCostDetails.LineNumber : '')
             setOtherCostApplicability({ label: OtherCostDetails.OtherCostApplicability, value: OtherCostDetails.OtherCostApplicabilityId })
             setDiscountCostApplicability({ label: OtherCostDetails.DiscountApplicability, value: OtherCostDetails.DiscountApplicbilityId })
             setValue('OtherCostApplicability', { label: OtherCostDetails.OtherCostApplicability, value: OtherCostDetails.OtherCostApplicabilityId })
@@ -717,8 +717,8 @@ function TabDiscountOther(props) {
           "OtherCostPercentage": getValues('PercentageOtherCost'),
           "PercentageOtherCost": getValues('PercentageOtherCost'),
           "OtherCostType": otherCostType.value,
-          "SANumber": values.SANumber,
-          "LineNumber": values.LineNumber,
+          "SANumber": getValues('SANumber'),
+          "LineNumber": getValues('LineNumber'),
           "DiscountCostType": hundiscountType.value,
           "OtherCostApplicabilityId": otherCostApplicability.value,
           "OtherCostApplicability": otherCostApplicability.label,
