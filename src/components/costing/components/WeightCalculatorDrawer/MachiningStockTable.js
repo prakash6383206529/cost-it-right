@@ -9,7 +9,7 @@ import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationK
 import Toaster from '../../../common/Toaster'
 function MachiningStockTable(props) {
 
-  const { rmRowData, diableMachiningStock } = props
+  const { rmRowData, diableMachiningStock,hotcoldErrors ,disableAll} = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [forgingVolume, setForgingVolume] = useState('')
@@ -118,6 +118,7 @@ function MachiningStockTable(props) {
   }
 
   const calculateforgingVolumeAndWeight = (value) => {
+    const description =getValues('description')
     const majorDiameter = checkForNull(getValues('majorDiameter'))
 
     const minorDiameter = checkForNull(getValues('minorDiameter'))
@@ -134,6 +135,7 @@ function MachiningStockTable(props) {
     let GrossWeight = 0;
     if ((minorDiameter > majorDiameter)) {
       reset({
+        description:description,
         minorDiameter: 0,
         majorDiameter: majorDiameter,
         Length: Length,
@@ -215,22 +217,22 @@ function MachiningStockTable(props) {
    * @description For updating and adding row
    */
   const addRow = () => {
-    const GrossWeight = checkForNull(grossWeight)  
-    
+    const GrossWeight = checkForNull(grossWeight)   
     const Volume = checkForNull(forgingVolume)
-    
-    const Description = getValues('description')
     const MajorDiameter = checkForNull(getValues('majorDiameter'))
     const MinorDiameter = checkForNull(getValues('minorDiameter'))
+    const Description = getValues('description')
     const Length = checkForNull(getValues('Length'))
     const Height = checkForNull(getValues('Height'))
     const Breadth = checkForNull(getValues('Breadth'))
     const No = checkForNull(getValues('No'))
     const MachiningStock = getValues('MachiningStock')
-
-    setDisableMachineType(false)
-
   
+    setDisableMachineType(false)
+    if(Object.keys(errors).length>0||'finishedWeight' in hotcoldErrors >0){
+      return false
+    }
+
     if ( GrossWeight === 0  || Volume === 0  || MachiningStock === '' || Description === '') {
       
       Toaster.warning("Please fill all the mandatory fields first.")
@@ -258,10 +260,9 @@ function MachiningStockTable(props) {
 
 
     const obj = {
-
-      Description: Description,
       MajorDiameter: MajorDiameter ? MajorDiameter : "-",
       MinorDiameter: MinorDiameter ? MinorDiameter : "-",
+      Description: Description,
       Length: Length ? Length : "-",
       Height: Height ? Height : "-",
       Breadth: Breadth ? Breadth : "-",
@@ -290,9 +291,10 @@ function MachiningStockTable(props) {
 
 
     reset({
-      description: '',
+      
       majorDiameter: '',
       minorDiameter: '',
+      description: '',
       Length: '',
       Height: '',
       Breadth: '',
@@ -440,7 +442,7 @@ function MachiningStockTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.MachiningStock}
-            disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableMachineType ? true : false}
+            disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableMachineType || disableAll ? true : false}
           />
         </Col>
 
@@ -465,7 +467,7 @@ function MachiningStockTable(props) {
             className=""
             customClassName={'withBorder'}
             errors={errors.description}
-            disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+            disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
           />
         </Col>
         {!irregularMachiningStock &&
@@ -481,21 +483,17 @@ function MachiningStockTable(props) {
                 rules={{
                   required: true,
                   pattern: {
-                    //value: /^[0-9]*$/i,
-                    value: /^[0-9]\d*(\.\d+)?$/i,
-                    message: 'Invalid Number.',
+                    value: /^\d{1,3}(\.\d{0,3})?$/i,
+                    message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                  maxLength: {
-                    value: 11,
-                    message: 'Length should not be more than 11'
-                  },
+                  
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Length}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
               />
             </Col>
           </>}
@@ -515,22 +513,17 @@ function MachiningStockTable(props) {
                   rules={{
                     required: true,
                     pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
+                      value: /^\d{0,3}(\.\d{0,5})?$/i,
+                      message: 'Maximum length for interger is 3 and for decimal is 5',
                     },
-                    maxLength: {
-                      value: 11,
-                      message: 'Length should not be more than 11'
-                    },
-                    // maxLength: 4,
+                   
                   }}
                   handleChange={() => { }}
                   defaultValue={''}
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.majorDiameter}
-                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                 />
               </Col>
             )}
@@ -546,14 +539,10 @@ function MachiningStockTable(props) {
                   rules={{
                     required: true,
                     pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
+                      value: /^\d{0,3}(\.\d{0,5})?$/i,
+                      message: 'Maximum length for interger is 3 and for decimal is 5',
                     },
-                    maxLength: {
-                      value: 11,
-                      message: 'Length should not be more than 11'
-                    },
+                  
                     // maxLength: 4,
                   }}
                   handleChange={() => { }}
@@ -561,7 +550,7 @@ function MachiningStockTable(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.minorDiameter}
-                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                  disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                 />
               </Col>
 
@@ -588,8 +577,8 @@ function MachiningStockTable(props) {
                     message: 'Invalid Number.',
                   },
                   maxLength: {
-                    value: 6,
-                    message: 'Length should not be more than 6'
+                    value: 3,
+                    message: 'Length should not be more than 3'
                   },
                   // maxLength: 4,
                 }}
@@ -598,7 +587,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
 
@@ -614,14 +603,10 @@ function MachiningStockTable(props) {
                 rules={{
                   required: true,
                   pattern: {
-                    //value: /^[0-9]*$/i,
-                    value: /^[0-9]\d*(\.\d+)?$/i,
-                    message: 'Invalid Number.',
+                    value: /^\d{0,3}(\.\d{0,3})?$/i,
+                    message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                  maxLength: {
-                    value: 11,
-                    message: 'Length should not be more than 11'
-                  },
+                
                   // maxLength: 4,
                 }}
                 handleChange={() => { }}
@@ -629,7 +614,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Height}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
           </>}
@@ -652,8 +637,8 @@ function MachiningStockTable(props) {
                     message: 'Invalid Number.',
                   },
                   maxLength: {
-                    value: 6,
-                    message: 'Length should not be more than 6'
+                    value: 3,
+                    message: 'Length should not be more than 3'
                   },
                   // maxLength: 4,
                 }}
@@ -662,7 +647,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
               />
             </Col>
 
@@ -679,13 +664,8 @@ function MachiningStockTable(props) {
                 rules={{
                   required: true,
                   pattern: {
-                    //value: /^[0-9]*$/i,
-                    value: /^[0-9]\d*(\.\d+)?$/i,
-                    message: 'Invalid Number.',
-                  },
-                  maxLength: {
-                    value: 11,
-                    message: 'Length should not be more than 11'
+                    value: /^\d{0,3}(\.\d{0,3})?$/i,
+                    message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
                   // maxLength: 4,
                 }}
@@ -694,7 +674,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Breadth}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
             <Col md="2">
@@ -708,22 +688,17 @@ function MachiningStockTable(props) {
                 rules={{
                   required: true,
                   pattern: {
-                    //value: /^[0-9]*$/i,
-                    value: /^[0-9]\d*(\.\d+)?$/i,
-                    message: 'Invalid Number.',
+                    value: /^\d{0,3}(\.\d{0,3})?$/i,
+                    message: 'Maximum length for interger is 3 and for decimal is 3',
                   },
-                  maxLength: {
-                    value: 11,
-                    message: 'Length should not be more than 11'
-                  },
-                  // maxLength: 4,
+                
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.Height}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll  ? true : false}
               />
             </Col>
 
@@ -746,8 +721,8 @@ function MachiningStockTable(props) {
                     message: 'Invalid Number.',
                   },
                   maxLength: {
-                    value: 6,
-                    message: 'Length should not be more than 6'
+                    value: 3,
+                    message: 'Length should not be more than 3'
                   },
                   // maxLength: 4,
                 }}
@@ -756,7 +731,7 @@ function MachiningStockTable(props) {
                 className=""
                 customClassName={'withBorder'}
                 errors={errors.No}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
             </Col>
           </>}
@@ -835,10 +810,10 @@ function MachiningStockTable(props) {
               </>
             ) : (
               <button
-                type="submit"
+                type="button"
                 className={'user-btn mt30 pull-left'}
                 onClick={addRow}
-                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               >
                 <div className={'plus'}></div>ADD
               </button>
@@ -891,13 +866,13 @@ function MachiningStockTable(props) {
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
-                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll? true : false}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
                                 type={'button'}
-                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue ? true : false}
+                                disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
                                 onClick={() => deleteRow(index)}
                               />
                             </React.Fragment>

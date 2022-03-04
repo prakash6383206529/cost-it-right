@@ -2,15 +2,16 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Container, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey , checkPercentageValue} from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 import { setForgingCalculatorMachiningStockSection, setPlasticArray } from '../../actions/Costing'; 
+import { object } from 'joi'
 
 function LossStandardTable(props) {
-  const { rmRowData , isLossStandard ,isNonFerrous} = props
+  const { rmRowData , isLossStandard ,isNonFerrous,disableAll} = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -149,11 +150,11 @@ function LossStandardTable(props) {
     const LossOfType = getValues('LossOfType')
     const FlashLoss = getValues('FlashLoss')
 
-  if((LossOfType?.label==="Scale Loss") || (LossOfType?.label==="Bilet Heating Loss")){
+   if((LossOfType?.label==="Scale Loss") || (LossOfType?.label==="Bilet Heating Loss")){
      
       setIsDisable(true)
    }
-  else if(LossOfType?.label==="Bar Cutting Allowance"){
+   else if(LossOfType?.label==="Bar Cutting Allowance"){
     if((BarDiameter !== undefined && BarDiameter !==0) || (BladeThickness !== undefined && BladeThickness !==0) ){
       
       setIsDisable(true)
@@ -169,8 +170,8 @@ function LossStandardTable(props) {
         setIsBarBlade(false)
       }
     }
-  }
-  else if(LossOfType?.label==="Flash Loss")  {
+   }
+   else if(LossOfType?.label==="Flash Loss")  {
 
     if((FlashLength !== undefined && FlashLength !==0) || (FlashThickness !== undefined && FlashThickness !==0)  || (FlashWidth !== undefined && FlashWidth !==0)){
         
@@ -185,9 +186,8 @@ function LossStandardTable(props) {
           setIsFlashParametersDisable(false)
         }
       }
-  } 
+    } 
   
-   
     
     const forgeWeight = props.forgeValue
     let LossWeight = 0;
@@ -218,7 +218,6 @@ function LossStandardTable(props) {
     }
     
     setValue('LossWeight', checkForDecimalAndNull(LossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-    
     setLossWeight(LossWeight)
     
   }
@@ -249,8 +248,11 @@ function LossStandardTable(props) {
     const BladeThickness = checkForNull(getValues('BladeThickness'))
     setDisableLossType(false)
     setFlashLossType(false)
+    if(Object.keys(errors).length>0){
+      return false
+    }
   
-
+  
   
     if ( LossWeight === 0 || LossOfType==='') {
       Toaster.warning("Please add data first.")
@@ -294,6 +296,7 @@ function LossStandardTable(props) {
       FlashLoss:getValues('FlashLoss')?.label,
       FlashLossId:getValues('FlashLoss')?.value
     }
+ 
     if (isEdit) {
       tempArray = Object.assign([...tableData], { [editIndex]: obj })
       setTableData(tempArray)   
@@ -491,14 +494,14 @@ if(value !== undefined && value !==0  && value !==''){
             className=""
             customClassName={'withBorder'}
             errors={errors.LossOfType}
-            disabled={props.CostingViewMode || disableLossType }
+            disabled={props.CostingViewMode || disableLossType || disableAll}
           />
         </Col>
         
         {scaleandBiletLossType&&
         <>
         <Col md="2">
-          <TextFieldHookForm
+          <NumberFieldHookForm
             label={`Loss(%)`}
             name={'LossPercentage'}
             Controller={Controller}
@@ -523,7 +526,7 @@ if(value !== undefined && value !==0  && value !==''){
             className=""
             customClassName={'withBorder'}
             errors={errors.LossPercentage}
-            disabled={props.CostingViewMode}
+            disabled={props.CostingViewMode||disableAll}
           />
         </Col>
         </>}
@@ -531,7 +534,7 @@ if(value !== undefined && value !==0  && value !==''){
         {barCuttingAllowanceLossType&&
         <>
         <Col md="2">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Bar Diameter(mm)`}
                       name={'BarDiameter'}
                       Controller={Controller}
@@ -541,15 +544,9 @@ if(value !== undefined && value !==0  && value !==''){
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{1,3}(\.\d{0,3})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 3',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={()=>{}}
                       defaultValue={''}
@@ -562,7 +559,7 @@ if(value !== undefined && value !==0  && value !==''){
                  
                   
                   <Col md="2" className='px-1'>
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Blade Thickness(mm)`}
                       name={'BladeThickness'}
                       Controller={Controller}
@@ -572,15 +569,9 @@ if(value !== undefined && value !==0  && value !==''){
                       rules={{
                         required: false,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{1,3}(\.\d{0,3})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 3',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={()=>{}}
                       defaultValue={''}
@@ -617,14 +608,14 @@ if(value !== undefined && value !==0  && value !==''){
             className=""
             customClassName={'withBorder'}
             errors={errors.FlashLoss}
-            disabled={props.CostingViewMode|| disableFlashType}
+            disabled={props.CostingViewMode|| disableFlashType|| disableAll}
           />
         </Col>
         </>}
         {useFormula&&
         <>
                 <Col md="3">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Flash Length(mm)`}
                       name={'FlashLength'}
                       Controller={Controller}
@@ -634,15 +625,9 @@ if(value !== undefined && value !==0  && value !==''){
                       rules={{
                         required: true,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{1,3}(\.\d{0,3})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 3',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -653,7 +638,7 @@ if(value !== undefined && value !==0  && value !==''){
                     />
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Flash Thickness(mm)`}
                       name={'FlashThickness'}
                       Controller={Controller}
@@ -663,15 +648,9 @@ if(value !== undefined && value !==0  && value !==''){
                       rules={{
                         required: true,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{1,3}(\.\d{0,3})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 3',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -682,7 +661,7 @@ if(value !== undefined && value !==0  && value !==''){
                     />
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Flash Width(mm)`}
                       name={'FlashWidth'}
                       Controller={Controller}
@@ -692,15 +671,9 @@ if(value !== undefined && value !==0  && value !==''){
                       rules={{
                         required: true,
                         pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
+                          value: /^\d{1,3}(\.\d{0,3})?$/i,
+                          message: 'Maximum length for interger is 3 and for decimal is 3',
                         },
-                        maxLength: {
-                          value: 11,
-                          message: 'Length should not be more than 11'
-                        },
-                        // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -714,7 +687,7 @@ if(value !== undefined && value !==0  && value !==''){
                   {percentage&&
                   <>
                   <Col md="2">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Loss(%)`}
                     name={'LossPercentage'}
                     Controller={Controller}
@@ -739,12 +712,12 @@ if(value !== undefined && value !==0  && value !==''){
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.LossPercentage}
-                    disabled={props.CostingViewMode}
+                    disabled={props.CostingViewMode|| disableAll}
                   />
                </Col>
         </>}       
         <Col md="2">
-          <TextFieldHookForm
+          <NumberFieldHookForm
             label={`Loss Weight`}
             name={'LossWeight'}
             Controller={Controller}
@@ -765,7 +738,7 @@ if(value !== undefined && value !==0  && value !==''){
             className=""
             customClassName={'withBorder'}
             errors={errors.LossWeight}
-            disabled={isDisable}
+            disabled={isDisable|| disableAll}
           />
         </Col>
         <Col md="3" className="pr-0">
@@ -773,7 +746,7 @@ if(value !== undefined && value !==0  && value !==''){
             {isEdit ? (
               <>
                 <button
-                  type="submit"
+                  type="button"
                   className={'btn btn-primary mt30 pull-left mr5'}
                   onClick={() => addRow()}
                 >
@@ -790,10 +763,10 @@ if(value !== undefined && value !==0  && value !==''){
               </>
             ) : (
               <button
-                type="submit"
+                type="button"
                 className={'user-btn mt30 pull-left'}
                 onClick={addRow}
-                disabled={props.CostingViewMode}
+                disabled={props.CostingViewMode|| disableAll}
               >
                 <div className={'plus'}></div>ADD
               </button>
@@ -838,13 +811,13 @@ if(value !== undefined && value !==0  && value !==''){
                               <button
                                 className="Edit mr-2"
                                 type={'button'}
-                                disabled={props.CostingViewMode}
+                                disabled={props.CostingViewMode|| disableAll}
                                 onClick={() => editRow(index)}
                               />
                               <button
                                 className="Delete"
                                 type={'button'}
-                                disabled={props.CostingViewMode}
+                                disabled={props.CostingViewMode|| disableAll}
                                 onClick={() => deleteRow(index)}
                               />
                             </React.Fragment>

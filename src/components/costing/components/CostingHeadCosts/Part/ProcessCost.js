@@ -32,12 +32,12 @@ function ProcessCost(props) {
   const trimValue = getConfigurationKey()
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
- 
+
   const [calciIndex, setCalciIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const [Ids, setIds] = useState([])
-  const [MachineIds,setMachineIds]= useState([])
+  const [MachineIds, setMachineIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
   const [oldGridData, setOldGridData] = useState(data && data.CostingProcessCostResponse)
@@ -107,7 +107,6 @@ function ProcessCost(props) {
   }
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
-    console.log('weightData: ', weightData);
 
     setIsCalculator(false)
     if (Object.keys(weightData).length === 0) return false;
@@ -134,7 +133,7 @@ function ProcessCost(props) {
     tempData = {
       ...tempData,
       Quantity: tempData.UOMType === TIME ? checkForNull(weightData.ProcessCost / weightData.MachineRate) : weightData.Quantity,
-      ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.Quantity):'-',
+      ProductionPerHour: tempData.UOMType === TIME ? checkForNull(weightData.PartPerHour) : '-',
       ProcessCost: weightData.ProcessCost,
       IsCalculatedEntry: true,
       ProcessCalculationId: weightData.ProcessCalculationId,
@@ -213,7 +212,7 @@ function ProcessCost(props) {
           ProcessCost: el.MachineRate * processQuantity,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId,
-          ProductionPerHour:'-'
+          ProductionPerHour: '-'
         }
       })
 
@@ -252,7 +251,7 @@ function ProcessCost(props) {
    */
   const selectedIds = (tempArr) => {
     tempArr && tempArr.map((el) => {
-      console.log('el: ', el);
+
       if (Ids.includes(el.ProcessId) === false) {
         let selectedIds = Ids
         selectedIds.push(el.ProcessId)
@@ -288,7 +287,7 @@ function ProcessCost(props) {
       }
 
       let selectedIds = []
-      let selectedMachineIds=[]
+      let selectedMachineIds = []
       tempArrAfterDelete.map(el => {
         selectedIds.push(el.ProcessId)
         selectedMachineIds.push(el.MachineRateId)
@@ -307,7 +306,7 @@ function ProcessCost(props) {
 
 
 
- 
+
 
   const handleQuantityChange = (event, index) => {
     let tempArr = []
@@ -490,7 +489,7 @@ function ProcessCost(props) {
                     <th style={{ width: "170px" }}>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
-                    <th style={{width: "220px"}}>{`Part/Hour`}</th>
+                    <th style={{ width: "220px" }}>{`Part/Hour`}</th>
                     <th style={{ width: "220px" }}>{`Quantity`}</th>
                     <th style={{ width: "220px" }} >{`Net Cost`}</th>
                     <th style={{ width: "145px" }}>{`Action`}</th>
@@ -505,7 +504,7 @@ function ProcessCost(props) {
                           <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
-                          <td>{item?.ProductionPerHour ? item.ProductionPerHour:'-'}</td>
+                          <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                           <td style={{ width: 150 }}>
                             <span className="d-inline-block w90px mr-2">
                               {

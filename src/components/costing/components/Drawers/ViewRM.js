@@ -139,7 +139,8 @@ function ViewRM(props) {
                   )}
                 </tbody>
               </Table>
-            </Col>
+            </Col> 
+            
             {viewCostingData[props.index].isApplyMasterBatch &&
               <>
                 < Col md="12">

@@ -947,14 +947,14 @@ const CostingSummaryTable = (props) => {
                        </th></tr>} 
 
                     <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
-                      <th>Net RM Cost</th>
+                      <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              <span>{!simulationDrawer && !(Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) ? checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                              <span>{checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                (!simulationDrawer && data.CostingHeading !== VARIANCE && !(Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && icons) &&
+                                (data.CostingHeading !== VARIANCE  && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1028,15 +1028,15 @@ const CostingSummaryTable = (props) => {
                      </th></tr>}
 
                     <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nConvCost > viewCostingData[1].nConvCost ? 'green-row' : viewCostingData[0].nConvCost < viewCostingData[1].nConvCost ? 'red-row' : '' : '-'}`}>
-                      <th>Net Conversion Cost</th>
+                      <th>Net Conversion Cost{simulationDrawer && (Number(master) === Number(OPERATIONS)) && '(Old)'}</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
 
-                              <span>{!simulationDrawer && !(Number(master) === Number(OPERATIONS)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                (data.CostingHeading !== VARIANCE && !simulationDrawer && !(Number(master) === Number(OPERATIONS)) && icons) &&
+                                (data.CostingHeading !== VARIANCE &&  icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1085,13 +1085,13 @@ const CostingSummaryTable = (props) => {
 
 
                     <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nsTreamnt > viewCostingData[1].nsTreamnt ? 'green-row' : viewCostingData[0].nsTreamnt < viewCostingData[1].nsTreamnt ? 'red-row' : '' : '-'}`}>
-                      <th>Net Surface Treatment Cost</th>
+                      <th>Net Surface Treatment Cost{simulationDrawer && (Number(master) === Number(SURFACETREATMENT)) && '(Old)'}</th>
 
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             < td >
-                              <span>{!simulationDrawer && !(Number(master) === Number(SURFACETREATMENT)) ? data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</span>
+                              <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.netSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
                                 (data.CostingHeading !== VARIANCE && icons && !(Number(master) === Number(SURFACETREATMENT))) &&
                                 <button
@@ -1423,9 +1423,9 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
                     {
-                      !simulationDrawer &&
+                     
                       <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : viewCostingData[0].nPOPrice < viewCostingData[1].nPOPrice ? 'red-row' : '' : '-'}`}>
-                        <th>Net PO Price (INR)</th>
+                        <th>Net PO Price (INR){simulationDrawer && '(Old)'}</th>
                         {viewCostingData &&
                           viewCostingData.map((data, index) => {
                             return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -1451,9 +1451,9 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
                     {
-                      !simulationDrawer &&
+                     
                       <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
-                        <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}) </th>
+                        <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}){simulationDrawer && '(Old)'}</th>
                         {/* {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return <td>Net PO Price({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
