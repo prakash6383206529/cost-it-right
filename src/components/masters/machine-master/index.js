@@ -248,11 +248,11 @@ class MachineMaster extends Component {
                                             />
                                         </TabPane>}
 
-                                </TabContent>
-                            </div>
-                        </Col>
-                    </Row>
-                </div>
+                                </TabContent >
+                            </div >
+                        </Col >
+                    </Row >
+                </div >
             </>
         );
     }

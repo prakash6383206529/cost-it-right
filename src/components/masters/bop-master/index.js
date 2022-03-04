@@ -253,10 +253,10 @@ class BOPMaster extends Component {
                     />
                   </TabPane>}
 
-              </TabContent>
-            </Col>
-          </Row>
-        </div>
+              </TabContent >
+            </Col >
+          </Row >
+        </div >
       </>
     );
   }

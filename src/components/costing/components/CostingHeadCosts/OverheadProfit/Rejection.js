@@ -31,8 +31,8 @@ function Rejection(props) {
         //REJECTION FIELDS
         Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
         RejectionPercentage: CostingRejectionDetail && CostingRejectionDetail.RejectionPercentage !== null ? CostingRejectionDetail.RejectionPercentage : '',
-        RejectionCost: CostingRejectionDetail && CostingRejectionDetail.RejectionCost !== null ? CostingRejectionDetail.RejectionCost : '',
-        RejectionTotalCost: CostingRejectionDetail && CostingRejectionDetail.RejectionTotalCost !== null ? CostingRejectionDetail.RejectionTotalCost : '',
+        RejectionCost: CostingRejectionDetail && CostingRejectionDetail.RejectionCost !== null ? checkForDecimalAndNull(CostingRejectionDetail.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        RejectionTotalCost: CostingRejectionDetail && CostingRejectionDetail.RejectionTotalCost !== null ? checkForDecimalAndNull(CostingRejectionDetail.RejectionTotalCost, initialConfiguration.NoOfDecimalForPrice) : '',
     }
     const dispatch = useDispatch()
 
@@ -55,19 +55,19 @@ function Rejection(props) {
 
     useEffect(() => {
         checkRejectionApplicability(applicability.label)
-     
+
 
     }, [rejectionFieldValues]);
 
 
-    useEffect(()=>{
+    useEffect(() => {
         setTimeout(() => {
             let tempObj = {
                 "RejectionApplicabilityId": applicability ? applicability.value : '',
                 "RejectionApplicability": applicability ? applicability.label : '',
                 "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
                 "RejectionCost": applicability ? rejectionObj.RejectionCost : '',
-                "RejectionTotalCost": applicability ?rejectionObj.RejectionTotalCost : '',
+                "RejectionTotalCost": applicability ? rejectionObj.RejectionTotalCost : '',
                 "IsSurfaceTreatmentApplicable": true,
             }
 
@@ -75,7 +75,7 @@ function Rejection(props) {
                 props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
         }, 200)
-    },[rejectionObj])
+    }, [rejectionObj])
 
 
     /**
@@ -87,7 +87,7 @@ function Rejection(props) {
 
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
-                if (item.Value === '0' || item.Text ==='Net Cost') return false;
+                if (item.Value === '0' || item.Text === 'Net Cost') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
