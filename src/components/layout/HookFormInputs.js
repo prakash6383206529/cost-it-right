@@ -137,11 +137,12 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading, customClassName } = field;
+    isClearable, control, errors, register, isLoading, customClassName, isMulti } = field;
 
 
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
+  let isMultiple = (isMulti === true) ? true : false;
 
   return (
     <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
@@ -174,6 +175,7 @@ export const SearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
+              isMulti={isMultiple}
             />
           )
 
@@ -306,7 +308,6 @@ export const DatePickerHookForm = (field) => {
 // import Typography from "../typography";
 // import "./radioButtons.less";
 // export const RadioHookForm = (field) => {
-//   console.log('field: ', field);
 //   const { dataArray = [], label = "label", optionsValue = "optionsValue", labelElement = '', className, selectedValue = "", register, name, onChange = null, defaultValue } = field
 
 //   const onChangeSelect = (val) => {
@@ -357,7 +358,6 @@ export const DatePickerHookForm = (field) => {
 
 
 export const RadioHookForm = (field) => {
-  // console.log('field: ', field);
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
   const className = `${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -370,34 +370,34 @@ export const RadioHookForm = (field) => {
         <label className="label-container">
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
-       
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          {...register}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, onBlur, value, name } }) => {
-            return (
-              <input
-                {...field}
-                {...register}
-                type="radio"
-                name={name}
-                checked={defaultValue}
-                // className={InputClassName}
-                disabled={isDisabled}
-                value={value}
-                onChange={(e) => {
-                  handleChange(e);
-                  onChange(e)
-                }}
-              />
-            )
-          }
-          }
-        />
-         </label>
+
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            {...register}
+            defaultValue={defaultValue}
+            render={({ field: { onChange, onBlur, value, name } }) => {
+              return (
+                <input
+                  {...field}
+                  {...register}
+                  type="radio"
+                  name={name}
+                  checked={defaultValue}
+                  // className={InputClassName}
+                  disabled={isDisabled}
+                  value={value}
+                  onChange={(e) => {
+                    handleChange(e);
+                    onChange(e)
+                  }}
+                />
+              )
+            }
+            }
+          />
+        </label>
         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
       </div>
     </>
@@ -444,7 +444,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
-              noOptionsMessage={({inputValue}) => !inputValue ? NoOptionMessage : "No results found"}
+              noOptionsMessage={({ inputValue }) => !inputValue ? NoOptionMessage : "No results found"}
             />
           )
 

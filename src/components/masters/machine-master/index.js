@@ -226,6 +226,7 @@ class MachineMaster extends Component {
                                                 DownloadAccessibility={this.state.DownloadAccessibility}
                                                 ViewAccessibility={this.state.ViewAccessibility}
                                                 isMasterSummaryDrawer={false}
+                                                selectionForListingMasterAPI='Master'
                                             />
                                         </TabPane>}
 

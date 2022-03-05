@@ -8,7 +8,7 @@ import {
     getRawMaterialFilterSelectList,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -26,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -37,7 +38,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply } = props;
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
 
 
 
@@ -86,12 +87,13 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
-
-        if (isSimulation) {
-
-            setvalue({ min: 0, max: 0 });
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, () => { }))
         }
-        getDataList()
+        setvalue({ min: 0, max: 0 });
+        if (selectionForListingMasterAPI === 'Master') {
+            getDataList()
+        }
     }, [])
 
 
@@ -267,9 +269,9 @@ function RMDomesticListing(props) {
     }
 
     /**
-  * @method shearingCostFormatter
-  * @description Renders buttons
-  */
+    * @method shearingCostFormatter
+    * @description Renders buttons
+    */
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
