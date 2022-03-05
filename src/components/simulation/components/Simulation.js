@@ -4,7 +4,7 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getSelectListOfMasters, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
+import { getListingForSimulationCombined, getSelectListOfMasters, getTokenSelectListAPI, setMasterForSimulation, setTechnologyForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID } from '../../../config/constants';
@@ -21,7 +21,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredData, getOtherCostingSimulation, isUploadSimulation, userDetails } from '../../../helper';
+import { applyEditCondSimulation, getFilteredData, getOtherCostingSimulation, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
@@ -45,7 +45,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState({})
     const [technology, setTechnology] = useState({})
@@ -58,6 +58,10 @@ function Simulation(props) {
     const [editWarning, setEditWarning] = useState(true)
     const [onLoad, setOnLoad] = useState(false)
     const [filterStatus, setFilterStatus] = useState('')
+    const [token, setToken] = useState([])
+    const [showTokenDropdown, setShowTokenDropdown] = useState(false)
+    const [selectionForListingMasterAPI, setSelectionForListingMasterAPI] = useState('')
+    const [objectForCombinedTokenAPI, setObjectForCombinedTokenAPI] = useState('')
 
     const dispatch = useDispatch()
 
@@ -90,16 +94,23 @@ function Simulation(props) {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
         setMaster(value)
         setShowMasterList(false)
+        setShowTokenDropdown(false)
         setTechnology({ label: '', value: '' })
         setValue('Technology', '')
         dispatch(setMasterForSimulation(value))
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
-            // setEditWarning(applyEditCondSimulation(getValues('Masters').value))
+            setSelectionForListingMasterAPI('Master')
+            setShowTokenDropdown(true)
             setShowMasterList(true)
+            let obj = {
+                technologyId: value.value,
+                loggedInUserId: loggedInUserId(),
+                simulationTechnologyId: (String(master.value) === BOPDOMESTIC || String(master.value) === BOPIMPORT || String(master.value) === EXCHNAGERATE || master.value === undefined) ? 0 : master.value
+            }
+            dispatch(getTokenSelectListAPI(obj, () => { }))
         }
         setEditWarning(applyEditCondSimulation(value.value))
         setFilterStatus(`Please check the ${(value.label)} that you want to edit.`)
-
     }
 
     const handleTechnologyChange = (value) => {
@@ -107,12 +118,26 @@ function Simulation(props) {
         setTechnology(value)
         setShowMasterList(false)
         setEditWarning(true);
+        setToken([])
+        setValue('token', '')
+        setSelectionForListingMasterAPI('Master')
         setTimeout(() => {
             dispatch(setTechnologyForSimulation(value))
+            let obj = {
+                technologyId: value.value,
+                loggedInUserId: loggedInUserId(),
+                simulationTechnologyId: master.value
+            }
+            dispatch(getTokenSelectListAPI(obj, () => { }))
             if (value !== '' && Object.keys(master).length > 0) {
                 setShowMasterList(true)
+                setShowTokenDropdown(true)
             }
         }, 100);
+    }
+
+    const handleTokenChange = (value) => {
+        setToken(value)
     }
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -186,23 +211,44 @@ function Simulation(props) {
     }
 
     const renderModule = (value) => {
+        let temp = userDetails().Department
+        temp = temp && temp.map((item) => {
+            item = item.DepartmentCode
+            return item
+        })
+        let tempValue = token
+        tempValue = tempValue && tempValue.map((item) => {
+            let object = {}
+            object.SimulationId = item.value
+            return object
+        })
+
+        let obj = {
+
+            MasterId: master.value,
+            TechnologyId: technology.value,
+            // DepartmentCode: temp.join(),
+            DepartmentCode: '',
+            SimulationIds: tempValue
+        }
+
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} apply={editTable} objectForMultipleSimulation={obj} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             case MACHINERATE:
-                return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
+                return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} />)
+                return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             case EXCHNAGERATE:
-                return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} />)
+                return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={token} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={OPERATIONS} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             case SURFACETREATMENT:
-                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} apply={editTable} isOperationST={SURFACETREATMENT} />)
+                return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} />)
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
@@ -250,6 +296,14 @@ function Simulation(props) {
 
         if (label === 'technology') {
             technologySelectList && technologySelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'token') {
+            getTokenSelectList && getTokenSelectList.map((item) => {
                 if (item.Value === '0') return false
                 temp.push({ label: item.Text, value: item.Value })
                 return null
@@ -681,21 +735,21 @@ function Simulation(props) {
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} master={master.label} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={token} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} master={master.label} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={token} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
-                return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} />
+                return <ERSimulation cancelEditPage={cancelEditPage} list={exchangeRateDataList} technology={technology.label} master={master.label} tokenForMultiSimulation={token} />
             case SURFACETREATMENT:
-                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <OperationSTSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={token} />
             case OPERATIONS:
-                return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <OperationSTSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={token} />
             case MACHINERATE:
-                return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <MRSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={token} />
             case BOPDOMESTIC:
-                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={token} />
             case BOPIMPORT:
-                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
+                return <BDSimulation isOperation={true} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={token} />
             // case BOPIMPORT:
             //     return <OverheadSimulation isOperation={true} openEditPageReload={openEditPageReload} cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} />
             // case BOPIMPORT:
@@ -705,6 +759,44 @@ function Simulation(props) {
         }
     }
 
+    const callAPIOnClick = () => {
+        // let temp = userDetails().Department
+        // temp = temp && temp.map((item) => {
+        //     item = item.DepartmentCode
+        //     return item
+        // })
+        // let tempValue = token
+        // tempValue = tempValue && tempValue.map((item) => {
+        //     let object = {}
+        //     object.SimulationId = item.value
+        //     return object
+        // })
+
+
+        // let obj = {
+
+        //     MasterId: Number(master.value),
+        //     TechnologyId: Number(technology.value),
+        //     // DepartmentCode: temp.join(),
+        //     DepartmentCode: '',
+        //     SimulationIds: tempValue
+        // }
+        // dispatch(getListingForSimulationCombined(obj, RMDOMESTIC, () => { }))
+        setSelectionForListingMasterAPI('Combined')
+        // setObjectForCombinedTokenAPI(obj)
+
+        setShowMasterList(false)
+        setEditWarning(true);
+        // renderModule('')
+        setTimeout(() => {
+            // dispatch(setTechnologyForSimulation(value))
+            // if (value !== '' && Object.keys(master).length > 0) {
+            // }
+            setShowMasterList(true)
+            // renderModule(master)
+        }, 700);
+
+    }
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (location?.state?.isFromApprovalListing === true) {
@@ -774,6 +866,32 @@ function Simulation(props) {
                                     </div>
                                 </div>
                             }
+                            {showTokenDropdown &&
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="flex-fills label">Token:</div>
+                                    <div className="flex-fills hide-label pl-0">
+                                        <SearchableSelectHookForm
+                                            label={''}
+                                            name={'token'}
+                                            placeholder={'token'}
+                                            valueDescription={token}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: false }}
+                                            register={register}
+                                            // defaultValue={technology.length !== 0 ? technology : ''}
+                                            options={renderListing('token')}
+                                            mandatory={false}
+                                            handleChange={handleTokenChange}
+                                            errors={errors.Masters}
+                                            isMulti={true}
+                                        />
+                                    </div>
+                                </div>
+                            }
+                            {(token?.length !== 0 && token !== null) && <button className='user-btn' onClick={callAPIOnClick}>
+                                <div className='save-icon'></div>
+                            </button>}
                         </Col>
                     </Row>
 

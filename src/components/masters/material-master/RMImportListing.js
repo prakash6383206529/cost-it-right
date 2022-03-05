@@ -7,7 +7,7 @@ import {
   , getVendorListByVendorType
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -22,13 +22,14 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList} from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -38,7 +39,7 @@ const gridOptions = {};
 
 
 function RMImportListing(props) {
-  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility } = props;
+  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
 
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
@@ -86,9 +87,14 @@ function RMImportListing(props) {
 
     if (isSimulation) {
 
+      if (selectionForListingMasterAPI === 'Combined') {
+        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => { }))
+      }
       setvalue({ min: 0, max: 0 });
     }
-    getDataList()
+    if (selectionForListingMasterAPI === 'Master') {
+      getDataList()
+    }
   }, [])
 
 
@@ -208,20 +214,20 @@ function RMImportListing(props) {
     let isEditbale = false
     let isDeleteButton = false
 
-    
-      if (EditAccessibility && !rowData.IsRMAssociated) {
-        isEditbale = true
-      } else {
-        isEditbale = false
-      }
-    
-    
-      if (DeleteAccessibility && !rowData.IsRMAssociated) {
-        isDeleteButton = true
-      } else {
-        isDeleteButton = false
-      }
-    
+
+    if (EditAccessibility && !rowData.IsRMAssociated) {
+      isEditbale = true
+    } else {
+      isEditbale = false
+    }
+
+
+    if (DeleteAccessibility && !rowData.IsRMAssociated) {
+      isDeleteButton = true
+    } else {
+      isDeleteButton = false
+    }
+
 
     return (
       <>
@@ -441,7 +447,7 @@ function RMImportListing(props) {
   }
 
 
-  
+
   return (
     <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
       {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
@@ -561,7 +567,7 @@ function RMImportListing(props) {
                 <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
 
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                
+
                 <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

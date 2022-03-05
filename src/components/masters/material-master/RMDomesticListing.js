@@ -8,7 +8,7 @@ import {
     getRawMaterialFilterSelectList
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -23,9 +23,10 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData,userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData, userDepartmetList } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -37,8 +38,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
-
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, ViewRMAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
 
 
 
@@ -89,12 +89,13 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
-
-        if (isSimulation) {
-
-            setvalue({ min: 0, max: 0 });
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, () => { }))
         }
-        getDataList()
+        setvalue({ min: 0, max: 0 });
+        if (selectionForListingMasterAPI === 'Master') {
+            getDataList()
+        }
     }, [])
 
 
@@ -212,19 +213,19 @@ function RMDomesticListing(props) {
         let isEditbale = false
         let isDeleteButton = false
 
-    
-            if (EditAccessibility && !rowData.IsRMAssociated) {
-                isEditbale = true
-            } else {
-                isEditbale = false
-            }
+
+        if (EditAccessibility && !rowData.IsRMAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
 
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+        if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
 
         return (
@@ -290,9 +291,9 @@ function RMDomesticListing(props) {
     }
 
     /**
-  * @method shearingCostFormatter
-  * @description Renders buttons
-  */
+    * @method shearingCostFormatter
+    * @description Renders buttons
+    */
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
@@ -584,9 +585,9 @@ function RMDomesticListing(props) {
                                 <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-            
+
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-                                
+
                                 {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>

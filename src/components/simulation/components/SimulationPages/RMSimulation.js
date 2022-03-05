@@ -27,7 +27,7 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -132,6 +132,13 @@ function RMSimulation(props) {
             }
             return null;
         })
+        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
+            let obj = {}
+            obj.SimulationId = item.value
+            return obj
+
+        })
+        obj.SimulationIds = tempObject
         obj.SimulationRawMaterials = tempArr
         dispatch(runVerifySimulation(obj, res => {
             setIsDisable(false)

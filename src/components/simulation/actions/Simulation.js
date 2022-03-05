@@ -28,6 +28,25 @@ import {
     GET_VERIFY_OVERHEAD_SIMULATION_LIST,
     GET_VERIFY_PROFIT_SIMULATION_LIST,
     SET_SHOW_SIMULATION_PAGE,
+    GET_TOKEN_SELECT_LIST,
+    GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA,
+    RMDOMESTIC,
+    RMIMPORT,
+    BOPDOMESTIC,
+    GET_RM_IMPORT_LIST,
+    GET_BOP_DOMESTIC_DATA_LIST,
+    BOPIMPORT,
+    GET_BOP_IMPORT_DATA_LIST,
+    OPERATIONS,
+    GET_OPERATION_COMBINED_DATA_LIST,
+    SURFACETREATMENT,
+    MACHINERATE,
+    GET_MACHINE_DATALIST_SUCCESS,
+    EXCHNAGERATE,
+    EXCHANGE_RATE_DATALIST,
+    PROCESS,
+    GET_RM_DOMESTIC_LIST,
+    GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -188,6 +207,10 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
                     payload: response.data.Data.SimulatedCostingList
+                })
+                dispatch({
+                    type: GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION,
+                    payload: response.data.Data?.SimulatedCostingListALLKEYS
                 })
                 callback(response)
             }
@@ -642,7 +665,8 @@ export function getImpactedMasterData(simulationId, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,
-                    payload: response.data.Data.ImpactedMasterDataList,
+                    payload: response.data.Data,
+                    // payload: response.data.Data.ImpactedMasterDataList,
                 });
                 callback(response);
             }
@@ -976,3 +1000,155 @@ export function setShowSimulationPage(Data) {
         // callback();
     }
 };
+
+/**
+* @method getTokenSelectList
+* @description Used to get select list of Vendor's
+*/
+export function getTokenSelectListAPI(obj, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TOKEN_SELECT_LIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getListingForSimulationCombined(requestData, master, callback) {
+    return (dispatch) => {
+        switch (master) {
+            case RMDOMESTIC:
+                dispatch({
+                    type: GET_RM_DOMESTIC_LIST,
+                    payload: []
+                })
+                break;
+
+            case RMIMPORT:
+                dispatch({
+                    type: GET_RM_IMPORT_LIST,
+                    payload: []
+                })
+                break;
+
+            case BOPDOMESTIC:
+                dispatch({
+                    type: GET_BOP_DOMESTIC_DATA_LIST,
+                    payload: []
+                })
+                break;
+
+            case BOPIMPORT:
+                dispatch({
+                    type: GET_BOP_IMPORT_DATA_LIST,
+                    payload: []
+                })
+                break;
+
+            case OPERATIONS:
+            case SURFACETREATMENT:
+                dispatch({
+                    type: GET_OPERATION_COMBINED_DATA_LIST,
+                    payload: []
+                })
+                break;
+
+            case MACHINERATE:
+                dispatch({
+                    type: GET_MACHINE_DATALIST_SUCCESS,
+                    payload: []
+                })
+                break;
+
+            case EXCHNAGERATE:
+                dispatch({
+                    type: EXCHANGE_RATE_DATALIST,
+                    payload: []
+                })
+                break;
+
+            //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
+
+            default:
+                break;
+        }
+        const request = axios.post(`${API.getListingForSimulationCombined}`, requestData, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                switch (master) {
+                    case RMDOMESTIC:
+                        dispatch({
+                            type: GET_RM_DOMESTIC_LIST,
+                            payload: response.data.DataList
+                        })
+                        break;
+
+                    case RMIMPORT:
+                        dispatch({
+                            type: GET_RM_IMPORT_LIST,
+                            payload: response.data.DataList
+                        })
+                        break;
+
+                    case BOPDOMESTIC:
+                        dispatch({
+                            type: GET_BOP_DOMESTIC_DATA_LIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case BOPIMPORT:
+                        dispatch({
+                            type: GET_BOP_IMPORT_DATA_LIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case OPERATIONS:
+                    case SURFACETREATMENT:
+                        dispatch({
+                            type: GET_OPERATION_COMBINED_DATA_LIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case MACHINERATE:
+                        dispatch({
+                            type: GET_MACHINE_DATALIST_SUCCESS,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case EXCHNAGERATE:
+                        dispatch({
+                            type: EXCHANGE_RATE_DATALIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
+
+                    default:
+                        break;
+                }
+
+            }
+            callback(response)
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
