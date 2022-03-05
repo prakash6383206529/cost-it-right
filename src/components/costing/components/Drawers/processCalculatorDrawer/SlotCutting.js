@@ -460,7 +460,8 @@ function SlotCutting(props) {
                         rules={{
                           required: false,
                           pattern: {
-                            value: /^[0-9\b]+$/i,
+                            // value: /^[0-9\b]+$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
                           // maxLength: 4,

@@ -403,8 +403,7 @@ function Drilling(props) {
             <div className="mt25 col-md-12 text-right">
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn" >
                 <div className={'cancel-icon'}></div> CANCEL </button>
-              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}>
-               
+              <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false} >
                 <div className={'save-icon'}></div> {'SAVE'}
               </button>
             </div>

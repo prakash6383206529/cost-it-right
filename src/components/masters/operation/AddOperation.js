@@ -45,6 +45,7 @@ class AddOperation extends Component {
       selectedVendorPlants: [],
       oldDate: '',
       UOM: [],
+      oldUOM: [],
       isDateChange: false,
       IsSendForApproval: false,
       IsFinancialDataChanged: true,
@@ -374,6 +375,7 @@ class AddOperation extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,
@@ -559,7 +561,7 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
     const { initialConfiguration, filedObj } = this.props;
     const userDetail = userDetails()
 
@@ -633,7 +635,7 @@ class AddOperation extends Component {
 
       }
 
-      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
         this.cancel()
         return false
       }
@@ -700,7 +702,7 @@ class AddOperation extends Component {
         }
 
 
-        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && uploadAttachements) {
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
           this.cancel()
           return false
         } else {
@@ -907,7 +909,7 @@ class AddOperation extends Component {
                             optionLabel={(option) => option.Text}
                             component={renderMultiSelectField}
                             validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                            mendatory={true}   
+                            mendatory={true}
                             className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
                           />
