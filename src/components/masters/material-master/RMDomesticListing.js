@@ -102,7 +102,6 @@ function RMDomesticListing(props) {
             }
             getDataList()
         }
-        getDataList()
     }, [])
 
 
@@ -286,9 +285,9 @@ function RMDomesticListing(props) {
     }
 
     /**
-  * @method shearingCostFormatter
-  * @description Renders buttons
-  */
+    * @method shearingCostFormatter
+    * @description Renders buttons
+    */
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';

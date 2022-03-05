@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, RMDOMESTIC, SURFACETREATMENT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,

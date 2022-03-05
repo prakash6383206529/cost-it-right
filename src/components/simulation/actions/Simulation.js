@@ -220,6 +220,7 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                     type: GET_COSTING_SIMULATION_LIST,
                     payload: response.data.Data.SimulatedCostingList
                 })
+
                 callback(response)
             }
         }).catch((error) => {
@@ -862,7 +863,8 @@ export function getImpactedMasterData(simulationId, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,
-                    payload: response.data.Data.ImpactedMasterDataList,
+                    payload: response.data.Data,
+                    // payload: response.data.Data.ImpactedMasterDataList,
                 });
                 callback(response);
             }
@@ -1206,6 +1208,10 @@ export function setShowSimulationPage(Data) {
     }
 };
 
+/**
+* @method getTokenSelectList
+* @description Used to get select list of Vendor's
+*/
 export function getTokenSelectListAPI(obj, callback) {
 
     return (dispatch) => {
@@ -1225,8 +1231,6 @@ export function getTokenSelectListAPI(obj, callback) {
         });
     };
 }
-
-
 
 export function getListingForSimulationCombined(requestData, master, callback) {
     return (dispatch) => {
@@ -1354,3 +1358,4 @@ export function getListingForSimulationCombined(requestData, master, callback) {
         })
     }
 }
+

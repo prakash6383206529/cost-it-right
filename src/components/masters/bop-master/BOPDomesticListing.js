@@ -25,7 +25,6 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
-
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -307,7 +306,6 @@ class BOPDomesticListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
-
     getFilterBOPData = () => {
         if (this.props.isSimulation) {
             if (this.props.selectionForListingMasterAPI === 'Combined') {
@@ -325,8 +323,6 @@ class BOPDomesticListing extends Component {
             return this.props.bopDomesticList
         }
     }
-
-
     /**
     * @method render
     * @description Renders the component

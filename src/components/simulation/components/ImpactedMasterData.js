@@ -1,8 +1,4 @@
-import React, { useState } from 'react'
-import { Row, Col } from 'reactstrap'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../helper';
-import DayTime from '../../common/DayTimeWrapper'
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import React, { useEffect } from 'react'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -43,6 +39,30 @@ export function Impactedmasterdata(props) {
         )
 
     }
+
+    //     switch (String(masterId)) {
+    //         case EXCHNAGERATE:
+    //             return <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} />
+    //         case RMDOMESTIC:
+    //             return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
+    //         case RMIMPORT:
+    //             return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
+    //         case SURFACETREATMENT:
+    //             return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />
+    //         case OPERATIONS:
+    //             return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />
+    //         case MACHINERATE:
+    //             return <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+    //         case BOPDOMESTIC:
+    //             return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+    //         case BOPIMPORT:
+    //             return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+
+
+    //         default:
+    //             break;
+    //     }
+    // }
 
     return (
         <>

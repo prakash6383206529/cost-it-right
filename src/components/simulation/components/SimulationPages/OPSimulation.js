@@ -27,7 +27,7 @@ const gridOptions = {
 
 
 function OPSImulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -98,10 +98,6 @@ function OPSImulation(props) {
             return null;
         })
 
-        console.log('OverheadApplicabilityTypeCount: ', OverheadApplicabilityTypeCount);
-        console.log('OverheadRMPercentageCount: ', OverheadRMPercentageCount);
-        console.log('OverheadMachiningCCPercentageCount: ', OverheadMachiningCCPercentageCount);
-        console.log('OverheadBOPPercentageCount: ', OverheadBOPPercentageCount);
         if (OverheadApplicabilityTypeCount === list.length && OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length
             && OverheadBOPPercentageCount === list.length) {
             Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
@@ -126,9 +122,7 @@ function OPSImulation(props) {
         }
         let tempArr = []
         list && list.map(item => {
-            console.log('list: ', list);
             let tempObj = {}
-            console.log('item: ', item);
             if (item.OverheadApplicabilityType !== item.NewOverheadApplicabilityType ||
                 Number(item.OverheadBOPPercentage) !== Number(item.NewOverheadBOPPercentage) ||
                 Number(item.OverheadRMPercentage) !== Number(item.NewOverheadRMPercentage) ||
@@ -165,13 +159,23 @@ function OPSImulation(props) {
             }
         })
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
         obj.SimulationIds = tokenForMultiSimulation
 >>>>>>> 1bb9fa597 (Token API changes in impactedmaster and api calling checkbox)
         obj.SimulationRawMaterials = tempArr
         console.log('obj: ', obj);
+=======
+        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
+            let obj = {}
+            obj.SimulationId = item.value
+            return obj
+>>>>>>> 04448985a (Token API integration)
 
+        })
+        obj.SimulationIds = tempObject
+        obj.SimulationRawMaterials = tempArr
         dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 
             setIsDisable(false)
@@ -364,7 +368,6 @@ function OPSImulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
-        console.log('value: ', value);
         return (
             <>
                 {
@@ -999,7 +1002,7 @@ function OPSImulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>

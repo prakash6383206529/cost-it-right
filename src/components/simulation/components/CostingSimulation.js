@@ -94,7 +94,6 @@ function CostingSimulation(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
 
-
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
     const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)));
@@ -116,7 +115,6 @@ function CostingSimulation(props) {
             if (item.IsAssemblyExist === true) {
                 count++
             }
-
         })
         if (count !== 0) {
             setAssemblyImpactButtonTrue(true)
@@ -129,35 +127,7 @@ function CostingSimulation(props) {
         dispatch(setShowSimulationPage(true))
     };
 
-    const reducerOldRMPrice = (array, item) => {
-        let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
-        let sum = 0
-        const arr = array.reduce((accumulator, el) => {
-            if (temparr.length === 1) {
-                if (el.CostingId === item.CostingId) {
-                    sum = el.OldRMPrice
-                }
-            } else {
-                sum = accumulator + el.OldRMPrice
-            }
-            return sum
-        }, 0)
-    }
 
-    const reducerNewRMPrice = (array, item) => {
-        let temparr = array.filter(item1 => item1.CostingId === item.CostingId)
-        let sum = 0
-        const arr = array.reduce((accumulator, el) => {
-            if (temparr.length === 1) {
-                if (el.CostingId === item.CostingId) {
-                    sum = el.NewRMPrice
-                }
-            } else {
-                sum = accumulator + el.NewRMPrice
-            }
-            return sum
-        }, 0)
-    }
 
     const getCostingList = (plantId = '', rawMatrialId = '') => {
         switch (Number(selectedMasterForSimulation?.value)) {
@@ -197,6 +167,7 @@ function CostingSimulation(props) {
                                     break;
                             }
 
+
                         })
                         let uniqeArray = []
                         const map = new Map();
@@ -219,6 +190,8 @@ function CostingSimulation(props) {
                         tempObj.Technology = Data.SimulatedCostingList[0].Technology
                         tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
                         setAmendmentDetails(tempObj)
+
+
                     }
 
                     // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
@@ -335,20 +308,10 @@ function CostingSimulation(props) {
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
-    const plantSelectList = useSelector(state => state.comman.plantSelectList)
-
-    const { rawMaterialNameSelectList } = useSelector(state => state.material)
-
     useEffect(() => {
         hideColumn()
-        // costingList && costingList.map(item => {
-        //     item.Variance = checkForDecimalAndNull(item.OldRMPrice - item.NewRMPrice, getConfigurationKey().NoOfDecimalForPrice)
-        // })
-
-
 
     }, [costingList])
-
 
 
     const runCostingDetailSimulation = () => {
@@ -1041,18 +1004,22 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
-                                                    {(isBOPDomesticOrImport || showBOPColumn) && <>
-                                                        <AgGridColumn width={140} field="OldBOPCost" headerName='Old BOP Cost' cellRenderer={fourDecimal} ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewBOPCost" headerName='New BOP Cost' cellRenderer={fourDecimal}></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={fourDecimal} ></AgGridColumn>
-                                                    </>}
+                                                    {
+                                                        (isBOPDomesticOrImport || showBOPColumn) && <>
+                                                            <AgGridColumn width={140} field="OldBOPCost" headerName='Old BOP Cost' cellRenderer={fourDecimal} ></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewBOPCost" headerName='New BOP Cost' cellRenderer={fourDecimal}></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={fourDecimal} ></AgGridColumn>
+                                                        </>}
 
-                                                    {(isMachineRate || showMachineRateColumn) && <>
-                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
-                                                    </>}
+                                                    {
+                                                        (isMachineRate || showMachineRateColumn) && <>
+                                                            <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
+                                                        </>
+                                                    }
 
-                                                    {showExchangeRateColumn &&
+                                                    {
+                                                        showExchangeRateColumn &&
                                                         <>
                                                             <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
@@ -1061,7 +1028,8 @@ function CostingSimulation(props) {
 
                                                     {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
 
-                                                    {showExchangeRateColumn &&
+                                                    {
+                                                        showExchangeRateColumn &&
                                                         <>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='PO Price Old(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='PO Price New (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
@@ -1089,7 +1057,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
                                                     <AgGridColumn width={110} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                     {/* </>} */}
-                                                </AgGridReact>
+                                                </AgGridReact >
 
                                                 <div className="paging-container d-inline-block float-right">
                                                     <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -1098,11 +1066,11 @@ function CostingSimulation(props) {
                                                         <option value="100">100</option>
                                                     </select>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </div>
+                                            </div >
+                                        </div >
+                                    </Col >
+                                </Row >
+                            </div >
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn">
 
@@ -1134,7 +1102,7 @@ function CostingSimulation(props) {
 
                                 </div>
                             </Row>
-                        </div>
+                        </div >
                         {isApprovalDrawer &&
                             <ApproveRejectDrawer
                                 isOpen={isApprovalDrawer}
@@ -1154,7 +1122,8 @@ function CostingSimulation(props) {
                             // isSaveDone={isSaveDone}
                             />}
 
-                        {isVerifyImpactDrawer &&
+                        {
+                            isVerifyImpactDrawer &&
                             <VerifyImpactDrawer
                                 isOpen={isVerifyImpactDrawer}
                                 anchor={'right'}
@@ -1170,15 +1139,17 @@ function CostingSimulation(props) {
                                 amendmentDetails={amendmentDetails}
                                 dataForAssemblyImpactInVerifyImpact={tableData}
                                 assemblyImpactButtonTrue={assemblyImpactButtonTrue}
-                            />}
-                    </div>
+                            />
+                        }
+                    </div >
 
             }
 
 
             {(showApprovalHistory || getShowSimulationPage) && <Redirect to='/simulation-history' />}
 
-            {CostingDetailDrawer &&
+            {
+                CostingDetailDrawer &&
                 <CostingDetailSimulationDrawer
                     isOpen={CostingDetailSimulationDrawer}
                     closeDrawer={closeDrawer2}
@@ -1192,7 +1163,8 @@ function CostingSimulation(props) {
                     isSimulation={true}
                 />
             }
-            {showViewAssemblyDrawer &&
+            {
+                showViewAssemblyDrawer &&
                 <ViewAssembly
                     isOpen={showViewAssemblyDrawer}
                     closeDrawer={closeAssemblyDrawer}

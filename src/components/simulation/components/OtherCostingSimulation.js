@@ -61,6 +61,13 @@ function OtherCostingSimulation(props) {
     const [noContent, setNoContent] = useState(false)
     const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
 
+    const [showBOPColumn, setShowBOPColumn] = useState(false);
+    const [showRMColumn, setShowRMColumn] = useState(false);
+    const [showOperationColumn, setShowOperationColumn] = useState(false);
+    const [showSurfaceTreatmentColumn, setShowSurfaceTreatmentColumn] = useState(false);
+    const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
+    const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false)
+    const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
 
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
@@ -151,6 +158,7 @@ function OtherCostingSimulation(props) {
 
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+    const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
@@ -394,6 +402,27 @@ function OtherCostingSimulation(props) {
         const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+    const hideColumn = (props) => {
+        setHideDataColumn({
+            hideOverhead: costingList && costingList.length > 0 && costingList[0]?.NewOverheadCost === 0 ? true : false,
+            hideProfit: costingList && costingList.length > 0 && costingList[0].NewProfitCost && costingList[0]?.NewProfitCost === 0 ? true : false,
+            hideRejection: costingList && costingList.length > 0 && costingList[0].NewRejectionCost && costingList[0]?.NewRejectionCost === 0 ? true : false,
+            hideICC: costingList && costingList.length > 0 && costingList[0].NewICCCost && costingList[0]?.NewICCCost === 0 ? true : false,
+            hidePayment: costingList && costingList.length > 0 && costingList[0].NewPaymentTermsCost && costingList[0]?.NewPaymentTermsCost === 0 ? true : false,
+            hideOtherCost: costingList && costingList.length > 0 && costingList[0].NewOtherCost && costingList[0]?.NewOtherCost === 0 ? true : false,
+            hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost && costingList[0]?.NewDiscountCost === 0 ? true : false,
+            hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost && costingList[0]?.NewNetOverheadAndProfitCost === 0 ? true : false
+        })
+        setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
+        setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
+        setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
+        setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
+        setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
+        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
+        setShowCombinedProcessColumn(costingSimulationListAllKeys?.IsCombinedProcessSimulation === true ? true : false)
+
+
+    }
 
     const VarianceFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -457,18 +486,7 @@ function OtherCostingSimulation(props) {
     }
 
 
-    const hideColumn = (props) => {
-        setHideDataColumn({
-            hideOverhead: tableData && tableData.length > 0 && NewOverheadCostReducer(tableData, 'NewOverheadCost'),
-            hideProfit: tableData && tableData.length > 0 && NewProfitCostReducer(tableData, 'NewProfitCost'),
-            hideRejection: tableData && tableData.length > 0 && NewRejectionCost(tableData, 'NewRejectionCost'),
-            hideICC: tableData && tableData.length > 0 && NewICCCostReducer(tableData, 'NewICCCost'),
-            hidePayment: tableData && tableData.length > 0 && NewPaymentTermsCostReducer(tableData, 'NewPaymentTermsCost'),
-            hideOtherCost: tableData && tableData.length > 0 && NewOtherCostReducer(tableData, 'NewOtherCost'),
-            hideDiscount: tableData && tableData.length > 0 && NewDiscountCostReducer(tableData, 'NewDiscountCost'),
-            hideOveheadAndProfit: tableData && tableData.length > 0 && NewNetOverheadAndProfitCostReducer(tableData, 'NewNetOverheadAndProfitCost')
-        })
-    }
+
 
     useEffect(() => {
         setLoader(false)
@@ -688,9 +706,8 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
-                                                    {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
-                                                    {
-                                                        String(master) === String(EXCHNAGERATE) &&
+
+                                                    {(String(master) === EXCHNAGERATE || showExchangeRateColumn) &&
                                                         <>
                                                             <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
@@ -701,7 +718,7 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='New Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>
                                                         </>
                                                     }
-                                                    {String(master) === String(COMBINED_PROCESS) &&
+                                                    {String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn &&
                                                         <>
                                                             <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='fourDecimalFormatter'></AgGridColumn>
@@ -711,6 +728,57 @@ function OtherCostingSimulation(props) {
                                                         </>
                                                     }
                                                     <AgGridColumn width={140} field="NetCCVariance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
+
+                                                    {(showRMColumn) && <>
+                                                        <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>
+                                                        <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
+                                                    </>}
+
+                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='Old PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='New PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="Variance" headerName=' PO Variance' cellRenderer='variancePOFormatter' ></AgGridColumn>
+
+                                                    {(showRMColumn) && <>
+                                                        {/* <AgGridColumn width={140} field="OldRMCSum" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewRMCSum" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVarianceSum" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn> */}
+                                                        <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Old RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='New RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={140} field="RMVariance" headerName='RM Variance' cellRenderer='varianceRMCFormatter' ></AgGridColumn>
+                                                        {/* <AgGridColumn width={140} field="OldRMRate" hide></AgGridColumn> */}
+                                                        {/* <AgGridColumn width={140} field="NewRMRate" hide></AgGridColumn> */}
+                                                        <AgGridColumn width={140} field="OldScrapRate" hide></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewScrapRate" hide></AgGridColumn>
+                                                    </>}
+
+                                                    {(showSurfaceTreatmentColumn) && <>
+                                                        <AgGridColumn width={140} field="OldSurfaceTreatmentCost" headerName='Old ST Cost' cellRenderer="oldSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' cellRenderer="newSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldTranspotationCost" headerName='Old Extra Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' cellRenderer="oldNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost' cellRenderer="newNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
+                                                    </>}
+
+                                                    {(showOperationColumn) && <>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
+                                                    </>}
+
+                                                    {(showBOPColumn) && <>
+                                                        <AgGridColumn width={140} field="OldBasicRate" headerName='Old Basic Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewBasicRate" headerName='New Basic Rate' ></AgGridColumn>
+                                                    </>}
+
+                                                    {showMachineRateColumn && <>
+                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
+                                                    </>}
+
+
+                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
