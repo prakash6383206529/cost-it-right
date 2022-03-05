@@ -1,28 +1,22 @@
 import React, { useState, useContext, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { costingInfoContext } from '../../CostingDetailStepTwo'
+import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch } from 'react-redux'
-import {  TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
-import LossStandardTable from '../LossStandardTable'
-import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
-import { KG } from '../../../../../config/constants'
-import Toaster from '../../../../common/Toaster'
+import {  TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from  '../../../../helper'
+import LossStandardTable from './LossStandardTable'
+import { saveRawMaterialCalciData } from '../../actions/CostWorking'
+import { KG } from '../../../../config/constants'
+import Toaster from '../../../common/Toaster'
 
-
-function                                                                         
-NonFerrous(props) {
+function Ferrous(props) {
 
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext)
     const dispatch = useDispatch()
 
     const defaultValues = {
-        shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== undefined ? WeightCalculatorRequest.ShotWeight : '',
-        cavity: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfCavity !== undefined ? WeightCalculatorRequest.NumberOfCavity : '',
-        burningPercent: WeightCalculatorRequest && WeightCalculatorRequest.BurningPercentage !== undefined ? WeightCalculatorRequest.BurningPercentage : '',
-        burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
         castingWeight: WeightCalculatorRequest && WeightCalculatorRequest.CastingWeight !== undefined ? WeightCalculatorRequest.CastingWeight : '',
         recovery: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== undefined ? WeightCalculatorRequest.RecoveryPercentage : '',
         machiningScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapWeight !== undefined ? WeightCalculatorRequest.MachiningScrapWeight : '',
@@ -38,8 +32,6 @@ NonFerrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState({})
-    const [nonFerrousDropDown , setNonFerrousDropDown] = useState(false)
-
     const { rmRowData , activeTab , isHpdc} = props
 
 
@@ -52,77 +44,38 @@ NonFerrous(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['shotWeight', 'burningPercent', 'cavity', 'finishedWeight', 'recovery', 'castingWeight'],
+        name: [ 'finishedWeight', 'recovery', 'castingWeight'],
     })
 
   const tableData = (value = []) => {
 
         setTableVal(value)
     }
-  const LossDropDown=()=>{
-      let dropDown = []
-      
-      
-      if(activeTab === '1'|| activeTab=== '2'){
-         
-        dropDown = [
+   const  dropDown = [
           
             {
                 label: 'Melting Loss',
-                value: 9,
+                value: 5,
             },
             {
                 label: 'Fetling Loss',
-                value: 10,
+                value: 6,
             },
             {
                 label: 'Grinding Loss',
-                value: 11,
+                value: 7,
             },
             {
                 label: 'Rejection Allowance',
-                value: 12,
+                value: 4,
             },
         ] 
        
-      }
-      else{
-        dropDown = [
-            {
-                label: 'Processing Allowance',
-                value: 13,
-            },
-            {
-                label: 'Machining Loss',
-                value: 14,
-            },
-            {
-                label: 'Rejection Allowance',
-                value: 12,
-            },
-        ]
-        
-      }
-      setNonFerrousDropDown(dropDown)
-    //   return nonFerrousDropDown
-  
-  }
+
     useEffect(() => {
         burningValue()
-        handlGrossWeight()
         calculateRemainingCalculation(lostWeight)
     }, [fieldValues])
-
-   
-
-    const handlGrossWeight = () => {
-        const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostWeight
-        const updatedValue = dataToSend
-        updatedValue.grossWeight = grossWeight
-        setDataToSend(updatedValue)
-        setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
-
-    }
 
     const calculateRemainingCalculation = (lostSum = 0) => {
 
@@ -201,14 +154,10 @@ NonFerrous(props) {
         obj.UOMId = rmRowData.UOMId
         obj.UOM = rmRowData.UOM
         obj.UOMForDimension = KG
-        obj.ShotWeight = getValues('shotWeight')
-        obj.NumberOfCavity = getValues('cavity')
-        obj.BurningPercentage = getValues('burningPercent')
-        obj.BurningValue = dataToSend.burningValue
         obj.MachiningScrapWeight = getValues('machiningScrapWeight')
         obj.CastingWeight = getValues('castingWeight')
         obj.RecoveryPercentage = getValues('recovery')
-        obj.GrossWeight = dataToSend.totalGrossWeight
+        obj.GrossWeight = dataToSend.grossWeight
         obj.FinishWeight = getValues('finishedWeight')
         obj.ScrapWeight = dataToSend.scrapWeight
         obj.RMCost = dataToSend.rmCost
@@ -245,110 +194,15 @@ NonFerrous(props) {
                 >
                     <Col md="12">
                         <div className="costing-border px-4">
-                            <Row>
+                            {/* <Row>
                                 <Col md="12" className={'mt25'}>
                                     <div className="header-title">
                                         <h5>{'Input Weight Calculator:'}</h5>
                                     </div>
                                 </Col>
-                            </Row>
+                            </Row> */}
 
                             <Row className={''}>
-                                {isHpdc&&
-                                <>
-                                <Col md="3" >
-                                    <TextFieldHookForm
-                                        label={`Shot Weight(Kg)`}
-                                        name={'shotWeight'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.shotWeight}
-                                        disabled={props.isEditFlag ? false : true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`No. Of Cavity`}
-                                        name={'cavity'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-                                                
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.cavity}
-                                        disabled={props.isEditFlag ? false : true}
-                                    />
-                                </Col>
-                                <Col md="3" >
-                                    <TextFieldHookForm
-                                        label={`Burning %`}
-                                        name={'burningPercent'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.burningPercent}
-                                        disabled={props.isEditFlag ? false : true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Burning Value`}
-                                        name={'burningValue'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                              
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.burningValue}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                </>}
 
                                 <Col md="3">
                                     <TextFieldHookForm
@@ -380,7 +234,7 @@ NonFerrous(props) {
                             </Row>
 
                             <LossStandardTable
-                                dropDownMenu={nonFerrousDropDown}
+                                dropDownMenu={dropDown}
                                 CostingViewMode={props.CostingViewMode}
                                 calculation={calculateRemainingCalculation}
                                 weightValue={Number(getValues('castingWeight'))}
@@ -388,9 +242,8 @@ NonFerrous(props) {
                                 sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
                                 tableValue={tableData}
                                 isLossStandard = {false}
-                                LossDropDown={LossDropDown}
                                 isPlastic={false}
-                                isNonFerrous={true}
+                                isNonFerrous={false}
 
                             />
 
@@ -467,7 +320,7 @@ NonFerrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Recovery Scrap %`}
+                                        label={`Recovery %`}
                                         name={'recovery'}
                                         Controller={Controller}
                                         control={control}
@@ -491,10 +344,7 @@ NonFerrous(props) {
                                     />
                                 </Col>
                             </Row>
-                           
                             <Row className={''}>
-                            {isHpdc&&
-                                <>
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`RM Cost`}
@@ -511,7 +361,6 @@ NonFerrous(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                                </>} 
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Scrap Cost`}
@@ -575,4 +424,4 @@ NonFerrous(props) {
     );
 }
 
-export default NonFerrous;
+export default Ferrous;

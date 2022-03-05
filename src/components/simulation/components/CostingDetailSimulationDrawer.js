@@ -172,7 +172,7 @@ function CostingDetailSimulationDrawer(props) {
                                         }
                                     </Row>
                                 }
-                                <CostingSummaryTable customClass="ml-0" simulationMode={true} viewMode={true} master={master} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={true} simulationMode={true} viewMode={true} master={master} />
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">

@@ -267,7 +267,9 @@ class CostingTab extends Component {
             </>
           )
 
-        } if (item.ActionName == 'Bulk Upload') {
+        } 
+        
+        if (item.ActionName == 'Bulk Upload') {
 
           return (
             <>

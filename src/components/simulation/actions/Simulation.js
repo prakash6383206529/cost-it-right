@@ -567,6 +567,7 @@ export function runSimulationOnSelectedExchangeCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -695,6 +696,7 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -742,6 +744,7 @@ export function runSimulationOnSelectedMachineRateCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -756,6 +759,7 @@ export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });

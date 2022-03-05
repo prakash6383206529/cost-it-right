@@ -3,10 +3,10 @@ import React from 'react';
  const Buttons =(props)=> {
     return (
       <div className="buttons">
+        <button id="clear" onClick={props.onClear}>AC</button>
         <button id="parenthesis-open" onClick={props.onParenthesis}>(</button>
         <button id="parenthesis-close" onClick={props.onParenthesis}>)</button>
         <button id="modulo" onClick={props.onOperator}>%</button>
-        <button id="clear" onClick={props.onClear}>AC</button>
 
         <button id="seven" onClick={props.onDigit}>7</button>
         <button id="eight" onClick={props.onDigit}>8</button>

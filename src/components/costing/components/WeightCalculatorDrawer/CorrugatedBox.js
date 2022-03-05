@@ -137,7 +137,7 @@ function CorrugatedBox(props) {
 
         let data1 = {
             cuttingAllowance: getValues('cutting_allowance'),
-            widthSheet: getValues('width_sheet')
+            widthSheet: dataSend.widthSheetWithDecimal
 
         }
         if (data1.cuttingAllowance) {
@@ -163,7 +163,7 @@ function CorrugatedBox(props) {
 
 
         let data = {
-            widthSheet: getValues('width_sheet'),
+            widthSheet: dataSend.widthSheetWithDecimal,
             cuttingAllowanceForLength: getValues('cuttingAllowanceForLength'),
         }
 
@@ -186,8 +186,8 @@ function CorrugatedBox(props) {
     const setFinalGrossWeight = () => {
 
         let data = {
-            width_inc_cutting: getValues('width_inc_cutting'),
-            length_inc_cutting_allowance: getValues('length_inc_cutting_allowance'),
+            width_inc_cutting: dataSend.widthIncCuttingDecimal,
+            length_inc_cutting_allowance: dataSend.LengthCuttingAllowance,
             no_of_ply: getValues('no_of_ply'),
             gsm: getValues('gsm')
 
@@ -524,7 +524,7 @@ function CorrugatedBox(props) {
 
 
 
-                            <Row className={'mt15'}>
+                            <Row className={'mt15 corrugated-box-label-wrapper'}>
 
                                 <Col md="3">
 
@@ -620,12 +620,7 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                            </Row>
-
-
-
-                            <Row className={'mt15'}>
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TextFieldHookForm
                                         label={`Cutting Allowance`}
                                         name={'cuttingAllowanceForLength'}
@@ -650,7 +645,7 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TextFieldHookForm
                                         label={`Length(sheet) inc. Cutting allowance`}
                                         name={'length_inc_cutting_allowance'}
@@ -724,7 +719,7 @@ function CorrugatedBox(props) {
                             </Row>
                         </div>
 
-                        {<div className="col-sm-12 text-right px-0 mt-4">
+                        {<div className="col-sm-12 text-right mt-4">
                             <button
                                 type={'button'}
                                 className="reset mr15 cancel-btn"

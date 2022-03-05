@@ -11,7 +11,7 @@ import { EMPTY_GUID } from '../../../../../config/constants';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
-  console.log('item of subassembly: ', item);
+  
 
   const [IsOpen, setIsOpen] = useState(false);
   const [Count, setCount] = useState(0);

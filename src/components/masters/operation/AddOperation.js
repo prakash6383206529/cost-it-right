@@ -43,11 +43,13 @@ class AddOperation extends Component {
 
       vendorName: [],
       selectedVendorPlants: [],
+      oldDate: '',
       UOM: [],
+      oldUOM: [],
       isDateChange: false,
       IsSendForApproval: false,
-      isFinalUserEdit: false,
-
+      IsFinancialDataChanged: true,
+      DataToChange: [],
 
       isSurfaceTreatment: false,
       remarks: '',
@@ -231,7 +233,7 @@ class AddOperation extends Component {
 
   closeVendorDrawer = (e = '') => {
     this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
     })
   }
 
@@ -255,7 +257,7 @@ class AddOperation extends Component {
   * @method handleUOM
   * @description called
   */
-  handleUOM = (newValue, actionMeta) => {
+  handleUOM = (newValue) => {
     if (newValue && newValue !== '') {
 
       this.setState({ UOM: newValue, })
@@ -285,6 +287,19 @@ class AddOperation extends Component {
     })
 
   }
+
+
+  handleRateChange = (value) => {
+
+    if (this.state.isEditFlag && Number(this.state.DataToChange?.Rate) === Number(value?.target?.value)) {
+      this.setState({ IsFinancialDataChanged: false })
+
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
+  }
+
   /**
   * @method onPressSurfaceTreatment
   * @description Used for Surface Treatment
@@ -319,7 +334,7 @@ class AddOperation extends Component {
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           this.setState({ minEffectiveDate: Data.EffectiveDate })
 
@@ -352,7 +367,7 @@ class AddOperation extends Component {
 
             this.setState({
               isEditFlag: true,
-              isFinalUserEdit: this.state.isFinalApprovar ? true : false,
+              IsFinancialDataChanged: false,
               isLoader: false,
               IsVendor: Data.IsVendor,
               selectedTechnology: technologyArray,
@@ -360,10 +375,13 @@ class AddOperation extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               dataToChange: Data
             })
@@ -433,6 +451,7 @@ class AddOperation extends Component {
       this.setState({ files: tempArr })
     }
 
+
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
@@ -444,6 +463,8 @@ class AddOperation extends Component {
         this.setState({ files: files })
       })
     }
+
+
 
     if (status === 'rejected_file_type') {
       this.setDisableFalseFunction()
@@ -540,8 +561,8 @@ class AddOperation extends Component {
   */
   onSubmit = debounce((values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange, uploadAttachements, isDateChange } = this.state;
-    const { initialConfiguration } = this.props;
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+    const { initialConfiguration, filedObj } = this.props;
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
@@ -571,7 +592,10 @@ class AddOperation extends Component {
     })
 
     /** Update existing detail of supplier master **/
-    if (this.state.isEditFlag && this.state.isFinalApprovar) {
+    // if (this.state.isEditFlag && this.state.isFinalApprovar) {
+
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
+
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OperationId }
       })
@@ -586,16 +610,41 @@ class AddOperation extends Component {
         Remark: remarks,
         Attachements: updatedFiles,
         LoggedInUserId: loggedInUserId(),
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        IsFinancialDataChanged: isDateChange ? true : false
       }
       // if (this.state.isEditFlag) {
       // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
       //   this.cancel()
       //   return false
       // }
-      this.setState({ showPopup: true, updatedObj: updateData })
-      // }
-      this.setState({ setDisable: true })
+
+      if (IsFinancialDataChanged) {
+
+        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+          this.setState({ showPopup: true, updatedObj: updateData })
+          this.setState({ setDisable: true })
+          return false
+
+        } else {
+
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
+        }
+
+      }
+
+      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
+        this.cancel()
+        return false
+      }
+
+      if (isEditFlag) {
+        this.setState({ showPopup: true, updatedObj: updateData })
+        this.setState({ setDisable: true })
+        return false
+      }
 
 
     } else {/** Add new detail for creating operation master **/
@@ -609,6 +658,7 @@ class AddOperation extends Component {
 
       this.setState({ setDisable: true })
       let formData = {
+        IsFinancialDataChanged: isDateChange ? true : false,
         IsSendForApproval: this.state.IsSendForApproval,
         OperationId: OperationId,
         IsVendor: IsVendor,
@@ -636,13 +686,30 @@ class AddOperation extends Component {
 
       if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
 
-        if (isDateChange) {
-          this.setState({ approveDrawer: true, approvalObj: formData })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ approveDrawer: true, approvalObj: formData })
+            this.setState({ setDisable: true })
+            return false
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
         }
-        else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
+
+
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.Value === oldUOM.Value && uploadAttachements) {
+          this.cancel()
+          return false
+        } else {
+          this.setState({ approveDrawer: true, approvalObj: formData })
         }
+
+
       } else {
 
         this.props.createOperationsAPI(formData, (res) => {
@@ -937,6 +1004,7 @@ class AddOperation extends Component {
                           component={renderText}
                           required={true}
                           disabled={isViewMode}
+                          onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -970,7 +1038,7 @@ class AddOperation extends Component {
                             }}
                             component={renderDatePicker}
                             className=" "
-                            disabled={isViewMode || this.state.isFinalUserEdit}
+                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
                           />
                         </div>
@@ -1172,7 +1240,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, } = state;
-  const filedObj = selector(state, 'OperationCode');
+  const filedObj = selector(state, 'OperationCode', 'text');
   const { technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;

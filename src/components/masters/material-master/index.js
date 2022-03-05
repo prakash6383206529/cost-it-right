@@ -257,12 +257,13 @@ function RowMaterialMaster(props) {
 
 
 
-                            {Number(activeTab) === 1 &&
+                            {Number(activeTab) === 1 && ViewRMAccessibility &&
                                 <TabPane tabId="1">
                                     <RMDomesticListing
                                         formToggle={displayDomesticForm}
                                         getDetails={getDetails}
                                         toggle={toggle}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
@@ -278,6 +279,7 @@ function RowMaterialMaster(props) {
                                         formToggle={displayImportForm}
                                         getDetails={getDetailsImport}
                                         toggle={toggle}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}

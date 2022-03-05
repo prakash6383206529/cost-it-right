@@ -272,6 +272,7 @@ class OperationListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
 
         let isEditable = false
+        let isDeleteButton = false
 
         if (CheckApprovalApplicableMaster(OPERATIONS_ID)) {
             if (EditAccessibility && !rowData.IsOperationAssociated) {
@@ -283,11 +284,23 @@ class OperationListing extends Component {
             isEditable = EditAccessibility
         }
 
+
+        if (CheckApprovalApplicableMaster(OPERATIONS_ID)) {
+            if (DeleteAccessibility && !rowData.IsOperationAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+        } else {
+            isDeleteButton = DeleteAccessibility
+        }
+
+
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -419,7 +432,8 @@ class OperationListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue ? 'Vendor Based' : 'Zero Based';
+        let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
+        return data;
     }
 
     /**
