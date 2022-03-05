@@ -695,6 +695,7 @@ const CostingSummaryTable = (props) => {
     var height = document.querySelector("#summaryPdf").clientHeight;
     var width = document.querySelector("#summaryPdf").offsetWidth;
     var doc = new jsPDF('p', "ex", [width, height])
+   
     // var doc = new jsPDF('l', "mm", [width, height])
     // var doc = new jsPDF('l', "mm", [1244, 1700])
     // var doc = new jsPDF('l', "pc", [width, height])  
@@ -718,7 +719,8 @@ const CostingSummaryTable = (props) => {
     var height = document.querySelector("#summaryPdf").clientHeight;
     var width = document.querySelector("#summaryPdf").offsetWidth;
     var doc = new jsPDF('p', "ex", [width, height])
- 
+    console.log('width: ', width);
+    console.log(height, "height")
     setIcon(false)
     doc.html(document.querySelector("#summaryPdf"), {
       margin: [0, 5, 0, 5],
@@ -772,7 +774,7 @@ const CostingSummaryTable = (props) => {
             }
           </Row>
 
-          <Row className={customClass} id="summaryPdf" className={`${drawerDetailPDF ? 'remove-space-border':''}`}>
+          <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border':''}`}>
             {(drawerDetailPDF || pdfHead ) &&
               <>
                 <Col md="12" className='pdf-header-wrapper'>
@@ -860,7 +862,7 @@ const CostingSummaryTable = (props) => {
                                         class="text-primary d-inline-block change-version-block"
                                         onClick={() => editHandler(index)}
                                       >
-                                        <small>Change version</small>
+                                      {(!drawerDetailPDF && !pdfHead) &&  <small>Change version</small>}
                                       </a>
                                     }
                                   </span>

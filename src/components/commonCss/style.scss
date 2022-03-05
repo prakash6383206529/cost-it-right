@@ -7078,6 +7078,7 @@ left: 17rem;
 .remove-space-border {
   .left-border {
     border-left: none !important;
+    word-spacing: 2px;
     padding: 0 !important;
     margin: 5px 0 2px 0 !important;
   }
@@ -7094,3 +7095,18 @@ left: 17rem;
     }
 }
 // <-------END simulation token dropdown css------>
+  .background-light-blue {
+    th {
+      word-spacing: 2px;
+      border-right: none;
+    }
+    td {
+      border-left: none !important;
+      text-align: right;
+      padding-right: 20px;
+      span {
+        font-size: 16px;
+        font-weight: 900;
+      }
+    }
+  }
