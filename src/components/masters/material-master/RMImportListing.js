@@ -208,27 +208,20 @@ function RMImportListing(props) {
     let isEditbale = false
     let isDeleteButton = false
 
-    if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+    
       if (EditAccessibility && !rowData.IsRMAssociated) {
         isEditbale = true
       } else {
         isEditbale = false
       }
-    } else {
-      isEditbale = EditAccessibility
-    }
-
-    if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+    
+    
       if (DeleteAccessibility && !rowData.IsRMAssociated) {
         isDeleteButton = true
       } else {
         isDeleteButton = false
       }
-    } else {
-      isDeleteButton = DeleteAccessibility
-    }
-
-
+    
 
     return (
       <>
