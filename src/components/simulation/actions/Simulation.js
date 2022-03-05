@@ -29,6 +29,7 @@ import {
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
     GET_VERIFY_OVERHEAD_SIMULATION_LIST,
     GET_VERIFY_PROFIT_SIMULATION_LIST,
+    SET_SHOW_SIMULATION_PAGE,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -532,6 +533,7 @@ export function uploadSimulationAttachmentByCategory(data, callback) {
             }).catch(error => {
                 callback(error.response)
                 dispatch({ type: API_FAILURE })
+                callback(error)
             })
     }
 }
@@ -612,6 +614,7 @@ export function runSimulationOnSelectedExchangeCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -892,6 +895,7 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -939,6 +943,7 @@ export function runSimulationOnSelectedMachineRateCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -953,6 +958,7 @@ export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -1155,4 +1161,16 @@ export function runSimulationOnSelectedProfitCosting(data, callback) {
     };
 }
 
-
+/**
+ * @method setShowSimulationPage
+ * @description Set Show Simulation Page
+ */
+export function setShowSimulationPage(Data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SHOW_SIMULATION_PAGE,
+            payload: Data,
+        })
+        // callback();
+    }
+};

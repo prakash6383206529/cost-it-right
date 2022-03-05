@@ -43,6 +43,7 @@ import imgRedcross from '../../../assests/images/red-cross.png';
 import imgGreencross from '../../../assests/images/greenCross.png';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 
+import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -496,7 +497,7 @@ function SimulationApprovalSummary(props) {
         let roudOffOld = 0, rounfOffNew = 0
         roudOffOld = _.round(row.OldNetRawMaterialsCost, COSTINGSIMULATIONROUND)
         rounfOffNew = _.round(row.NewNetRawMaterialsCost, COSTINGSIMULATIONROUND)
-        return cell != null ? checkForDecimalAndNull(cell,getConfigurationKey().NoOfDecimalForPrice) : ''
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const POVarianceFormatter = (props) => {
@@ -550,7 +551,7 @@ function SimulationApprovalSummary(props) {
         return (
             <>
                 <Link to="compare-costing" spy={true} smooth={true} activeClass="active" ><button className="Balance mb-0" type={'button'} onClick={() => DisplayCompareCosting(cell, row)}></button></Link>
-                    {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
+                {row?.IsAssemblyExist && <button className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
 
 
             </>
@@ -619,9 +620,9 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
-        if (String(SimulationTechnologyId) !== SURFACETREATMENT) {
+        if (String(SimulationTechnologyId) === SURFACETREATMENT) {
             temp = row.IsMultiple === true ? 'Multiple Surface Treatment' : row.OperationName
-        } else if (String(SimulationTechnologyId) !== OPERATIONS) {
+        } else if (String(SimulationTechnologyId) === OPERATIONS) {
             temp = row.IsMultiple === true ? 'Multiple Operation' : row.OperationName
         }
         return cell != null ? temp : '-';
@@ -708,7 +709,7 @@ function SimulationApprovalSummary(props) {
         }
         return temp
     }
-    
+
     const rePush = () => {
         let pushObj = {}
         let temp = []
@@ -732,8 +733,9 @@ function SimulationApprovalSummary(props) {
         <>
             {showListing === false &&
                 <>
+                <CalculatorWrapper />
                     {loader && <LoaderCustom />}
-                      <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
 
                         {recordInsertStatusBox &&
                             <div className="error-box-container">
@@ -742,7 +744,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteInsertStatusBox}
-                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross }
+                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
                         }
@@ -754,7 +756,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteAmendmentStatusBox}
-                                    src={errorBoxClass() ==='success' ? imgGreencross : imgRedcross}
+                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
 
@@ -987,10 +989,10 @@ function SimulationApprovalSummary(props) {
                                                                 <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={150} field="VendorName" headerName="Vendor"></AgGridColumn>
                                                                 {
-                                                                    (String(SimulationTechnologyId) !== SURFACETREATMENT || String(SimulationTechnologyId) !== OPERATIONS) &&
+                                                                    (String(SimulationTechnologyId) === SURFACETREATMENT || String(SimulationTechnologyId) === OPERATIONS) &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OperationName" cellRenderer='operationNameFormatter' headerName="Operation Name"></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code Variance" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE &&
@@ -1106,7 +1108,13 @@ function SimulationApprovalSummary(props) {
                                 <div className="left-border">{'Attachments:'}</div>
                             </Col>
                             <Col md="12" className="pr-0">
-                                <AttachmentSec token={simulationDetail.TokenNo} type={type} Attachements={simulationDetail.Attachements} showAttachment={true} />
+                                <AttachmentSec
+                                    token={simulationDetail.TokenNo}
+                                    type={type}
+                                    Attachements={simulationDetail.Attachements}
+                                    showAttachment={true}
+                                    isSimulationSummary={true}
+                                />
                             </Col>
                         </Row>
                         <Row className="mb-4 reset-btn-container">
@@ -1126,7 +1134,7 @@ function SimulationApprovalSummary(props) {
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
-
+                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA}/></div> :""}
                                 </div>
                             }
                             {showViewAssemblyDrawer &&

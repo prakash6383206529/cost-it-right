@@ -465,20 +465,19 @@ function AddRM(props) {
               </Row>
 
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left bluefooter-butn">
+                <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
+                <button
+                    type={'button'}
+                    className="reset cancel-btn mr5"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
                   <button
                     type={'button'}
-                    className="submit-button mr5 save-btn"
+                    className="submit-button save-btn"
                     onClick={addRow} >
                     <div className={'save-icon'}></div>
                     {'SELECT'}
-                  </button>
-
-                  <button
-                    type={'button'}
-                    className="reset mr15 cancel-btn"
-                    onClick={cancel} >
-                    <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                 </div>
               </Row>

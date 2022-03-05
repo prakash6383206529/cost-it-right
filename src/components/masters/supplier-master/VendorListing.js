@@ -759,7 +759,7 @@ class VendorListing extends Component {
                     </Row>
                 </form>
                 <div className={`ag-grid-wrapper height-width-wrapper pt-2  ${this.props.supplierDataList && this.props.supplierDataList?.length <=0 ?"overlay-contain": ""}`}>
-                    <div className="ag-theme-material">
+                <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -784,7 +784,7 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="VendorId" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="VendorId" width={"230px"} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         <div className="button-wrapper">
                             <div className="paging-container d-inline-block float-right">

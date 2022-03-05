@@ -118,7 +118,8 @@ class AddVolume extends Component {
       gridApi: null,
       gridColumnApi: null,
       rowData: null,
-      setDisable: false
+      setDisable: false,
+      inputLoader:false
     }
   }
 
@@ -135,8 +136,6 @@ class AddVolume extends Component {
     }, 100)
 
     this.props.getPlantSelectListByType(ZBC, () => { })
-    // this.props.getVendorListByVendorType(true, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
     this.props.getFinancialYearSelectList(() => { })
     this.props.getPartSelectList(() => { })
     this.getDetail()
@@ -213,6 +212,8 @@ class AddVolume extends Component {
    */
   onPressVendor = () => {
     this.setState({ IsVendor: !this.state.IsVendor })
+      this.setState({inputLoader:true})
+      this.props.getVendorWithVendorCodeSelectList(()=>{this.setState({inputLoader:false})})
   }
 
   /**
@@ -742,11 +743,28 @@ class AddVolume extends Component {
                           )}
                           {this.state.IsVendor && (
                             <Col md="3">
-                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter first few digits to see the vendor name" />
-                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                             {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
+                             <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                             <div className="fullinput-icon">
+                             <AsyncSelect 
+                             name="vendorName" 
+                             ref={this.myRef} 
+                             key={this.state.updateAsyncDropdown} 
+                             loadOptions={promiseOptions} 
+                             onChange={(e) => this.handleVendorName(e)} 
+                             value={this.state.vendorName} 
+                             noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                             isDisabled={isEditFlag ? true : false} />
                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                             
+                             </div>
+                            {!isEditFlag && (
+                                <div
+                                  onClick={this.vendorToggler}
+                                  className={"plus-icon-square  right"}
+                                ></div>
+                              )}
+                            </div>
                             </Col>
 
                           )}

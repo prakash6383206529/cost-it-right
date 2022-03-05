@@ -17,6 +17,7 @@ import {
     GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     GET_OPERATION_COMBINED_DATA_LIST,
+    GET_OPERATION_APPROVAL_LIST,
     GET_OPERATION_SURFACE_TREATMENT_DATA_LIST,
     GET_OPERATION_INDIVIDUAL_DATA_LIST,
 } from '../../../config/constants';
@@ -133,32 +134,15 @@ export default function OtherOperationReducer(state = initialState, action) {
                 loading: false,
                 operationList: action.payload
             }
-        case GET_OPERATION_SURFACE_TREATMENT_DATA_LIST:
-            let tempST = action.payload
-            let surfaceTreatmentOperationData = []
-            tempST && tempST.map(item => {
-                if (item.IsSurfaceTreatmentOperation === true) {
-                    surfaceTreatmentOperationData.push(item)
-                }
-            })
+
+        case GET_OPERATION_APPROVAL_LIST:
             return {
+
                 ...state,
                 loading: false,
-                operationList: surfaceTreatmentOperationData
+                OperationApprovalList: action.payload
             }
-        case GET_OPERATION_INDIVIDUAL_DATA_LIST:
-            let tempO = action.payload
-            let OperationData = []
-            tempO && tempO.map(item => {
-                if (item.IsSurfaceTreatmentOperation === false) {
-                    OperationData.push(item)
-                }
-            })
-            return {
-                ...state,
-                loading: false,
-                operationList: OperationData
-            }
+
         default:
             return state;
     }

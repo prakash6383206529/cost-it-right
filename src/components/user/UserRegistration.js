@@ -5,8 +5,8 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, minLength5,minLength10, maxLength11, maxLength12, required, email,passwordValidate,validatePassword , noSpace, alphabetsOnlyForName, minLength7, maxLength18,
-  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength25 , postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6, minLength5,minLength10, maxLength11, maxLength12,maxLength25, required, email,passwordValidate,validatePassword , noSpace, alphabetsOnlyForName, minLength7, maxLength18,
+  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength15 , postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
@@ -1235,7 +1235,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3,alphabetsOnlyForName, maxLength25, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[required,minLength3, maxLength15]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1249,7 +1249,7 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[minLength3, maxLength25, alphabetsOnlyForName, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
+                          validate={[minLength3, maxLength15]}
                           component={renderText}
                           required={false}
                           // maxLength={26}
@@ -1329,7 +1329,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required, alphaNumeric , minLength3, maxLength25, checkWhiteSpaces]}
+                            validate={[required,minLength3, maxLength15]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}

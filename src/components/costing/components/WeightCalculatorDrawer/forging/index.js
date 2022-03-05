@@ -17,7 +17,20 @@ import HotForging from './HotForging'
 
 function ForgingCalculator(props) {
   const { rmRowData } = props
-  const [activeTab, setActiveTab] = useState('1')
+  
+  const getTabno = (layout) => {
+    switch (layout) {
+      case 'Hot':
+        return '1'
+      case 'Cold':
+        return '2'
+      default:
+        break;
+    }
+    console.log(layout,'layout');
+  }
+  const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
+
   /**
    * @method toggleDrawer
    * @description TOGGLE DRAWER
@@ -44,18 +57,6 @@ function ForgingCalculator(props) {
 
   return (
     <Fragment>
-      {/* <Row>
-        <Col md="2">{`RM Name: ${
-          rmRowData.RMName !== undefined ? rmRowData.RMName : ''
-        }`}</Col>
-        <Col md="2">{`Material: ${
-          rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''
-        }`}</Col>
-        <Col md="2">{`Density(g/cm2): ${
-          rmRowData.Density !== undefined ? rmRowData.Density : ''
-        }`}</Col>
-      </Row> */}
-
       <Row>
         <Col>
           <Nav tabs className="subtabs cr-subtabs-head forging-tabs  nav nav-tabs">
@@ -65,6 +66,7 @@ function ForgingCalculator(props) {
                 onClick={() => {
                   toggle('1')
                 }}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
               >
                 Hot Forging
               </NavLink>
@@ -75,6 +77,7 @@ function ForgingCalculator(props) {
                 onClick={() => {
                   toggle('2')
                 }}
+                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
               >
                 Cold Forging
               </NavLink>

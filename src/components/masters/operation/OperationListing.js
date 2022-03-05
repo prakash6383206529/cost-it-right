@@ -15,9 +15,10 @@ import {
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { ADDITIONAL_MASTERS, OPERATION, OperationMaster } from '../../../config/constants';
+import { ADDITIONAL_MASTERS, OPERATION, OperationMaster, OPERATIONS_ID } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import { loggedInUserId } from '../../../helper/auth';
+import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
 import { costingHeadObjs, OPERATION_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -112,45 +113,58 @@ class OperationListing extends Component {
     */
     getTableListData = (operation_for = null, operation_Name_id = null, technology_id = null, vendor_id = null) => {
         this.setState({ isLoader: true })
+
+        const { isMasterSummaryDrawer } = this.props
         let filterData = {
             operation_for: operation_for,
             operation_Name_id: operation_Name_id,
             technology_id: this.props.isSimulation ? this.props.technology : technology_id,
             vendor_id: vendor_id,
         }
-        this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
-            this.setState({ isLoader: false })
-            if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], })
-            } else if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList;
-                if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
-                    let surfaceTreatmentOperationData = []
-                    Data && Data.map(item => {
-                        if (item.IsSurfaceTreatmentOperation === true) {
-                            surfaceTreatmentOperationData.push(item)
-                        }
-                    })
-                    this.setState({ tableData: surfaceTreatmentOperationData })
-                } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
-                    let OperationData = []
-                    Data && Data.map(item => {
-                        if (item.IsSurfaceTreatmentOperation === false) {
-                            OperationData.push(item)
-                        }
-                    })
-                    this.setState({ tableData: OperationData })
+
+
+        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+            this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
+                this.setState({ isLoader: false })
+                if (res.status === 204 && res.data === '') {
+                    this.setState({ tableData: [], })
+                } else if (res && res.data && res.data.DataList) {
+                    let Data = res.data.DataList;
+                    if (Number(this.props.isOperationST) === Number(SURFACETREATMENT)) {
+                        let surfaceTreatmentOperationData = []
+                        Data && Data.map(item => {
+                            if (item.IsSurfaceTreatmentOperation === true) {
+                                surfaceTreatmentOperationData.push(item)
+                            }
+                        })
+                        this.setState({ tableData: surfaceTreatmentOperationData })
+                    } else if (Number(this.props.isOperationST) === Number(OPERATIONS)) {
+                        let OperationData = []
+                        Data && Data.map(item => {
+                            if (item.IsSurfaceTreatmentOperation === false) {
+                                OperationData.push(item)
+                            }
+                        })
+                        this.setState({ tableData: OperationData })
+                    } else {
+                        this.setState({ tableData: Data })
+                    }
+
+                    // if (this.props.isSimulation) {
+                    //     this.props.apply(Data)
+                    // }
                 } else {
-                    this.setState({ tableData: Data })
+
                 }
+            });
+        } else {
 
-                // if (this.props.isSimulation) {
-                //     this.props.apply(Data)
-                // }
-            } else {
+            setTimeout(() => {
+                this.setState({ tableData: this.props.operationList })
 
-            }
-        });
+            }, 700);
+
+        }
     }
 
     /**
@@ -246,11 +260,29 @@ class OperationListing extends Component {
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
 
+        let isEditable = false
+        let isDeleteButton = false
+
+
+            if (EditAccessibility && !rowData.IsOperationAssociated) {
+                isEditable = true
+            } else {
+                isEditable = false
+            }
+        
+
+            if (DeleteAccessibility && !rowData.IsOperationAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+
+
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -382,7 +414,8 @@ class OperationListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue ? 'Vendor Based' : 'Zero Based';
+        let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
+        return data;
     }
 
     /**
@@ -500,6 +533,14 @@ class OperationListing extends Component {
     }
 
 
+    getFilterOperationData = () => {
+        if (this.props.isSimulation) {
+            return getFilteredData(this.state.tableData, OPERATIONS_ID)
+        } else {
+            return this.state.tableData
+        }
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -572,7 +613,7 @@ class OperationListing extends Component {
 
         return (
             <div className="container-fluid">
-                {this.state.isLoader && <LoaderCustom />}
+                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                     <form>
 
@@ -589,7 +630,7 @@ class OperationListing extends Component {
                                                 :
                                                 ""
                                             }
-                                            {AddAccessibility && (
+                                            {AddAccessibility && !this.props?.isMasterSummaryDrawer && (
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
@@ -600,7 +641,7 @@ class OperationListing extends Component {
                                                     {/* ADD */}
                                                 </button>
                                             )}
-                                            {BulkUploadAccessibility && (
+                                            {BulkUploadAccessibility && !this.props?.isMasterSummaryDrawer && (
                                                 <button
                                                     type="button"
                                                     className={"user-btn mr5"}
@@ -612,7 +653,7 @@ class OperationListing extends Component {
                                                 </button>
                                             )}
                                             {
-                                                DownloadAccessibility &&
+                                                DownloadAccessibility && !this.props?.isMasterSummaryDrawer &&
                                                 <>
 
                                                     <ExcelFile filename={'Operation'} fileExtension={'.xls'} element={
@@ -627,7 +668,7 @@ class OperationListing extends Component {
 
 
                                             }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+                                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => this.resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
 
@@ -638,19 +679,16 @@ class OperationListing extends Component {
                         </Row>
                     </form>
 
-                    <div className={`ag-grid-wrapper height-width-wrapper ${tableData && tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
-                        <div
-                            className="ag-theme-material"
-
-                        >
+                        <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 domLayout='autoHeight'
-                                rowData={tableData}
+                                rowData={this.getFilterOperationData()}
                                 pagination={true}
 
                                 paginationPageSize={10}
@@ -675,7 +713,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                {!this.props.isSimulation && <AgGridColumn field="OperationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">

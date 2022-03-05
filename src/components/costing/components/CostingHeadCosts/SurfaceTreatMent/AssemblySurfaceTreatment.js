@@ -32,6 +32,7 @@ function AssemblySurfaceTreatment(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
+        AssemCostingId: costData.CostingId
       }
       dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
@@ -125,7 +126,7 @@ function AssemblySurfaceTreatment(props) {
           </td>
         </div>
         <td>
-          {!CostingViewMode && ((item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
+          {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
             <button
               type="button"
               className={'user-btn surface-treatment-btn'}
@@ -146,7 +147,7 @@ function AssemblySurfaceTreatment(props) {
                 // DrawerToggle()
               }}
             >
-              <div className={'plus'}></div>Surface T.</button>)
+              <div className={'plus'}></div> Surface T.</button>
           }
         </td>
       </tr>

@@ -7,7 +7,7 @@ import { checkForDecimalAndNull } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function PartSurfaceTreatment(props) {
-  
+
   const { item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -33,6 +33,7 @@ function PartSurfaceTreatment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
+          AssemCostingId: costData.CostingId
         }
         dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
@@ -62,6 +63,8 @@ function PartSurfaceTreatment(props) {
     item.CostingPartDetails.SurfaceTreatmentDetails = []
     item.CostingPartDetails.TransportationDetails = []
   }
+ // 
+  
 
   /**
    * @method render
@@ -83,7 +86,7 @@ function PartSurfaceTreatment(props) {
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         </div>
         <td>
-          {!CostingViewMode && ((item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
+          {!CostingViewMode && (item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
 
             <button
               type="button"
@@ -99,7 +102,7 @@ function PartSurfaceTreatment(props) {
               //onClick={DrawerToggle}
               onClick={() => toggle(item.BOMLevel, item.PartNumber)}
             >
-              <div className={'plus'}></div>Surface T.</button>)
+              <div className={'plus'}></div>Surface T.</button>
           }
         </td>
       </tr>

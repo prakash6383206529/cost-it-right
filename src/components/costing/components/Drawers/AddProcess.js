@@ -20,6 +20,7 @@ function AddProcess(props) {
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [selectedIds, setSelectedIds] = useState(props.Ids);
+  const [selectedMachineIds,setSelectedMachineIds] = useState(props.MachineIds)
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
   const [rowData, setRowData] = useState(null);
@@ -209,7 +210,7 @@ function AddProcess(props) {
 
   }, [tableData])
 
-  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.ProcessId) : false;
+  const isRowSelectable = rowNode => rowNode.data ? !selectedIds.includes(rowNode.data.ProcessId) || !selectedMachineIds.includes(rowNode.data.MachineRateId) : false;
 
   const resetState = () => {
     gridOptions.columnApi.resetColumnState();
@@ -233,7 +234,7 @@ function AddProcess(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD Process'}</h3>
+                    <h3>{'ADD Process:'}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -245,7 +246,7 @@ function AddProcess(props) {
               <Row className="mx-0">
                 <Col className="hidepage-size">
                 
-                  <div className={`ag-grid-wrapper height-width-wrapper ${processDrawerList && processDrawerList?.length <=0 ?"overlay-contain": ""}`}>
+                  <div className={`ag-grid-wrapper min-height-auto height-width-wrapper ${processDrawerList && processDrawerList?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-grid-header">
                       <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                       <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
@@ -302,20 +303,19 @@ function AddProcess(props) {
               </Row>
 
               <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-                <div className="col-sm-12 text-left px-3">
+                <div className="col-sm-12 text-left px-3 d-flex justify-content-end">
                   <button
                     type={'button'}
-                    className="submit-button mr5 save-btn"
+                    className="reset cancel-btn mr5"
+                    onClick={cancel} >
+                    <div className={'cancel-icon'}></div> {'Cancel'}
+                  </button>
+                  <button
+                    type={'button'}
+                    className="submit-button save-btn"
                     onClick={addRow} >
                     <div className={'save-icon'}></div>
                     {'SELECT'}
-                  </button>
-
-                  <button
-                    type={'button'}
-                    className="reset mr15 cancel-btn"
-                    onClick={cancel} >
-                    <div className={'cancel-icon'}></div> {'Cancel'}
                   </button>
                 </div>
               </Row>

@@ -19,7 +19,7 @@ import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { runVerifyProfitSimulation } from '../../actions/Simulation';
-
+import { checkForChangeInOverheadProfit1Values, checkForChangeInOverheadProfit2Values, checkForChangeInOverheadProfit3Values } from '../../SimulationUtils';
 const gridOptions = {
 
 };
@@ -77,16 +77,143 @@ function ProfitSimulation(props) {
         let tempRMBOP = 0
         let tempBOPCC = 0
         let tempRMCCBOP = 0
-        let tempFIXED = 0
+        let value = 0
 
         let checkRMPercent_NOT_CHANGED = 0
         let checkCCPercent_NOT_CHANGED = 0
         let checkBOPPercent_NOT_CHANGED = 0
         let checkPercent_NOT_CHANGED = 0
 
+        let tempObj = new Set([]);
 
         list && list.map((item) => {
+            tempRM = 0
+            tempCC = 0
+            tempBOP = 0
+            tempRMCC = 0
+            tempRMBOP = 0
+            tempBOPCC = 0
+            tempRMCCBOP = 0
 
+
+
+            switch (item.NewProfitApplicabilityType) {
+                case 'RM':
+                    let tempRMValue = []
+                    tempRMValue.NewValue = item.NewProfitRMPercentage
+                    tempRMValue.Value = item.ProfitRMPercentage
+                    if (checkForChangeInOverheadProfit1Values(tempRMValue)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'CC':
+                    let tempCCValue = []
+                    tempCCValue.NewValue = item.NewProfitMachiningCCPercentage
+                    tempCCValue.Value = item.ProfitMachiningCCPercentage
+                    if (checkForChangeInOverheadProfit1Values(tempCCValue)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'BOP':
+                    let tempBOPValue = []
+                    tempBOPValue.NewValue = item.NewProfitBOPPercentage
+                    tempBOPValue.Value = item.ProfitBOPPercentage
+                    if (checkForChangeInOverheadProfit1Values(tempBOPValue)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'Fixed':
+                    tempObj.add(item)
+
+                    break;
+
+                case 'RM + CC':
+                    let tempRM_CC_Value = []
+                    tempRM_CC_Value.NewApplicabilityType = item.NewProfitApplicabilityType
+                    tempRM_CC_Value.ApplicabilityType = item.ProfitApplicabilityType
+                    tempRM_CC_Value.NewProfitPercentage = item.NewProfitPercentage
+                    tempRM_CC_Value.ProfitPercentage = item.ProfitPercentage
+                    tempRM_CC_Value.NewFirstValue = item.NewProfitRMPercentage
+                    tempRM_CC_Value.FirstValue = item.ProfitRMPercentage
+                    tempRM_CC_Value.NewSecondValue = item.NewProfitMachiningCCPercentage
+                    tempRM_CC_Value.SecondValue = item.ProfitMachiningCCPercentage
+
+                    if (checkForChangeInOverheadProfit2Values(tempRM_CC_Value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'RM + BOP':
+                    let tempRM_BOP_Value = []
+                    tempRM_BOP_Value.NewApplicabilityType = item.NewProfitApplicabilityType
+                    tempRM_BOP_Value.ApplicabilityType = item.ProfitApplicabilityType
+                    tempRM_BOP_Value.NewProfitPercentage = item.NewProfitPercentage
+                    tempRM_BOP_Value.ProfitPercentage = item.ProfitPercentage
+                    tempRM_BOP_Value.NewFirstValue = item.NewProfitRMPercentage
+                    tempRM_BOP_Value.FirstValue = item.ProfitRMPercentage
+                    tempRM_BOP_Value.NewSecondValue = item.NewProfitBOPPercentage
+                    tempRM_BOP_Value.SecondValue = item.ProfitBOPPercentage
+
+                    if (checkForChangeInOverheadProfit2Values(tempRM_BOP_Value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+                case 'BOP + CC':
+                    let tempBOP_CC_Value = []
+                    tempBOP_CC_Value.NewApplicabilityType = item.NewProfitApplicabilityType
+                    tempBOP_CC_Value.ApplicabilityType = item.ProfitApplicabilityType
+                    tempBOP_CC_Value.NewProfitPercentage = item.NewProfitPercentage
+                    tempBOP_CC_Value.ProfitPercentage = item.ProfitPercentage
+                    tempBOP_CC_Value.NewFirstValue = item.NewProfitMachiningCCPercentage
+                    tempBOP_CC_Value.FirstValue = item.ProfitMachiningCCPercentage
+                    tempBOP_CC_Value.NewSecondValue = item.NewProfitBOPPercentage
+                    tempBOP_CC_Value.SecondValue = item.ProfitBOPPercentage
+
+                    if (checkForChangeInOverheadProfit2Values(tempBOP_CC_Value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+
+                case 'RM + CC + BOP':
+                    let tempRM_CC_BOP_value = []
+                    tempRM_CC_BOP_value.NewApplicabilityType = item.NewProfitApplicabilityType
+                    tempRM_CC_BOP_value.ApplicabilityType = item.ProfitApplicabilityType
+                    tempRM_CC_BOP_value.NewProfitPercentage = item.NewProfitPercentage
+                    tempRM_CC_BOP_value.ProfitPercentage = item.ProfitPercentage
+                    tempRM_CC_BOP_value.NewFirstValue = item.NewProfitMachiningCCPercentage
+                    tempRM_CC_BOP_value.FirstValue = item.ProfitMachiningCCPercentage
+                    tempRM_CC_BOP_value.NewSecondValue = item.NewProfitBOPPercentage
+                    tempRM_CC_BOP_value.SecondValue = item.ProfitBOPPercentage
+                    tempRM_CC_BOP_value.NewThirdValue = item.NewProfitMachiningCCPercentage
+                    tempRM_CC_BOP_value.ThirdValue = item.ProfitMachiningCCPercentage
+
+                    if (checkForChangeInOverheadProfit3Values(tempRM_CC_BOP_value)) {
+                        tempObj.add(item)
+                        tempRMBOP = 1
+                    }
+                    break;
+                default:
+                    return 'foo';
+            }
+        })
+        console.log(tempObj, 'tempObjtempObjtempObj');
+        list && list.map((item) => {
+            tempRM = 0
+            tempCC = 0
+            tempBOP = 0
+            tempRMCC = 0
+            tempRMBOP = 0
+            tempBOPCC = 0
+            tempRMCCBOP = 0
             switch (item.NewProfitApplicabilityType) {
                 case 'RM':
                     if (item.NewProfitRMPercentage === null || item.NewProfitRMPercentage === undefined
@@ -113,7 +240,6 @@ function ProfitSimulation(props) {
                     break;
 
                 case 'Fixed':
-                    tempFIXED = 1
 
                     break;
 
@@ -177,16 +303,15 @@ function ProfitSimulation(props) {
                 default:
                     return 'foo';
             }
-
-            if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0
-                || tempFIXED !== 0) {
+            // if all 0 then temp 0         // IF THERE ARE CHANGES THEN 0        !== 0 -> no changes
+            if (tempRM !== 0 || tempCC !== 0 || tempBOP !== 0 || tempRMCC !== 0 || tempRMBOP !== 0 || tempBOPCC !== 0 || tempRMCCBOP !== 0) {
                 temp = temp + 1
+            } else {
+                value = value + 1
             }
-
         })
 
-
-        if (Number(temp) !== list.length) {
+        if ((Number(temp) <= Number(list.length))) {
             if (tempRM !== 0) {
                 Toaster.warning('Please fill RM');
                 return false
@@ -194,22 +319,23 @@ function ProfitSimulation(props) {
                 Toaster.warning('Please fill CC');
                 return false
             } else if (tempBOP !== 0) {
-                Toaster.warning('Please fill BPOM');
+                Toaster.warning('Please fill BOP');
                 return false
             } else if (tempRMCC !== 0) {
-                Toaster.warning('Please fill both RM and CC');
+                Toaster.warning('Please fill both RM and CC or Profit Percentage');
                 return false
             } else if (tempRMBOP !== 0) {
-                Toaster.warning('Please fill both RM and BOP');
+                Toaster.warning('Please fill both RM and BOP or Profit Percentage');
                 return false
             } else if (tempBOPCC !== 0) {
-                Toaster.warning('Please fill both BOP and CC');
+                Toaster.warning('Please fill both BOP and CC or Profit Percentage');
                 return false
             } else if (tempRMCCBOP !== 0) {
-                Toaster.warning('Please fill all values RM, CC and BOP');
+                Toaster.warning('Please fill all values RM, CC and BOP or Profit Percentage');
                 return false
             }
         }
+
         list && list.map((li) => {
 
             if (li.ProfitApplicabilityType === li.NewProfitApplicabilityType || li?.NewProfitApplicabilityType === undefined) {
@@ -242,8 +368,9 @@ function ProfitSimulation(props) {
         //     return false
         // }
 
-        if (ProfitPercentageCount === list.length && ProfitRMPercentageCount === list.length
-            && ProfitMachiningCCPercentageCount === list.length && ProfitBOPPercentageCount === list.length) {
+        if (ProfitApplicabilityTypeCount === list.length && ProfitPercentageCount === list.length &&
+            ProfitRMPercentageCount === list.length && ProfitMachiningCCPercentageCount === list.length &&
+            ProfitBOPPercentageCount === list.length) {
             Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
             return false
         }
@@ -504,7 +631,7 @@ function ProfitSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.NewProfitPercentage :
-                        <span className='form-control height33' >{cell && value ? cell : ''} </span>
+                        <span className='form-control height33' >{row.NewProfitPercentage && value ? row.NewProfitPercentage : null} </span>
                 }
 
             </>
@@ -646,6 +773,14 @@ function ProfitSimulation(props) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
         params.api.paginationGoToPage(0);
+        gridOptions?.api?.startEditingCell({
+            rowIndex: 1,
+            colKey: 'NewProfitPercentage'
+        })
+        // setTimeout(() => {
+        //     gridApi.stopEditing()
+        // }, 200);
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -744,7 +879,7 @@ function ProfitSimulation(props) {
                 return value
 
             case 'RM + CC':
-                if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
+                if (rowData.NewProfitPercentage && (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ')) {
                     value = false
                 } else {
                     value = true
@@ -754,7 +889,7 @@ function ProfitSimulation(props) {
                 if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
-                    value = true
+                    value = false
                 }
                 return value
 
@@ -819,7 +954,7 @@ function ProfitSimulation(props) {
                 if (rowData.NewProfitPercentage !== null && rowData.NewProfitPercentage !== undefined && rowData.NewProfitPercentage !== '' && rowData.NewProfitPercentage !== ' ') {
                     value = false
                 } else {
-                    value = true
+                    value = false
                 }
                 return value
 
@@ -1008,7 +1143,6 @@ function ProfitSimulation(props) {
 
         }
         gridApi.redrawRows()
-
         setApplicabilityForGrid(props.value)
     }
 
@@ -1081,7 +1215,7 @@ function ProfitSimulation(props) {
                     <Fragment>
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                     </div>
@@ -1108,11 +1242,12 @@ function ProfitSimulation(props) {
 
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="IsVendor" editable='false' headerName="Costing Head" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="ClientName" editable='false' headerName="Client Name" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="VendorName" editable='false' headerName="Vendor Name" minWidth={190}></AgGridColumn>
 
-                                            <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn>
+                                            {/* <AgGridColumn field="IsVendor" editable='false' headerName="Costing Head" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="ClientName" editable='false' headerName="Client Name" minWidth={190}></AgGridColumn>
+                                            <AgGridColumn field="VendorName" editable='false' headerName="Vendor Name" minWidth={190}></AgGridColumn> */}
+
+                                            {/* <AgGridColumn field="ModelType" editable={false} headerName="Model Type" minWidth={190}></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Profit Applicability Type" marryChildren={true} >
                                                 <AgGridColumn width={160} field="ProfitApplicabilityType" editable='false' headerName="Old" cellRenderer='oldProfitApplicabilityTypeFormatter' colId="ProfitApplicabilityType"></AgGridColumn>

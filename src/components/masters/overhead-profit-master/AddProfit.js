@@ -39,7 +39,7 @@ class AddProfit extends Component {
       isEditFlag: false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
 
       ModelType: [],
       vendorName: [],
@@ -66,8 +66,8 @@ class AddProfit extends Component {
       showPopup: false,
       updatedObj: {},
       setDisable: false,
-      disablePopup: false
-
+      disablePopup: false,
+      inputLoader: false,
     }
   }
 
@@ -78,7 +78,6 @@ class AddProfit extends Component {
   componentDidMount() {
     this.props.fetchModelTypeAPI('--Model Types--', res => { });
     this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
-    this.props.getVendorWithVendorCodeSelectList()
     this.props.getClientSelectList(() => { })
     this.getDetails();
   }
@@ -93,6 +92,10 @@ class AddProfit extends Component {
       costingHead: costingHeadFlag,
       vendorName: [],
     });
+    if (costingHeadFlag === "vendor") {
+      this.setState({ inputLoader: true })
+      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
+    }
   }
 
   /**
@@ -241,7 +244,7 @@ class AddProfit extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, isVendorNameNotSelected:false });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
     } else {
       this.setState({ vendorName: [] })
     }
@@ -575,8 +578,11 @@ class AddProfit extends Component {
     const userDetail = userDetails()
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
-      return false
+
+      if (IsVendor && costingHead === 'vendor') {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
     }
     this.setState({ isVendorNameNotSelected: false })
 
@@ -605,7 +611,7 @@ class AddProfit extends Component {
         this.cancel()
         return false
       }
-      this.setState({ setDisable: true, disablePopup:false })
+      this.setState({ setDisable: true, disablePopup: false })
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: ProfitID }
       })
@@ -699,26 +705,26 @@ class AddProfit extends Component {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, costingHead,
       isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, disablePopup } = this.state;
-      const filterList = (inputValue) => {
-        let tempArr = []
-  
-        tempArr = this.renderListing("VendorNameList").filter(i =>
-          i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-        );
-  
-        if (tempArr.length <= 100) {
-          return tempArr
-        } else {
-          return tempArr.slice(0, 100)
-        }
-      };
-  
-      const promiseOptions = inputValue =>
-        new Promise(resolve => {
-          resolve(filterList(inputValue));
-  
-  
-        });
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
     return (
       <>
         {this.state.isLoader && <LoaderCustom />}
@@ -815,10 +821,18 @@ class AddProfit extends Component {
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <Col md="4">
                             <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                             <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
-                             <AsyncSelect name="vendorName" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag ? true : false} />
-                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                             
+                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
+                            <AsyncSelect
+                              name="vendorName"
+                              ref={this.myRef}
+                              key={this.state.updateAsyncDropdown}
+                              loadOptions={promiseOptions}
+                              onChange={(e) => this.handleVendorName(e)}
+                              value={this.state.vendorName}
+                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                              isDisabled={isEditFlag ? true : false} />
+                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+
                           </Col>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (

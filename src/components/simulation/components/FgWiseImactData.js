@@ -62,7 +62,7 @@ export function Fgwiseimactdata(props) {
                 <Col md="12">
                     {/* {impactType} */}
                     <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
-                        <table className="table cr-brdr-main accordian-table-with-arrow">
+                    <table className="table cr-brdr-main accordian-table-with-arrow">
                             <thead>
                                 {loader && <LoaderCustom />}
                                 <tr>

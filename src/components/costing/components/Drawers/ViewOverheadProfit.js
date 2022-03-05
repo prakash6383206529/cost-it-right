@@ -8,7 +8,7 @@ import { TextFieldHookForm } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull } from '../../../../helper'
 import { useSelector } from 'react-redux'
 function ViewOverheadProfit(props) {
-  const { overheadData, profitData, rejectAndModelType, iccPaymentData } = props
+  const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow } = props
 
   const { rejectData, modelType } = rejectAndModelType
 
@@ -17,8 +17,8 @@ function ViewOverheadProfit(props) {
     reValidateMode: 'onChange',
   })
 
-  const [viewOverheadData, setViewOverheadData] = useState({})
-  const [viewProfitData, setViewProfitData] = useState({})
+  const [viewOverheadData, setViewOverheadData] = useState(overheadData)
+  const [viewProfitData, setViewProfitData] = useState(profitData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -39,30 +39,9 @@ function ViewOverheadProfit(props) {
     }
     props.closeDrawer('')
   }
-
-
-  return (
-    <>
-      <Drawer
-        anchor={props.anchor}
-        open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
-      >
-        <Container>
-          <div className={"drawer-wrapper drawer-1500px"}>
-            <Row className="drawer-heading">
-              <Col>
-                <div className={"header-wrapper left"}>
-                  <h3>{"View Overhead & Profit Cost:"}</h3>
-                </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={"close-button right"}
-                ></div>
-              </Col>
-            </Row>
-
-            <div className="input-group form-group col-md-4 input-withouticon">
+ const modelShowData =()=> {
+   return <>
+    <div className="input-group form-group col-md-4 input-withouticon pdf-download">
               <TextFieldHookForm
                 label="Model Type for Overhead/Profit"
                 name={"modeltype"}
@@ -79,10 +58,11 @@ function ViewOverheadProfit(props) {
                 disabled={true}
               />
             </div>
-            <div
-            // className="cr-process-costwrap"
-            >
-              <Row className="px-3">
+            </>
+ }
+ const overheadTableData = ()=> {
+   return <>
+    <Row className="px-3">
                 <Col md="12">
                   <div className="left-border">{"Overheads"}</div>
                 </Col>
@@ -94,7 +74,7 @@ function ViewOverheadProfit(props) {
                     <thead>
                       <tr>
                         <th>{`Overhead On`}</th>
-                        <th>{`Percentage(%)`}</th>
+                        <th>{viewOverheadData.IsOverheadFixedApplicable ? 'Fixed' :'Percentage(%)'}</th>
                         <th>{`Cost (Applicability)`}</th>
                         <th>{`Overhead`}</th>
 
@@ -187,124 +167,127 @@ function ViewOverheadProfit(props) {
                   </Table>
                 </Col>
               </Row>
-              <br />
-              <div>
-                <Row className="px-3">
-                  <Col md="8">
-                    <div className="left-border">{"Profits:"}</div>
-                  </Col>
-                </Row>
-                <Row className="px-3">
-                  {/*PROFIT RENDERING */}
+   </>
+ } 
+ const profitTableData =()=> {
+   return<>
+      <Row className="px-3">
+      <Col md="8">
+        <div className="left-border">{"Profits:"}</div>
+      </Col>
+    </Row>
+    <Row className="px-3">
+      {/*PROFIT RENDERING */}
 
-                  <Col md="12">
-                    <Table className="table cr-brdr-main add-min-width" size="sm">
-                      <thead>
-                        { }
-                        <tr>
-                          <th>{`Profit On`}</th>
-                          <th>{`Percentage(%)`}</th>
-                          <th>{`Cost (Applicability)`}</th>
-                          <th>{`Profit`}</th>
+      <Col md="12">
+        <Table className="table cr-brdr-main add-min-width" size="sm">
+          <thead>
+            { }
+            <tr>
+              <th>{`Profit On`}</th>
+              <th>{viewOverheadData.IsProfitFixedApplicable ? 'Fixed' :'Percentage(%)'}</th>
+              <th>{`Cost (Applicability)`}</th>
+              <th>{`Profit`}</th>
 
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {viewProfitData && (
-                          <>
-                            {viewProfitData.IsProfitFixedApplicable && (
-                              <tr>
+            </tr>
+          </thead>
+          <tbody>
+            {viewProfitData && (
+              <>
+                {viewProfitData.IsProfitFixedApplicable && (
+                  <tr>
 
-                                <td>{`Fixed`}</td>
-                                <td>
-                                  {viewProfitData.ProfitFixedPercentage ? checkForDecimalAndNull(viewProfitData.ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitFixedCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitFixedTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                              </tr>
-                            )}
-                            {viewProfitData.IsProfitRMApplicable && (
-                              <tr>
-                                <td>{`RM`}</td>
-                                <td>
-                                  {viewProfitData.ProfitRMPercentage ? checkForDecimalAndNull(viewProfitData.ProfitRMPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitRMCost ? checkForDecimalAndNull(viewProfitData.ProfitRMCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitRMTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                              </tr>
-                            )}
-                            {viewProfitData.IsProfitBOPApplicable && (
-                              <tr>
-                                <td>{`BOP`}</td>
-                                <td>
-                                  {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitBOPCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitBOPTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                              </tr>
-                            )}
-                            {viewProfitData.IsProfitCCApplicable && (
-                              <tr>
-                                <td>{`CC`}</td>
-                                <td>
+                    <td>{`Fixed`}</td>
+                    <td>
+                      {viewProfitData.ProfitFixedPercentage ? checkForDecimalAndNull(viewProfitData.ProfitFixedPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitFixedCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitFixedTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitFixedTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                  </tr>
+                )}
+                {viewProfitData.IsProfitRMApplicable && (
+                  <tr>
+                    <td>{`RM`}</td>
+                    <td>
+                      {viewProfitData.ProfitRMPercentage ? checkForDecimalAndNull(viewProfitData.ProfitRMPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitRMCost ? checkForDecimalAndNull(viewProfitData.ProfitRMCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitRMTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                  </tr>
+                )}
+                {viewProfitData.IsProfitBOPApplicable && (
+                  <tr>
+                    <td>{`BOP`}</td>
+                    <td>
+                      {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitBOPCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitBOPTotalCost ? checkForDecimalAndNull(viewProfitData.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                  </tr>
+                )}
+                {viewProfitData.IsProfitCCApplicable && (
+                  <tr>
+                    <td>{`CC`}</td>
+                    <td>
 
-                                  {viewProfitData.ProfitCCPercentage ? checkForDecimalAndNull(viewProfitData.ProfitCCPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitCCCost ? checkForDecimalAndNull(viewProfitData.ProfitCCCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitCCTotalCost
-                                    ? viewProfitData.ProfitCCTotalCost
-                                    : "-"}
-                                </td>
-                              </tr>
-                            )}
-                            {viewProfitData.IsProfitCombined && (
-                              <tr>
-                                <td>{viewProfitData.ProfitApplicability}</td>
-                                <td>
-                                  {viewProfitData.ProfitPercentage ? checkForDecimalAndNull(viewProfitData.ProfitPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitCombinedCost ? checkForDecimalAndNull(viewProfitData.ProfitCombinedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
-                                </td>
-                                <td>
-                                  {viewProfitData.ProfitCombinedTotalCost
-                                    ? viewProfitData.ProfitCombinedTotalCost
-                                    : "-"}
-                                </td>
-                              </tr>
-                            )}
-                          </>
-                        )}
-                        {(viewProfitData.IsProfitFixedApplicable === null && viewProfitData.IsProfitRMApplicable === null && viewProfitData.IsProfitBOPApplicable === null && viewProfitData.IsProfitCCApplicable === null && viewProfitData.IsProfitCombined === null) && (
-                          <tr>
-                            <td colSpan={12}>
-                              <NoContentFound title={EMPTY_DATA} />
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </Col>
-                </Row>
-              </div>
-                  <br />
-              <div>
-                <Row className="px-3">
+                      {viewProfitData.ProfitCCPercentage ? checkForDecimalAndNull(viewProfitData.ProfitCCPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitCCCost ? checkForDecimalAndNull(viewProfitData.ProfitCCCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitCCTotalCost
+                        ? checkForDecimalAndNull(viewProfitData.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice)
+                        : "-"}
+                    </td>
+                  </tr>
+                )}
+                {viewProfitData.IsProfitCombined && (
+                  <tr>
+                    <td>{viewProfitData.ProfitApplicability}</td>
+                    <td>
+                      {viewProfitData.ProfitPercentage ? checkForDecimalAndNull(viewProfitData.ProfitPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitCombinedCost ? checkForDecimalAndNull(viewProfitData.ProfitCombinedCost, initialConfiguration.NoOfDecimalForPrice) : "-"}
+                    </td>
+                    <td>
+                      {viewProfitData.ProfitCombinedTotalCost
+                        ? checkForDecimalAndNull(viewProfitData.ProfitCombinedTotalCost, initialConfiguration.NoOfDecimalForPrice)
+                        : "-"}
+                    </td>
+                  </tr>
+                )}
+              </>
+            )}
+            {(viewProfitData.IsProfitFixedApplicable === null && viewProfitData.IsProfitRMApplicable === null && viewProfitData.IsProfitBOPApplicable === null && viewProfitData.IsProfitCCApplicable === null && viewProfitData.IsProfitCombined === null) && (
+              <tr>
+                <td colSpan={12}>
+                  <NoContentFound title={EMPTY_DATA} />
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </Col>
+    </Row>
+    </>
+ }
+ const rejectTableData = ()=> {
+   return <>
+   <Row className="px-3">
                   <Col md="10">
                     <div className="left-border">{"Rejection:"}</div>
                   </Col>
@@ -318,7 +301,7 @@ function ViewOverheadProfit(props) {
                         <tr>
 
                           <th>{`Applicability`}</th>
-                          <th>{`Rejection ${rejectData.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
+                          <th>{`Rejection ${rejectData?.RejectionApplicability === 'Fixed' ? '' : '(%)'}`}</th>
                           <th>{`Cost (Applicability)`}</th>
                           <th>{`Net Rejection`}</th>
                         </tr>
@@ -339,31 +322,14 @@ function ViewOverheadProfit(props) {
                               <td>{rejectData.RejectionTotalCost ? checkForDecimalAndNull(rejectData.RejectionTotalCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             </tr>
                         }
-                        {/* {rejectData && (
-                          <tr>
-                            <td>{rejectData.RejectionApplicability}</td>
-                            <td>{rejectData.RejectionPercentage}</td>
-                            <td>{rejectData.RejectionCost}</td>
-                            <td>{rejectData.RejectionTotalCost}</td>
-                          </tr>
-                        )} */}
-                        {/* {(rejectData.RejectionApplicability === null && rejectData.RejectionPercentage === null && rejectData.RejectionCost === null && rejectData.RejectionTotalCost === null) && (
-                          <tr>
-                            <td colSpan={8}>
-                              <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                            </td>
-                          </tr>
-                        )} */}
                       </tbody>
                     </Table>
                   </Col>
-                </Row>
-              </div>
-
-                  <br />
-
-              <div>
-                <Row className="px-3">
+                </Row></>
+ }
+ const iccTableData =()=> {
+   return <>
+   <Row className="px-3">
                   <Col md="12">
                     <div className="left-border">{"ICC:"}</div>
                   </Col>
@@ -402,15 +368,12 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
-                
-                </Row>
-              </div>
 
-              <br />
-
-
-              <div>
-                <Row className="px-3">
+                </Row></>
+ }
+ const paymentTableData = ()=> {
+   return <>
+    <Row className="px-3">
                   <Col md="12">
                     <div className="left-border">{"Payment Terms:"}</div>
                   </Col>
@@ -449,16 +412,73 @@ function ViewOverheadProfit(props) {
                       </tbody>
                     </Table>
                   </Col>
-                </Row>
+                </Row></>
+ }
+
+  return (
+    <>
+    {!isPDFShow ?
+      <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+      // onClose={(e) => toggleDrawer(e)}
+      >
+        <Container>
+          <div className={"drawer-wrapper drawer-1500px"}>
+            <Row className="drawer-heading">
+              <Col>
+                <div className={"header-wrapper left"}>
+                  <h3>{"View Overhead & Profit Cost:"}</h3>
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  className={"close-button right"}
+                ></div>
+              </Col>
+            </Row>
+
+           {modelShowData()}
+            <div
+            // className="cr-process-costwrap"
+            >
+              <>
+              {overheadTableData()}</>
+              <br />
+              <div>
+               {profitTableData()}
+              </div>
+              <br />
+              <div>
+                {rejectTableData()}
+              </div>
+              <br />
+              <div>
+                {iccTableData()}
               </div>
 
-
-
+              <br />
+              <div>
+               {paymentTableData()}
+              </div>
 
             </div>
           </div>
         </Container>
-      </Drawer>
+      </Drawer> : <>
+          {(viewOverheadData.IsOverheadFixedApplicable  || viewOverheadData.IsOverheadRMApplicable || viewOverheadData.IsOverheadBOPApplicable  || viewOverheadData.IsOverheadCCApplicable || viewOverheadData.IsOverheadCombined || viewProfitData.IsProfitFixedApplicable || viewProfitData.IsProfitRMApplicable || viewProfitData.IsProfitBOPApplicable || viewProfitData.IsProfitCCApplicable ||viewProfitData.IsProfitCombined) && modelShowData()}
+          <div>
+          { (viewOverheadData.IsOverheadFixedApplicable  || viewOverheadData.IsOverheadRMApplicable || viewOverheadData.IsOverheadBOPApplicable  || viewOverheadData.IsOverheadCCApplicable || viewOverheadData.IsOverheadCombined)  && overheadTableData()}
+          </div>
+          <div>
+          {(viewProfitData.IsProfitFixedApplicable || viewProfitData.IsProfitRMApplicable || viewProfitData.IsProfitBOPApplicable || viewProfitData.IsProfitCCApplicable ||viewProfitData.IsProfitCombined ) ? profitTableData(): ""}
+          </div>
+          {rejectData.RejectionApplicability != null && rejectTableData()}
+          {iccPaymentData.ICCApplicabilityDetail.ICCApplicability != null && iccTableData()}
+          {iccPaymentData.PaymentTermDetail.PaymentTermApplicability != null && paymentTableData()}
+
+      </>
+     
+       } 
     </>
   );
 }

@@ -224,13 +224,13 @@ function ERSimulation(props) {
 
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-header d-flex ">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                          <div className="refresh mr-0"></div></button>
+                                            <div className="refresh mr-0"></div></button>
                                     </div>
-                                   
+
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
                                             floatingFilter={true}
@@ -260,9 +260,12 @@ function ERSimulation(props) {
                                             <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
                                             <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>
-
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' cellRenderer='effectiveDateRenderer' minWidth={190}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>}
+                                            {isImpactedMaster && <>
+                                                <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="New Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                                <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Old Exchange Rate(INR)" minWidth={190}></AgGridColumn>
+                                            </>}
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 
                                         </AgGridReact>

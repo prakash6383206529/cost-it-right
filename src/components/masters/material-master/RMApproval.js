@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper'
 import { EMPTY_DATA, PENDING } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -16,6 +16,8 @@ import MasterSendForApproval from '../MasterSendForApproval';
 import WarningMessage from '../../common/WarningMessage';
 import { debounce } from 'lodash'
 import Toaster from '../../common/Toaster'
+import { masterFinalLevelUser } from '../actions/Material'
+
 
 
 
@@ -33,10 +35,24 @@ function RMApproval(props) {
     const { approvalList } = useSelector((state) => state.material)
     const [approvalDrawer, setApprovalDrawer] = useState(false)
     const [loader, setLoader] = useState(true)
+    const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
         getTableData()
+        let obj = {
+            MasterId: RM_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+
+        dispatch(masterFinalLevelUser(obj, (res) => {
+            if (res.data.Result) {
+                setIsFinalApprover(res.data.Data.IsFinalApprovar)
+            }
+        }))
+
 
     }, [])
 
@@ -147,6 +163,7 @@ function RMApproval(props) {
     * @description Renders buttons
     */
     const effectiveDateFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
@@ -190,6 +207,7 @@ function RMApproval(props) {
 
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
         return (
             <Fragment>
                 {
@@ -269,12 +287,12 @@ function RMApproval(props) {
     const onPageSizeChanged = (newPageSize) => {
         var value = document.getElementById('page-size').value;
 
-        if(props?.isApproval){
+        if (props?.isApproval) {
             gridApi.paginationSetPageSize(Number(newPageSize));  // APPLIED THIS IF ELSE CONDITION JUST BECAUSE IN DASHBOARD INCREASING PAGE DROPDOWN WAS NOT WORKING
 
         }
         else {
-        gridApi.paginationSetPageSize(Number(value));
+            gridApi.paginationSetPageSize(Number(value));
         }
     };
 
@@ -322,7 +340,7 @@ function RMApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                            <button title="send-for-approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
@@ -336,9 +354,7 @@ function RMApproval(props) {
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div
-                                className="ag-theme-material"
-                            >
+                            <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                                 <AgGridReact
                                     floatingFilter={true}
                                     style={{ height: '100%', width: '100%' }}
@@ -361,7 +377,7 @@ function RMApproval(props) {
                                     isRowSelectable={isRowSelectable}
                                 >
                                     <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
-                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
+                                    <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
                                     <AgGridColumn width="145" field="TechnologyName" headerName='Technology'></AgGridColumn>

@@ -449,10 +449,7 @@ class ProcessListing extends Component {
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
-              <div
-                className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
-              >
+              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}

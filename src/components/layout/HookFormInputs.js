@@ -401,7 +401,7 @@ export const RadioHookForm = (field) => {
 
 export const AsyncSearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message } = field;
+    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message, NoOptionMessage } = field;
 
 
   let isDisable = (disabled && disabled === true) ? true : false;
@@ -438,6 +438,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
+              noOptionsMessage={({inputValue}) => !inputValue ? NoOptionMessage : "No results found"}
             />
           )
 

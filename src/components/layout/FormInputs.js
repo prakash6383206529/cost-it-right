@@ -596,7 +596,7 @@ export function InputHiddenField(field) {
 }
 
 export function renderDatePicker(field) {
-  const { input, placeholder, defaultValue, disabled, meta: { touched, error }, } = field;
+  const { input, placeholder, defaultValue, disabled, meta: { touched, error }, minDate } = field;
   return (
     <div className={"react-picker-box"}>
       <label>{field.label}{field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}      </label>
@@ -605,7 +605,7 @@ export function renderDatePicker(field) {
         dateFormat="dd/MM/yyyy"
         placeholderText={placeholder}
         //maxDate={new Date()}
-        // minDate={new Date()}
+        minDate={minDate ? new Date(minDate) : null}
         showMonthDropdown
         showYearDropdown
         readonly="readonly"

@@ -25,7 +25,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, isOperation, lastRevision } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -67,7 +67,8 @@ function OperationSTSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let valueShow
-        switch (Number(selectedMasterForSimulation?.value)) {
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        switch (Number(master)) {
             case Number(SURFACETREATMENT):
                 valueShow = lastRevision ? row.OldSurfaceTreatmentCost : row.OldOperationRate
                 break;
@@ -96,7 +97,8 @@ function OperationSTSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
         let valueShow
-        switch (Number(selectedMasterForSimulation?.value)) {
+        let master = isImpactedMaster ? masterId : selectedMasterForSimulation?.value
+        switch (Number(master)) {
             case Number(SURFACETREATMENT):
                 valueShow = lastRevision ? row.NewSurfaceTreatmentCost : row.NewOperationRate
                 break;
@@ -243,7 +245,7 @@ function OperationSTSimulation(props) {
             return null;
         })
         if (Count === tempData.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         setIsDisable(true)
@@ -368,7 +370,7 @@ function OperationSTSimulation(props) {
                                                 </>}
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Rate" marryChildren={true} >
                                                     <AgGridColumn width={120} field="Rate" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="Rate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={true} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="New" colId='NewRate'></AgGridColumn>
                                                 </AgGridColumn>
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>

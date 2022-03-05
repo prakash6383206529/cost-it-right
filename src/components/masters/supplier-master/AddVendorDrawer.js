@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
     required, upper, email, minLength7, maxLength70, maxLength80, maxLength71 , maxLength7, maxLength5, vlidatePhoneNumber,maxLength12, alphaNumeric , acceptAllExceptSingleSpecialCharacter,
-    maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
+    maxLength15, postiveNumber, minLength10, maxLength6, checkWhiteSpaces
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
@@ -591,7 +591,7 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[postiveNumber, maxLength10, maxLength12, checkWhiteSpaces]}
+                                            validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                                             maxLength={12}
                                             customClassName={'withBorder'}
                                             disabled={isViewMode}

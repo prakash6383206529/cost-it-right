@@ -15,8 +15,8 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
-import { BopImport, BOPIMPORT, INR } from '../../../config/constants';
-import { getConfigurationKey } from '../../../helper';
+import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
+import { getConfigurationKey, CheckApprovalApplicableMaster, getFilteredData } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -79,9 +79,9 @@ class BOPImportListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
         }
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.props.getBOPImportDataList(filterData, (res) => {
-            this.setState({isLoader:false})
+            this.setState({ isLoader: false })
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 this.setState({ tableData: Data })
@@ -167,11 +167,30 @@ class BOPImportListing extends Component {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
+
+        let isEditable = false
+        let isDeleteButton = false
+
+        
+            if (EditAccessibility && !rowData.IsBOPAssociated) {
+                isEditable = true
+            } else {
+                isEditable = false
+            }
+        
+        
+            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+        
+
         return (
             <>
                 {ViewAccessibility && <button className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {isEditable && <button className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {isDeleteButton && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -197,7 +216,7 @@ class BOPImportListing extends Component {
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        return cellValue!= null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     plantFormatter = (props) => {
 
@@ -287,6 +306,13 @@ class BOPImportListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
+    getFilterBOPData = () => {
+        if (this.props.isSimulation) {
+            return getFilteredData(this.props.bopImportList, BOP_MASTER_ID)
+        } else {
+            return this.props.bopImportList
+        }
+    }
 
 
     /**
@@ -406,19 +432,17 @@ class BOPImportListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopImportList && this.props.bopImportList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopImportList && this.props.bopImportList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
-                            <div
-                                className="ag-theme-material"
-                            >
+                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     floatingFilter={true}
                                     // columnDefs={c}
-                                    rowData={this.props.bopImportList}
+                                    rowData={this.getFilterBOPData()}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}

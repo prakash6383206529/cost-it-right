@@ -16,7 +16,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
-// const BASE_URL = 'http://10.148.80.4:10122/api/v1';
+// const BASE_URL = 'http://10.10.1.100:10122/api/v1';
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -304,7 +304,6 @@ export const API = {
   masterSendToApproverBop: `${BASE_URL}/masters-approval-Bought-Out-Part/master-send-to-approver-by-sender`,
 
 
-
   //BOP Category
   createBOPCategory: `${BASE_URL}/masters-bought-out-part/add-bought-out-part-category`,
   getBOPCategorySelectList: `${BASE_URL}/masters-bought-out-part/select-list-bought-out-part-category`,
@@ -315,6 +314,12 @@ export const API = {
   getAllProcessAPI: `${BASE_URL}/masters-process/get-all`,
   updateProcessAPI: `${BASE_URL}/masters-process/update`,
   deleteProcessAPI: `${BASE_URL}/masters-process/delete`,
+
+
+  //MACHINE APPROVAL API'S
+
+  masterSendToApproverMachine: `${BASE_URL}/masters-machine/master-send-to-approver-by-sender`,
+
 
   //FUEL MASTER
   createFuel: `${BASE_URL}/masters-fuel/create-fuel`,
@@ -384,6 +389,12 @@ export const API = {
   getVendorListByOperation: `${BASE_URL}/masters-operation/get-operation-vendor-by-operation-select-list`,
   getTechnologyListByVendor: `${BASE_URL}/masters-operation/get-operation-technology-by-vendor-select-list`,
   getOperationListByVendor: `${BASE_URL}/masters-operation/get-operation-by-vendor-select-list`,
+
+
+  //OPERATION APPROVAL API'S
+
+  masterSendToApproverOperation: `${BASE_URL}/masters-approval-Operation/master-send-to-approver-by-sender`,
+  getOperationApprovalList: `${BASE_URL}/app-approval-system/get-master-approvals-by-filter`,
 
   //FREIGHT MASTER
   createFreight: `${BASE_URL}/masters-freight/create`,
@@ -922,7 +933,8 @@ export const API = {
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
-  getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`
+  getSimualtionInsightReport: `${BASE_URL}/reports/get-simulation-insights`,
+  getCostingReport: `${BASE_URL}/reports/get-costing-report`,
 
 }
 
@@ -1188,6 +1200,8 @@ export const GET_UNIT_OPERATION_DATA_SUCCESS = 'GET_UNIT_OPERATION_DATA_SUCCESS'
 export const GET_OPERATION_SELECTLIST_SUCCESS = 'GET_OPERATION_SELECTLIST_SUCCESS'
 export const GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST = 'GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST'
 export const GET_INITIAL_TECHNOLOGY_SELECTLIST = 'GET_INITIAL_TECHNOLOGY_SELECTLIST'
+export const GET_OPERATION_APPROVAL_LIST = 'GET_OPERATION_APPROVAL_LIST'
+
 
 //FREIGHT MASTER
 export const CREATE_FREIGHT_SUCCESS = 'CREATE_FREIGHT_SUCCESS'
@@ -1338,6 +1352,7 @@ export const CLOSE_OPEN_ACCORDION = 'CLOSE_OPEN_ACCORDION';
 export const IS_COSTING_EFFECTIVE_DATE_DISABLED = 'IS_COSTING_EFFECTIVE_DATE_DISABLED';
 export const SET_CUTOFF_RMC = 'SET_CUTOFF_RMC';
 export const GET_COSTING_SPECIFIC_TECHNOLOGY = 'GET_COSTING_SPECIFIC_TECHNOLOGY'
+export const FORGING_CALCULATOR_MACHININGSTOCK_SECTION = 'FORGING_CALCULATOR_MACHININGSTOCK_SECTION';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1361,6 +1376,8 @@ export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LE
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 export const GET_SIMULATION_LEVEL_BY_TECHNOLOGY = 'GET_SIMULATION_LEVEL_BY_TECHNOLOGY'
 export const GET_MASTER_LEVEL_BY_MASTERID = 'GET_MASTER_LEVEL_BY_MASTERID'
+export const COSTINGS_APPROVAL_DASHBOARD = 'COSTINGS_APPROVAL_DASHBOARD'
+export const AMENDMENTS_APPROVAL_DASHBOARD = 'AMENDMENTS_APPROVAL_DASHBOARD'
 
 //ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
@@ -1433,6 +1450,7 @@ export const GET_MACHINE_DATALIST_SUCCESS = 'GET_MACHINE_DATALIST_SUCCESS'
 export const GET_MACHINE_DATA_SUCCESS = 'GET_MACHINE_DATA_SUCCESS'
 export const GET_MACHINE_LIST_SUCCESS = 'GET_MACHINE_LIST_SUCCESS'
 export const GET_DEPRECIATION_SELECTLIST_SUCCESS = 'GET_DEPRECIATION_SELECTLIST_SUCCESS'
+export const GET_MACHINE_APPROVAL_LIST = 'GET_MACHINE_APPROVAL_LIST'
 
 //POWER MASTER
 export const GET_POWER_TYPE_SELECTLIST_SUCCESS = 'GET_POWER_TYPE_SELECTLIST_SUCCESS'
@@ -1491,6 +1509,7 @@ export const GET_ASSEMBLY_SIMULATION_LIST_SUMMARY = 'GET_ASSEMBLY_SIMULATION_LIS
 export const SET_DATA_TEMP = 'SET_DATA_TEMP'
 export const GET_VERIFY_OVERHEAD_SIMULATION_LIST = 'GET_VERIFY_OVERHEAD_SIMULATION_LIST'
 export const GET_VERIFY_PROFIT_SIMULATION_LIST = 'GET_VERIFY_PROFIT_SIMULATION_LIST'
+export const SET_SHOW_SIMULATION_PAGE = 'SET_SHOW_SIMULATION_PAGE'
 
 
 //SIMULATION APPROVAL
@@ -1804,4 +1823,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.1.241.2";
+export const VERSION = "V1.2.47";

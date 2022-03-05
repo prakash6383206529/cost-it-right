@@ -19,12 +19,14 @@ import {
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
+    GET_OPERATION_APPROVAL_LIST,
     GET_OPERATION_INDIVIDUAL_DATA_LIST,
     GET_OPERATION_SURFACE_TREATMENT_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
+import { loggedInUserId, userDetails } from '../../../helper';
 import { setItemData } from '../../costing/actions/Costing';
 
 const headers = config
@@ -253,19 +255,8 @@ export function deleteCEDotherOperationAPI(Id, callback) {
 export function getOperationsDataList(filterData, temp, callback) {
 
     return (dispatch) => {
-        dispatch({
-            type: GET_OPERATION_SURFACE_TREATMENT_DATA_LIST,
-            payload: []
-        })
-        dispatch({
-            type: GET_OPERATION_INDIVIDUAL_DATA_LIST,
-            payload: []
-        })
-        dispatch({
-            type: GET_OPERATION_COMBINED_DATA_LIST,
-            payload: []
-        })
-        let payloadSurfaceTreatment, payloadOperation, tempData, payload
+
+        let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, headers)
@@ -698,6 +689,7 @@ export function operationZBCBulkUpload(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -716,6 +708,63 @@ export function operationVBCBulkUpload(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
+        });
+    };
+}
+
+
+
+/**
+ * @method masterApprovalRequestBySenderOperation
+ * @description When sending Operation for approval for the first time
+ * 
+ */
+export function masterApprovalRequestBySenderOperation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterSendToApproverOperation, data, headers)
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    Toaster.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+/*
+@method getOperationApprovalList
+
+**/
+export function getOperationApprovalList(callback) {
+
+    return (dispatch) => {
+
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getOperationApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=3`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                //
+                dispatch({
+                    type: GET_OPERATION_APPROVAL_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                    // payload: JSON.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error)
         });
     };
 }

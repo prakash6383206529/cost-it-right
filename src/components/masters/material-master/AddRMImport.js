@@ -26,7 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, INR, ZBC, RM_MASTER_ID } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -37,7 +37,6 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { animateScroll as scroll } from 'react-scroll';
-import TooltipCustom from '../../common/Tooltip';
 import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddRMImport');
@@ -51,7 +50,7 @@ class AddRMImport extends Component {
     this.state = {
       isEditFlag: false,
       isViewFlag: this.props?.data?.isViewFlag ? true : false,
-      RawMaterialID: '',
+      RawMaterialID: EMPTY_GUID,
 
       RawMaterial: [],
       RMGrade: [],
@@ -59,19 +58,22 @@ class AddRMImport extends Component {
       Category: [],
       Technology: [],
       selectedPlants: [],
+      IsFinancialDataChanged: true,
 
       vendorName: [],
       VendorCode: '',
       selectedVendorPlants: [],
       vendorLocation: [],
-      isVendorNameNotSelected:false,
+      isVendorNameNotSelected: false,
 
       HasDifferentSource: false,
       sourceLocation: [],
+      oldDate: '',
 
       UOM: [],
       currency: [],
       effectiveDate: '',
+      minEffectiveDate: '',
       remarks: '',
 
       isShowForm: false,
@@ -103,7 +105,8 @@ class AddRMImport extends Component {
       uploadAttachements: true,
       isFinalApprovar: false,
       disablePopup: false,
-      setDisable: false
+      setDisable: false,
+      inputLoader: false
 
     }
   }
@@ -126,12 +129,13 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data } = this.props;
+    this.setState({ inputLoader: true })
     this.getDetails(data);
     this.props.change('NetLandedCost', 0)
     this.props.getRawMaterialCategory(res => { });
     this.props.fetchSupplierCityDataAPI(res => { });
-    this.props.getVendorListByVendorType(false, () => { })
-    this.props.getTechnologySelectList(() => { })
+    this.props.getVendorListByVendorType(false, () => { this.setState({ inputLoader: false }) })
+    this.props.getTechnologySelectList(() => { this.setState({ inputLoader: false }) })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
 
@@ -243,7 +247,7 @@ class AddRMImport extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue,isVendorNameNotSelected:false, selectedVendorPlants: [], vendorLocation: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [], vendorLocation: [] }, () => {
         const { vendorName } = this.state;
         const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
         this.setState({ VendorCode: result })
@@ -346,11 +350,27 @@ class AddRMImport extends Component {
 
   };
 
+  handleCutOfChange = () => {
+    this.setState({ isSourceChange: true })
+
+  }
+
+
+
   handleNetCost = () => {
 
     const { fieldsObj } = this.props
     const { currency, effectiveDate } = this.state
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
+
+
+    if (this.state.isEditFlag && Number(netCost) === Number(this.state.DataToChange?.NetLandedCost) && Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange?.ScrapRate)) {
+
+      this.setState({ IsFinancialDataChanged: false })
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
 
     if (currency === INR) {
       this.setState({ currencyValue: 1, netCost: checkForNull(netCost * this.state.currencyValue) }, () => {
@@ -366,12 +386,19 @@ class AddRMImport extends Component {
           else {
             this.setState({ showWarning: false })
           }
+
+
           this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
+
+
+
         })
       }
     }
+
+
   }
 
   /**
@@ -380,7 +407,8 @@ class AddRMImport extends Component {
   */
   handleMessageChange = (e) => {
     this.setState({
-      remarks: e.target.value
+      remarks: e.target.value,
+      isSourceChange: true
     })
   }
 
@@ -389,6 +417,15 @@ class AddRMImport extends Component {
     if (Number(newValue.target.value) > Number(fieldsObj.BasicRate)) {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
+    }
+
+    if (this.state.isEditFlag) {
+
+      if (Number(fieldsObj.ScrapRate) === Number(this.state.DataToChange.ScrapRate) && Number(this.state.netCost) === Number(this.state.DataToChange?.NetLandedCost)) {
+        this.setState({ IsFinancialDataChanged: false })
+      } else {
+        this.setState({ IsFinancialDataChanged: true })
+      }
     }
   }
 
@@ -407,13 +444,14 @@ class AddRMImport extends Component {
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-          this.setState({ DataToChange: Data })
+          this.setState({ DataToChange: Data, inputLoader: true })
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
           } else {
-            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { this.setState({ inputLoader: false }) })
           }
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => {
             this.props.fetchSpecificationDataAPI(Data.RMGrade, res => {
 
@@ -452,6 +490,7 @@ class AddRMImport extends Component {
                 const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
                 this.setState({
+                  IsFinancialDataChanged: false,
                   isEditFlag: true,
                   isShowForm: true,
                   IsVendor: Data.IsVendor,
@@ -467,6 +506,7 @@ class AddRMImport extends Component {
                   sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
                   UOM: UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
                   effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+                  oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
                   currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
                   remarks: Data.Remark,
                   files: Data.FileList,
@@ -511,11 +551,12 @@ class AddRMImport extends Component {
       vendorLocation: [],
     }, () => {
       const { IsVendor } = this.state;
+      this.setState({ inputLoader: true })
       if (IsVendor) {
-        this.props.getVendorWithVendorCodeSelectList(() => { })
+        this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       } else {
 
-        this.props.getVendorListByVendorType(IsVendor, () => { })
+        this.props.getVendorListByVendorType(IsVendor, () => { this.setState({ inputLoader: false }) })
         this.props.getPlantBySupplier('', () => { })
         this.props.getCityBySupplier(0, () => { })
       }
@@ -894,11 +935,13 @@ class AddRMImport extends Component {
         Id: FileId,
         DeletedBy: loggedInUserId(),
       }
-      this.props.fileDeleteRMDomestic(deleteData, (res) => {
-        Toaster.success('File has been deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      // this.props.fileDeleteRMDomestic(deleteData, (res) => {
+      //   Toaster.success('File has been deleted successfully.')
+      //   let tempArr = this.state.files.filter(item => item.FileId !== FileId)
+      //   this.setState({ files: tempArr })
+      // })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
       let tempArr = this.state.files.filter(
@@ -928,13 +971,20 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange,uploadAttachements } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
 
-    const { initialConfiguration } = this.props;
-    this.setState({ setDisable: true, disablePopup:false})
+    const { initialConfiguration ,fieldsObj} = this.props;
+    this.setState({ setDisable: true, disablePopup: false })
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+
+
+    if (Number(fieldsObj.BasicRate) < Number(fieldsObj.ScrapRate)) {
+      this.setState({ setDisable: false })
+      Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
 
@@ -954,7 +1004,7 @@ class AddRMImport extends Component {
       return vendorPlantArray;
     })
 
-    if (isEditFlag && this.state.isFinalApprovar) {
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
@@ -968,6 +1018,7 @@ class AddRMImport extends Component {
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
+        ScrapRateInINR: currency === INR ? values.ScrapRate : (values.ScrapRate * currencyValue),
         NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
@@ -978,52 +1029,77 @@ class AddRMImport extends Component {
         IsConvertIntoCopy: isDateChange ? true : false,
         IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
         CutOffPrice: values.cutOffPrice,
-        IsCutOffApplicable: false,
-        RawMaterialCode: values.Code
+        IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
+        RawMaterialCode: values.Code,
+        IsFinancialDataChanged: isDateChange ? true : false
       }
-      if (isEditFlag && this.state.isFinalApprovar) {
+      //DONT DELETE COMMENTED CODE BELOW
 
-        if (isSourceChange) {
-          
-          this.props.updateRMImportAPI(requestData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-              this.clearForm()
 
-            }
-          })
-        }
-        if (isDateChange) {
-          this.props.updateRMImportAPI(requestData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-              this.clearForm()
 
-            }
-          })
+
+      if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+        Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+        String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+          values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+        this.cancel()
+        return false
+      }
+
+
+      if (IsFinancialDataChanged) {
+
+        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+          this.setState({ showPopup: true, updatedObj: requestData })
+          return
+
         } else {
-          if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-            Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-            String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-              values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-            this.cancel()
-            return false
-          }
-          if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
-            Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
-              values.cutOffPrice === undefined) || uploadAttachements === false)) {
-            this.setState({ showPopup: true, updatedObj: requestData })
-          }
 
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
+          return false
         }
+
       }
+
+
+      if (isSourceChange) {
+        this.props.updateRMImportAPI(requestData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+            this.clearForm()
+
+          }
+        })
+      }
+      else {
+        this.setState({ showPopup: true, updatedObj: requestData })
+      }
+
+
+      // else {
+      //   if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+      //     Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+      //     String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+      //       values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+      //     this.cancel()
+      //     return false
+      //   }
+      //   if ((Number(DataToChange.BasicRatePerUOM) !== values.BasicRate || Number(DataToChange.ScrapRate) !== values.ScrapRate ||
+      //     Number(DataToChange.NetLandedCost) !== values.NetLandedCost || (Number(DataToChange.CutOffPrice) !== values.cutOffPrice ||
+      //       values.cutOffPrice === undefined) || uploadAttachements === false)) {
+      //     this.setState({ showPopup: true, updatedObj: requestData })
+      //   }
+
 
 
     } else {
+
       this.setState({ setDisable: true })
       const formData = {
+        RawMaterialId: RawMaterialID,
+        IsFinancialDataChanged: isDateChange ? true : false,
         IsVendor: IsVendor,
         RawMaterial: RawMaterial.value,
         RMGrade: RMGrade.value,
@@ -1037,6 +1113,7 @@ class AddRMImport extends Component {
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
+        ScrapRateInINR: currency === INR ? values.ScrapRate : (values.ScrapRate * currencyValue),
         NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
@@ -1062,16 +1139,47 @@ class AddRMImport extends Component {
       // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
       if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
 
-        if (isDateChange) {
-          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })          //IF THE EFFECTIVE DATE IS NOT UPDATED THEN USER SHOULD NOT BE ABLE TO SEND IT FOR APPROVAL IN EDIT MODE
-        }
-        else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
+
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+            return
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
         }
 
+        if (isSourceChange) {
+          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+          this.setState({ setDisable: false })
+
+        } else {
+
+          if (isEditFlag) {
+
+
+            if (uploadAttachements && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
+              Number(DataToChange.ScrapRate) === Number(values.ScrapRate) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
+              String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
+                values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
+              this.cancel()
+              return false
+            }
+          }
+
+          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+
+        }
+
+
       } else {
-       
+
         this.props.createRMImport(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
@@ -1082,6 +1190,7 @@ class AddRMImport extends Component {
       }
     }
   }
+
 
   onPopupConfirm = () => {
     this.setState({ disablePopup: true })
@@ -1116,26 +1225,26 @@ class AddRMImport extends Component {
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
       isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, disablePopup } = this.state;
 
-      const filterList = (inputValue) => {
-        let tempArr = []
-  
-        tempArr = this.renderListing("VendorNameList").filter(i =>
-          i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
-        );
-  
-        if (tempArr.length <= 100) {
-          return tempArr
-        } else {
-          return tempArr.slice(0, 100)
-        }
-      };
-  
-      const promiseOptions = inputValue =>
-        new Promise(resolve => {
-          resolve(filterList(inputValue));
-  
-  
-        });
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
 
     return (
       <>
@@ -1379,12 +1488,24 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                           <Col md="4" className='mb-4'>
-                                     
-                          <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                           <TooltipCustom customClass='child-component-tooltip' tooltipClass='component-tooltip-container' tooltipText="Please enter vendor name/code" />
-                           <AsyncSelect name="DestinationSupplierId" ref={this.myRef} key={this.state.updateAsyncDropdown} loadOptions={promiseOptions} onChange={(e) => this.handleVendorName(e)} value={this.state.vendorName} isDisabled={isEditFlag || isViewFlag} />
-                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                           
+                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                            {!this.state.isLoader && this.state.inputLoader && <LoaderCustom customClass={`input-loader ${this.state.IsVendor ? 'vendor-based' : 'zero-based'} `} />}
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                              <div className="fullinput-icon">
+                                <AsyncSelect
+                                  name="DestinationSupplierId"
+                                  ref={this.myRef}
+                                  key={this.state.updateAsyncDropdown}
+                                  loadOptions={promiseOptions}
+                                  onChange={(e) => this.handleVendorName(e)}
+                                  value={this.state.vendorName}
+                                  noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                  isDisabled={isEditFlag || isViewFlag} />
+
+                                {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              </div>
+                              {!isEditFlag && (<div onClick={this.vendorToggler} className={"plus-icon-square  right"}   ></div>)}
+                            </div>
                           </Col>
                           {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
@@ -1497,6 +1618,7 @@ class AddRMImport extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
+                                  minDate={this.state.minEffectiveDate}
                                   autoComplete={'off'}
                                   required={true}
                                   changeHandler={(e) => {
@@ -1504,7 +1626,8 @@ class AddRMImport extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
-                                  disabled={isViewFlag}
+                                  disabled={isViewFlag || !this.state.IsFinancialDataChanged}
+
                                 />
                               </div>
                             </div>
@@ -1522,6 +1645,7 @@ class AddRMImport extends Component {
                               disabled={isViewFlag}
                               className=" "
                               customClassName=" withBorder"
+                              onChange={this.handleCutOfChange}
                             />
                           </Col> */}
                           <Col md="4">
@@ -1865,7 +1989,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost');
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,

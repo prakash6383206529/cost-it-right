@@ -4,12 +4,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
 import DayTime from '../../common/DayTimeWrapper'
-import {   getPartInfo, checkPartWithTechnology,
+import {
+  getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
-import { formViewData, loggedInUserId } from '../../../helper'
+import { checkForDecimalAndNull, formViewData, loggedInUserId } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
@@ -44,8 +45,9 @@ function CostingSummary(props) {
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const [titleObj, setTitleObj] = useState({})
-    //dropdown loader 
-    const [inputLoader, setInputLoader] = useState(false)
+  //dropdown loader 
+  const [inputLoader, setInputLoader] = useState(false)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
@@ -65,12 +67,12 @@ function CostingSummary(props) {
 
 
   useEffect(() => {
-    
-    if (reactLocalStorage.get('location') === '/costing-summary'){
-        dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
-        dispatch(getPartInfo('', () => { }))
-        dispatch(getPartSelectListByTechnology('', () => { }))
-      }  
+
+    if (reactLocalStorage.get('location') === '/costing-summary') {
+      dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+      dispatch(getPartInfo('', () => { }))
+      dispatch(getPartSelectListByTechnology('', () => { }))
+    }
   }, [])
 
   /*************USED FOR SETTING DEFAULT VALUE IN SUMMARY AFTER SELECTING COSTING FROM DETAIL*****************/
@@ -91,7 +93,7 @@ function CostingSummary(props) {
           setValue('ECNNumber', Data.ECNNumber)
           setValue('DrawingNumber', Data.DrawingNumber)
           setValue('RevisionNumber', Data.RevisionNumber)
-          setValue('ShareOfBusiness', Data.Price)
+          setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
           setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
           setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           newValue.revisionNumber = Data.RevisionNumber
@@ -158,7 +160,7 @@ function CostingSummary(props) {
       setInputLoader(true)
       dispatch(getPartSelectListByTechnology(newValue.value, () => {
         setInputLoader(false)
-       }))
+      }))
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
@@ -207,8 +209,8 @@ function CostingSummary(props) {
                   setValue('ECNNumber', Data.ECNNumber)
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
-                  setValue('ShareOfBusiness', Data.Price)
-                  setTitleObj(prevState => ({ ...prevState,  descriptionTitle: Data.Description, partNameTitle: Data.PartName}))
+                  setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
+                  setTitleObj(prevState => ({ ...prevState, descriptionTitle: Data.Description, partNameTitle: Data.PartName }))
                   setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
                   setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
                   newValue.revisionNumber = Data.RevisionNumber
@@ -400,7 +402,7 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
-                      {inputLoader  && <LoaderCustom customClass="input-loader"/>}
+                        {inputLoader && <LoaderCustom customClass="input-loader" />}
                         {IsTechnologySelected && <TooltipCustom tooltipText="Please enter first few digits to see the part numbers" />}
                         <AsyncSearchableSelectHookForm
                           label={"Assembly No./Part No."}
@@ -416,13 +418,31 @@ function CostingSummary(props) {
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
+                          NoOptionMessage={"Please enter first few digits to see the part numbers"}
+                          disabled={technology.length === 0 ? true : false}
+                        />
+
+
+                        {/* <SearchableSelectHookForm
+                          label={'Assembly No./Part No.'}
+                          name={'Part'}
+                          placeholder={'Select'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={part.length !== 0 ? part : ''}
+                          options={renderDropdownListing('PartList')}
+                          mandatory={true}
+                          handleChange={handlePartChange}
+                          errors={errors.Part}
                           disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
-                        /> 
+                        /> */}
                       </Col>
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          title ={titleObj.partNameTitle}
+                          title={titleObj.partNameTitle}
                           label="Assembly Name/Part Name"
                           name={'PartName'}
                           Controller={Controller}

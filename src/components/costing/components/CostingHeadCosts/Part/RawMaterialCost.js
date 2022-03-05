@@ -14,7 +14,7 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, INR, KG, MG } from '../../../../../config/constants'
 import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow, FORGINING } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -22,6 +22,7 @@ import 'reactjs-popup/dist/index.css';
 let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
+  
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset, setError } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -37,6 +38,7 @@ function RawMaterialCost(props) {
 
   const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
+  console.log('costData: ', costData);
   const CostingViewMode = useContext(ViewCostingContext);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false)
@@ -55,7 +57,8 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
-  const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
+  const isScrapRecoveryPercentageApplied = Number(costData.TechnologyId) === Number(FORGINING) ? true:false
+
 
   const dispatch = useDispatch()
 
@@ -131,7 +134,7 @@ function RawMaterialCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
-
+      let tempArray=[]
       if (isMultipleRMAllow(costData.ETechnologyType)) {
         let rowArray = rowData && rowData.map(el => {
           return {
@@ -154,6 +157,7 @@ function RawMaterialCost(props) {
         })
 
         setGridData([...gridData, ...rowArray])
+        tempArray = [...gridData, ...rowArray]
         selectedIds([...gridData, ...rowArray])
       } else {
         let tempObj = {
@@ -174,9 +178,16 @@ function RawMaterialCost(props) {
           IsCutOffApplicable: rowData.IsCutOffApplicable,
         }
         setGridData([...gridData, tempObj])
+        tempArray= [...gridData, tempObj]
       }
       dispatch(gridDataAdded(true))
-
+      tempArray && tempArray.map((item,index)=>{
+        setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      })
     }
 
     if (rowData && rowData.length > 0 && IsApplyMasterBatch) {
@@ -605,6 +616,7 @@ function RawMaterialCost(props) {
       }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
+
       setGridData(tempArr)
       setTimeout(() => {
 
@@ -639,6 +651,14 @@ function RawMaterialCost(props) {
     let tempArr = gridData && gridData.filter((el, i) => {
       if (i === index) return false;
       return true;
+    })
+
+ tempArr && tempArr.map((item,index)=>{
+      setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.BurningLossWeight`, checkForDecimalAndNull(item.BurningValue, getConfigurationKey().NoOfDecimalForInputOutput))
+      setValue(`${rmGridFields}.${index}.ScrapWeight`, checkForDecimalAndNull(item.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     })
     setGridData(tempArr)
 
