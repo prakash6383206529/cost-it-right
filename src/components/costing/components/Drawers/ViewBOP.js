@@ -33,7 +33,7 @@ function ViewBOP(props) {
               <Col md="12">
                 <Row>
                   <Col md="12">
-                    <div className="left-border">{'View BOP:'}</div>
+                    <div className="left-border">{'BOP:'}</div>
                   </Col>
                 </Row>
                 <Table className="table cr-brdr-main" size="sm">
