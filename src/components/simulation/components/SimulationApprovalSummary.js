@@ -249,7 +249,8 @@ function SimulationApprovalSummary(props) {
         } else {
             setApproveDrawer(false)
             setRejectDrawer(false)
-            getSimulationApprovalSummary()
+            setShowListing(true)
+            // getSimulationApprovalSummary()
         }
     }
 
