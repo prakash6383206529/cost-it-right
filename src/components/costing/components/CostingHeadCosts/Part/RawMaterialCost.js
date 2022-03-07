@@ -38,7 +38,7 @@ function RawMaterialCost(props) {
 
   const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
-  console.log('costData: ', costData);
+  
   const CostingViewMode = useContext(ViewCostingContext);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false)
