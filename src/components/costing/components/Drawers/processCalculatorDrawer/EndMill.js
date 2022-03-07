@@ -527,9 +527,7 @@ function EndMill(props) {
               <button onClick={onCancel} type="submit" value="CANCEL" className="reset mr15 cancel-btn"              >
                 <div className={'cancel-icon'}></div>CANCEL </button>
               <button type="submit" className="btn-primary save-btn" disabled={props.CostingViewMode ? true : false}>
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
+              <div className={"save-icon"}></div>
                 {'SAVE'}
               </button>
             </div>
