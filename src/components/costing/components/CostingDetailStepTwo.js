@@ -242,11 +242,11 @@ function CostingDetailStepTwo(props) {
 
 
   const findApplicabilityCost = (data, Text, headCostData, costData, percent) => {
-    console.log('data: ', data);
-    console.log('headCostData: ', headCostData);
+    
+    
     if (data && Text && Object.keys(headCostData).length > 0) {
 
-      console.log(CostingDataList, "CostingDataListCostingDataList",);
+      
       const ConversionCostForCalculation = headCostData?.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
       const RMBOPCC = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost) + ConversionCostForCalculation
       const RMBOP = checkForNull(headCostData.NetRawMaterialsCost) + checkForNull(headCostData.NetBoughtOutPartCost);
@@ -260,12 +260,12 @@ function CostingDetailStepTwo(props) {
       switch (Text) {
         case 'RM':
           totalCost = headCostData.NetRawMaterialsCost * calculatePercentage(percent)
-          console.log('totalCost: ', totalCost);
+          
           break;
 
         case 'BOP':
           totalCost = headCostData.NetBoughtOutPartCost * calculatePercentage(percent)
-          console.log("COMING HERE", totalCost);
+          
 
           break;
 
@@ -324,14 +324,14 @@ function CostingDetailStepTwo(props) {
         if (data.OtherCostType === 'Percentage') {
 
           const cost = checkForNull(findApplicabilityCost(data, data?.OtherCostApplicability, headerCostData, CostingData, data?.PercentageOtherCost))
-          console.log('cost: ', cost);
+          
           // data.AnyOtherCost = calculatePercentageValue(SumOfTab, data.PercentageOtherCost)
           data.AnyOtherCost = cost
         }
 
         // const discountedCost =data.DiscountCostType==='Percentage'? checkForNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage)):data.DiscountsAndOtherCost;
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
-        console.log('discountedCost: ', discountedCost);
+        
         const discountValues = {
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),

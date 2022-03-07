@@ -47,7 +47,7 @@ function AddFreight(props) {
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
 
 
-  const [freightCost,setFreightCost] = useState('')
+  const [freightCost, setFreightCost] = useState('')
 
   useEffect(() => {
     setTimeout(() => {
@@ -121,16 +121,16 @@ function AddFreight(props) {
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
-        if (item.Value === '0' || item.Text ==='Fixed') return false;
+        if (item.Value === '0' || item.Text === 'Fixed') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
-    });
-    return temp;
+      });
+      return temp;
     }
 
   }
 
-    // WILL BE USED LATER FOR OTHER RADIO BUTON CALCULATION
+  // WILL BE USED LATER FOR OTHER RADIO BUTON CALCULATION
   /**
   * @method handleCapacityChange
   * @description  CAPACITY CHANGE HANDLE
@@ -179,22 +179,22 @@ function AddFreight(props) {
     }
   }
 
-  
+
   /**
    * @method calculateCost
    * @description APPLICABILITY CALCULATION
    */
   const calculateCost = (Text) => {
     const { NetRawMaterialsCost, NetBoughtOutPartCost, ProcessCostTotal, OperationCostTotal } = headCostData;
- 
+
     const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headCostData.NetConversionCost) - checkForNull(headCostData.TotalOtherOperationCostPerAssembly) : headCostData.ProcessCostTotal + headCostData.OperationCostTotal
-    const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) +ConversionCostForCalculation
+    const RMBOPCC = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
     const RMBOP = checkForNull(NetRawMaterialsCost) + checkForNull(NetBoughtOutPartCost);
-    const RMCC = checkForNull(NetRawMaterialsCost) +ConversionCostForCalculation;
+    const RMCC = checkForNull(NetRawMaterialsCost) + ConversionCostForCalculation;
     const BOPCC = checkForNull(NetBoughtOutPartCost) + ConversionCostForCalculation
     const RateAsPercentage = getValues('Rate');
-    let dataList =CostingDataList && CostingDataList.length >0 ? CostingDataList[0]:{}
-      const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) 
+    let dataList = CostingDataList && CostingDataList.length > 0 ? CostingDataList[0] : {}
+    const totalTabCost = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(dataList.NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost)
 
     let totalFreightCost = ''
     switch (Text) {
@@ -203,10 +203,10 @@ function AddFreight(props) {
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
         break;
-      
-      case  'BOP':
+
+      case 'BOP':
         totalFreightCost = NetBoughtOutPartCost * calculatePercentage(RateAsPercentage)
-        console.log("COMING HERE",totalFreightCost);
+
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
         break;
@@ -216,12 +216,12 @@ function AddFreight(props) {
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
         break;
-      
-      case 'BOP + CC': 
-          totalFreightCost = BOPCC * calculatePercentage(RateAsPercentage)
-          setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
-          setFreightCost(totalFreightCost)
-          break;
+
+      case 'BOP + CC':
+        totalFreightCost = BOPCC * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
+        break;
       case 'CC':
         totalFreightCost = (RMCC) * calculatePercentage(RateAsPercentage)
         setValue('FreightCost', checkForDecimalAndNull((ProcessCostTotal + OperationCostTotal) * calculatePercentage(RateAsPercentage), getConfigurationKey().NoOfDecimalForPrice))
@@ -240,10 +240,10 @@ function AddFreight(props) {
         setFreightCost(totalFreightCost)
         break;
       case 'Net Cost':
-          totalFreightCost = (totalTabCost) * calculatePercentage(RateAsPercentage)
-          setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
-          setFreightCost(totalFreightCost)
-          break;
+        totalFreightCost = (totalTabCost) * calculatePercentage(RateAsPercentage)
+        setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
+        setFreightCost(totalFreightCost)
+        break;
 
       default:
         break;

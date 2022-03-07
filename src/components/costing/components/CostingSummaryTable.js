@@ -950,7 +950,7 @@ const CostingSummaryTable = (props) => {
                       <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          console.log('data: ', checkForDecimalAndNull(data.netRM,initialConfiguration.NoOfDecimalForPrice));
+                          
                           return (
                             <td>
                               <span>{checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>

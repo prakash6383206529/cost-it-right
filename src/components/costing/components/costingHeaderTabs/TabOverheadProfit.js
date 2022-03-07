@@ -173,7 +173,7 @@ function TabOverheadProfit(props) {
   const dispatchOverheadDetail = (data, params, arr) => {
 
     const { overheadObj, profitObj, modelType } = data;
-    console.log('overheadObj: ', overheadObj);
+
 
     let OverheadCost = checkForNull(overheadObj.OverheadRMTotalCost) +
       checkForNull(overheadObj.OverheadBOPTotalCost) +
@@ -450,7 +450,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
-          IsPaymentTerms: PaymentTermObj &&PaymentTermObj?.NetCost ? true : false,
+            IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
           // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
@@ -467,7 +467,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
-          IsPaymentTerms: PaymentTermObj &&PaymentTermObj?.NetCost ? true : false,
+            IsPaymentTerms: PaymentTermObj && PaymentTermObj?.NetCost ? true : false,
             NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
           // i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(i.CostingPartDetails.OverheadCost) +
