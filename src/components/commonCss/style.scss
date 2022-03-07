@@ -7200,3 +7200,10 @@ left: 17rem;
        min-width: 160px;
   }
 }
+.rotate90 {
+  transform: rotate(90deg);
+  width: 12px;
+}
+.select__menu {
+  z-index: 12 !important;
+}
