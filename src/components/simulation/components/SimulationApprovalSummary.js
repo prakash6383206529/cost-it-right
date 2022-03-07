@@ -7,7 +7,7 @@ import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
+import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADCP, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getAmmendentStatus, getApprovalSimulatedCostingSummary, getComparisionSimulationData, setAttachmentFileData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachmentonFTP } from '../actions/Simulation'
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, COMBINED_PROCESS, FILE_URL, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
@@ -42,8 +42,8 @@ import ViewAssembly from './ViewAssembly';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import imgGreencross from '../../../assests/images/greenCross.png';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
-
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
+import { debounce } from 'lodash'
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -101,6 +101,7 @@ function SimulationApprovalSummary(props) {
 
     const [recordInsertStatusBox, setRecordInsertStatusBox] = useState(true);
     const [amendmentStatusBox, setAmendmentStatusBox] = useState(true);
+    const [isDisabled, setIsDisabled] = useState(false);
 
     const dispatch = useDispatch()
 
@@ -391,6 +392,8 @@ function SimulationApprovalSummary(props) {
             case SURFACETREATMENT:
             case OPERATIONS:
                 return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADST, dataForDownload.length > 0 ? dataForDownload : [])
+            case COMBINED_PROCESS:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADCP, dataForDownload.length > 0 ? dataForDownload : [])
             default:
                 break;
         }
@@ -710,7 +713,8 @@ function SimulationApprovalSummary(props) {
         return temp
     }
 
-    const rePush = () => {
+    const rePush = debounce(() => {
+        setIsDisabled(true)
         let pushObj = {}
         let temp = []
         let uniqueArr = _.uniqBy(costingList, function (o) {
@@ -725,7 +729,9 @@ function SimulationApprovalSummary(props) {
         dispatch(pushAPI(pushObj, () => { }))
         Toaster.success(MESSAGES.REPUSH_DONE_SUCCESSFULLY)
         setShowListing(true)
-    }
+        setIsDisabled(false)
+
+    }, 500)
 
 
 
@@ -733,7 +739,7 @@ function SimulationApprovalSummary(props) {
         <>
             {showListing === false &&
                 <>
-                <CalculatorWrapper />
+                    <CalculatorWrapper />
                     {loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
 
@@ -1134,7 +1140,7 @@ function SimulationApprovalSummary(props) {
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
-                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA}/></div> :""}
+                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
                                 </div>
                             }
                             {showViewAssemblyDrawer &&
@@ -1253,7 +1259,7 @@ function SimulationApprovalSummary(props) {
                         <Row className="sf-btn-footer no-gutters justify-content-between">
                             <div className="col-sm-12 text-right bluefooter-butn">
                                 <Fragment>
-                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => rePush()}>
+                                    <button type="submit" className="submit-button mr5 save-btn" disabled={isDisabled} onClick={() => rePush()}>
                                         <div className={"save-icon"}></div>{" "}
                                         {"RePush"}
                                     </button>
