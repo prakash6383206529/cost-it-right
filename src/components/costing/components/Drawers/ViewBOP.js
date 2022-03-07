@@ -33,7 +33,7 @@ function ViewBOP(props) {
               <Col md="12">
                 <Row>
                   <Col md="12">
-                    <div className="left-border">{'View BOP:'}</div>
+                    <div className="left-border">{'BOP:'}</div>
                   </Col>
                 </Row>
                 <Table className="table cr-brdr-main" size="sm">
@@ -188,7 +188,7 @@ function ViewBOP(props) {
         </Container>
       </Drawer> : <div className='mt-2'>
          { viewBOPCost.length !== 0 && bopDataTable()}
-      {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage) && handlingChargeTableData())}</div>  }
+      {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage !== 0) && handlingChargeTableData())}</div>  }
     </Fragment>
   )
 }
