@@ -702,7 +702,7 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='fourDecimalFormatter'></AgGridColumn>
                                                         </>
                                                     }
-                                                    <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NetCCVariance" headerName='Variance' cellRenderer='fourDecimalFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
