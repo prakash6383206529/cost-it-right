@@ -171,7 +171,7 @@ function ViewBOP(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'View BOP Cost:'}</h3>
+                    <h3>{'View Insert Cost:'}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -188,7 +188,7 @@ function ViewBOP(props) {
           </Container>
         </Drawer> : <div className='mt-2'>
           {viewBOPCost.length !== 0 && bopDataTable()}
-          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage) && handlingChargeTableData())}</div>}
+          {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage !== 0) && handlingChargeTableData())}</div>}
     </Fragment>
   )
 }
