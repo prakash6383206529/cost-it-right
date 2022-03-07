@@ -608,7 +608,7 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className="pt-4 blue-before ">
+                <Row className=" blue-before ">
 
                     <Col md="8">
                         <div className="warning-message mt-1">
@@ -617,7 +617,7 @@ function ReportListing(props) {
                     </Col>
 
 
-                    <Col md="6" lg="6" className="search-user-block mb-3">
+                    <Col md="8"  className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
                             <div>
                                 <button disabled={enableSearchFilterSearchButton} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
