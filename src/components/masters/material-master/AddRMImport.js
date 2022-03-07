@@ -477,8 +477,8 @@ class AddRMImport extends Component {
                 this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
                 this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
                 this.props.change('NetLandedCostCurrency', Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '')
-                this.props.change('JaliScrapCost', Data.JaliScrapCost ? Data.JaliScrapCost : '')
-                this.props.change('CircleScrapCost', Data.ScrapRate)
+                this.props.change('JaliScrapCost', Data.ScrapRate ? Data.ScrapRate : '')
+                this.props.change('CircleScrapCost', Data.JaliScrapCost)
 
                 this.props.change('cutOffPrice', Data.CutOffPrice ? Data.CutOffPrice : '')
                 this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
@@ -984,7 +984,7 @@ class AddRMImport extends Component {
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, oldDate, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, isSourceChange, uploadAttachements, currencyValue, IsFinancialDataChanged } = this.state;
 
-    const { initialConfiguration ,fieldsObj} = this.props;
+    const { initialConfiguration, fieldsObj } = this.props;
     this.setState({ setDisable: true, disablePopup: false })
 
     if (vendorName.length <= 0) {
