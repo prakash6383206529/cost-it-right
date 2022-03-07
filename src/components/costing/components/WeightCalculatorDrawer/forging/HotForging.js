@@ -531,7 +531,7 @@ const calculateNetRmCostComponent = () =>{
                   </Col>
                 </Row>
                
-                <Col md="3">
+                <Col md="3" className='mt10 px-0'>
                   <TextFieldHookForm
                       label={`Forged Weight (Kg)`}
                       name={'forgedWeight'}

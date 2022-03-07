@@ -95,6 +95,17 @@ function LossStandardTable(props) {
       setFlashLossType(false)
       setPercentage(true)
     }
+    reset({
+      LossPercentage: '',
+      FlashLength: '',
+      FlashThickness: '',
+      FlashWidth: '',
+      BarDiameter: '',
+      BladeThickness: '',
+      LossOfType: '',
+      LossWeight: '',
+      FlashLoss:'',
+    })
   }
 
   const handleFlashloss = (value) =>{
@@ -573,7 +584,7 @@ if(value !== undefined && value !==0  && value !==''){
                   </>}
          {flashLossType&&
          <>       
-        <Col md="3">
+        <Col className={`${!useFormula ? "col-md-2": "col-md-3"}`}>
           <SearchableSelectHookForm
             label={`Flash loss`}
             name={'FlashLoss'}
@@ -825,7 +836,7 @@ if(value !== undefined && value !==0  && value !==''){
                 })}
               {tableData && tableData.length === 0 && (
                 <tr>
-                  <td colspan="4">
+                  <td colspan="15">
                     <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>
