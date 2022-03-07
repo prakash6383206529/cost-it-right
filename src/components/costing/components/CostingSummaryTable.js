@@ -719,8 +719,6 @@ const CostingSummaryTable = (props) => {
     var height = document.querySelector("#summaryPdf").clientHeight;
     var width = document.querySelector("#summaryPdf").offsetWidth;
     var doc = new jsPDF('p', "ex", [width, height])
-    console.log('width: ', width);
-    console.log(height, "height")
     setIcon(false)
     doc.html(document.querySelector("#summaryPdf"), {
       margin: [0, 5, 0, 5],
