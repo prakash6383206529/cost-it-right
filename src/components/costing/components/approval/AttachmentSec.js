@@ -87,14 +87,30 @@ function AttachmentSec(props) {
     }
 
     /**
-    * @method setDisableFalseFunctionImpactSheet
-    * @description setDisableFalseFunctionImpactSheet
+    * @method setDisableFalseFunctionAttachmentFiles
+    * @description setDisableFalseFunctionAttachmentFiles
     */
-    const setDisableFalseFunctionImpactSheet = () => {
-        const loop = Number(dropzoneImpactSheet.current.files.length) - Number(files.length)
-        if (Number(loop) === 1) {
-            setIsDisable(false)
-        }
+    const setDisableFalseFunctionAttachmentFiles = () => {
+        setTimeout(() => {
+            let loopImpactSheet = 1
+            let loopSupplierConfirm = 1
+            let loopInvoiceBackup = 1
+            let loopOthers = 1
+            let loopAttachments = 1
+            loopImpactSheet = Number(dropzoneImpactSheet.current?.files.length) - Number(files.length)
+            loopSupplierConfirm = Number(dropzoneSupplierConfirm.current?.files.length) - Number(supplierFiles.length)
+            loopInvoiceBackup = Number(dropzoneInvoiceBackup.current?.files.length) - Number(invoiceFiles.length)
+            loopOthers = Number(dropzoneOthers.current?.files.length) - Number(otherFiles.length)
+            loopAttachments = Number(dropzoneAttachments.current?.files.length) - Number(attachmentFiles.length)
+
+            if (((isNaN(loopImpactSheet) && dropzoneImpactSheet.current?.files.length === undefined) || Number(loopImpactSheet) === 0)
+                && ((isNaN(loopSupplierConfirm) && dropzoneSupplierConfirm.current?.files.length === undefined) || Number(loopSupplierConfirm) === 0)
+                && ((isNaN(loopInvoiceBackup) && dropzoneInvoiceBackup.current?.files.length === undefined) || Number(loopInvoiceBackup) === 0)
+                && ((isNaN(loopOthers) && dropzoneOthers.current?.files.length === undefined) || Number(loopOthers) === 0)
+                && ((isNaN(loopAttachments) && dropzoneAttachments.current?.files.length === undefined) || Number(loopAttachments) === 0)) {
+                setIsDisable(false)
+            }
+        }, 500);
     }
 
     // called every time a file's `status` changes
@@ -116,7 +132,7 @@ function AttachmentSec(props) {
             data.append('Folder', IMPACT_SHEET)
 
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionImpactSheet()
+                setDisableFalseFunctionAttachmentFiles()
                 let Data = res?.data[0]
                 files.push(Data)
                 setFiles(files)
@@ -125,30 +141,18 @@ function AttachmentSec(props) {
         }
 
         if (status === 'rejected_file_type') {
-            setDisableFalseFunctionImpactSheet()
+            setDisableFalseFunctionAttachmentFiles()
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionImpactSheet()
-            dropzoneImpactSheet.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneImpactSheet.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionImpactSheet()
-            dropzoneImpactSheet.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneImpactSheet.current?.files.pop()
             Toaster.warning("Something went wrong")
-        }
-    }
-
-
-    /**
-    * @method setDisableFalseFunctionsupplierFiles
-    * @description setDisableFalseFunctionsupplierFiles
-    */
-    const setDisableFalseFunctionsupplierFiles = () => {
-        const loop = Number(dropzoneSupplierConfirm.current.files.length) - Number(supplierFiles.length)
-        if (Number(loop) === 1) {
-            setIsDisable(false)
         }
     }
 
@@ -170,7 +174,7 @@ function AttachmentSec(props) {
             data.append('Folder', SUPPLIER_CONFRIM)
 
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionsupplierFiles()
+                setDisableFalseFunctionAttachmentFiles()
                 let Data = res?.data[0]
                 supplierFiles.push(Data)
                 setSupplierFiles(supplierFiles)
@@ -181,27 +185,15 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionsupplierFiles()
-            dropzoneSupplierConfirm.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneSupplierConfirm.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionsupplierFiles()
-            dropzoneSupplierConfirm.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneSupplierConfirm.current?.files.pop()
             Toaster.warning("Something went wrong")
-        }
-    }
-
-
-    /**
-    * @method setDisableFalseFunctioninvoiceFiles
-    * @description setDisableFalseFunctioninvoiceFiles
-    */
-    const setDisableFalseFunctioninvoiceFiles = () => {
-        const loop = Number(dropzoneInvoiceBackup.current.files.length) - Number(invoiceFiles.length)
-        if (Number(loop) === 1) {
-            setIsDisable(false)
         }
     }
 
@@ -222,7 +214,7 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', INVOICE_BACKUP)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctioninvoiceFiles()
+                setDisableFalseFunctionAttachmentFiles()
                 let Data = res?.data[0]
                 invoiceFiles.push(Data)
                 setInvoiceFiles(invoiceFiles)
@@ -233,27 +225,15 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctioninvoiceFiles()
-            dropzoneInvoiceBackup.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneInvoiceBackup.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctioninvoiceFiles()
-            dropzoneInvoiceBackup.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneInvoiceBackup.current?.files.pop()
             Toaster.warning("Something went wrong")
-        }
-    }
-
-
-    /**
-    * @method setDisableFalseFunctionotherFiles
-    * @description setDisableFalseFunctionotherFiles
-    */
-    const setDisableFalseFunctionotherFiles = () => {
-        const loop = Number(dropzoneOthers.current.files.length) - Number(otherFiles.length)
-        if (Number(loop) === 1) {
-            setIsDisable(false)
         }
     }
 
@@ -274,7 +254,7 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', OTHER)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionotherFiles()
+                setDisableFalseFunctionAttachmentFiles()
                 let Data = res?.data[0]
                 otherFiles.push(Data)
                 setOtherFiles(otherFiles)
@@ -285,27 +265,15 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionotherFiles()
-            dropzoneOthers.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneOthers.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionotherFiles()
-            dropzoneOthers.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneOthers.current?.files.pop()
             Toaster.warning("Something went wrong")
-        }
-    }
-
-
-    /**
-    * @method setDisableFalseFunctionattachmentFiles
-    * @description setDisableFalseFunctionattachmentFiles
-    */
-    const setDisableFalseFunctionattachmentFiles = () => {
-        const loop = Number(dropzoneAttachments.current.files.length) - Number(attachmentFiles.length)
-        if (Number(loop) === 1) {
-            setIsDisable(false)
         }
     }
 
@@ -326,7 +294,7 @@ function AttachmentSec(props) {
             data.append('Token', token)
             data.append('Folder', ATTACHMENTS)
             dispatch(uploadSimulationAttachmentByCategory(data, (res) => {
-                setDisableFalseFunctionattachmentFiles()
+                setDisableFalseFunctionAttachmentFiles()
                 let Data = res?.data[0]
                 attachmentFiles.push(Data)
                 setAttachmentFiles(attachmentFiles)
@@ -337,22 +305,17 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
-            setDisableFalseFunctionattachmentFiles()
-            dropzoneAttachments.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneAttachments.current?.files.pop()
             Toaster.warning("File size greater than 5mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
-            setDisableFalseFunctionattachmentFiles()
-            dropzoneAttachments.current.files.pop()
+            setDisableFalseFunctionAttachmentFiles()
+            dropzoneAttachments.current?.files.pop()
             Toaster.warning("Something went wrong")
         }
     }
-
-
-
-
-
 
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -374,7 +337,7 @@ function AttachmentSec(props) {
         }
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
         if (dropzoneImpactSheet?.current !== null) {
-            dropzoneImpactSheet.current.files.pop()
+            dropzoneImpactSheet.current?.files.pop()
         }
     }
     const deleteFileOthers = (FileId, OriginalFileName) => {
@@ -396,7 +359,7 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
         if (dropzoneSupplierConfirm?.current !== null) {
-            dropzoneSupplierConfirm.current.files.pop()
+            dropzoneSupplierConfirm.current?.files.pop()
         }
     }
 
@@ -419,7 +382,7 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
         if (dropzoneInvoiceBackup?.current !== null) {
-            dropzoneInvoiceBackup.current.files.pop()
+            dropzoneInvoiceBackup.current?.files.pop()
         }
     }
 
@@ -442,7 +405,7 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
         if (dropzoneOthers?.current !== null) {
-            dropzoneOthers.current.files.pop()
+            dropzoneOthers.current?.files.pop()
         }
     }
 
@@ -465,7 +428,7 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
         if (dropzoneAttachments?.current !== null) {
-            dropzoneAttachments.current.files.pop()
+            dropzoneAttachments.current?.files.pop()
         }
     }
 
