@@ -51,7 +51,8 @@ class PowerListing extends Component {
       vendorName: [],
       vendorPlant: [],
       showPopup: false,
-      deletedId: ''
+      deletedId: '',
+      isLoader: false
     }
   }
 
@@ -62,19 +63,20 @@ class PowerListing extends Component {
   componentDidMount() {
     this.props.getZBCPlantList(() => { })
     this.props.getStateSelectList(() => { })
-    this.props.getVendorWithVendorCodeSelectList();
+    this.props.getVendorWithVendorCodeSelectList(() => { });
     this.getDataList()
   }
 
   getDataList = () => {
     const { StateName, plant, vendorName, vendorPlant } = this.state;
+    this.setState({ isLoader: true })
     if (!this.state.IsVendor) {
-
       const filterData = {
         plantID: plant ? plant.value : '',
         stateID: StateName ? StateName.value : '',
       }
       this.props.getPowerDetailDataList(filterData, (res) => {
+        this.setState({ isLoader: false })
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           this.setState({ tableData: Data })
@@ -356,7 +358,7 @@ class PowerListing extends Component {
     return (
 
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
             <Col md="4" className="switch mb-1">
@@ -434,15 +436,12 @@ class PowerListing extends Component {
           <Col>
 
 
-
-            <div className="ag-grid-wrapper height-width-wrapper">
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.powerDataList && this.props.powerDataList?.length <= 0 ? "overlay-contain" : ""}`}>
               {/* ZBC Listing */}
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
-              <div
-                className="ag-theme-material"
-              >
+              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 {!this.state.IsVendor &&
                   <AgGridReact
                     defaultColDef={defaultColDef}
@@ -454,7 +453,6 @@ class PowerListing extends Component {
                     paginationPageSize={10}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
-                    loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,

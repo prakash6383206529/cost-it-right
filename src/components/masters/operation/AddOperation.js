@@ -15,12 +15,17 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, OPERATIONS_ID, ZBC, EMPTY_GUID } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { debounce } from 'lodash';
+import AsyncSelect from 'react-select/async';
+import LoaderCustom from '../../common/LoaderCustom';
+import { CheckApprovalApplicableMaster } from '../../../helper';
+import { masterFinalLevelUser } from '../actions/Material'
 
 const selector = formValueSelector('AddOperation');
 
@@ -34,10 +39,18 @@ class AddOperation extends Component {
       IsVendor: false,
       selectedTechnology: [],
       selectedPlants: [],
+      isVendorNameNotSelected: false,
 
       vendorName: [],
       selectedVendorPlants: [],
+      oldDate: '',
       UOM: [],
+      isViewMode: this.props?.data?.isViewMode ? true : false,
+      oldUOM: [],
+      isDateChange: false,
+      IsSendForApproval: false,
+      IsFinancialDataChanged: true,
+      DataToChange: [],
 
       isSurfaceTreatment: false,
       remarks: '',
@@ -49,15 +62,19 @@ class AddOperation extends Component {
       isShowForm: false,
       isOpenVendor: false,
       isOpenUOM: false,
-      OperationId: '',
+      OperationId: EMPTY_GUID,
       effectiveDate: '',
+      minEffectiveDate: '',
       destinationPlant: [],
       changeValue: true,
       dataToChange: '',
       uploadAttachements: true,
       isDisableCode: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false,
+      inputLoader: false,
     }
   }
 
@@ -74,9 +91,23 @@ class AddOperation extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+
     this.props.getTechnologySelectList(() => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getVendorWithVendorCodeSelectList()
+
+    let obj = {
+      MasterId: OPERATIONS_ID,
+      DepartmentId: userDetails().DepartmentId,
+      LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+      LoggedInUserId: loggedInUserId()
+    }
+    this.props.masterFinalLevelUser(obj, (res) => {
+      if (res.data.Result) {
+        this.setState({ isFinalApprovar: res.data.Data.IsFinalApprovar })
+      }
+
+    })
+
     this.getDetail()
     // if (initialConfiguration && initialConfiguration.IsOperationCodeConfigure && data.isEditFlag === false) {
     //   this.props.checkAndGetOperationCode('', (res) => {
@@ -162,10 +193,9 @@ class AddOperation extends Component {
   onPressVendor = () => {
     this.setState({
       IsVendor: !this.state.IsVendor,
-      // vendorName: [],
-      // selectedVendorPlants: [],
-      // vendorLocation: [],
     });
+    this.setState({ inputLoader: true })
+    this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
   }
 
   /**
@@ -190,7 +220,7 @@ class AddOperation extends Component {
   */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [] }, () => {
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false, selectedVendorPlants: [] }, () => {
         const { vendorName } = this.state;
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
@@ -205,8 +235,16 @@ class AddOperation extends Component {
 
   closeVendorDrawer = (e = '') => {
     this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
     })
+  }
+
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false, setDisable: false })
+    if (type === 'submit') {
+      this.cancel()
+    }
   }
 
   /**
@@ -221,7 +259,7 @@ class AddOperation extends Component {
   * @method handleUOM
   * @description called
   */
-  handleUOM = (newValue, actionMeta) => {
+  handleUOM = (newValue) => {
     if (newValue && newValue !== '') {
       this.setState({ UOM: newValue, })
     } else {
@@ -246,9 +284,23 @@ class AddOperation extends Component {
   handleEffectiveDateChange = (date) => {
     this.setState({
       effectiveDate: date,
+      isDateChange: true,
     })
 
   }
+
+
+  handleRateChange = (value) => {
+
+    if (this.state.isEditFlag && Number(this.state.DataToChange?.Rate) === Number(value?.target?.value)) {
+      this.setState({ IsFinancialDataChanged: false })
+
+    } else if (this.state.isEditFlag) {
+      this.setState({ IsFinancialDataChanged: true })
+
+    }
+  }
+
   /**
   * @method onPressSurfaceTreatment
   * @description Used for Surface Treatment
@@ -279,11 +331,13 @@ class AddOperation extends Component {
         isEditFlag: true,
         OperationId: data.ID,
       })
+      this.props.getVendorWithVendorCodeSelectList(() => { this.setState({ inputLoader: false }) })
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+          this.setState({ minEffectiveDate: Data.EffectiveDate })
 
           let plantArray = [];
           Data && Data.Plant.map((item) => {
@@ -303,6 +357,7 @@ class AddOperation extends Component {
             return vendorPlantArray;
           })
 
+
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, UOMSelectList, plantSelectList } = this.props;
 
@@ -310,8 +365,10 @@ class AddOperation extends Component {
             const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
 
+
             this.setState({
               isEditFlag: true,
+              IsFinancialDataChanged: false,
               isLoader: false,
               IsVendor: Data.IsVendor,
               selectedTechnology: technologyArray,
@@ -319,10 +376,13 @@ class AddOperation extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
+              oldUOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Display, value: UOMObj.Value } : [],
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
+              effectiveDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
+              oldDate: DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '',
               destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               dataToChange: Data
             })
@@ -369,9 +429,22 @@ class AddOperation extends Component {
 
   }
 
+  /**
+  * @method setDisableFalseFunction
+  * @description setDisableFalseFunction
+  */
+  setDisableFalseFunction = () => {
+    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+    if (Number(loop) === 1) {
+      this.setState({ setDisable: false })
+    }
+  }
+
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file }, status) => {
     const { files, } = this.state;
+
+    this.setState({ uploadAttachements: false, setDisable: true })
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -379,10 +452,12 @@ class AddOperation extends Component {
       this.setState({ files: tempArr })
     }
 
+
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
       this.props.fileUploadOperation(data, (res) => {
+        this.setDisableFalseFunction()
         let Data = res.data[0]
         const { files } = this.state;
         files.push(Data)
@@ -390,14 +465,19 @@ class AddOperation extends Component {
       })
     }
 
+
+
     if (status === 'rejected_file_type') {
+      this.setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("File size greater than 2 mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      this.setDisableFalseFunction()
       this.dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -480,11 +560,19 @@ class AddOperation extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant, dataToChange } = this.state;
-    const { initialConfiguration } = this.props;
+      UOM, oldUOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, oldDate, effectiveDate, destinationPlant, DataToChange, uploadAttachements, isDateChange, IsFinancialDataChanged, isEditFlag } = this.state;
+    const { initialConfiguration, filedObj } = this.props;
     const userDetail = userDetails()
+
+    if (vendorName.length <= 0) {
+      if (IsVendor) {
+        this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+        return false
+      }
+    }
+    this.setState({ isVendorNameNotSelected: false })
 
     let technologyArray = [];
     selectedTechnology && selectedTechnology.map((item) => {
@@ -505,11 +593,17 @@ class AddOperation extends Component {
     })
 
     /** Update existing detail of supplier master **/
-    if (this.state.isEditFlag) {
+    // if (this.state.isEditFlag && this.state.isFinalApprovar) {
+
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(OPERATIONS_ID) !== true)) {
+
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OperationId }
       })
+
+
       let updateData = {
+        EffectiveDate: DayTime(effectiveDate).format('YYYY/MM/DD HH:mm:ss'),
         OperationId: OperationId,
         UnitOfMeasurementId: UOM.value,
         Rate: values.Rate,
@@ -517,20 +611,57 @@ class AddOperation extends Component {
         Remark: remarks,
         Attachements: updatedFiles,
         LoggedInUserId: loggedInUserId(),
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        IsFinancialDataChanged: isDateChange ? true : false
       }
-      if (this.state.isEditFlag) {
-        if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate)) {
-          this.cancel()
+      // if (this.state.isEditFlag) {
+      // if (dataToChange.UnitOfMeasurementId === UOM.value && dataToChange.Rate === Number(values.Rate) && uploadAttachements) {
+      //   this.cancel()
+      //   return false
+      // }
+
+      if (IsFinancialDataChanged) {
+
+        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+          this.setState({ showPopup: true, updatedObj: updateData })
+          this.setState({ setDisable: true })
+          return false
+
+        } else {
+
+          this.setState({ setDisable: false })
+          Toaster.warning('Please update the effective date')
           return false
         }
+
+      }
+
+      if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.value === oldUOM.value && uploadAttachements) {
+        this.cancel()
+        return false
+      }
+
+      if (isEditFlag) {
         this.setState({ showPopup: true, updatedObj: updateData })
+        this.setState({ setDisable: true })
+        return false
       }
 
 
     } else {/** Add new detail for creating operation master **/
 
+
+      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
+        this.setState({ IsSendForApproval: true })
+      } else {
+        this.setState({ IsSendForApproval: false })
+      }
+
+      this.setState({ setDisable: true })
       let formData = {
+        IsFinancialDataChanged: isDateChange ? true : false,
+        IsSendForApproval: this.state.IsSendForApproval,
+        OperationId: OperationId,
         IsVendor: IsVendor,
         OperationName: values.OperationName,
         OperationCode: values.OperationCode,
@@ -554,52 +685,104 @@ class AddOperation extends Component {
 
 
 
-      // if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
-      //   this.setState({ approveDrawer: true, approvalObj: formData })
-      // } else {
-      //   this.props.reset()
-      //   this.props.createOperationsAPI(formData, (res) => {
-      //     if (res.data.Result) {
-      //       Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-      //       //this.clearForm()
-      //       this.cancel()
-      //     }
-      //   })
-      // }
+      if (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) {
 
+        if (IsFinancialDataChanged) {
 
-      this.props.reset()
-      this.props.createOperationsAPI(formData, (res) => {
-        if (res.data.Result) {
-          Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
-          this.cancel();
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ approveDrawer: true, approvalObj: formData })
+            this.setState({ setDisable: true })
+            return false
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
         }
-      });
+
+
+        if (Number(DataToChange.Rate) === Number(values.Rate) && DataToChange.Remark === values.Remark && UOM.Value === oldUOM.Value && uploadAttachements) {
+          this.cancel()
+          return false
+        } else {
+          this.setState({ approveDrawer: true, approvalObj: formData })
+        }
+
+
+      } else {
+
+        this.props.createOperationsAPI(formData, (res) => {
+          this.setState({ setDisable: false })
+          if (res.data.Result) {
+            Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
+            //this.clearForm()
+            this.cancel()
+          }
+        })
+      }
+
+      // this.props.createOperationsAPI(formData, (res) => {
+      //   this.setState({ setDisable: false })
+      //   if (res?.data?.Result) {
+      //     Toaster.success(MESSAGES.OPERATION_ADD_SUCCESS);
+      //     this.cancel();
+      //   }
+      // });
 
 
     }
 
-  }
+  }, 500)
 
-  onPopupConfirm = () => {
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateOperationAPI(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
+
   }
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, disablePopup } = this.state;
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
+
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -620,6 +803,7 @@ class AddOperation extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>
@@ -734,34 +918,28 @@ class AddOperation extends Component {
                         </Col>
                       )}
                       {this.state.IsVendor && (
-                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                        <Col md="3"><label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                          {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
                             <div className="fullinput-icon">
-                              <Field
-                                name="VendorName"
-                                type="text"
-                                label="Vendor Name"
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("VendorNameList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleVendorName}
-                                valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : false}
-                              />
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handleVendorName(e)}
+                                value={this.state.vendorName}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                isDisabled={isEditFlag ? true : false} />
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </div>
                             {!isEditFlag && (
                               <div
                                 onClick={this.vendorToggler}
-                                className={
-                                  "plus-icon-square mt-2 right"
-                                }
+                                className={"plus-icon-square  right"}
                               ></div>
                             )}
                           </div>
-
                         </Col>
 
                       )}
@@ -820,7 +998,7 @@ class AddOperation extends Component {
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
-                          disabled={false}
+                          disabled={isViewMode}
                         />
                       </Col>
                       <Col md="3">
@@ -833,7 +1011,8 @@ class AddOperation extends Component {
                           component={renderText}
                           //onChange={this.handleBasicRate}
                           required={true}
-                          disabled={false}
+                          disabled={isViewMode}
+                          onChange={this.handleRateChange}
                           className=" "
                           customClassName=" withBorder"
                         />
@@ -862,6 +1041,7 @@ class AddOperation extends Component {
                             onChange={this.handleEffectiveDateChange}
                             type="text"
                             validate={[required]}
+                            minDate={this.state.minEffectiveDate}
                             autoComplete={'off'}
                             required={true}
                             changeHandler={(e) => {
@@ -869,7 +1049,7 @@ class AddOperation extends Component {
                             }}
                             component={renderDatePicker}
                             className=" "
-                            disabled={isEditFlag ? true : false}
+                            disabled={isViewMode || !this.state.IsFinancialDataChanged}
                             customClassName=" withBorder"
                           //minDate={moment()}
                           />
@@ -934,6 +1114,7 @@ class AddOperation extends Component {
                           validate={[maxLength512]}
                           //required={true}
                           component={renderTextAreaField}
+                          disabled={isViewMode}
                           maxLength="512"
                         />
                       </Col>
@@ -951,6 +1132,7 @@ class AddOperation extends Component {
                             //onSubmit={this.handleSubmit}
                             accept="*"
                             initialFiles={this.state.initialFiles}
+                            disabled={isViewMode}
                             maxFiles={3}
                             maxSizeBytes={2000000}
                             inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
@@ -987,15 +1169,15 @@ class AddOperation extends Component {
                                   {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
-
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() =>
-                                      this.deleteFile(f.FileId, f.FileName)
-                                    }
-                                    src={imgRedcross}
-                                  ></img>
+                                  {!isViewMode &&
+                                    <img
+                                      alt={""}
+                                      className="float-right"
+                                      onClick={() =>
+                                        this.deleteFile(f.FileId, f.FileName)
+                                      }
+                                      src={imgRedcross}
+                                    ></img>}
                                 </div>
                               );
                             })}
@@ -1010,30 +1192,30 @@ class AddOperation extends Component {
                         type={"button"}
                         className="mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-
-
-                      {/* //  (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !isEditFlag && !this.state.isFinalApprovar) ?
-                        //    <button type="submit"
-                        //      class="user-btn approval-btn save-btn mr5"
-                        //      disabled={this.state.isFinalApprovar}
-                        //   >
-                        //      <div className="send-for-approval"></div>
-                        //     {'Send For Approval'}
-                        //    </button>
-                        //    : */}
-                      <button
-                        type="submit"
-                        className="user-btn mr5 save-btn"
-                      >
-                        <div className={"save-icon"}></div>
-                        {isEditFlag ? "Update" : "Save"}
-                      </button>
-
-
+                      {
+                        (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) ?
+                          <button type="submit"
+                            class="user-btn approval-btn save-btn mr5"
+                            disabled={isViewMode}
+                          >
+                            <div className="send-for-approval"></div>
+                            {'Send For Approval'}
+                          </button>
+                          :
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                            disabled={isViewMode || setDisable}
+                          >
+                            <div className={"save-icon"}></div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                      }
 
 
                     </div>
@@ -1068,7 +1250,7 @@ class AddOperation extends Component {
               isOpen={this.state.approveDrawer}
               closeDrawer={this.closeApprovalDrawer}
               isEditFlag={false}
-              // masterId={OPERATIONS_ID}
+              masterId={OPERATIONS_ID}
               type={'Sender'}
               anchor={"right"}
               approvalObj={this.state.approvalObj}
@@ -1078,7 +1260,7 @@ class AddOperation extends Component {
           )
         }
         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
         }
       </div>
     );
@@ -1092,7 +1274,7 @@ class AddOperation extends Component {
 */
 function mapStateToProps(state) {
   const { comman, otherOperation, supplier, auth, } = state;
-  const filedObj = selector(state, 'OperationCode');
+  const filedObj = selector(state, 'OperationCode', 'text');
   const { technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { operationData } = otherOperation;
   const { vendorWithVendorCodeSelectList } = supplier;
@@ -1134,6 +1316,7 @@ export default connect(mapStateToProps, {
   getOperationDataAPI,
   fileUploadOperation,
   fileDeleteOperation,
+  masterFinalLevelUser,
   checkAndGetOperationCode,
 })(reduxForm({
   form: 'AddOperation',

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Button, Table } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import ConfirmComponent from '../../helper/ConfirmComponent';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -19,6 +18,9 @@ const gridOptions = {};
 class LevelTechnologyListing extends Component {
 	constructor(props) {
 		super(props);
+		this.agGrid1 = React.createRef();
+		this.agGrid2 = React.createRef();
+		this.agGrid3 = React.createRef();
 		this.state = {
 			isEditFlag: false,
 			tableData: [],
@@ -27,8 +29,9 @@ class LevelTechnologyListing extends Component {
 			rowData: null,
 			sideBar: { toolPanels: ['columns'] },
 			showData: false,
-			showPopup:false,
-            deletedId:''
+			showPopup: false,
+			deletedId: '',
+			isLoder: false
 
 		}
 	}
@@ -41,7 +44,9 @@ class LevelTechnologyListing extends Component {
 	}
 
 	getLevelsListData = () => {
+		this.setState({ isLoader: true })
 		this.props.getAllLevelMappingAPI(res => {
+			this.setState({ isLoader: false })
 			if (res.status == 204 && res.data == '') {
 				this.setState({ tableData: [], })
 			} else if (res && res.data && res.data.DataList) {
@@ -56,10 +61,16 @@ class LevelTechnologyListing extends Component {
 	}
 
 	getSimulationDataList = () => {
-		this.props.getSimulationLevelDataList(res => { })
+		this.setState({ isLoader: true })
+		this.props.getSimulationLevelDataList(res => {
+			this.setState({ isLoader: false })
+		})
 	}
 	getMasterDataList = () => {
-		this.props.getMasterLevelDataList(res => { })
+		this.setState({ isLoader: true })
+		this.props.getMasterLevelDataList(res => {
+			this.setState({ isLoader: false })
+		})
 	}
 
 	/**
@@ -85,7 +96,7 @@ class LevelTechnologyListing extends Component {
 	* @description confirm delete level
 	*/
 	deleteItem = (Id) => {
-		this.setState({showPopup:true, deletedId:Id })
+		this.setState({ showPopup: true, deletedId: Id })
 	}
 
 	/**
@@ -99,15 +110,15 @@ class LevelTechnologyListing extends Component {
 				this.getUpdatedData()
 			}
 		});
-		this.setState({showPopup:false})
+		this.setState({ showPopup: false })
 	}
-	onPopupConfirm =() => {
+	onPopupConfirm = () => {
 		this.confirmDeleteItem(this.state.deletedId);
-	   
+
 	}
-	closePopUp= () =>{
-		this.setState({showPopup:false})
-	  }
+	closePopUp = () => {
+		this.setState({ showPopup: false })
+	}
 	buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 
@@ -166,8 +177,11 @@ class LevelTechnologyListing extends Component {
 	};
 
 	onPageSizeChanged = (newPageSize) => {
-		var value = document.getElementById('page-size').value;
-		this.state.gridApi.paginationSetPageSize(Number(value));
+
+		// var value = document.getElementById('page-size').value;
+		// this.state.gridApi.paginationSetPageSize(Number(value));
+		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize))
+
 	};
 
 	onFilterTextBoxChanged(e) {
@@ -187,11 +201,20 @@ class LevelTechnologyListing extends Component {
 	};
 
 	onPageSizeChanged1 = (newPageSize) => {
-		var value = document.getElementById('page-size1').value;
-		this.state.gridApi.paginationSetPageSize(Number(value));
+		// var value = document.getElementById('page-size1').value;
+		// this.state.gridApi.paginationSetPageSize(Number(value));
+		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize))
+	};
+
+	onPageSizeChanged2 = (newPageSize) => {
+		// var value = document.getElementById('page-size1').value;
+		// this.state.gridApi.paginationSetPageSize(Number(value));
+		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
 	onFilterTextBoxChanged1(e) {
+
+
 		this.state.gridApi.setQuickFilter(e.target.value);
 	}
 
@@ -232,7 +255,6 @@ class LevelTechnologyListing extends Component {
 
 		const frameworkComponents = {
 			totalValueRenderer: this.buttonFormatter,
-			customLoadingOverlay: LoaderCustom,
 			customNoRowsOverlay: NoContentFound,
 			simulationButtonFormatter: this.simulationButtonFormatter,
 			masterButtonFormatter: this.masterButtonFormatter
@@ -240,227 +262,193 @@ class LevelTechnologyListing extends Component {
 
 		return (
 			<>
-				<Row className="levellisting-page">
-					<Col md="12">
-						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
-					</Col>
-				</Row>
-				<Row className="levellisting-page">
-					<Col md="6" className=""></Col>
-					<Col md="6" className="text-right search-user-block mb-3">
-						{AddAccessibility && <button
-							type="button"
-							className={'user-btn mr5'}
-							title="Add"
-							onClick={this.props.mappingToggler}>
-							<div className={'plus mr-0'}></div>
-						</button>}
-						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
-							<div className="refresh mr-0"></div>
-						</button>
-					</Col>
-				</Row>
-				<Row className="levellisting-page">
-					<Col className="level-table" md="12">
-						{/* <BootstrapTable
-							data={this.state.tableData}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
-						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-							<div className="ag-grid-header">
-								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-							</div>
-							<div
-								className="ag-theme-material"
-								style={{ height: '100%', width: '100%' }}
-							>
-								<AgGridReact
-									defaultColDef={defaultColDef}
-									floatingFilter={true}
-									domLayout='autoHeight'
-									// columnDefs={c}
-									rowData={this.state.tableData}
-									pagination={true}
-									paginationPageSize={5}
-									onGridReady={this.onGridReady}
-									gridOptions={gridOptions}
-									loadingOverlayComponent={'customLoadingOverlay'}
-									noRowsOverlayComponent={'customNoRowsOverlay'}
-									noRowsOverlayComponentParams={{
-										title: EMPTY_DATA,
-									}}
-									frameworkComponents={frameworkComponents}
-								>
-									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
-									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-								</AgGridReact>
-								<div className="paging-container d-inline-block float-right">
-									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
-										<option value="5" selected={true}>5</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-									</select>
+				<div className='p-relative'>
+					{this.state.isLoader && <LoaderCustom />}
+					<Row className="levellisting-page">
+						<Col md="12">
+							<h2 className="manage-level-heading">{`Level Mapping`}</h2>
+						</Col>
+					</Row>
+					<Row className="levellisting-page">
+						<Col md="6" className=""></Col>
+						<Col md="6" className="text-right search-user-block mb-3">
+							{AddAccessibility && <button
+								type="button"
+								className={'user-btn mr5'}
+								title="Add"
+								onClick={this.props.mappingToggler}>
+								<div className={'plus mr-0'}></div>
+							</button>}
+							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState1()}>
+								<div className="refresh mr-0"></div>
+							</button>
+						</Col>
+					</Row>
+					<Row className="levellisting-page">
+						<Col className="level-table" md="12">
+							<div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+								<div className="ag-grid-header">
+									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+								</div>
+								<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+									<AgGridReact
+										defaultColDef={defaultColDef}
+										floatingFilter={true}
+										domLayout='autoHeight'
+										// columnDefs={c}
+										rowData={this.state.tableData}
+										pagination={true}
+										ref={this.agGrid1}
+										paginationPageSize={5}
+										onGridReady={this.onGridReady}
+										gridOptions={gridOptions}
+										loadingOverlayComponent={'customLoadingOverlay'}
+										noRowsOverlayComponent={'customNoRowsOverlay'}
+										noRowsOverlayComponentParams={{
+											title: EMPTY_DATA,
+										}}
+										frameworkComponents={frameworkComponents}
+									>
+										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+										<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
+										<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+									</AgGridReact>
+									<div className="paging-container d-inline-block float-right">
+										<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged(e.target.value)} id="page-size">
+											<option value="5" selected={true}>5</option>
+											<option value="20">20</option>
+											<option value="50">50</option>
+										</select>
+									</div>
 								</div>
 							</div>
-						</div>
+						</Col>
+					</Row>
+				</div>
+				<div className='p-relative'>
+					{this.state.isLoader && <LoaderCustom />}
+					<Row className="levellisting-page mt20">
+						<Col md="12">
+							<h2 className="manage-level-heading">{`Simulation Level Mapping`}</h2>
+						</Col>
+					</Row>
+					<Row className="levellisting-page">
+						<Col md="6" className=""></Col>
+						<Col md="6" className="text-right search-user-block mb-3">
+							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+								<div className="refresh mr-0"></div>
+							</button>
+						</Col>
+					</Row>
 
-
-					</Col>
-				</Row>
-
-				<Row className="levellisting-page mt20">
-					<Col md="12">
-						<h2 className="manage-level-heading">{`Simulation Level Mapping`}</h2>
-					</Col>
-				</Row>
-				<Row className="levellisting-page">
-					<Col md="6" className=""></Col>
-					<Col md="6" className="text-right search-user-block mb-3">
-						<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-							<div className="refresh mr-0"></div>
-						</button>
-					</Col>
-				</Row>
-
-				<Row className="levellisting-page">
-					<Col className="level-table" md="12 ">
-						{/* <BootstrapTable
-							data={this.props.simulationLevelDataList}
-							striped={false}
-							bordered={false}
-							hover={false}
-							options={options}
-							//search
-							ignoreSinglePage
-							ref={'table'}
-							trClassName={'userlisting-row'}
-							tableHeaderClass='my-custom-header'
-							pagination>
-							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataFormat={this.simulationButtonFormatter}>Actions</TableHeaderColumn>
-						</BootstrapTable> */}
-
-						<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-							<div className="ag-grid-header">
-								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
-							</div>
-							<div
-								className="ag-theme-material"
-								style={{ height: '100%', width: '100%' }}
-							>
-								<AgGridReact
-									defaultColDef={defaultColDef}
-									domLayout='autoHeight'
-									// columnDefs={c}
-									rowData={this.props.simulationLevelDataList}
-									pagination={true}
-									paginationPageSize={5}
-									onGridReady={this.onGridReady1}
-									gridOptions={gridOptions}
-									loadingOverlayComponent={'customLoadingOverlay'}
-									noRowsOverlayComponent={'customNoRowsOverlay'}
-									noRowsOverlayComponentParams={{
-										title: EMPTY_DATA,
-									}}
-									frameworkComponents={frameworkComponents}
-								>
-									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-									<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
-									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-									<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
-								</AgGridReact>
-								<div className="paging-container d-inline-block float-right">
-									<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
-										<option value="5" selected={true}>5</option>
-										<option value="20">20</option>
-										<option value="50">50</option>
-									</select>
+					<Row className="levellisting-page">
+						<Col className="level-table" md="12 ">
+							<div className={`ag-grid-wrapper height-width-wrapper ${this.props.simulationLevelDataList && this.props.simulationLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+								<div className="ag-grid-header">
+									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
+								</div>
+								<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+									<AgGridReact
+										defaultColDef={defaultColDef}
+										domLayout='autoHeight'
+										// columnDefs={c}
+										rowData={this.props.simulationLevelDataList}
+										pagination={true}
+										paginationPageSize={5}
+										ref={this.agGrid2}
+										onGridReady={this.onGridReady1}
+										gridOptions={gridOptions}
+										loadingOverlayComponent={'customLoadingOverlay'}
+										noRowsOverlayComponent={'customNoRowsOverlay'}
+										noRowsOverlayComponentParams={{
+											title: EMPTY_DATA,
+										}}
+										frameworkComponents={frameworkComponents}
+									>
+										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+										<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
+										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
+										<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+									</AgGridReact>
+									<div className="paging-container d-inline-block float-right">
+										<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
+											<option value="5" selected={true}>5</option>
+											<option value="20">20</option>
+											<option value="50">50</option>
+										</select>
+									</div>
 								</div>
 							</div>
-						</div>
 
 
-					</Col>
-				</Row>
+						</Col>
+					</Row>
+				</div>
 				{
 					getConfigurationKey().IsMasterApprovalAppliedConfigure &&
 					<>
-						<Row className="levellisting-page mt20">
-							<Col md="12">
-								<h2 className="manage-level-heading">{`Master Level Mapping`}</h2>
-							</Col>
-						</Row>
-						<Row className="levellisting-page">
-							<Col md="6" className=""></Col>
-							<Col md="6" className="text-right search-user-block mb-3">
-								<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-									<div className="refresh mr-0"></div>
-								</button>
-							</Col>
-						</Row>
+						<div className='p-relative'>
+							{this.state.isLoader && <LoaderCustom />}
+							<Row className="levellisting-page mt20">
+								<Col md="12">
+									<h2 className="manage-level-heading">{`Master Level Mapping`}</h2>
+								</Col>
+							</Row>
+							<Row className="levellisting-page">
+								<Col md="6" className=""></Col>
+								<Col md="6" className="text-right search-user-block mb-3">
+									<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
+										<div className="refresh mr-0"></div>
+									</button>
+								</Col>
+							</Row>
 
-						<Row className="levellisting-page">
-							<Col className="level-table" md="12 ">
-								<div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
-									<div className="ag-grid-header">
-										<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
-									</div>
-									<div
-										className="ag-theme-material"
-
-									>
-										<AgGridReact
-											defaultColDef={defaultColDef}
-											domLayout='autoHeight'
-											// columnDefs={c}
-											rowData={this.props.masterLevelDataList}
-											pagination={true}
-											paginationPageSize={5}
-											onGridReady={this.onGridReady1}
-											gridOptions={gridOptions}
-											loadingOverlayComponent={'customLoadingOverlay'}
-											noRowsOverlayComponent={'customNoRowsOverlay'}
-											noRowsOverlayComponentParams={{
-												title: EMPTY_DATA,
-											}}
-											frameworkComponents={frameworkComponents}
-										>
-											{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-											<AgGridColumn field="Master" headerName="Master"></AgGridColumn>
-											<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-											<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
-										</AgGridReact>
-										<div className="paging-container d-inline-block float-right">
-											<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged1(e.target.value)} id="page-size1">
-												<option value="5" selected={true}>5</option>
-												<option value="20">20</option>
-												<option value="50">50</option>
-											</select>
+							<Row className="levellisting-page">
+								<Col className="level-table" md="12 ">
+									<div className={`ag-grid-wrapper height-width-wrapper ${this.props.masterLevelDataList && this.props.masterLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+										<div className="ag-grid-header">
+											<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged1(e)} />
+										</div>
+										<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
+											<AgGridReact
+												defaultColDef={defaultColDef}
+												domLayout='autoHeight'
+												// columnDefs={c}
+												rowData={this.props.masterLevelDataList}
+												pagination={true}
+												ref={this.agGrid3}
+												paginationPageSize={5}
+												onGridReady={this.onGridReady1}
+												gridOptions={gridOptions}
+												loadingOverlayComponent={'customLoadingOverlay'}
+												noRowsOverlayComponent={'customNoRowsOverlay'}
+												noRowsOverlayComponentParams={{
+													title: EMPTY_DATA,
+												}}
+												frameworkComponents={frameworkComponents}
+											>
+												{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+												<AgGridColumn field="Master" headerName="Master"></AgGridColumn>
+												<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
+												<AgGridColumn field="LevelId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
+											</AgGridReact>
+											<div className="paging-container d-inline-block float-right">
+												<select className="form-control paging-dropdown" onChange={(e) => this.onPageSizeChanged2(e.target.value)} id="page-size1">
+													<option value="5" selected={true}>5</option>
+													<option value="20">20</option>
+													<option value="50">50</option>
+												</select>
+											</div>
 										</div>
 									</div>
-								</div>
 
-								{
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`}  />
-                }
-							</Col>
-						</Row>
+									{
+										this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`} />
+									}
+								</Col>
+							</Row>
+						</div>
 					</>
 				}
 			</>

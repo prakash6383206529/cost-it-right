@@ -21,12 +21,13 @@ import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import PushSection from '../../../common/PushSection'
+import { Redirect } from 'react-router';
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, setSelectedRowsDataEmpty } = props
 
 
   const userLoggedIn = loggedInUserId()
@@ -49,6 +50,7 @@ function ApproveRejectDrawer(props) {
   const [initialFiles, setInitialFiles] = useState([]);
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
+  const [showListingPage, setShowListingPage] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -118,8 +120,8 @@ function ApproveRejectDrawer(props) {
         dropzone.current.files = filesList
 
       }
-    
-      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing&& getConfigurationKey().IsProvisionalSimulation) {
+
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing && getConfigurationKey().IsProvisionalSimulation) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
     }
@@ -307,6 +309,7 @@ function ApproveRejectDrawer(props) {
 
   const closePushButton = () => {
     setOpenPushButton(false)
+    setShowListingPage(true)
     props.closeDrawer('', 'Cancel')
   }
 
@@ -319,8 +322,6 @@ function ApproveRejectDrawer(props) {
     const reason = getValues('reason')
     const dept = getValues('dept')
     const approver = getValues('approver')
-
-
     if (type === 'Reject') {
       if (remark) {
         setShowError(false)
@@ -566,9 +567,9 @@ function ApproveRejectDrawer(props) {
                 if (res && res.status && (res.status === 200 || res.status === 204)) {
                   Toaster.success('Approval pushed successfully.')
                 }
-                props.closeDrawer('', 'Push')
               }))
-
+              
+              props.closeDrawer('', 'Push')
             } else {
               Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
               props.closeDrawer('', 'submit')
@@ -699,10 +700,22 @@ function ApproveRejectDrawer(props) {
     return { url: 'https://httpbin.org/post', }
   }
 
+  /**
+ * @method setDisableFalseFunction
+ * @description setDisableFalseFunction
+ */
+  const setDisableFalseFunction = () => {
+    const loop = Number(dropzone.current.files.length) - Number(files.length)
+    if (Number(loop) === 1) {
+      setIsDisable(false)
+    }
+  }
+
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
 
 
+    setIsDisable(true)
 
     if (status === 'removed') {
       const removedFileName = file.name;
@@ -716,8 +729,10 @@ function ApproveRejectDrawer(props) {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
+      setIsDisable(true)
       dispatch(uploadSimulationAttachment(data, (res) => {
-        let Data = res.data[0]
+        setDisableFalseFunction()
+        let Data = res?.data[0]
         files.push(Data)
         setFiles(files)
         setTimeout(() => {
@@ -727,13 +742,16 @@ function ApproveRejectDrawer(props) {
     }
 
     if (status === 'rejected_file_type') {
+      setDisableFalseFunction()
       Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
     } else if (status === 'error_file_size') {
+      setDisableFalseFunction()
       dropzone.current.files.pop()
       Toaster.warning("File size greater than 5mb not allowed")
     } else if (status === 'error_validation'
       || status === 'error_upload_params' || status === 'exception_upload'
       || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunction()
       dropzone.current.files.pop()
       Toaster.warning("Something went wrong")
     }
@@ -767,6 +785,13 @@ function ApproveRejectDrawer(props) {
       dropzone.current.files.pop()
     }
   }
+  useEffect(() => {
+    if (showListingPage === true) {
+      return <Redirect to="/simulation-history" />
+    }
+  }, [showListingPage])
+
+
   return (
     <>
       <Drawer
@@ -1108,6 +1133,7 @@ function ApproveRejectDrawer(props) {
                     type={'button'}
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
+                    disabled={isDisable}
                   >
                     <div className={'cancel-icon'}></div>
                     {'Cancel'}

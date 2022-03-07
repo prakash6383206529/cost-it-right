@@ -9,10 +9,8 @@ import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
-import { applySuperScripts } from '../../../helper';
 import Association from './Association';
-import { RmMaterial, RmSpecification } from '../../../config/constants';
+import { RmMaterial } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -39,7 +37,8 @@ class RMListing extends Component {
             gridColumnApi: null,
             rowData: null,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
         }
     }
 
@@ -51,12 +50,13 @@ class RMListing extends Component {
         this.getListData();
     }
 
-    /**
+    /**+-
     * @method getListData
     * @description Get list data
     */
     getListData = () => {
-        this.props.getMaterialTypeDataListAPI(res => { });
+        this.setState({isLoader:true})
+        this.props.getMaterialTypeDataListAPI(res => { this.setState({isLoader:false}) });
     }
 
     /**
@@ -64,6 +64,7 @@ class RMListing extends Component {
     * @description  used to cancel filter form
     */
     closeDrawer = (e = '') => {
+        this.setState({isLoader:true})
         this.setState({ isOpen: false }, () => {
             this.getListData()
         })
@@ -276,7 +277,7 @@ class RMListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.props.loading && <Loader />}
+                {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
                         {AddAccessibility && (
@@ -320,14 +321,11 @@ class RMListing extends Component {
 
                 <Row>
                     <Col>
-                        <div className="ag-grid-wrapper height-width-wrapper">
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
-                            <div
-                                className="ag-theme-material"
-                                style={{ height: '100%', width: '100%' }}
-                            >
+                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
@@ -337,7 +335,8 @@ class RMListing extends Component {
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
-                                    gridOptions={gridOptions}                                  
+                                    gridOptions={gridOptions}
+                                    // loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,

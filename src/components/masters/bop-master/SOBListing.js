@@ -3,13 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
-import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import { getManageBOPSOBDataList, getInitialFilterData, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
-import { MESSAGES } from '../../../config/message';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl, costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
@@ -44,7 +41,8 @@ class SOBListing extends Component {
       gridColumnApi: null,
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
-      showData: false
+      showData: false,
+      isLoader:false
 
     }
   }
@@ -70,7 +68,9 @@ class SOBListing extends Component {
       bought_out_part_id: bought_out_part_id,
       plant_id: plant_id
     }
+    this.setState({isLoader:true})
     this.props.getManageBOPSOBDataList(filterData, (res) => {
+      this.setState({isLoader:false})
       if (res && res.status === 200) {
         let Data = res.data.DataList;
         this.setState({ tableData: Data })
@@ -370,7 +370,6 @@ class SOBListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       hyphenFormatter: this.hyphenFormatter,
       costingHeadFormatter: this.costingHeadFormatter,
@@ -378,51 +377,10 @@ class SOBListing extends Component {
 
     return (
       <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {/* {this.props.loading && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
-            {this.state.shown && (
-              <Col md="8" className="filter-block">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                  <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                  <div className="flex-fill">
-                    <Field
-                      name="BOPPartNumber"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={'BOP Part No.'}
-                      isClearable={false}
-                      options={this.renderListing('SOBVendors')}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                      required={true}
-                      handleChangeDescription={this.handleHeadChange}
-                      valueDescription={this.state.costingHead}
-                    />
-                  </div>
 
-                  <div className="flex-fill">
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.resetFilter}
-                      className="reset mr10"
-                    >
-                      {'Reset'}
-                    </button>
-
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.filterList}
-                      className="user-btn mr5"
-                    >
-                      {'Apply'}
-                    </button>
-                  </div>
-                </div>
-              </Col>)}
 
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
@@ -457,25 +415,21 @@ class SOBListing extends Component {
         </form>
         <Row>
           <Col>
-            <div className="ag-grid-wrapper height-width-wrapper">
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopSobList && this.props.bopSobList?.length <=0 ?"overlay-contain": ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
-              <div
-                className="ag-theme-material"
-                style={{ height: '100%', width: '100%' }}
-              >
+              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   floatingFilter={true}
-                  // columnDefs={c}
                   domLayout='autoHeight'
+                  // columnDefs={c}
                   rowData={this.props.bopSobList}
                   pagination={true}
                   paginationPageSize={10}
                   onGridReady={this.onGridReady}
                   gridOptions={gridOptions}
-                  loadingOverlayComponent={'customLoadingOverlay'}
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   noRowsOverlayComponentParams={{
                     title: EMPTY_DATA,
@@ -483,12 +437,12 @@ class SOBListing extends Component {
                   frameworkComponents={frameworkComponents}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                  <AgGridColumn field="BoughtOutPartNumber" headerName="Insert Part No."></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartName" headerName="Insert Part Name"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartCategory" headerName="Insert Category"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                   <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="NoOfVendors" headerName="No of Vendors"></AgGridColumn>
-                  <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                  <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB%"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)"></AgGridColumn>
                   <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
@@ -512,6 +466,7 @@ class SOBListing extends Component {
           ID={this.state.ID}
           anchor={'right'}
         />}
+
       </div >
     );
   }

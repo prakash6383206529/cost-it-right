@@ -194,6 +194,7 @@ export const SearchableSelectHookForm = (field) => {
 */
 export const TextAreaHookForm = (field) => {
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
@@ -398,7 +399,7 @@ export const RadioHookForm = (field) => {
 
 export const AsyncSearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message } = field;
+    isClearable, control, errors, register, isLoading, customClassName, asyncOptions, message, NoOptionMessage } = field;
 
 
   let isDisable = (disabled && disabled === true) ? true : false;
@@ -435,6 +436,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
               selected={value}
               value={value}
               isLoading={isLoader}
+              noOptionsMessage={({inputValue}) => !inputValue ? NoOptionMessage : "No results found"}
             />
           )
 

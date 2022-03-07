@@ -29,9 +29,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-function enumFormatter(cell, row, enumObject) {
-    return enumObject[cell];
-}
+
 
 class AssemblyPartListing extends Component {
     constructor(props) {
@@ -46,7 +44,8 @@ class AssemblyPartListing extends Component {
             BOMId: '',
             isBulkUpload: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
         }
     }
 
@@ -64,13 +63,15 @@ class AssemblyPartListing extends Component {
     * @description Get user list data
     */
     getTableListData = () => {
+        this.setState({isLoader: true})
         this.props.getAssemblyPartDataList((res) => {
+            this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
                 this.setState({
-                    tableData: Data,
+                    tableData: Data
                 })
             } else {
 
@@ -99,6 +100,7 @@ class AssemblyPartListing extends Component {
     */
     deleteItem = (Id) => {
         this.setState({ showPopup: true, deletedId: Id })
+        
     }
 
     /**
@@ -126,13 +128,10 @@ class AssemblyPartListing extends Component {
     */
     effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        if (cellValue.includes("T")) {
+        
+    
             return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-        }
-        else {
-            return cellValue ? cellValue : ''
-        }
+   
     }
 
     renderEffectiveDate = () => {
@@ -337,7 +336,6 @@ class AssemblyPartListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter,
             visualAdFormatter: this.visualAdFormatter,
@@ -345,8 +343,8 @@ class AssemblyPartListing extends Component {
         };
 
         return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
+            <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+               {this.state.isLoader && <LoaderCustom />}
                 <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
@@ -399,14 +397,11 @@ class AssemblyPartListing extends Component {
                 </Row>
 
 
-
-                <div className="ag-grid-wrapper height-width-wrapper">
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <=0 ?"overlay-contain": ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>
-                    <div
-                        className="ag-theme-material"
-                    >
+                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                         <AgGridReact
                             defaultColDef={defaultColDef}
                             floatingFilter={true}
@@ -416,7 +411,6 @@ class AssemblyPartListing extends Component {
                             paginationPageSize={10}
                             onGridReady={this.onGridReady}
                             gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
                             noRowsOverlayComponentParams={{
                                 title: EMPTY_DATA,
@@ -432,7 +426,7 @@ class AssemblyPartListing extends Component {
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                            <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="PartId" width={120} headerName="View BOM" cellRenderer={'visualAdFormatter'}></AgGridColumn>
                             <AgGridColumn field="PartId" width={160} headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>

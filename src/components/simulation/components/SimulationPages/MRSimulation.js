@@ -216,7 +216,7 @@ function MRSimulation(props) {
             return null;
         })
         if (ccCount === tempData.length) {
-            toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            toastr.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
@@ -302,7 +302,7 @@ function MRSimulation(props) {
                         <form>
 
                             <Row>
-                                <Col className="add-min-height mb-3 sm-edit-page">
+                                <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
                                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />

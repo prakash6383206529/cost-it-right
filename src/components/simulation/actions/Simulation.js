@@ -24,8 +24,10 @@ import {
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
     GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
     SET_DATA_TEMP,
-    GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+    GET_VERIFY_OVERHEAD_SIMULATION_LIST,
+    GET_VERIFY_PROFIT_SIMULATION_LIST,
+    SET_SHOW_SIMULATION_PAGE,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -567,6 +569,7 @@ export function runSimulationOnSelectedExchangeCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -601,6 +604,7 @@ export function uploadSimulationAttachment(data, callback) {
             }).catch(error => {
                 callback(error.response)
                 dispatch({ type: API_FAILURE })
+                callback(error)
             })
     }
 }
@@ -661,6 +665,7 @@ export function runVerifySurfaceTreatmentSimulation(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     }
 }
@@ -673,7 +678,7 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_VERIFY_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                    payload: response.data.Data.SimulationSurfaceTreatmentAndOperationImpactedCosting
                 })
                 callback(response)
             }
@@ -692,10 +697,29 @@ export function runSimulationOnSelectedSurfaceTreatmentCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
     };
+}
+
+export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatrialId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostingSurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
 }
 
 export function runVerifyMachineRateSimulation(data, callback) {
@@ -721,6 +745,7 @@ export function runSimulationOnSelectedMachineRateCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -735,6 +760,7 @@ export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
@@ -788,17 +814,42 @@ export function getSimulatedAssemblyWiseImpactDate(requestData, isAssemblyInDraf
         })
         const request = axios.post(`${API.getSimulatedAssemblyWiseImpactDate}`, requestData, headers);
         request.then((response) => {
+            // THIS BLOCK WORKS WHEN THERE IS DATA IN API
             if (response.data.Result) {
+
+                // THIS IS WHEN CALL COMES FROM DRAFT
                 if (isAssemblyInDraft === true) {
                     dispatch({
                         type: GET_ASSEMBLY_SIMULATION_LIST,
                         payload: response.data.DataList
                     })
-                } if (isAssemblyInDraft === false) {
+                }
 
+                // THIS IS WHEN CALL COMES FROM SUMMARY
+                if (isAssemblyInDraft === false) {
                     dispatch({
                         type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
                         payload: response.data.DataList
+                    })
+                    callback(response)
+                }
+            }
+            // THIS BLOCK WORKS WHEN THERE IS NO DATA IN API
+            else if (response.status === 204) {
+
+                // THIS IS WHEN CALL COMES FROM DRAFT
+                if (isAssemblyInDraft === true) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST,
+                        payload: []
+                    })
+                }
+
+                // THIS IS WHEN CALL COMES FROM SUMMARY
+                if (isAssemblyInDraft === false) {
+                    dispatch({
+                        type: GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
+                        payload: []
                     })
                     callback(response)
                 }
@@ -819,14 +870,14 @@ export function setData(valdataTemp) {
     }
 }
 
-export function getVerifyOverheadProfitSimulationList(token, callback) {
+export function getVerifyOverheadSimulationList(token, callback) {
 
     return (dispatch) => {
         const request = axios.get(`${API.getVerifyOverheadProfitSimulationList}?simulationId=${token}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_VERIFY_OVERHEAD_PROFIT_SIMULATION_LIST,
+                    type: GET_VERIFY_OVERHEAD_SIMULATION_LIST,
                     payload: response.data.Data.SimulationExchangeRateImpactedCostings
                 })
                 callback(response)
@@ -838,9 +889,9 @@ export function getVerifyOverheadProfitSimulationList(token, callback) {
     }
 }
 
-export function runSimulationOnSelectedOverheadProfitCosting(data, callback) {
+export function runSimulationOnSelectedOverheadCosting(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedOverheadProfitCosting, data, headers);
+        const request = axios.post(API.runSimulationOnSelectedOverheadCosting, data, headers);
         request.then((response) => {
             if (response.data.Result) {
                 callback(response);
@@ -852,4 +903,76 @@ export function runSimulationOnSelectedOverheadProfitCosting(data, callback) {
     };
 }
 
+export function runVerifyOverheadSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftOverheadSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+export function runVerifyProfitSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftProfitSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 
+export function getVerifyProfitSimulationList(token, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getVerifyProfitSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_PROFIT_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedProfitCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedProfitCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method setShowSimulationPage
+ * @description Set Show Simulation Page
+ */
+export function setShowSimulationPage(Data) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SHOW_SIMULATION_PAGE,
+            payload: Data,
+        })
+        // callback();
+    }
+};

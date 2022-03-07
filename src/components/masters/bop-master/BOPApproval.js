@@ -6,8 +6,14 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { EMPTY_DATA } from '../../../config/constants';
-import { getRMApprovalList } from '../actions/Material';
-import { DRAFT } from '../../../config/constants';
+import { DRAFT, BOP_MASTER_ID } from '../../../config/constants';
+import { getBOPApprovalList } from '../actions/BoughtOutParts'
+import DayTime from '../../common/DayTimeWrapper'
+import SummaryDrawer from '../SummaryDrawer';
+import Toaster from '../../common/Toaster'
+import MasterSendForApproval from '../MasterSendForApproval';
+import { masterFinalLevelUser } from '../actions/Material'
+import { loggedInUserId, userDetails } from '../../../helper'
 
 
 
@@ -21,11 +27,28 @@ function BOPApproval(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [approvalData, setApprovalData] = useState('')
     const { approvalList } = useSelector((state) => state.material)
+    const { BopApprovalList } = useSelector((state) => state.boughtOutparts)
     const [loader, setLoader] = useState(true)
+    const [approvalDrawer, setApprovalDrawer] = useState(false)
+    const [showApprovalSumary, setShowApprovalSummary] = useState(false)
+    const [isFinalApprover, setIsFinalApprover] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
         getTableData()
+
+        let obj = {
+            MasterId: BOP_MASTER_ID,
+            DepartmentId: userDetails().DepartmentId,
+            LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
+            LoggedInUserId: loggedInUserId()
+        }
+
+        dispatch(masterFinalLevelUser(obj, (res) => {
+            if (res.data.Result) {
+                setIsFinalApprover(res.data.Data.IsFinalApprovar)
+            }
+        }))
 
     }, [])
 
@@ -37,9 +60,21 @@ function BOPApproval(props) {
 
     const getTableData = () => {
         //  API CALL FOR GETTING RM APPROVAL LIST
-        dispatch(getRMApprovalList((res) => {
+
+        dispatch(getBOPApprovalList((res) => {
             setLoader(false)
         }))
+
+
+    }
+
+
+
+    const closeApprovalDrawer = (e = '') => {
+        setApprovalDrawer(false)
+        setLoader(true)
+        getTableData()
+
     }
 
 
@@ -54,10 +89,27 @@ function BOPApproval(props) {
 
     const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
         setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
-
+        setShowApprovalSummary(true)
         // props.closeDashboard()
 
     }
+
+
+    const closeDrawer = (e = '') => {
+        setShowApprovalSummary(false)
+        setLoader(true)
+        getTableData()
+    }
+
+    /**
+* @method effectiveDateFormatter
+* @description Renders buttons
+*/
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
+
 
     /**
   * @method linkableFormatter
@@ -101,6 +153,13 @@ function BOPApproval(props) {
 
     const sendForApproval = () => {
 
+        if (selectedRowData.length > 0) {
+            setApprovalDrawer(true)
+        }
+        else {
+            Toaster.warning('Please select draft token to send for approval.')
+        }
+
     }
 
 
@@ -120,8 +179,13 @@ function BOPApproval(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
+
         var value = document.getElementById('page-size').value;
-        gridApi.paginationSetPageSize(Number(value));
+
+
+        gridApi.paginationSetPageSize(Number(newPageSize));
+
+
     };
 
     const onFilterTextBoxChanged = (e) => {
@@ -132,6 +196,7 @@ function BOPApproval(props) {
 
         statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
+        effectiveDateRenderer: effectiveDateFormatter
 
     };
 
@@ -141,8 +206,8 @@ function BOPApproval(props) {
 
     return (
         <div>
+            {loader && <LoaderCustom />}
             <Row className="pt-4 blue-before">
-
                 <Col md="6" lg="6" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
                         <div>
@@ -152,7 +217,7 @@ function BOPApproval(props) {
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={resetState}>
                                 <div className="refresh mr-0"></div>
                             </button>
-                            <button title="send-for-approval" class="user-btn approval-btn" onClick={sendForApproval}>
+                            <button title="send-for-approval" class="user-btn approval-btn" disabled={isFinalApprover} onClick={sendForApproval}>
                                 <div className="send-for-approval mr-0" ></div>
                             </button>
                         </div>
@@ -161,22 +226,20 @@ function BOPApproval(props) {
             </Row>
             <Row>
                 <Col>
-                    {loader && <LoaderCustom />}
+
                     <div className={`ag-grid-react`}>
-                        <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
-                            <div
-                                className="ag-theme-material"
-                            >
+                            <div className={`ag-theme-material ${loader && "max-loader-height"}`}>
                                 <AgGridReact
                                     floatingFilter={true}
                                     style={{ height: '100%', width: '100%' }}
                                     defaultColDef={defaultColDef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
-                                    rowData={approvalList}
+                                    rowData={BopApprovalList}
                                     pagination={true}
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
@@ -192,21 +255,21 @@ function BOPApproval(props) {
                                     onSelectionChanged={onRowSelect}
                                     isRowSelectable={isRowSelectable}
                                 >
-                                    <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn>
+                                    {/* <AgGridColumn width="145" field="CostingId" hide dataAlign="center" searchable={false} ></AgGridColumn> */}
                                     <AgGridColumn width="145" cellClass="has-checkbox" field="ApprovalProcessId" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                     <AgGridColumn width="145" field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                     <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>
-                                    <AgGridColumn width="145" field="TechnologyName" headerName='BOP Part No'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RawMaterial" headerName='BOP Part Name'></AgGridColumn>
-                                    <AgGridColumn width="145" field="RMGrade" headerName='BOP Category'></AgGridColumn>
-                                    <AgGridColumn width="150" field="RMSpec" headerName='UOM'></AgGridColumn>
-                                    <AgGridColumn width="140" field="Category" headerName='Specification'></AgGridColumn>
-                                    <AgGridColumn width="140" field="MaterialType" headerName='Plant'></AgGridColumn>
-                                    <AgGridColumn field="Plant" headerName='Vendor'></AgGridColumn>
-                                    <AgGridColumn field="VendorName" headerName="Minimum Order Quantity"></AgGridColumn>
-                                    <AgGridColumn width="140" field="UOM" headerName="Basic Rate(INR)"></AgGridColumn>
-                                    <AgGridColumn width="140" field="BasicRate" headerName="Net Cost(INR)"></AgGridColumn>
-                                    <AgGridColumn width="140" field="ScrapRate" headerName="Effective Date"></AgGridColumn>
+
+                                    <AgGridColumn width="145" field="BoughtOutPartNumber" headerName='BOP Part No'></AgGridColumn>
+                                    <AgGridColumn width="145" field="BoughtOutPartName" headerName='BOP Part Name'></AgGridColumn>
+                                    <AgGridColumn width="145" field="BoughtOutPartCategory" headerName='BOP Category'></AgGridColumn>
+                                    <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>
+                                    <AgGridColumn width="140" field="Specification" headerName='Specification'></AgGridColumn>
+                                    <AgGridColumn width="140" field="Plants" headerName='Plant'></AgGridColumn>
+                                    <AgGridColumn field="VendorName" headerName='Vendor'></AgGridColumn>
+                                    <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate(INR)"></AgGridColumn>
+                                    <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost(INR)"></AgGridColumn>
+                                    <AgGridColumn width="140" field="EffectiveDate" cellRenderer='effectiveDateRenderer' headerName="Effective Date"></AgGridColumn>
 
 
                                     <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="Status" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>
@@ -224,6 +287,30 @@ function BOPApproval(props) {
                     </div>
                 </Col>
             </Row>
+            {
+                showApprovalSumary &&
+                <SummaryDrawer
+                    isOpen={showApprovalSumary}
+                    closeDrawer={closeDrawer}
+                    approvalData={approvalData}
+                    anchor={'bottom'}
+                    masterId={BOP_MASTER_ID}
+                />
+            }
+
+            {
+                approvalDrawer &&
+                <MasterSendForApproval
+                    isOpen={approvalDrawer}
+                    closeDrawer={closeApprovalDrawer}
+                    isEditFlag={false}
+                    masterId={BOP_MASTER_ID}
+                    type={'Sender'}
+                    anchor={"right"}
+                    isBulkUpload={true}
+                    approvalData={selectedRowData}
+                />
+            }
 
         </div>
 

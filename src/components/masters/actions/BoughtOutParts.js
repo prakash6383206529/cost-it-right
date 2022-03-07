@@ -13,10 +13,13 @@ import {
     GET_INITIAL_SOB_VENDORS_SUCCESS,
     GET_BOP_DOMESTIC_DATA_LIST,
     GET_BOP_IMPORT_DATA_LIST,
+    GET_BOP_APPROVAL_LIST,
     config,
     GET_SOB_LISTING,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
+import { loggedInUserId, userDetails } from '../../../helper';
+import Toaster from '../../common/Toaster';
 
 const headers = config
 
@@ -34,6 +37,7 @@ export function createBOPDomestic(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -52,6 +56,7 @@ export function createBOPImport(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -203,6 +208,7 @@ export function updateBOPDomestic(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }
@@ -220,6 +226,7 @@ export function updateBOPImport(requestData, callback) {
             }).catch((error) => {
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
+                callback(error);
             });
     };
 }
@@ -385,6 +392,7 @@ export function bulkUploadBOPDomesticZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -403,6 +411,7 @@ export function bulkUploadBOPDomesticVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -421,6 +430,7 @@ export function bulkUploadBOPImportZBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -439,6 +449,7 @@ export function bulkUploadBOPImportVBC(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
@@ -539,4 +550,61 @@ export function updateBOPSOBVendors(requestData, callback) {
                 dispatch({ type: API_FAILURE });
             });
     };
+}
+
+
+
+/*
+@method getBOPApprovalList
+
+**/
+export function getBOPApprovalList(callback) {
+
+    return (dispatch) => {
+
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getBOPApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=2`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                //
+                dispatch({
+                    type: GET_BOP_APPROVAL_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                    // payload: JSON.data.DataList
+                })
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error)
+        });
+    };
+}
+
+
+
+/**
+ * @method masterApprovalRequestBySenderBop
+ * @description When sending bop for approval for the first time
+ * 
+ */
+export function masterApprovalRequestBySenderBop(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterSendToApproverBop, data, headers)
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    Toaster.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import ReactExport from 'react-export-excel';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, REJECTED } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile } from '../actions/CostWorking';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -80,13 +80,13 @@ class CostingSummaryBulkUpload extends Component {
         if (status === PENDING) {
             return (
                 <>
-                    <button className={'user-btn mr5'} disabled={row.IncorrectCostingCount >0 ? true:false} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
+                    <button className={'user-btn mr5'} disabled={row.IncorrectCostingCount > 0 ? true : false} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
                     <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, false)} type={'button'}>Reject</button>
                     {/* {row.NoOfIncorrectRow > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>} */}
                 </>
             )
         }
-        else if(status === APPROVED){
+        else if (status === APPROVED || status === REJECTED) {
             return <span>-</span>
 
         }

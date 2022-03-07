@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
 import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting,runSimulationOnSelectedOverheadProfitCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting,runSimulationOnSelectedOverheadProfitCosting,runSimulationOnSelectedProfitCosting } from '../actions/Simulation';
 import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import DayTime from '../../common/DayTimeWrapper'
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
@@ -160,9 +160,9 @@ function RunSimulationDrawer(props) {
     const IsAvailable = (id) => { }
 
     const checkForResponse = (res) => {
+        setRunSimulationDisable(false)
         if ('response' in res) {
             if (res && res?.response?.data?.Result === false) {
-                setRunSimulationDisable(false)
             }
         }
         if (res?.data?.Result) {
@@ -181,7 +181,7 @@ function RunSimulationDrawer(props) {
         const Rejection = selectedData.includes("Rejection")
         const DiscountOtherCost = selectedData.includes("Discount And Other Cost")
         const PaymentTerms = selectedData.includes("Payment Terms")
-        const Inventory = selectedData.includes("Inventory")
+        const Inventory = selectedData.includes("ICC")
         const AdditionalDiscount = selectedData.includes("Additional Discount")
         const AdditionalOtherCost = selectedData.includes("Additional Other Cost")
 
@@ -223,7 +223,6 @@ function RunSimulationDrawer(props) {
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
-                runSimulationCosting()
                 break;
             case Number(OPERATIONS):
                 dispatch(runSimulationOnSelectedSurfaceTreatmentCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
@@ -243,13 +242,19 @@ function RunSimulationDrawer(props) {
                 runSimulationCosting()
                 break;
             case Number(BOPIMPORT):
-                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'),  SimulationApplicability: temp }, (res) => {
+                dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                     checkForResponse(res)
                 }))
                 runSimulationCosting()
                 break;
             // case Number(BOPIMPORT):
-            //     dispatch(runSimulationOnSelectedOverheadProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+            //     dispatch(runSimulationOnSelectedOverheadCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+            //         checkForResponse(res)
+            //     }))
+            //     runSimulationCosting()
+            //     break;
+            // case Number(BOPIMPORT):
+            //     dispatch(runSimulationOnSelectedProfitCosting({ ...objs, EffectiveDate: DayTime(selectedDate).format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
             //         checkForResponse(res)
             //     }))
             //     runSimulationCosting()
@@ -623,9 +628,9 @@ function RunSimulationDrawer(props) {
                                                         errors={errors.EffectiveDate}
                                                     />
                                                 </Col>
-                                                <Col md="12" className="mt-4 warning-text-container">
+                                                <Col md="12" className="mt-4 pt-1 warning-text-container">
                                                     <div className="warning-text">
-                                                        <WarningMessage dClass="mr-3" message={"Unselected checkbox won't be applied in future"} />
+                                                        <WarningMessage dClass="mr-3 pt-2" message={"Unselected norms won't be applied in future revisions"} />
                                                     </div>
                                                 </Col>
                                             </Row>

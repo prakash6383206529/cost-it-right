@@ -49,7 +49,7 @@ class ReasonListing extends Component {
       rowData: null,
       sideBar: { toolPanels: ['columns'] },
       showData: false,
-      isLoader: true,
+      isLoader: false,
       renderState: true,
       showPopup: false,
       deletedId: ''
@@ -62,6 +62,7 @@ class ReasonListing extends Component {
 
   componentDidMount() {
     this.applyPermission(this.props.topAndLeftMenuData)
+    this.setState({isLoader:true})
     setTimeout(() => {
       this.getTableListData()
     }, 2000);
@@ -111,11 +112,12 @@ class ReasonListing extends Component {
   getTableListData = () => {
     this.setState({ isLoader: true })
     this.props.getAllReasonAPI(true, (res) => {
+      this.setState({isLoader:false})
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data }, () => this.setState({ isLoader: false, renderState: !this.state.renderState }))
+        this.setState({ tableData: Data }, () => this.setState({ renderState: !this.state.renderState }))
       } else {
         this.setState({ tableData: [] })
       }
@@ -338,20 +340,18 @@ class ReasonListing extends Component {
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      // customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
       statusButtonFormatter: this.statusButtonFormatter
     };
 
     return (
       <>
-
-        {this.state.isLoader && <LoaderCustom />}
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+        <div className={`ag-grid-react container-fluid p-relative ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
           <ScrollToTop pointProp="go-to-top" />
           <Row>
             <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>
+          {this.state.isLoader && <LoaderCustom />}
           <Row className="no-filter-row pt-4">
             <Col md={6} className="text-right filter-block"></Col>
             <Col md="6" className="text-right search-user-block pr-0">
@@ -393,13 +393,11 @@ class ReasonListing extends Component {
               </div>
             </Col>
           </Row>
-          <div className="ag-grid-wrapper height-width-wrapper">
+          <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.reasonDataList && this.props.reasonDataList?.length <=0 ?"overlay-contain": ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
             </div>
-            <div
-              className="ag-theme-material"
-            >
+            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -410,7 +408,6 @@ class ReasonListing extends Component {
                 paginationPageSize={10}
                 onGridReady={this.onGridReady}
                 gridOptions={gridOptions}
-                loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 noRowsOverlayComponentParams={{
                   title: EMPTY_DATA,

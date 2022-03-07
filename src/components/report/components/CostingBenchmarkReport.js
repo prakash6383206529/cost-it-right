@@ -85,7 +85,7 @@ function CostingBenchmarkReport(props) {
             case RMIMPORT:
                 return (<RMImportListing isSimulation={false} technology={0} />)
             case MACHINERATE:
-                return (<MachineRateListing isSimulation={true} technology={0} />)
+                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} />)
             case BOPDOMESTIC:
                 return (<BOPDomesticListing isSimulation={true} technology={technology.value} />)
             case BOPIMPORT:

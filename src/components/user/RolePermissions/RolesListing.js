@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAllRoleAPI, deleteRoleAPI, getLeftMenu } from '../../../actions/auth/AuthActions';
+import { getAllRoleAPI, deleteRoleAPI } from '../../../actions/auth/AuthActions';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { Loader } from '../../common/Loader';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { loggedInUserId } from '../../../helper/auth';
 import { checkPermission } from '../../../helper/util';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import { ROLE } from '../../../config/constants';
-import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -43,6 +39,7 @@ class RolesListing extends Component {
   }
 
   componentDidMount() {
+    this.setState({isLoader:true})
     const { topAndLeftMenuData } = this.props;
     if (topAndLeftMenuData !== undefined) {
       const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
@@ -64,7 +61,6 @@ class RolesListing extends Component {
   }
 
   getRolesListData = () => {
-    this.setState({ isLoader: true })
     this.props.getAllRoleAPI(res => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
@@ -193,7 +189,6 @@ closePopUp= () =>{
 
     const frameworkComponents = {
       totalValueRenderer: this.buttonFormatter,
-      customLoadingOverlay: LoaderCustom,
       customNoRowsOverlay: NoContentFound,
     };
 
@@ -227,14 +222,11 @@ closePopUp= () =>{
           </Row>
           <Row class="">
             <Col className="table-mt-0">
-              <div className="ag-grid-wrapper height-width-wrapper">
+              <div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <=0 ?"overlay-contain": ""}`}>
                 <div className="ag-grid-header">
                   <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                 </div>
-                <div
-                  className="ag-theme-material"
-                  style={{ height: '100%', width: '100%' }}
-                >
+                <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                   <AgGridReact
                     defaultColDef={defaultColDef}
                     floatingFilter={true}
@@ -245,7 +237,6 @@ closePopUp= () =>{
                     paginationPageSize={10}
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
-                    loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,

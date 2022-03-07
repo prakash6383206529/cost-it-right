@@ -16,6 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
+import { debounce } from 'lodash';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -36,8 +37,8 @@ class AddIndivisualProduct extends Component {
             DataToCheck: [],
             DropdownChanged: true,
             uploadAttachements: true,
-            isSurfaceTreatment: false,
-
+            isImpactCalculation: false,
+            setDisable: false
         }
     }
 
@@ -145,9 +146,22 @@ class AddIndivisualProduct extends Component {
 
     }
 
+    /**
+    * @method setDisableFalseFunction
+    * @description setDisableFalseFunction
+    */
+    setDisableFalseFunction = () => {
+        const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
+        if (Number(loop) === 1) {
+            this.setState({ setDisable: false })
+        }
+    }
+
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
         const { files, } = this.state;
+
+        this.setState({ uploadAttachements: false, setDisable: true })
 
         if (status === 'removed') {
             const removedFileName = file.name;
@@ -159,6 +173,7 @@ class AddIndivisualProduct extends Component {
             let data = new FormData()
             data.append('file', file)
             this.props.fileUploadProduct(data, (res) => {
+                this.setDisableFalseFunction()
                 let Data = res.data[0]
                 const { files } = this.state;
                 files.push(Data)
@@ -167,13 +182,16 @@ class AddIndivisualProduct extends Component {
         }
 
         if (status === 'rejected_file_type') {
+            this.setDisableFalseFunction()
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
         } else if (status === 'error_file_size') {
+            this.setDisableFalseFunction()
             this.dropzone.current.files.pop()
             Toaster.warning("File size greater than 2 mb not allowed")
         } else if (status === 'error_validation'
             || status === 'error_upload_params' || status === 'exception_upload'
             || status === 'aborted' || status === 'error_upload') {
+            this.setDisableFalseFunction()
             this.dropzone.current.files.pop()
             Toaster.warning("Something went wrong")
         }
@@ -244,8 +262,8 @@ class AddIndivisualProduct extends Component {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    onSubmit = (values) => {
-        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isSurfaceTreatment, uploadAttachements } = this.state;
+    onSubmit = debounce((values) => {
+        const { ProductId, selectedPlants, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, uploadAttachements } = this.state;
 
         let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -256,6 +274,7 @@ class AddIndivisualProduct extends Component {
                 this.cancel()
                 return false;
             }
+            this.setState({ setDisable: true })
             let updatedFiles = files.map((file) => {
                 return { ...file, ContextId: ProductId }
             })
@@ -277,9 +296,9 @@ class AddIndivisualProduct extends Component {
             }
 
             if (isEditFlag) {
-                this.props.reset()
                 this.props.updateProduct(updateData, (res) => {
-                    if (res.data.Result) {
+                    this.setState({ setDisable: false })
+                    if (res?.data?.Result) {
                         Toaster.success(MESSAGES.UPDATE_PRODUCT_SUCESS);
                         this.cancel()
                     }
@@ -291,6 +310,7 @@ class AddIndivisualProduct extends Component {
 
         } else {
 
+            this.setState({ setDisable: true })
             let formData = {
                 LoggedInUserId: loggedInUserId(),
                 Remark: values.Remark,
@@ -306,15 +326,15 @@ class AddIndivisualProduct extends Component {
                 Attachements: files
             }
 
-            this.props.reset()
             this.props.createProduct(formData, (res) => {
-                if (res.data.Result === true) {
+                this.setState({ setDisable: false })
+                if (res?.data?.Result === true) {
                     Toaster.success(MESSAGES.PRODUCT_ADD_SUCCESS);
                     this.cancel()
                 }
             });
         }
-    }
+    }, 500)
 
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
@@ -328,7 +348,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration } = this.props;
-        const { isEditFlag, isViewMode } = this.state;
+        const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
             <>
                 {this.state.isLoader && <LoaderCustom />}
@@ -409,12 +429,12 @@ class AddIndivisualProduct extends Component {
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={""}
-                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20, required]}
+                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                                                     component={renderText}
                                                                     onChange={
                                                                         this.ProductGroupCodeUpdate
                                                                     }
-                                                                    required={true}
+                                                                    required={false}
                                                                     className=""
                                                                     customClassName={"withBorder"}
                                                                     disabled={isViewMode}
@@ -496,7 +516,6 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
 
                                                 </Row>
-
                                                 <Row>
 
 
@@ -536,7 +555,6 @@ class AddIndivisualProduct extends Component {
                                                                 getUploadParams={this.getUploadParams}
                                                                 onChangeStatus={this.handleChangeStatus}
                                                                 PreviewComponent={this.Preview}
-                                                                //onSubmit={this.handleSubmit}
                                                                 accept="*"
                                                                 initialFiles={this.state.initialFiles}
                                                                 maxFiles={3}
@@ -613,6 +631,7 @@ class AddIndivisualProduct extends Component {
                                                         type={"button"}
                                                         className="mr15 cancel-btn"
                                                         onClick={this.cancel}
+                                                        disabled={setDisable}
                                                     >
                                                         <div className={"cancel-icon"}></div>
                                                         {"Cancel"}
@@ -620,7 +639,7 @@ class AddIndivisualProduct extends Component {
                                                     <button
                                                         type="submit"
                                                         className="user-btn mr5 save-btn"
-                                                        disabled={isViewMode}
+                                                        disabled={isViewMode || setDisable}
                                                     >
                                                         <div className={"save-icon"}></div>
                                                         {isEditFlag ? "Update" : "Save"}

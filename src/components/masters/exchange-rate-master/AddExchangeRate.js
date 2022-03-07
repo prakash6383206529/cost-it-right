@@ -14,6 +14,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import LoaderCustom from '../../common/LoaderCustom';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { debounce } from 'lodash';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -29,7 +30,10 @@ class AddExchangeRate extends Component {
       DropdownChanged: true,
       DataToChange: [],
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      setDisable: false,
+      disablePopup: false
+
     }
   }
 
@@ -161,7 +165,7 @@ class AddExchangeRate extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged } = this.state;
 
     /** Update existing detail of exchange master **/
@@ -175,6 +179,7 @@ class AddExchangeRate extends Component {
         return false;
       }
 
+      this.setState({ setDisable: true, disablePopup:false })
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,
@@ -192,9 +197,10 @@ class AddExchangeRate extends Component {
         this.setState({ showPopup: true, updatedObj: updateData })
         const toastrConfirmOptions = {
           onOk: () => {
-            this.props.reset()
+
             this.props.updateExchangeRate(updateData, (res) => {
-              if (res.data.Result) {
+              this.setState({ setDisable: false })
+              if (res?.data?.Result) {
                 Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
                 this.cancel()
               }
@@ -209,6 +215,7 @@ class AddExchangeRate extends Component {
 
     } else {/** Add new detail for creating exchange master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         CurrencyId: currency.value,
         CurrencyExchangeRate: values.CurrencyExchangeRate,
@@ -219,9 +226,9 @@ class AddExchangeRate extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
-      this.props.reset()
       this.props.createExchangeRate(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
 
           Toaster.success(MESSAGES.EXCHANGE_ADD_SUCCESS);
           this.cancel();
@@ -229,19 +236,20 @@ class AddExchangeRate extends Component {
       });
     }
 
-  }
+  }, 500)
 
-  onPopupConfirm = () => {
-    this.props.reset()
+  onPopupConfirm = debounce(() => {
+    this.setState({ disablePopup: true })
     this.props.updateExchangeRate(this.state.updatedObj, (res) => {
-      if (res.data.Result) {
+      this.setState({ setDisable: false })
+      if (res?.data?.Result) {
         Toaster.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
         this.cancel()
       }
     });
-  }
+  }, 500)
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, setDisable: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -255,7 +263,7 @@ class AddExchangeRate extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, } = this.state;
+    const { isEditFlag, isViewMode, setDisable, disablePopup } = this.state;
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -277,7 +285,6 @@ class AddExchangeRate extends Component {
                 <form
                   noValidate
                   className="form"
-
                   onSubmit={handleSubmit((e) => this.onSubmit(e))}
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
@@ -414,12 +421,14 @@ class AddExchangeRate extends Component {
                         type={"button"}
                         className="mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={'cancel-icon'}></div>
                         {"Cancel"}
                       </button>
                       <button
                         type="submit"
+                        disabled={isViewMode || setDisable}
                         className="user-btn mr5 save-btn"
                       >
                         <div className={"save-icon"}></div>
@@ -432,7 +441,7 @@ class AddExchangeRate extends Component {
             </div>
           </div>
           {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} />
+            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} disablePopup={disablePopup} />
           }
         </div>
       </div>

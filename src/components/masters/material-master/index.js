@@ -5,20 +5,20 @@ import RMListing from './RMListing';
 import SpecificationListing from './SpecificationListing';
 import { Row, Container, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
-import { getRowMaterialDataAPI } from '../actions/Material';
 import AddRMImport from './AddRMImport';
 import RMDomesticListing from './RMDomesticListing';
 import RMImportListing from './RMImportListing';
 
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE } from '../../../config/constants';
+import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE,RM_MASTER_ID } from '../../../config/constants';
 import { getConfigurationKey } from '../../../helper';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import RMApproval from './RMApproval';
 import ScrollToTop from '../../common/ScrollToTop';
+import { CheckApprovalApplicableMaster } from '../../../helper';
 
 
 
@@ -30,8 +30,10 @@ function RowMaterialMaster(props) {
     const [isRMOpen, setisRMOpen] = useState(false);
     const [isOpen, setisOpen] = useState(false);
     const [isEditFlag, setisEditFlag] = useState(false);
+    const [isViewFlag, setisViewFlag] = useState(false);
     const [Id, setId] = useState('');
     const [activeTab, setactiveTab] = useState(reactLocalStorage.get('location') === '/raw-material-master/raw-material-approval' ? '5' : '1');
+
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
 
     const [isRMImportForm, setisRMImportForm] = useState(false);
@@ -58,7 +60,7 @@ function RowMaterialMaster(props) {
 
         applyPermission(topAndLeftMenuData);
 
-    }, [])
+    }, [topAndLeftMenuData])
 
 
 
@@ -68,8 +70,6 @@ function RowMaterialMaster(props) {
     //     }
     // }
 
-
-    // jp ka order scheduling se compare
 
     // useMemo((nextProps) => {
     //     // componentWillReceiveProps
@@ -163,6 +163,8 @@ function RowMaterialMaster(props) {
 
     }
 
+
+
     /**
     * @method getDetailsImport
     * @description GET DETAILS FOR IMPORT FORM IN EDIT MODE
@@ -205,9 +207,9 @@ function RowMaterialMaster(props) {
     return (
         <Container fluid>
             <Row id="go-top-top">
-                <Col sm="4">
+                {ViewRMAccessibility && <Col sm="4">
                     <h1>{`Raw Material Master`}</h1>
-                </Col>
+                </Col>}
                 <ScrollToTop pointProp={"go-top-top"} />
             </Row>
             <Row>
@@ -239,7 +241,7 @@ function RowMaterialMaster(props) {
                             </NavItem>}
                             {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
                             {/* uncomment below line after cherry-pick to Minda  TODO */}
-                            {(ViewRMAccessibility && getConfigurationKey().IsMasterApprovalAppliedConfigure) && <NavItem>
+                            {(ViewRMAccessibility && CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
                                 {/* {ViewRMAccessibility && <NavItem> */}
                                 <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
                                     toggle('5');
@@ -254,12 +256,13 @@ function RowMaterialMaster(props) {
 
 
 
-                            {activeTab == 1 && ViewRMAccessibility &&
+                            {Number(activeTab) === 1 && ViewRMAccessibility &&
                                 <TabPane tabId="1">
                                     <RMDomesticListing
                                         formToggle={displayDomesticForm}
                                         getDetails={getDetails}
                                         toggle={toggle}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
@@ -269,12 +272,13 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 2 && ViewRMAccessibility &&
+                            {Number(activeTab) === 2 &&
                                 <TabPane tabId="2">
                                     <RMImportListing
                                         formToggle={displayImportForm}
                                         getDetails={getDetailsImport}
                                         toggle={toggle}
+                                        ViewRMAccessibility={ViewRMAccessibility}
                                         AddAccessibility={AddAccessibility}
                                         EditAccessibility={EditAccessibility}
                                         DeleteAccessibility={DeleteAccessibility}
@@ -284,7 +288,7 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 3 && ViewRMAccessibility &&
+                            {Number(activeTab) === 3 &&
                                 <TabPane tabId="3">
                                     <SpecificationListing
                                         toggle={toggle}
@@ -298,7 +302,7 @@ function RowMaterialMaster(props) {
                                     />
                                 </TabPane>}
 
-                            {activeTab == 4 && ViewRMAccessibility &&
+                            {Number(activeTab) === 4 &&
                                 <TabPane tabId="4">
                                     <RMListing
                                         AddAccessibility={AddAccessibility}
@@ -307,7 +311,7 @@ function RowMaterialMaster(props) {
                                         DownloadAccessibility={DownloadAccessibility}
                                     />
                                 </TabPane>}
-                            {activeTab == 5 && ViewRMAccessibility &&
+                            {Number(activeTab) === 5 &&
                                 <TabPane tabId="5">
                                     {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })

@@ -64,6 +64,7 @@ function RMSimulation(props) {
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
         let basicScrapCount = 0
+        let isScrapRateGreaterThanBasiRate = false
         list && list.map((li) => {
             if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
 
@@ -72,10 +73,17 @@ function RMSimulation(props) {
             if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
                 basicScrapCount = basicScrapCount + 1
             }
+            if ((li?.NewBasicRate === undefined ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                isScrapRateGreaterThanBasiRate = true
+            }
             return null;
         })
         if (basicRateCount === list.length && basicScrapCount === list.length) {
-            Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
+            return false
+        }
+        if (isScrapRateGreaterThanBasiRate) {
+            Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
         setIsDisable(true)
@@ -184,12 +192,12 @@ function RMSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cell, props)
         return (
             <>
                 {
                     isImpactedMaster ?
-                        Number(row.NewBasicRate) :
+                        checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
@@ -216,12 +224,12 @@ function RMSimulation(props) {
     const newScrapRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+        const value = beforeSaveCell(cell, props)
         return (
             <>
                 {
                     isImpactedMaster ?
-                        row.NewScrapRate :
+                        checkForDecimalAndNull(row.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
                 }
             </>
@@ -262,8 +270,14 @@ function RMSimulation(props) {
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
   */
-    const beforeSaveCell = (props) => {
-        const cellValue = props
+    const beforeSaveCell = (cell, props) => {
+        const cellValue = cell
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        if ((row?.NewBasicRate === undefined ? Number(row?.BasicRate) : Number(row?.NewBasicRate)) <
+            (row?.NewScrapRate === undefined ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
+            Toaster.warning('Scrap Rate should be less than Basic Rate')
+            return false
+        }
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
                 Toaster.warning("Value should not be more than 8")
@@ -312,7 +326,7 @@ function RMSimulation(props) {
             }
 
             if (basicRateCount === list.length || basicScrapCount === list.length) {
-                Toaster.warning('There is no changes in new value.Please correct the data ,then run simulation')
+                Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             } else {
                 setShowRunSimulationDrawer(true)
             }
@@ -379,6 +393,11 @@ function RMSimulation(props) {
     }
     const cellChange = (props) => {
     }
+
+    const onCellValueChanged = (props) => {
+
+    }
+
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -399,7 +418,7 @@ function RMSimulation(props) {
     return (
 
         <div>
-            <div className={`ag-grid-react`}>
+            <div className={`ag-grid-react ${props.customClass}`}>
 
                 {
 
@@ -453,12 +472,30 @@ function RMSimulation(props) {
                         }
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
-                                <div className="ag-grid-wrapper height-width-wrapper">
-                                    <div className="ag-grid-header d-flex">
-                                        <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
+                                    <div className="ag-grid-header d-flex justify-content-between align-items-center">
+                                        <div className='d-flex'>
+                                            <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
+                                        </div>
+                                        {/* {list && list.map( item=> {
+                                            return <>
+                                             <div className={`d-flex simulation-label-container ${isbulkUpload ? "mt-5 pt-2" : ''}`}>
+                                                <div className='d-flex pl-3'>
+                                                 <label>Technology: </label>
+                                                  <p className='technology mx-1' title={item.TechnologyName}>{item.TechnologyName}</p>
+                                                </div>
+                                                <div className='d-flex pl-3'>
+                                                 <label className='mx-1'>Vendor:</label>
+                                                 <p title={item.VendorName}>{item.VendorName}</p>
+                                                </div>
+                                             </div>
+                                            </>
+                                               
+                                        })} */}
+                                        {/* <------------Don't remove the code it will use in future----> */}
                                     </div>
                                     <div className="ag-theme-material" style={{ width: '100%' }}>
                                         <AgGridReact
@@ -479,6 +516,7 @@ function RMSimulation(props) {
                                             }}
                                             frameworkComponents={frameworkComponents}
                                             stopEditingWhenCellsLoseFocus={true}
+                                            onCellValueChanged={onCellValueChanged}
                                         >
                                             {
                                                 !isImpactedMaster &&
@@ -499,11 +537,11 @@ function RMSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate' editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName="Scrap Rate (INR)">
                                                 <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Old" colId="ScrapRate" ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="New" colId="NewScrapRate" editable={!isImpactedMaster} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName="RM Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" editable='false' cellRenderer={'shearingCostFormatter'} headerName="RM Shearing Cost" ></AgGridColumn>

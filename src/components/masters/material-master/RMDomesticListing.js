@@ -19,14 +19,14 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { INR, ZBC, RmImport, RM_MASTER_ID, APPROVAL_ID } from '../../../config/constants'
 import { costingHeadObjs, RMDOMESTIC_DOWNLOAD_EXCEl, RMIMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getFilteredRMData, userDepartmetList } from '../../../helper';
-
+import ReactExport from 'react-export-excel';
+import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData,userDepartmetList } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -37,7 +37,8 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, loading, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
+
 
 
 
@@ -49,15 +50,19 @@ function RMDomesticListing(props) {
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
     const [gridColumnApi, setgridColumnApi] = useState(null);          // DONT DELETE THIS STATE , IT IS USED BY AG GRID
 
-    const [loader, setloader] = useState(true);
+    const [loader, setloader] = useState(false);
     const dispatch = useDispatch();
 
     const rmDataList = useSelector((state) => state.material.rmDataList);
     const filteredRMData = useSelector((state) => state.material.filteredRMData);
-    const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({ mode: 'onChange', reValidateMode: 'onChange', })
+
     const [showPopup, setShowPopup] = useState(false)
     const [deletedId, setDeletedId] = useState('')
     const [showPopupBulk, setShowPopupBulk] = useState(false)
+    const [editTable, setEditTable] = useState(EditAccessibility)
+    const [viewAction, setViewAction] = useState(ViewRMAccessibility)
+
+
 
 
     /**
@@ -95,7 +100,7 @@ function RMDomesticListing(props) {
 
     const getFilterRMData = () => {
         if (isSimulation) {
-            return getFilteredRMData(rmDataList)
+            return getFilteredData(rmDataList, RM_MASTER_ID)
         } else {
             return rmDataList
         }
@@ -123,6 +128,7 @@ function RMDomesticListing(props) {
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
         }
         //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
+        setloader(true)
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, (res) => {
                 if (res && res.status === 200) {
@@ -149,13 +155,17 @@ function RMDomesticListing(props) {
     */
     const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
         let data = {
+
             isEditFlag: true,
-            isViewMode: isViewMode,
+            isViewFlag: isViewMode,
             Id: Id,
             IsVendor: rowData.CostingHead === 'Vendor Based' ? true : rowData.CostingHead === 'Zero Based' ? false : rowData.CostingHead,
         }
         props.getDetails(data);
     }
+
+
+
 
     /**
     * @method deleteItem
@@ -200,22 +210,30 @@ function RMDomesticListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
+        let isDeleteButton = false
 
-
-        if (CheckApprovalApplicableMaster(RM_MASTER_ID)) {
+    
             if (EditAccessibility && !rowData.IsRMAssociated) {
                 isEditbale = true
             } else {
                 isEditbale = false
             }
-        } else {
-            isEditbale = EditAccessibility
-        }
+
+
+            if (DeleteAccessibility && !rowData.IsRMAssociated) {
+                isDeleteButton = true
+            } else {
+                isDeleteButton = false
+            }
+
+
         return (
             <>
-                {ViewRMAccessibility && <button className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+
+
+                {viewAction && < button className="View mr5" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditbale && <button className="Edit mr-2 align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {DeleteAccessibility && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {isDeleteButton && <button className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
             </>
         )
     };
@@ -236,8 +254,8 @@ function RMDomesticListing(props) {
 
     const costFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const { initialConfiguration } = props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+        let value = cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '';
+        return value
     }
 
     const companyFormatter = (props) => {
@@ -277,7 +295,7 @@ function RMDomesticListing(props) {
   */
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '-';
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
     }
 
 
@@ -287,7 +305,7 @@ function RMDomesticListing(props) {
     */
     const freightCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '-';
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';
     }
 
 
@@ -301,9 +319,9 @@ function RMDomesticListing(props) {
     }
 
     const closeBulkUploadDrawer = () => {
+
         setisBulkUpload(false);
         getDataList(null, null, null)
-
 
     }
 
@@ -324,11 +342,6 @@ function RMDomesticListing(props) {
         props.toggle('4')
     }
 
-    /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    const onSubmit = (values) => { }
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -437,7 +450,7 @@ function RMDomesticListing(props) {
         totalValueRenderer: buttonFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadRenderer: costingHeadFormatter,
-        customLoadingOverlay: LoaderCustom,
+        // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         costFormatter: costFormatter,
         freightCostFormatter: freightCostFormatter,
@@ -451,85 +464,72 @@ function RMDomesticListing(props) {
 
     return (
         <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-
-            < form onSubmit={handleSubmit(onSubmit)} noValidate >
-                <Row className="filter-row-large pt-4 ">
-
-                    {
-                        // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
-                        (!isSimulation && !props.isMasterSummaryDrawer) &&
-                        <Col md="6" lg="6" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    <>
-                                        {/* {shown ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
-                                                <div className="cancel-icon-white"></div>
-                                            </button>
-                                        ) : (
-                                            <button title="Filter" type="button" className="user-btn mr5" onClick={() => { setshown(!shown) }}>
-                                                <div className="filter mr-0"></div>
-                                            </button>
-                                        )} */}
-                                        {AddAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={formToggle}
-                                                title="Add"
-                                            >
-                                                <div className={"plus mr-0"}></div>
-                                                {/* ADD */}
-                                            </button>
-                                        )}
-                                        {BulkUploadAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={bulkToggle}
-                                                title="Bulk Upload"
-                                            >
-                                                <div className={"upload mr-0"}></div>
-                                                {/* Bulk Upload */}
-                                            </button>
-                                        )}
-                                        {
-                                            DownloadAccessibility &&
-                                            <>
-
-                                                <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                    <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
-                                                        {/* DOWNLOAD */}
-                                                    </button>}>
-
-                                                    {onBtExport()}
-                                                </ExcelFile>
-
-
-                                            </>
-
-
-                                        }
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
+            {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
+            <Row className="filter-row-large pt-4 ">
+                {
+                    // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
+                    (!isSimulation && !props.isMasterSummaryDrawer) &&
+                    <Col md="6" lg="6" className="search-user-block mb-3">
+                        <div className="d-flex justify-content-end bd-highlight w100">
+                            <div>
+                                <>
+                                    {shown ? (
+                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setshown(!shown) }}>
+                                            <div className="cancel-icon-white"></div>
                                         </button>
+                                    ) : (<>
                                     </>
-                                </div>
+
+                                    )}
+                                    {AddAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={formToggle}
+                                            title="Add"
+                                        >
+                                            <div className={"plus mr-0"}></div>
+                                            {/* ADD */}
+                                        </button>
+                                    )}
+                                    {BulkUploadAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn mr5"}
+                                            onClick={bulkToggle}
+                                            title="Bulk Upload"
+                                        >
+                                            <div className={"upload mr-0"}></div>
+                                            {/* Bulk Upload */}
+                                        </button>
+                                    )}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
+                                                <button type="button" className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                                    {/* DOWNLOAD */}
+                                                </button>}>
+                                                {onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                    }
+                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                        <div className="refresh mr-0"></div>
+                                    </button>
+                                </>
                             </div>
-                        </Col>
-                    }
-                </Row>
-            </form >
+                        </div>
+                    </Col>
+                }
+            </Row>
             <Row>
                 <Col>
-                    {(loader && !props.isMasterSummaryDrawer) && <LoaderCustom />}
-                    <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
-                        <div
-                            className="ag-theme-material"
-                        >
+                        <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                             <AgGridReact
                                 style={{ height: '100%', width: '100%' }}
                                 defaultColDef={defaultColDef}
@@ -565,7 +565,7 @@ function RMDomesticListing(props) {
 
                                 <AgGridColumn field="MaterialType" headerName="Material"></AgGridColumn>
 
-                                <AgGridColumn field="Plant" headerName="Plant"></AgGridColumn>
+                                <AgGridColumn field="Plant" headerName="Plant(Code)"></AgGridColumn>
 
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)"></AgGridColumn>
 
@@ -577,22 +577,19 @@ function RMDomesticListing(props) {
 
                                 <AgGridColumn field="ScrapRate" headerName="Scrap Rate(INR)" ></AgGridColumn>
 
-                                <AgGridColumn field="RMFreightCost" headerName="RM Freight Cost(INR)" cellRenderer='freightCostFormatter'></AgGridColumn>
+                                <AgGridColumn field="RMFreightCost" headerName="Freight Cost(INR)" cellRenderer='freightCostFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="RMShearingCost" headerName="Shearing Cost(INR)" cellRenderer='shearingCostFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="NetLandedCost" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-
+            
                                 {CheckApprovalApplicableMaster(RM_MASTER_ID) && <AgGridColumn field="DisplayStatus" headerName="Status" cellRenderer='statusFormatter'></AgGridColumn>}
-
-                                {!isSimulation && <AgGridColumn width={150} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>}
-
+                                
+                                {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
-
                                 <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
-
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -628,8 +625,6 @@ function RMDomesticListing(props) {
         </div >
     );
 }
-
-
 
 export default RMDomesticListing;
 

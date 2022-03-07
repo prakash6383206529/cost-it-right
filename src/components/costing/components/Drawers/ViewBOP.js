@@ -7,14 +7,13 @@ import { EMPTY_DATA } from '../../../../config/constants'
 import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
-  const { viewBOPData } = props
+  const { viewBOPData, isPDFShow } = props
   const { BOPData, bopPHandlingCharges, bopHandlingPercentage, childPartBOPHandlingCharges, IsAssemblyCosting } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   useEffect(() => {
     setviewBOPCost(BOPData)
   }, [])
-
   /**
    * @method toggleDrawer
    * @description closing drawer
@@ -28,28 +27,9 @@ function ViewBOP(props) {
     }
     props.closeDrawer('')
   }
-  return (
-    <Fragment>
-      <Drawer
-        anchor={props.anchor}
-        open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
-      >
-        <Container>
-          <div className={'drawer-wrapper drawer-1500px'}>
-            <Row className="drawer-heading">
-              <Col>
-                <div className={'header-wrapper left'}>
-                  <h3>{'View Insert Cost:'}</h3>
-                </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}
-                ></div>
-              </Col>
-            </Row>
-
-            <Row className="mx-0">
+  const bopDataTable = ()=> {
+    return <>
+            <Row>
               <Col md="12">
                 <Row>
                   <Col md="12">
@@ -87,7 +67,7 @@ function ViewBOP(props) {
                           </tr>
                         )
                       })}
-                    {viewBOPCost.length === 0 && (
+                    {viewBOPCost?.length === 0 && (
                       <tr>
                         <td colSpan={7}>
                           <NoContentFound title={EMPTY_DATA} />
@@ -98,16 +78,18 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
-
-            <Row className="mx-0">
+    </>
+  }
+  const handlingChargeTableData = ()=> {
+    return <>
+          <Row>
               <Col md="12">
-                <br />
                 <Row>
                   <Col md="12">
                     <div className="left-border">{`${IsAssemblyCosting ? 'Assembly\'s Insert Handling Charge:' : 'Insert Handling Charge:'}`}</div>
                   </Col>
                 </Row>
-                <Table className="table cr-brdr-main" size="sm">
+                <Table className="table cr-brdr-main mb-0" size="sm">
                   <thead>
                     <tr>
                       <th>{`Percentage`}</th>
@@ -144,7 +126,7 @@ function ViewBOP(props) {
                       <div className="left-border">{'Part\'s Insert Handling Charge:'}</div>
                     </Col>
                   </Row>
-                  <Table className="table cr-brdr-main" size="sm">
+                  <Table className="table cr-brdr-main mb-0" size="sm">
                     <thead>
                       <tr>
                         {IsAssemblyCosting && <th>{`Part No.`}</th>}
@@ -173,11 +155,40 @@ function ViewBOP(props) {
                     </tbody>
                   </Table>
                 </Col>
-              </Row>
-            }
+              </Row>}
+    </>
+  }
+  return (
+    <Fragment>
+      {!isPDFShow ? 
+      <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+      // onClose={(e) => toggleDrawer(e)}
+      >
+        <Container>
+          <div className={'drawer-wrapper drawer-1500px'}>
+            <Row className="drawer-heading">
+              <Col>
+                <div className={'header-wrapper left'}>
+                  <h3>{'View BOP Cost:'}</h3>
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  className={'close-button right'}
+                ></div>
+              </Col>
+            </Row>
+             {bopDataTable()}
+             <div>
+               {handlingChargeTableData()}
+             </div>
+            
           </div>
         </Container>
-      </Drawer>
+      </Drawer> : <div className='mt-2'>
+         { viewBOPCost.length !== 0 && bopDataTable()}
+      {(childPartBOPHandlingCharges && (childPartBOPHandlingCharges.length !== 0 || bopHandlingPercentage) && handlingChargeTableData())}</div>  }
     </Fragment>
   )
 }

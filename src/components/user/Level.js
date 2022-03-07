@@ -48,6 +48,7 @@ class Level extends Component {
     this.getLevelMappingDetail()
     this.props.getSimulationTechnologySelectList(() => { })
     this.props.getMastersSelectList(() => { })
+
   }
 
   /**
@@ -171,12 +172,16 @@ class Level extends Component {
     }
 
     if (label === 'technology' && this.state.levelType === 'Master') {
-      masterList && masterList.map(item => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null;
+      let arrayOfTechnology = []
+      const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
+      myArray && myArray.map((item) => {
+        let tempObj = {}
+        let temp = item.split('=')
+        tempObj.label = temp[0]
+        tempObj.value = temp[1]
+        arrayOfTechnology.push(tempObj)
       })
-      return temp;
+      return arrayOfTechnology
     }
 
     if (label === 'level') {
@@ -191,7 +196,6 @@ class Level extends Component {
       });
       return temp;
     }
-
   }
 
   /**

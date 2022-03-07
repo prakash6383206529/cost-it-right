@@ -10,11 +10,12 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import { checkForDecimalAndNull } from '../../../helper';
 
 const gridOptions = {};
 
 function AssemblyWiseImpact(props) {
-    const { impactType, dataForAssemblyImpact, isPartImpactAssembly } = props;
+    const { impactType, dataForAssemblyImpact, isPartImpactAssembly,isImpactDrawer } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -24,6 +25,7 @@ function AssemblyWiseImpact(props) {
     const dispatch = useDispatch();
 
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
+    const { initialConfiguration } = useSelector(state => state.auth)
 
     useEffect(() => {
         setloader(true)
@@ -33,14 +35,14 @@ function AssemblyWiseImpact(props) {
             if (isPartImpactAssembly) {
                 let obj = {
                     CostingId: dataForAssemblyImpact?.CostingId,
-                    delta: dataForAssemblyImpact?.Variance,
+                    delta: isImpactDrawer? dataForAssemblyImpact?.Variance :dataForAssemblyImpact.POVariance,
                     IsSinglePartImpact: true
                 }
                 requestData = [obj]
 
             } else {
                 dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
+                    requestData.push({ CostingId: item.CostingId, delta:isImpactDrawer? item.Variance :item.POVariance, IsSinglePartImpact: false })
                     return null
                 })
             }
@@ -68,6 +70,13 @@ function AssemblyWiseImpact(props) {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
 
+    /**
+    * @method costFormatter
+    */
+    const costFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '-';
+    }
 
     const onGridReady = (params) => {
         setgridApi(params.api);
@@ -101,15 +110,16 @@ function AssemblyWiseImpact(props) {
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
-        hyphenFormatter: hyphenFormatter
+        hyphenFormatter: hyphenFormatter,
+        costFormatter: costFormatter
     };
 
     return (
-        <div className={`ag-grid-react `}>
+        <div className={`ag-grid-react ${props.customClass}`}>
             {/* { this.props.loading && <Loader />} */}
             <Row>
                 <Col className="mb-3">
-                    <div className="ag-grid-header">
+                    <div className="ag-grid-header d-flex">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " value={textFilterSearch} onChange={(e) => onFilterTextBoxChanged(e)} />
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
@@ -122,7 +132,7 @@ function AssemblyWiseImpact(props) {
             <Row>
                 <Col>
                     {(loader) && <LoaderCustom />}
-                    <div className="ag-grid-wrapper height-width-wrapper">
+                    <div className={`ag-grid-wrapper height-width-wrapper  ${simulationAssemblyList && simulationAssemblyList?.length <=0 ?"overlay-contain": ""}`}>
                         <div
                             className="ag-theme-material"
                         >
@@ -148,9 +158,9 @@ function AssemblyWiseImpact(props) {
                                 <AgGridColumn field="PartName" headerName='Name' cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Level" headerName="Child's Level" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                <AgGridColumn field="OldPrice" headerName='Old PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='New PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
+                                <AgGridColumn field="Variance" headerName='Variance/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
                             </AgGridReact>
                             <div className="paging-container d-inline-block float-right">
                                 <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces,minLength10,alphaNumeric,vlidatePhoneNumber,maxLength71,maxLength7 ,maxLength5, acceptAllExceptSingleSpecialCharacter, maxLength4, postiveNumber, maxLength10, maxLength12, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -14,6 +14,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 class AddZBCPlant extends Component {
   constructor(props) {
@@ -29,7 +30,8 @@ class AddZBCPlant extends Component {
       state: [],
       company: [],
       DropdownChanged: true,
-      DataToCheck: []
+      DataToCheck: [],
+      setDisable: false
     }
   }
 
@@ -219,7 +221,7 @@ class AddZBCPlant extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
@@ -234,7 +236,7 @@ class AddZBCPlant extends Component {
         return false
       }
 
-      this.setState({ isSubmitted: true });
+      this.setState({ isSubmitted: true, setDisable: true });
       let updateData = {
         PlantId: PlantId,
         CreatedDate: '',
@@ -255,9 +257,9 @@ class AddZBCPlant extends Component {
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
         CompanyId: company.value
       }
-      this.props.reset()
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_PLANT_SUCESS);
           this.cancel()
         }
@@ -265,6 +267,7 @@ class AddZBCPlant extends Component {
 
     } else {
 
+      this.setState({ setDisable: true })
       let formData = {
         PlantName: values.PlantName,
         PlantCode: values.PlantCode,
@@ -281,15 +284,15 @@ class AddZBCPlant extends Component {
         CompanyId: company.value
       }
 
-      this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
-        if (res.data.Result === true) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.PLANT_ADDED_SUCCESS);
           this.cancel()
         }
       });
     }
-  }
+  }, 500)
 
   handleCompanyChange = (value) => {
     if (value && value !== '') {
@@ -310,7 +313,7 @@ class AddZBCPlant extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag } = this.props;
-    const { country, isViewMode } = this.state;
+    const { country, isViewMode, setDisable } = this.state;
     return (
       <>
         <Drawer
@@ -331,7 +334,7 @@ class AddZBCPlant extends Component {
                   <Col>
                     <div className={"header-wrapper left"}>
                       <h3>
-                        {isEditFlag ? "Update ZBC Plant" : "Add ZBC Plant"}
+                        {isEditFlag ? "Update Plant" : "Add  Plant"}
                       </h3>
                     </div>
                     <div
@@ -347,7 +350,7 @@ class AddZBCPlant extends Component {
                       name={"PlantName"}
                       type="text"
                       placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=""
@@ -403,9 +406,9 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           component={renderText}
-                          maxLength={10}
+                          maxLength={12}
                           className=""
                           customClassName={"withBorder"}
                           disabled={isViewMode}
@@ -417,9 +420,9 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength5 , checkWhiteSpaces]}
                           component={renderText}
-                          maxLength={3}
+                          maxLength={5}
                           className=""
                           customClassName={"withBorder"}
                           disabled={isViewMode}
@@ -549,6 +552,7 @@ class AddZBCPlant extends Component {
                       type={"button"}
                       className=" mr15 cancel-btn"
                       onClick={this.cancel}
+                      disabled={setDisable}
                     >
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
@@ -556,7 +560,7 @@ class AddZBCPlant extends Component {
                     <button
                       type="submit"
                       className="user-btn save-btn"
-                      disabled={isViewMode}
+                      disabled={isViewMode || setDisable}
                     >
                       <div className={"save-icon"}></div>
                       {isEditFlag ? "Update" : "Save"}

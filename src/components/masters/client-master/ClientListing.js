@@ -51,12 +51,14 @@ class ClientListing extends Component {
             sideBar: { toolPanels: ['columns'] },
             showData: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
+            isLoader:false
 
         }
     }
 
     componentDidMount() {
+        this.setState({isLoader:true})
         this.applyPermission(this.props.topAndLeftMenuData)
         setTimeout(() => {
             this.getTableListData(null, null)
@@ -105,6 +107,7 @@ class ClientListing extends Component {
             companyName: companyName,
         }
         this.props.getClientDataList(filterData, res => {
+            this.setState({isLoader:false})
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -347,16 +350,16 @@ class ClientListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
+            // customLoadingOverlay: LoaderCustom,
             customNoRowsOverlay: NoContentFound,
             hyphenFormatter: this.hyphenFormatter
         };
 
         return (
             // <div className="">
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
+            <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
                 <ScrollToTop pointProp="go-to-top" />
-                {/* {this.props.loading && <Loader />} */}
+                {this.state.isLoader && <LoaderCustom />}
                 < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <h1 className="mb-0">Customer Master</h1>
@@ -396,13 +399,11 @@ class ClientListing extends Component {
 
 
 
-                    <div className="ag-grid-wrapper height-width-wrapper">
+                    <div className={`ag-grid-wrapper height-width-wrapper ${this.props.clientDataList && this.props.clientDataList?.length <=0 ?"overlay-contain": ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
-                        <div
-                            className="ag-theme-material"
-                        >
+                        <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
@@ -415,7 +416,6 @@ class ClientListing extends Component {
                                 paginationPageSize={10}
                                 onGridReady={this.onGridReady}
                                 gridOptions={gridOptions}
-                                loadingOverlayComponent={'customLoadingOverlay'}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
                                     title: EMPTY_DATA,

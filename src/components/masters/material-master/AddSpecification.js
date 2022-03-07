@@ -18,6 +18,7 @@ import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
 import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
+import { debounce } from 'lodash';
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -32,7 +33,8 @@ class AddSpecification extends Component {
       isOpenGrade: false,
       isOpenMaterialDrawer: false,
       DropdownChanged: true,
-      DataToChange: []
+      DataToChange: [],
+      setDisable: false
     }
   }
 
@@ -305,7 +307,7 @@ class AddSpecification extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  onSubmit = debounce((values) => {
     const { RawMaterial, material, RMGrade, DataToChange, DropdownChanged } = this.state;
     const { ID, isEditFlag } = this.props;
 
@@ -316,6 +318,7 @@ class AddSpecification extends Component {
         this.cancel()
         return false
       }
+      this.setState({ setDisable: true })
       let formData = {
         RawMaterialId: RawMaterial.value,
         SpecificationId: ID,
@@ -329,15 +332,17 @@ class AddSpecification extends Component {
         MaterialTypeName: material.label,
         RawMaterialCode: values.Code
       }
-      this.props.reset()
+
       this.props.updateRMSpecificationAPI(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
           this.toggleDrawer('', '')
         }
       })
     } else {
 
+      this.setState({ setDisable: true })
       let formData = {
         RawMaterialId: RawMaterial.value,
         Specification: values.Specification,
@@ -345,15 +350,16 @@ class AddSpecification extends Component {
         MaterialId: material.value,
         RawMaterialCode: values.Code
       }
-      this.props.reset()
+
       this.props.createRMSpecificationAPI(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
           this.toggleDrawer('', formData)
         }
       });
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -374,7 +380,7 @@ class AddSpecification extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer } = this.state;
+    const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer, setDisable } = this.state;
     const { handleSubmit, isEditFlag, specificationData, AddAccessibilityRMANDGRADE,
       EditAccessibilityRMANDGRADE, } = this.props;
     return (
@@ -573,6 +579,7 @@ class AddSpecification extends Component {
                           type={"button"}
                           className=" mr15 cancel-btn"
                           onClick={this.cancel}
+                          disabled={setDisable}
                         >
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
@@ -580,6 +587,7 @@ class AddSpecification extends Component {
                         <button
                           type="submit"
                           className="user-btn save-btn"
+                          disabled={setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}

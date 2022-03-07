@@ -18,6 +18,9 @@ import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom'
+import { debounce } from 'lodash'
+import TooltipCustom from '../../common/Tooltip';
+import AsyncSelect from 'react-select/async';
 
 const selector = formValueSelector('AddLabour')
 
@@ -29,6 +32,7 @@ class AddLabour extends Component {
       isEditFlag: false,
       LabourDetailId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
+      isVendorNameNotSelected:false,
 
       IsEmployeContractual: true,
       IsVendor: false,
@@ -45,7 +49,9 @@ class AddLabour extends Component {
       isOpenMachineType: false,
 
       isDisable: false,
-      DropdownChanged: true
+      DropdownChanged: true,
+      setDisable: false,
+      inputLoader:false,
     }
   }
 
@@ -54,10 +60,11 @@ class AddLabour extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    this.setState({inputLoader:true})
     this.props.getFuelComboData(() => { })
     this.props.getPlantListByState('', () => { })
     this.props.getMachineTypeSelectList(() => { })
-    this.props.labourTypeVendorSelectList(() => { })
+    this.props.labourTypeVendorSelectList(() => { this.setState({inputLoader:false}) })
     this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     this.getDetail()
   }
@@ -206,6 +213,7 @@ class AddLabour extends Component {
     this.setState({
       IsEmployeContractual: !this.state.IsEmployeContractual,
     })
+    
   }
 
   /**
@@ -225,7 +233,7 @@ class AddLabour extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ vendorName: newValue, selectedVendorPlants: [] })
+      this.setState({ vendorName: newValue, selectedVendorPlants: [],isVendorNameNotSelected:false })
     } else {
       this.setState({ vendorName: [], selectedVendorPlants: [] })
     }
@@ -543,10 +551,15 @@ class AddLabour extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {
-    const {
-      IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
+  onSubmit = debounce((values) => {
+    const { IsEmployeContractual, IsVendor, StateName, selectedPlants, vendorName, LabourId, gridTable, DropdownChanged } = this.state
     const userDetail = userDetails()
+
+    if (vendorName.length <= 0) {
+      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      return false
+    }
+    this.setState({ isVendorNameNotSelected: false })
 
     if (gridTable && gridTable.length === 0) {
       Toaster.warning('Labour Rate entry required.')
@@ -561,7 +574,7 @@ class AddLabour extends Component {
         return false
       }
 
-
+      this.setState({ setDisable: true })
       let updateData = {
         LabourId: LabourId,
         IsContractBase: IsEmployeContractual,
@@ -575,9 +588,9 @@ class AddLabour extends Component {
         ],
       }
 
-      this.props.reset()
       this.props.updateLabour(updateData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
           this.cancel()
         }
@@ -586,6 +599,7 @@ class AddLabour extends Component {
     } else {
       /** Add new detail for creating operation master **/
 
+      this.setState({ setDisable: true })
       let formData = {
         IsContractBase: IsEmployeContractual,
         IsVendor: IsVendor,
@@ -598,15 +612,15 @@ class AddLabour extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
-      this.props.reset()
       this.props.createLabour(formData, (res) => {
-        if (res.data.Result) {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
           Toaster.success(MESSAGES.LABOUR_ADDED_SUCCESS)
           this.cancel()
         }
       })
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -620,7 +634,28 @@ class AddLabour extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, isDisable, isViewMode } = this.state;
+    const { isEditFlag, isOpenMachineType, isDisable, isViewMode, setDisable } = this.state;
+
+    const filterList = (inputValue) => {
+      let tempArr = []
+
+      tempArr = this.renderListing("VendorNameList").filter(i =>
+        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (tempArr.length <= 100) {
+        return tempArr
+      } else {
+        return tempArr.slice(0, 100)
+      }
+    };
+
+    const promiseOptions = inputValue =>
+      new Promise(resolve => {
+        resolve(filterList(inputValue));
+
+
+      });
     return (
       <div className="container-fluid">
         {this.state.isLoader && <LoaderCustom />}
@@ -678,21 +713,19 @@ class AddLabour extends Component {
                       </Col>
                       {this.state.IsEmployeContractual && (
                         <Col md="4">
-                          <div className="form-group">
-                            <Field
-                              name="VendorName"
-                              type="text"
-                              label="Vendor Name"
-                              component={searchableSelect}
-                              placeholder={"Select"}
-                              options={this.renderListing("VendorNameList")}
-                              validate={
-                                this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []} required={true}
-                              handleChangeDescription={this.handleVendorName}
-                              valueDescription={this.state.vendorName}
-                              disabled={isEditFlag ? true : isDisable ? true : false}
-                            />
-                          </div>
+                           <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                           {this.state.inputLoader  && <LoaderCustom customClass={`input-loader masters-vendor-loader `}/>}
+                           <AsyncSelect 
+                           name="vendorName" 
+                           ref={this.myRef} 
+                           key={this.state.updateAsyncDropdown} 
+                           loadOptions={promiseOptions} 
+                           onChange={(e) => this.handleVendorName(e)} 
+                           value={this.state.vendorName} 
+                           noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                           isDisabled={isEditFlag ? true : isDisable ? true : false} />
+                           {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                          
                         </Col>
                       )}
                       <Col md="4">
@@ -910,6 +943,7 @@ class AddLabour extends Component {
                         type={"button"}
                         className="reset mr15 cancel-btn"
                         onClick={this.cancel}
+                        disabled={setDisable}
                       >
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
@@ -917,7 +951,7 @@ class AddLabour extends Component {
                       <button
                         type="submit"
                         className="submit-button mr5 save-btn"
-                        disabled={isViewMode}
+                        disabled={isViewMode || setDisable}
                       >
                         <div className={"save-icon"}></div>
                         {isEditFlag ? "Update" : "Save"}

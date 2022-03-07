@@ -6,7 +6,7 @@ import { focusOnError } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
@@ -49,14 +49,15 @@ class ExchangeRateListing extends Component {
             gridApi: null,
             gridColumnApi: null,
             rowData: null,
-            isLoader: true,
+            isLoader: false,
             showPopup: false,
-            deletedId: ''
+            deletedId: '',
         }
     }
 
     componentDidMount() {
         this.applyPermission(this.props.topAndLeftMenuData)
+        this.setState({isLoader:true})
         setTimeout(() => {
             this.props.getCurrencySelectList(() => { })
             this.getTableListData()
@@ -105,7 +106,6 @@ class ExchangeRateListing extends Component {
     * @description Get list data
     */
     getTableListData = (currencyId = 0) => {
-        this.setState({ isLoader: true })
         let filterData = {
             currencyId: currencyId,
         }
@@ -296,7 +296,6 @@ class ExchangeRateListing extends Component {
     frameworkComponents = {
         totalValueRenderer: this.buttonFormatter,
         effectiveDateRenderer: this.effectiveDateFormatter,
-        customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: this.hyphenFormatter
     };
@@ -342,11 +341,10 @@ class ExchangeRateListing extends Component {
 
         return (
             <>
-                {/* {this.state.isLoader && <LoaderCustom />} */}
                 <div className={`ag-grid-react exchange-rate ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
                     <div className="container-fluid">
                         <ScrollToTop pointProp="go-to-top" />
-                        {/* {this.props.loading && <Loader />} */}
+                        {this.state.isLoader && <LoaderCustom />}
                         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                             {!this.props.isSimulation &&
                                 <Row>
@@ -392,7 +390,7 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className="ag-grid-wrapper height-width-wrapper" >
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <=0 ?"overlay-contain": ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -407,7 +405,6 @@ class ExchangeRateListing extends Component {
                                     paginationPageSize={10}
                                     onGridReady={this.onGridReady}
                                     gridOptions={gridOptions}
-                                    loadingOverlayComponent={'customLoadingOverlay'}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,

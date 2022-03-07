@@ -42,7 +42,7 @@ class FreightListing extends Component {
       destinationLocation: [],
       sourceLocation: [],
       vendor: [],
-      isLoader: true,
+      isLoader: false,
       showPopup: false,
       deletedId: ''
     }
@@ -53,10 +53,9 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    // this.props.getVendorListByVendorType(true, () => { })
+    this.setState({ isLoader: true })
     setTimeout(() => {
-
-      this.props.getVendorWithVendorCodeSelectList()
+      this.props.getVendorWithVendorCodeSelectList(() => { })
       this.props.fetchSupplierCityDataAPI(res => { });
       this.getDataList()
     }, 500);
@@ -67,7 +66,6 @@ class FreightListing extends Component {
   * @description GET DETAILS OF BOP DOMESTIC
   */
   getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
-    this.setState({ isLoader: true })
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
@@ -75,9 +73,10 @@ class FreightListing extends Component {
       destination_city_id: destination_city_id,
     }
     this.props.getFreightDataList(filterData, (res) => {
+      this.setState({ isLoader: false })
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data }, () => this.setState({ isLoader: false }))
+        this.setState({ tableData: Data })
       } else if (res && res.response && res.response.status === 412) {
         this.setState({ tableData: [], isLoader: false })
       } else {
@@ -347,33 +346,11 @@ class FreightListing extends Component {
         </form>
         <Row>
           <Col>
-            {/* <BootstrapTable
-              data={this.props.freightDetail}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              exportCSV={DownloadAccessibility}
-                csvFileName={`${FreightMaster}.csv`}
-              //ignoreSinglePage
-              ref={'table'}
-              pagination>  */}
-            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-            {/* <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="left" dataSort={true} >{'Mode'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="left" dataSort={true} >{'Source City'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
-            <TableHeaderColumn dataAlign="right" searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-            </BootstrapTable>  */}
-            <div className="ag-grid-wrapper height-width-wrapper">
+            <div className={`ag-grid-wrapper height-width-wrapper ${this.props.freightDetail && this.props.freightDetail?.length <= 0 ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
               </div>
-              <div
-                className="ag-theme-material"
-              >
+              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
                 <AgGridReact
                   defaultColDef={defaultColDef}
                   domLayout='autoHeight'
