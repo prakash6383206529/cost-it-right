@@ -208,7 +208,7 @@ function ViewConversionCost(props) {
                           })}
                         {costingProcessCost && costingProcessCost.length === 0 && (
                           <tr>
-                            <td colSpan={12}>
+                            <td colSpan={15}>
                               <NoContentFound title={EMPTY_DATA} />
                             </td>
                           </tr>
@@ -402,7 +402,7 @@ function ViewConversionCost(props) {
                             })}
                           {costingToolsCost.length === 0 && (
                             <tr>
-                              <td colSpan={8}>
+                              <td colSpan={12}>
                                 <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr>
