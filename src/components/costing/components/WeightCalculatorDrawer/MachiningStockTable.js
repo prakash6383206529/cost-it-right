@@ -852,7 +852,7 @@ function MachiningStockTable(props) {
                 })}
               {tableData && tableData.length === 0 && (
                 <tr>
-                  <td colspan="4">
+                  <td colspan="15">
                     <NoContentFound title={EMPTY_DATA} />
                   </td>
                 </tr>

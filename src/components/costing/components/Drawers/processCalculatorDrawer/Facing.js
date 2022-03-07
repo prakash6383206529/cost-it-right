@@ -488,9 +488,8 @@ function Facing(props) {
                 disabled={props.CostingViewMode ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <img src={require("../../../../../assests/images/check.png")} alt="check-icon.jpg" />
-                </div>
+                 <div className={"save-icon"}></div>
+              
                 {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>

@@ -25,15 +25,13 @@ import activeCosting from '../../assests/images/costing-active.svg'
 import activeSimulation from '../../assests/images/simulation-active.svg'
 import activeUser from '../../assests/images/user-active.svg'
 import activeAudit from '../../assests/images/audit-active.svg'
-import Logo from '../../assests/images/logo/re-logo.jpg'
+import Logo from '../../assests/images/logo/company-logo.svg'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { BOP_MASTER_ID, MACHINE_MASTER_ID, OPERATIONS_ID, RM_MASTER_ID, VERSION } from '../../config/constants';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from '../../helper';
-// import Calculator from "../common/Calculator/component/Calculator";
-// import Draggable from 'react-draggable';
 
 class SideBar extends Component {
   constructor(props) {
