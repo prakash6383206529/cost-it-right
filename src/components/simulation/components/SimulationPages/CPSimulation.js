@@ -304,7 +304,7 @@ function CPSimulation(props) {
 
                             <Row>
                                 <Col className="add-min-height mb-3 sm-edit-page">
-                                    <div className={`ag-grid-wrapper height-width-wrapper  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                    <div className={`ag-grid-wrapper height-width-wrapper  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                         </div>
@@ -345,14 +345,14 @@ function CPSimulation(props) {
                                                     <AgGridColumn width={120} field="ConversionCost" editable='false' headerName="Old" cellRenderer='oldCPFormatter' colId="ConversionCost"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newCPFormatter' editable={true} field="NewCC" headerName="New" colId='NewCC'></AgGridColumn>
                                                 </AgGridColumn>
-                                                {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>}
+                                                {/* {!isImpactedMaster && <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>} */}
                                                 {
                                                     !isImpactedMaster &&
                                                     <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Total" marryChildren={true} >
                                                         <AgGridColumn width={120} cellRenderer='OldcostFormatter' valueGetter='Number(data.ConversionCost) + Number(data.RemainingTotal)' field="TotalCost" editable='false' headerName="Old" colId="Total"></AgGridColumn>
                                                         <AgGridColumn width={120} cellRenderer='NewcostFormatter' valueGetter='data.NewCC + Number(data.RemainingTotal)' field="NewTotal" headerName="New" colId='NewTotal'></AgGridColumn>
                                                     </AgGridColumn>
-                                                } 
+                                                }
 
                                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 {/* <AgGridColumn field="DisplayStatus" headerName="Status" floatingFilter={false} cellRenderer='statusFormatter'></AgGridColumn> */}

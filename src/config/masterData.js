@@ -2615,6 +2615,23 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
 
 
 ]
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+    { label: "Old CC", value: "OldNetCC" },
+    { label: "New CC", value: "NewNetCC" },
+    { label: "CC Variance", value: "Variance" },
+
+]
 
 export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "IsVendor", },
