@@ -12,6 +12,7 @@ import Toaster from '../../../common/Toaster'
 import DayTime from '../../../common/DayTimeWrapper'
 import { useEffect } from 'react'
 import _ from 'lodash'
+import { debounce } from 'lodash'
 
 function PushButtonDrawer(props) {
 
@@ -20,7 +21,7 @@ function PushButtonDrawer(props) {
 
   const dispatch = useDispatch()
   const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm();
-  const [plant, setPlant] = useState([]);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [MaterialGroup, setMaterialGroup] = useState(!isSimulation ? { label: approvalData[0].MaterialGroup, value: approvalData[0].MaterialGroup } : { label: simulationDetail.MaterialGroup, value: simulationDetail.MaterialGroup });
   const [PurchasingGroup, setPurchasingGroup] = useState(!isSimulation ? { label: approvalData[0].PurchasingGroup, value: approvalData[0].PurchasingGroup } : { label: simulationDetail.PurchasingGroup, value: simulationDetail.PurchasingGroup });
 
@@ -84,12 +85,13 @@ function PushButtonDrawer(props) {
       setPurchasingGroup([])
     }
   }
-  const onSubmit = () => {
+  const onSubmit = debounce(() => {
+    setIsDisabled(true)
     if (isSimulation) {
       let temp = []
-      let uniqueArr = _.uniqBy(costingList, function(o){
+      let uniqueArr = _.uniqBy(costingList, function (o) {
         return o.CostingId;
-    });
+      });
 
       uniqueArr && uniqueArr.map(item => {
         const vendor = item.VendorName.split('(')[1]
@@ -97,24 +99,25 @@ function PushButtonDrawer(props) {
         temp.push({
           CostingId: item.CostingId, effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/YYYY'), vendorCode: vendor.split(')')[0], materialNumber: item.PartNo, netPrice: netPo, plant: item.PlantCode ? item.PlantCode : '1511',
           currencyKey: INR, basicUOM: 'NO', purchasingOrg: PurchasingGroup.label.split('(')[0], purchasingGroup: item.DepartmentCode ? item.DepartmentCode : 'MRPL', materialGroup: MaterialGroup.label.split('(')[0], taxCode: 'YW', TokenNumber: simulationDetail.Token,
-          Quantity: quantity,  DecimalOption: simulationDetail.DecimalOption
+          Quantity: quantity, DecimalOption: simulationDetail.DecimalOption
         })
       })
 
 
-  
+
       let simObj = {
         LoggedInUserId: loggedInUserId(),
         Request: temp
       }
       dispatch(approvalPushedOnSap(simObj, res => {
+        setIsDisabled(false)
         if (res && res.status && (res.status === 200 || res.status === 204)) {
           Toaster.success('Approval pushed successfully.')
         }
-        props.closeDrawer('', 'Push')
       }))
+      props.closeDrawer('', 'Push')
     } else {
-      
+
       const { netPo, quantity } = getPOPriceAfterDecimal(approvalData[0].DecimalOption, dataSend[0].NewPOPrice ? dataSend[0].NewPOPrice : 0)
       let pushdata = {
         effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('MM/DD/YYYY') : '',
@@ -149,16 +152,17 @@ function PushButtonDrawer(props) {
         Request: [pushdata]
       }
       dispatch(approvalPushedOnSap(obj, res => {
+        setIsDisabled(false)
         if (res && res.status && (res.status === 200 || res.status === 204)) {
           Toaster.success('Approval pushed successfully.')
         }
-        props.closeDrawer('', 'Push')
       }))
+      props.closeDrawer('', 'Push')
     }
 
 
 
-  }
+  }, 500)
   return (
     <>
       <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen}
@@ -246,6 +250,7 @@ function PushButtonDrawer(props) {
                     type={'button'}
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
+                    disabled={isDisabled}
                   >
 
                     <div className={'cancel-icon'}></div>
@@ -256,9 +261,10 @@ function PushButtonDrawer(props) {
                     type="button"
                     className="submit-button mr5 save-btn"
                     onClick={onSubmit}
+                    disabled={isDisabled}
                   >
                     <div className={'save-icon'}></div>
-                    {'Push'}
+                    {'RePush'}
                   </button>
                 </div>
               </Row>

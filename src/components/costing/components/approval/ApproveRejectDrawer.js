@@ -21,12 +21,13 @@ import { provisional } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import PushSection from '../../../common/PushSection'
+import { Redirect } from 'react-router';
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing,setSelectedRowsDataEmpty } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, master, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, setSelectedRowsDataEmpty } = props
 
 
   const userLoggedIn = loggedInUserId()
@@ -49,6 +50,7 @@ function ApproveRejectDrawer(props) {
   const [initialFiles, setInitialFiles] = useState([]);
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
+  const [showListingPage, setShowListingPage] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -118,8 +120,8 @@ function ApproveRejectDrawer(props) {
         dropzone.current.files = filesList
 
       }
-    
-      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing&& getConfigurationKey().IsProvisionalSimulation) {
+
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing && getConfigurationKey().IsProvisionalSimulation) {
         dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
     }
@@ -307,6 +309,7 @@ function ApproveRejectDrawer(props) {
 
   const closePushButton = () => {
     setOpenPushButton(false)
+    setShowListingPage(true)
     props.closeDrawer('', 'Cancel')
   }
 
@@ -782,6 +785,13 @@ function ApproveRejectDrawer(props) {
       dropzone.current.files.pop()
     }
   }
+  useEffect(() => {
+    if (showListingPage === true) {
+      return <Redirect to="/simulation-history" />
+    }
+  }, [showListingPage])
+
+
   return (
     <>
       <Drawer

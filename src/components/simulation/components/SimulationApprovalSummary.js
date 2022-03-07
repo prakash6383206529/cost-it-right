@@ -9,8 +9,8 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
-import { getApprovalSimulatedCostingSummary, getComparisionSimulationData,getAmmendentStatus,getImpactedMasterData,getLastSimulationData,uploadSimulationAttachment } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC,FILE_URL,SURFACETREATMENT, OPERATIONS  } from '../../../config/constants';
+import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getAmmendentStatus, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment } from '../actions/Simulation'
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, FILE_URL, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
@@ -48,7 +48,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { isbulkUpload,approvalDetails, approvalData, list, technology, master } = props;
+    const { isbulkUpload, approvalDetails, approvalData, list, technology, master } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [shown, setshown] = useState(false)
@@ -135,11 +135,11 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements,SenderReasonId,DepartmentId } = res.data.Data
-               
-                let uniqueArr = _.uniqBy(SimulatedCostingList, function(o){
-                    return o.CostingId;
-                });
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId } = res.data.Data
+
+            let uniqueArr = _.uniqBy(SimulatedCostingList, function (o) {
+                return o.CostingId;
+            });
 
 
             setCostingList(uniqueArr)
@@ -153,7 +153,7 @@ function SimulationApprovalSummary(props) {
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
-                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId,DepartmentId:DepartmentId
+                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
             })
             setFiles(Attachements)
             setIsApprovalDone(IsSent)
@@ -260,7 +260,8 @@ function SimulationApprovalSummary(props) {
             setRejectDrawer(false)
         } else {
             setPushButton(false)
-            getSimulationApprovalSummary()
+            // getSimulationApprovalSummary()
+            setShowListing(true)
         }
     }
 
@@ -642,7 +643,7 @@ function SimulationApprovalSummary(props) {
         params.api.paginationGoToPage(0);
 
         window.screen.width >= 1600 && params.api.sizeColumnsToFit()
-        
+
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -726,9 +727,9 @@ function SimulationApprovalSummary(props) {
         <>
             {showListing === false &&
                 <>
-                <CalculatorWrapper />
+                    <CalculatorWrapper />
                     {loader && <LoaderCustom />}
-                    <div className={`container-fluid  smh-approval-summary-page ${loader ===true ? 'loader-wrapper':'' }`} id="go-to-top">
+                    <div className={`container-fluid  smh-approval-summary-page ${loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
                         <Errorbox customClass={errorBoxClass()} errorText={status} />
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
@@ -1155,7 +1156,7 @@ function SimulationApprovalSummary(props) {
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
-                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA}/></div> :""}
+                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
                                 </div>
                             }
                             {showViewAssemblyDrawer &&
