@@ -4239,6 +4239,8 @@ body{
   width: 100%;
 }
 .error-message {
+  position: absolute;
+  bottom: 8px;
   img {
     display: none;
   }
