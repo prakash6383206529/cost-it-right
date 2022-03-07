@@ -472,7 +472,7 @@ function MachiningStockTable(props) {
         </Col>
         {!irregularMachiningStock &&
           <>
-            <Col md="2">
+            <Col md="2" className='forging-length-wrapper'>
               <TextFieldHookForm
                 label={`Length(mm)`}
                 name={'Length'}
