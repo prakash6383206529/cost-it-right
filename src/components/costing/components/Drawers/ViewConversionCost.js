@@ -279,7 +279,7 @@ function ViewConversionCost(props) {
                             })}
                           {costingOperationCost && costingOperationCost.length === 0 && (
                             <tr>
-                              <td colSpan={9}>
+                              <td colSpan={12}>
                                 <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr>
@@ -350,7 +350,7 @@ function ViewConversionCost(props) {
                             })}
                           {othercostingOperationCost && othercostingOperationCost.length === 0 && (
                             <tr>
-                              <td colSpan={9}>
+                              <td colSpan={12}>
                                 <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr>
@@ -402,7 +402,7 @@ function ViewConversionCost(props) {
                             })}
                           {costingToolsCost.length === 0 && (
                             <tr>
-                              <td colSpan={8}>
+                              <td colSpan={12}>
                                 <NoContentFound title={EMPTY_DATA} />
                               </td>
                             </tr>

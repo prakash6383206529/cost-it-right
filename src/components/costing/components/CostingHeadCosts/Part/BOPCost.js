@@ -419,7 +419,7 @@ function BOPCost(props) {
                     }
                     {gridData && gridData.length === 0 &&
                       <tr>
-                        <td colSpan={6}>
+                        <td colSpan={12}>
                           <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
