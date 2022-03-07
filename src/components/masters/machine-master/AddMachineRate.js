@@ -975,6 +975,22 @@ class AddMachineRate extends Component {
         }
 
 
+        if (IsFinancialDataChanged) {
+
+          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ showPopup: true, updatedObj: requestData })
+            return false
+
+          } else {
+
+            this.setState({ setDisable: false })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
+
+        }
+
+
         if (isEditFlag) {
           if (DropdownChange) {
             this.cancel();

@@ -42,6 +42,7 @@ export function getReportListing(index, take, isPagination, data, callback) {
 
     return (dispatch) => {
         if (isPagination === true) {
+
             const departmentQueryParams = `&departmentCode=${userDepartmetList()}`
             const queryParams = `costingNumber=${data.costingNumber}&toDate=${data.toDate}&fromDate=${data.fromDate}&statusId=${data.statusId}&technologyId=${data.technologyId}&plantCode=${data.plantCode}&vendorCode=${data.vendorCode}&userId=${EMPTY_GUID}&isSortByOrderAsc=${data.isSortByOrderAsc}`
             const queryParamsSecond = `&isApplyPagination=${true}&skip=${index}&take=${take}`
