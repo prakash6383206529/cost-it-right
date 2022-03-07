@@ -804,6 +804,13 @@ button.add-btn {
   border-radius: 4px !important;
 }
 
+.pdf-download {
+  .inputbox.withBorder {
+     input.form-control  {
+      padding: 5px 12px !important;
+   }   
+  }
+}
 .form-control,.input-form-control.bg-grey,
 .manageuser .css-yk16xz-control {
   font-size: 14px !important;
@@ -1205,11 +1212,11 @@ input.form-control{
   opacity: 1;
   background-size: contain;
 }
-.pdf-btn{
-  margin-right: 5px;
+.pdf-detail{
+  margin-right: 0px;
   width: 32px;
   height: 32px;
-  background: transparent url("../../assests/images/pdf.svg") 0% 0% no-repeat padding-box;
+  background: transparent url("../../assests/images/pdf-detail.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   background-size: contain;
 }
@@ -6664,7 +6671,13 @@ left: 17rem;
 }
 //END Radio hook custom css//
 .pdf-loader {
-  top: -1900;
+  top: 0;
+  left: -28px;
+  right: -15px;
+  .loaderinner {
+    position: fixed;
+    top: 40%;
+  }
 }
 .loader-wrapper {
   height: calc(100vh - 924px);
@@ -7056,5 +7069,16 @@ left: 17rem;
     min-height: 42px;
     display: flex;
     align-items: center;
+  }
+}
+.border-none {
+  border-bottom: none !important;
+  border-top: none !important;
+}
+.remove-space-border {
+  .left-border {
+    border-left: none !important;
+    padding: 0 !important;
+    margin: 5px 0 2px 0 !important;
   }
 }
