@@ -111,7 +111,7 @@ function HotForging(props) {
     name: ['finishedWeight', 'BilletDiameter' , 'BilletLength' , 'ScrapRecoveryPercentage'],
     
   })
-  console.log(fieldValues,'fieldValues');
+  
 
   const dispatch = useDispatch()
   const [inputWeightValue, setInputWeightValue] = useState(0)
@@ -473,7 +473,7 @@ const calculateNetRmCostComponent = () =>{
     },
   ]
   const handleFinishWeight = (value)=>{
-    console.log('value: ', value);
+    
     if(value.target.value===0 || value.target.value==="" || value.target.value===null){
       setDisableAll(true)
     }

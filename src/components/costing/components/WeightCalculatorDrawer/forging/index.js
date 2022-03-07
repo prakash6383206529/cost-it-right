@@ -27,7 +27,7 @@ function ForgingCalculator(props) {
       default:
         break;
     }
-    console.log(layout,'layout');
+    
   }
   const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.WeightCalculationId === null ? '1' : rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
 

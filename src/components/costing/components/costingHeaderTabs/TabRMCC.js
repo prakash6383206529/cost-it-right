@@ -1473,7 +1473,7 @@ function TabRMCC(props) {
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
     if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false  && checkIsDataChange === true) {
-      console.log('ComponentItemData: ', ComponentItemData);
+      
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -1518,7 +1518,7 @@ function TabRMCC(props) {
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
         tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
-          console.log('item from subaseembly request: ', item);
+          
           if(item.PartType === 'Sub Assembly'){
             let subAssemblyObj = {
               "CostingId": item.CostingId,

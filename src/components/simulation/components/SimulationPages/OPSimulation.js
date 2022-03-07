@@ -98,10 +98,10 @@ function OPSImulation(props) {
             return null;
         })
 
-        console.log('OverheadApplicabilityTypeCount: ', OverheadApplicabilityTypeCount);
-        console.log('OverheadRMPercentageCount: ', OverheadRMPercentageCount);
-        console.log('OverheadMachiningCCPercentageCount: ', OverheadMachiningCCPercentageCount);
-        console.log('OverheadBOPPercentageCount: ', OverheadBOPPercentageCount);
+        
+        
+        
+        
         if (OverheadApplicabilityTypeCount === list.length && OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length
             && OverheadBOPPercentageCount === list.length) {
             Toaster.warning('There is no changes in new value.Please correct the data, then run simulation')
@@ -126,9 +126,9 @@ function OPSImulation(props) {
         }
         let tempArr = []
         list && list.map(item => {
-            console.log('list: ', list);
+            
             let tempObj = {}
-            console.log('item: ', item);
+            
             if (item.OverheadApplicabilityType !== item.NewOverheadApplicabilityType ||
                 Number(item.OverheadBOPPercentage) !== Number(item.NewOverheadBOPPercentage) ||
                 Number(item.OverheadRMPercentage) !== Number(item.NewOverheadRMPercentage) ||
@@ -165,7 +165,7 @@ function OPSImulation(props) {
             }
         })
         obj.SimulationRawMaterials = tempArr
-        console.log('obj: ', obj);
+        
 
         dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 
@@ -359,7 +359,7 @@ function OPSImulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell)
-        console.log('value: ', value);
+        
         return (
             <>
                 {

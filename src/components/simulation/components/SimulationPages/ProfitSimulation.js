@@ -205,7 +205,7 @@ function ProfitSimulation(props) {
                     return 'foo';
             }
         })
-        console.log(tempObj, 'tempObjtempObjtempObj');
+
         list && list.map((item) => {
             tempRM = 0
             tempCC = 0

@@ -206,7 +206,7 @@ function AddFreight(props) {
       
       case  'BOP':
         totalFreightCost = NetBoughtOutPartCost * calculatePercentage(RateAsPercentage)
-        console.log("COMING HERE",totalFreightCost);
+        
         setValue('FreightCost', checkForDecimalAndNull(totalFreightCost, getConfigurationKey().NoOfDecimalForPrice))
         setFreightCost(totalFreightCost)
         break;
