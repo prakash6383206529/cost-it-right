@@ -46,10 +46,20 @@ function AssemblyPart(props) {
             }))
           }
           // let tempArr = setArrayForCosting
+          let array=[];
+          array = JSON.parse(localStorage.getItem('costingArray'))       
+
+          // if(Data.CostingChildPartDetails && Data.CostingChildPartDetails.length >0){
+          //  dispatch(setAllCostingInArray(Data.CostingChildPartDetails,false))
+
+          // }
           Data.CostingChildPartDetails && Data.CostingChildPartDetails.map(item=>{
-            dispatch(setAllCostingInArray(item,false))
+            // dispatch(setAllCostingInArray(item,false))
+            array.push(item);
           })
-          props.toggleAssembly(BOMLevel, PartNumber, Data)
+          localStorage.setItem('costingArray', JSON.stringify(array));
+          props.toggleAssembly(BOMLevel, PartNumber, Data)  
+
         }
       }))
     } else {
@@ -115,6 +125,7 @@ function AssemblyPart(props) {
       setAssemblyOperationCost={props.setAssemblyOperationCost}
       setAssemblyToolCost={props.setAssemblyToolCost}
       subAssembId={item.CostingId}
+    
     />
   })
 

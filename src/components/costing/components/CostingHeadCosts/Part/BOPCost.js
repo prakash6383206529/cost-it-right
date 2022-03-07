@@ -232,7 +232,7 @@ function BOPCost(props) {
           BOPHandlingCharges: getValues('BOPHandlingCharges'),
         }
         if (!CostingViewMode) {
-          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+          props.setBOPHandlingCost(gridData, BOPHandlingFields, Params,item)
         }
       }, 200)
 
@@ -263,7 +263,7 @@ function BOPCost(props) {
         BOPHandlingCharges: 0,
       }
       if (!CostingViewMode) {
-        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params,item)
       }
     }
   }, [IsApplyBOPHandlingCharges]);

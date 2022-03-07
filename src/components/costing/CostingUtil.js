@@ -1,10 +1,10 @@
 import { checkForNull, loggedInUserId } from "../../helper"
 export const createToprowObjAndSave = (tabData,surfaceTabData,PackageAndFreightTabData,overHeadAndProfitTabData,ToolTabData,discountAndOtherTabData,netPOPrice,getAssemBOPCharge,tabId,setArrayForCosting)=>{
  
- 
+ let Arr = JSON.parse(localStorage.getItem('costingArray'))
     let assemblyWorkingRow = []
 
-    setArrayForCosting && setArrayForCosting.map((item) => {
+    Arr && Arr.map((item) => {
       if(item.PartType === 'Sub Assembly'){
         let subAssemblyObj = {
           "CostingId": item.CostingId,

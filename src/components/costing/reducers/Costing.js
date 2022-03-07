@@ -75,6 +75,7 @@ import {
   CHECK_IS_PACKAGE_AND_FREIGHT_DATA_CHANGE,
   FORGING_CALCULATOR_MACHININGSTOCK_SECTION
 } from '../../../config/constants';
+import _ from 'lodash'
 
 const initialState = {
   ComponentItemData: {},
@@ -292,8 +293,6 @@ export default function costingReducer(state = initialState, action) {
       };
     case SET_RMCC_TAB_DATA:
       const tempRMData = [...action.payload]
-      console.log('tempRMData from reducer: ', tempRMData);
-      
       return {
         ...state,
         loading: false,
@@ -577,16 +576,24 @@ export default function costingReducer(state = initialState, action) {
         checkIsDataChange:action.payload
       }
       case SET_ARRAY_FOR_COSTING:          
-
-      let tempArray = [...state.setArrayForCosting,action.payload]
+    //   console.log(state.setArrayForCosting,"state.setArrayForCostingstate.setArrayForCosting");
+    //   let tempArray = _.cloneDeep(state.setArrayForCosting)
+    //   tempArray.push(action.payload)
+    //   // let tempArray = [...action.payload]
+    //  console.log('tempArray from reducer: ', tempArray);
       // let uniqueArr = _.uniqBy(tempArray, function (o) {
       //   return o.CostingId;
       // });
-      return {
+      // return {
+      //   ...state,
+      //   loading:false,
+      //   setArrayForCosting:tempArray
+      // }
+      return { 
         ...state,
         loading:false,
-        setArrayForCosting:tempArray
-      }
+        setArrayForCosting: [...state.setArrayForCosting, ...action.payload]
+    }
     case CHECK_IS_OVERHEAD_AND_PROFIT_DATA_CHANGE:
       return{
         ...state,

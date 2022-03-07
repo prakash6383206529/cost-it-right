@@ -8,7 +8,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation,isDataChange, setAllCostingInArray
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
+import { checkForNull, CheckIsCostingDateSelected, isGuid, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -19,6 +19,7 @@ import AddBOPHandling from '../Drawers/AddBOPHandling';
 import { createToprowObjAndSave } from '../../CostingUtil';
 import { Link } from 'react-scroll';
 import _ from 'lodash'
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function TabRMCC(props) {
 
@@ -44,16 +45,18 @@ function TabRMCC(props) {
         AssemCostingId: costData.CostingId,
         subAsmCostingId:costData.CostingId
       }
-      dispatch(getRMCCTabData(data, true, (res) => {   
-        dispatch(setAllCostingInArray(res.data.DataList[0],false))
+      dispatch(getRMCCTabData(data, true, (res) => {  
+        // dispatch(setAllCostingInArray(res.data.DataList,false))
+      let tempArr  = [];
+      tempArr.push(res.data.DataList[0]);
+      localStorage.setItem('costingArray',JSON.stringify(tempArr));
 
       }))
     }
-  }, [costData])
+  }, [Object.keys(costData).length > 0])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    console.log("COMING IN RMCC USE effect");
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
     if (CostingViewMode === false) {
       let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
@@ -230,7 +233,6 @@ function TabRMCC(props) {
   */
   const getCCTotalCostForAssembly = (PartNo) => {
     let tempArr = setArrayForCosting && setArrayForCosting.filter(item=>item.AssemblyPartNumber === PartNo && item.PartType !== 'Assembly')
-    console.log('tempArr from CC cost of Assembly: ', tempArr);
     let NetCost = 0;
     NetCost = tempArr && tempArr.reduce((accummlator, el) => {
 
@@ -306,7 +308,6 @@ function TabRMCC(props) {
       if (item.PartType === 'Part') {
         return accummlator + item.CostingPartDetails.TotalRawMaterialsCost * item.Quantity
       } else {
-
         return accummlator + item.CostingPartDetails.TotalRawMaterialsCostWithQuantity * item.Quantity
       }
     }, 0)
@@ -327,30 +328,52 @@ function TabRMCC(props) {
   const setBOPCostAssembly = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if ( item.PartType === 'Part') {
-        return accummlator + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost )
+        return accummlator + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCost) * item.Quantity
       } 
-      // else if(item.PartType === 'BOP'){
-      //   return accummlator + item.CostingPartDetails.TotalBoughtOutPartCost  * item.CostingPartDetails.Quantity
-      // }
       else {
-        return accummlator + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity)
+        return accummlator + checkForNull(item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) * item.Quantity
       }
-
     }, 0)
     return total
   }
+
+const setBOPCostForSubAssembly = (arr)=> {
+  const total = arr && arr.reduce((accummlator, item) => {
+    if (item.PartType === 'Part') {
+      return accummlator + item.CostingPartDetails.TotalBoughtOutPartCost 
+    } else {
+
+      return accummlator + item.CostingPartDetails.TotalBoughtOutPartCostWithQuantity
+    }
+  }, 0)
+  return total
+}
+
+
 
   const setConversionCostAssembly = (arr) => {
     const total = arr && arr.reduce((accummlator, item) => {
       if (item.PartType === 'Part') {
-        return accummlator + checkForNull(item.CostingPartDetails.TotalConversionCost)
+        return accummlator + checkForNull(item.CostingPartDetails.TotalConversionCost) * item.Quantity
       } else {
-        return accummlator + checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity)
+        return accummlator + checkForNull(item.CostingPartDetails.TotalConversionCostWithQuantity) * item.Quantity
       }
     }, 0)
     return total
   }
 
+  const setConversionCostForSubAssembly = (arr)=> {
+    const total = arr && arr.reduce((accummlator, item) => {
+      if (item.PartType === 'Part') {
+        return accummlator + item.CostingPartDetails.TotalConversionCost 
+      } else {
+  
+        return accummlator + item.CostingPartDetails.TotalConversionCostWithQuantity
+      }
+    }, 0)
+    return total
+  }
+  
 
   const setOperationCostForAssembly = (PartNo)=>{
     let tempArr = setArrayForCosting && setArrayForCosting.filter(item=>item.AssemblyPartNumber === PartNo && item.PartType !== 'Assembly')
@@ -431,7 +454,7 @@ function TabRMCC(props) {
   }
 
 
-  const calculationForPart = (gridData,obj,type)=>{
+  const calculationForPart = (gridData,obj,type,BOPHandlingFields={})=>{
     let partObj = obj
     let GrandTotalCost =0 
     switch (type) {
@@ -443,9 +466,12 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partObj.Quantity;
         break;
       case 'BOP':
-         GrandTotalCost = checkForNull(partObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(gridData)) + checkForNull(partObj.CostingPartDetails.TotalConversionCost)
         partObj.CostingPartDetails.CostingBoughtOutPartCost = gridData;
-        partObj.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(gridData);
+        partObj.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(gridData) + checkForNull(BOPHandlingFields?.BOPHandlingCharges);
+        partObj.CostingPartDetails.IsApplyBOPHandlingCharges = BOPHandlingFields?.IsApplyBOPHandlingCharges;
+        partObj.CostingPartDetails.BOPHandlingPercentage = checkForNull(BOPHandlingFields?.BOPHandlingPercentage);
+        partObj.CostingPartDetails.BOPHandlingCharges = checkForNull(BOPHandlingFields?.BOPHandlingCharges);
+        GrandTotalCost = checkForNull(partObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(partObj.CostingPartDetails.TotalConversionCost)
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partObj.Quantity;
         break;
@@ -491,17 +517,31 @@ function TabRMCC(props) {
       subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =    subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * quantity;
       break;
     case 'BOP':
-      subAssemObj.TotalBoughtOutPartCost = setBOPCostAssembly(tempArr)
-      subAssemObj.TotalBoughtOutPartCostWithQuantity = subAssemObj.TotalBoughtOutPartCost * quantity;
+      subAssemObj.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostForSubAssembly(tempArr)
+      subAssemObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = subAssemObj.CostingPartDetails.TotalBoughtOutPartCost * quantity;
+      subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost =  checkForNull(subAssemObj.CostingPartDetails.TotalRawMaterialsCost) +  checkForNull(subAssemObj.CostingPartDetails.TotalBoughtOutPartCost)+ checkForNull(subAssemObj.CostingPartDetails.TotalConversionCost);
+      subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =    subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * quantity;
       break;
     case 'CC':
-      subAssemObj.TotalConversionCost = setConversionCostAssembly(tempArr)
-      subAssemObj.TotalConversionCostWithQuantity = subAssemObj.TotalConversionCost * quantity;
+      subAssemObj.CostingPartDetails.TotalConversionCost = setConversionCostForSubAssembly(tempArr)
+      subAssemObj.CostingPartDetails.TotalConversionCostWithQuantity = subAssemObj.CostingPartDetails.TotalConversionCost * quantity;
+      subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost =  subAssemObj.CostingPartDetails.TotalRawMaterialsCost +  checkForNull(subAssemObj.CostingPartDetails.TotalBoughtOutPartCost)+ checkForNull(subAssemObj.CostingPartDetails.TotalConversionCost);
+      subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =   subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * quantity;
+      break;
+    case 'Sub Assembly':
+      subAssemObj.CostingPartDetails.TotalRawMaterialsCost = setRMCostForSubAssembly(tempArr)
+      subAssemObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = subAssemObj.CostingPartDetails.TotalRawMaterialsCost* quantity;
+      subAssemObj.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostForSubAssembly(tempArr)
+      subAssemObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = subAssemObj.CostingPartDetails.TotalBoughtOutPartCost * quantity;
+      subAssemObj.CostingPartDetails.TotalConversionCost = setConversionCostForSubAssembly(tempArr)
+      subAssemObj.CostingPartDetails.TotalConversionCostWithQuantity = subAssemObj.CostingPartDetails.TotalConversionCost * quantity;
+      subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost =  subAssemObj.CostingPartDetails.TotalRawMaterialsCost +  checkForNull(subAssemObj.CostingPartDetails.TotalBoughtOutPartCost)+ checkForNull(subAssemObj.CostingPartDetails.TotalConversionCost);
+      subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =   subAssemObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * quantity;
       break;
     case 'Sub Assembly Operation':
-      subAssemObj.CostingPartDetails.TotalOperationCostComponent = getCCTotalCostForAssembly(PartNo)     
+      subAssemObj.CostingPartDetails.CostingPartDetails.TotalOperationCostComponent = getCCTotalCostForAssembly(PartNo)     
       subAssemObj.CostingPartDetails.TotalOperationCostSubAssembly = setOperationCostForAssembly(PartNo)
-
+      break;
     default:
       break;
   }
@@ -509,14 +549,16 @@ function TabRMCC(props) {
   return subAssemObj
   }
 
+  const updateStructure = ()=>{
+
+  }
+
   /**
   * @method setRMCost
   * @description SET RM COST
   */
   const setRMCost = (rmGrid, params, item) => {
-    const arr = setRMCostInDataList(rmGrid, params,RMCCTabData, item)
-    console.log('RMCCTabData: ', RMCCTabData);
-    //  dispatch(setRMCCData(arr, () => { }))
+     const arr = setRMCostInDataList(rmGrid, params,RMCCTabData, item)
   }
 
   const setRMCostInDataList = (rmGrid, params, arr1,item) => {
@@ -529,58 +571,111 @@ function TabRMCC(props) {
           const useLevel = level.split('L')[1]
           let initialPartNo=''
           let quant =''
-          let tempArrForCosting  = setArrayForCosting        
+          let tempArrForCosting  = JSON.parse(localStorage.getItem('costingArray'))
           for(let i= useLevel; i>=0; i--){
               if(item.PartType ==="Part"){
                 // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
                 if(i === useLevel){
-                  let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x)=> x.PartNumber === params.PartNumber)
+                  let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x)=> x.PartNumber === params.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
                   let partObj =  calculationForPart(rmGrid,item,'RM')
-                    tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
-                   initialPartNo = item.AssemblyPartNumber
-                   quant= item.CostingPartDetails.Quantity
+                  tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
+                  initialPartNo = item.AssemblyPartNumber
+                  quant= item.CostingPartDetails.Quantity
                 }
                 else {
                   let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
                   let objectToUpdate = tempArrForCosting[indexForUpdate]
-                  if(objectToUpdate.PartType ==='Sub Assembly' || objectToUpdate.PartType ==='Assembly'){
-                    let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === initialPartNo )
+                  if(objectToUpdate.PartType ==='Sub Assembly'){
+                    let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === initialPartNo)
                     initialPartNo = objectToUpdate.AssemblyPartNumber
                     let subAssemObj = calculationForSubAssembly(objectToUpdate,objectToUpdate.PartNumber,quant,'RM',tempArr)
                     quant = objectToUpdate.CostingPartDetails.Quantity
-                    console.log('subAssemObj: ', subAssemObj);
-                    console.log('objectToUpdate after manipulation: ', subAssemObj);
                     tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
-                    console.log('tempArrForCosting: ', tempArrForCosting);
+                    console.log('tempArrForCosting in First Condition: ', tempArrForCosting);
                   }
-
                 }
-
               }
               else if(item.PartType ==="Sub Assembly"){
                 // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-
               }
               else if(item.PartType === 'BOP'){
 
               }
-            
           }
+          let Arr = tempArrForCosting && tempArrForCosting.filter(costing=>costing.PartNumber === item.PartNumber && costing.AssemblyPartNumber !== item.AssemblyPartNumber)
+          Arr && Arr.map(costingItem=>{
+            const level = costingItem.BOMLevel
+            const useLevel = level.split('L')[1]
+            let initialPartNo=''
+            let quant =''
+            for(let i= useLevel; i>=0; i--){
+              if(costingItem.PartType ==="Part"){
+                // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
+                if(i === useLevel){
+                  let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x)=> x.PartNumber === costingItem.PartNumber && x.AssemblyPartNumber === costingItem.AssemblyPartNumber)
+                  let partObj =  calculationForPart(rmGrid,costingItem,'RM')
+                  tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
+                  initialPartNo = costingItem.AssemblyPartNumber
+                  quant= costingItem.CostingPartDetails.Quantity
+                }
+                else {
+                  let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
+                  let objectToUpdate = tempArrForCosting[indexForUpdate]
+                  if(objectToUpdate.PartType ==='Sub Assembly'){
+                    let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === initialPartNo )
+                    initialPartNo = objectToUpdate.AssemblyPartNumber
+                    let subAssemObj = calculationForSubAssembly(objectToUpdate,objectToUpdate.PartNumber,quant,'RM',tempArr)
+                    quant = objectToUpdate.CostingPartDetails.Quantity
+                    tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
+                    console.log('tempArrForCosting in second costing: ', tempArrForCosting);
+                  }
+                }
+              }
+              else if(item.PartType ==="Sub Assembly"){
+                // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
+              }
+              else if(item.PartType === 'BOP'){
+              }
+          }
+          })
+          let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item=>item.BOMLevel === 'L1')
+          let assemblyObj = tempArrForCosting[0]
+          assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
+          tempArrForCosting = Object.assign([...tempArrForCosting],{[0]:assemblyObj})
+          localStorage.setItem('costingArray',[])
+          localStorage.setItem('costingArray',JSON.stringify(tempArrForCosting))
       
-      return i;
-      });
+          return i;
+        });
+
+        const mapArray=(data)=> data.map(item=>{
+        let newItem = item
+        let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
+        let obj = updatedArr && updatedArr.find(updateditem=>updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
+        newItem.CostingPartDetails.TotalRawMaterialsCost = checkForNull(obj.CostingPartDetails.TotalRawMaterialsCost)
+        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost =checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCost)
+        newItem.CostingPartDetails.TotalRawMaterialsCostWithQuantity = obj.CostingPartDetails.TotalRawMaterialsCostWithQuantity
+        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = obj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity
+        if(item.CostingChildPartDetails.length >0){
+          mapArray(item.CostingChildPartDetails)
+        }
+        return newItem
+      })
+       const updatedArr=  mapArray(RMCCTabData)
+       dispatch(setRMCCData(updatedArr, () => { }))
 
     } catch (error) {
     }
     return tempArr;
-  }
+  } 
 
   /**
   * @method setRMMasterBatchCost
   * @description SET RM MASTER BATCH COST
   */
   const setRMMasterBatchCost = (rmGrid, MasterBatchObj, params) => {
-    let arr = setRMBatchCostInDataList(rmGrid, MasterBatchObj, params, RMCCTabData)
+    // let arr = setRMBatchCostInDataList(rmGrid, MasterBatchObj, params, RMCCTabData)
     // dispatch(setRMCCData(arr, () => { }))
   }
 
@@ -650,128 +745,99 @@ function TabRMCC(props) {
    * @method setBOPCost
    * @description SET BOP COST
    */
-  const setBOPCost = (bopGrid, params, item) => {
-    console.log("BOP");
-    const arr = setBOPCostInDataList(bopGrid, params, RMCCTabData, item)
-    if (RMCCTabData[0].PartNumber === params.PartNumber && RMCCTabData[0].BOMLevel === params.BOMLevel) {
-      // dispatch(setRMCCData(arr, () => { }))
-    } else {
-
-      const arr1 =arr // THIS FUNCTION IS FOR ASSEMBLY CALCULATION
-      // dispatch(setRMCCData(arr1, () => { }))
-    }
+  const setBOPCost = (bopGrid, params, item,BOPHandlingFields={}) => {
+    const arr = setBOPCostInDataList(bopGrid, params, RMCCTabData, item,BOPHandlingFields)
   }
 
-  const setBOPCostInDataList = (bopGrid, params, arr, item) => {
-    console.log('item: ', item);
-
+  const setBOPCostInDataList = (bopGrid, params, arr, item,BOPHandlingFields={}) => {
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {     
           const level = params.BOMLevel
           const useLevel = level.split('L')[1]
           let initialPartNo=''
-          let tempArrForCosting  = setArrayForCosting        
+          let quant =''
+          let tempArrForCosting  =  JSON.parse(localStorage.getItem('costingArray'))        
           for(let i= useLevel; i>=0; i--){
               if(item.PartType ==="Part" || item.PartType === 'BOP'){
                 // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
                 if(i === useLevel){
-                  let partIndex = setArrayForCosting && setArrayForCosting.findIndex((x)=> x.PartNumber === params.PartNumber)
-                  let partObj =  calculationForPart(bopGrid,item,'BOP') 
+                  let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x)=> x.PartNumber === params.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
+                  let partObj =  calculationForPart(bopGrid,item,'BOP',BOPHandlingFields) 
                   tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
                   initialPartNo = item.AssemblyPartNumber
-                  dispatch(setAllCostingInArray(tempArrForCosting,true))
+                  quant= item.CostingPartDetails.Quantity
                 }else {
-                  let indexForUpdate = setArrayForCosting && setArrayForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
-                  let objectToUpdate = setArrayForCosting[indexForUpdate]
+                  let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
+                  let objectToUpdate = tempArrForCosting[indexForUpdate]
                   if(objectToUpdate.PartType ==='Sub Assembly' || objectToUpdate.PartType === 'Assembly'){
+                    let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === initialPartNo)
                     initialPartNo = objectToUpdate.AssemblyPartNumber
-                    let subAssemObj = calculationForSubAssembly(objectToUpdate.PartNumber,objectToUpdate.CostingPartDetails.Quantity,'BOP')
-                    objectToUpdate.CostingPartDetails.TotalBoughtOutPartCost = subAssemObj.TotalBoughtOutPartCost
-                    objectToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = subAssemObj.TotalBoughtOutPartCostWithQuantity
-                    tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: objectToUpdate })
-                    dispatch(setAllCostingInArray(tempArrForCosting,true))
+                    let subAssemObj = calculationForSubAssembly(objectToUpdate,objectToUpdate.PartNumber,quant,'BOP',tempArr)
+                    quant = objectToUpdate.CostingPartDetails.Quantity
+                    tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
                   }
 
                 }
-
-              }
-              else if(item.PartType ==="Sub Assembly"){
-                // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-                console.log("SUBASSEMBLY?");
-              }
-              else if(item.PartType === 'BOP'){
-
               }
           }
           
-
-
-
-
-
-
-
-
-        // let tempIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.AssemblyPartNumber && x.PartType === 'Sub Assembly')
-        // if ((item.PartType === 'Part' || item.PartType === 'BOP') && item.BOMLevel === LEVEL1) {
-        //   let partOrBopIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && (x.PartType === 'Part' || x.PartType === 'BOP'))
-        //   let partOrBopObj = i.CostingChildPartDetails[partOrBopIndex]
-        //   let GrandTotalCost = checkForNull(partOrBopObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(partOrBopObj.CostingPartDetails.TotalConversionCost)
-
-        //   partOrBopObj.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partOrBopObj.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(bopGrid);
-        //   partOrBopObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = partOrBopObj.CostingPartDetails.TotalBoughtOutPartCost
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partOrBopObj.Quantity;
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [partOrBopIndex]: partOrBopObj })
-        //   setBOPCostInDataList(bopGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-
-        // }
-        // else if (item.PartType === 'Sub Assembly' && params.BOMLevel === LEVEL1) {
-        //   //ASSEMBLY CALCULATION WILL COME HERE 
-
-        // } else if (item.PartType === 'Sub Assembly' && params.BOMLevel !== LEVEL1) { // INNER SUBASSEMBLY WILL COME HERE
-        // }
-        // else if (item.PartType === 'Part' && tempIndex !== -1) {
-        //   let tempObj = i.CostingChildPartDetails[tempIndex]
-        //   let partTempIndex = tempObj.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && x.PartType === 'Part')
-        //   let partTempObj = tempObj.CostingChildPartDetails[partTempIndex]
-        //   //PART CALCULATION WILL COME HERE
-        //   let GrandTotalCost = checkForNull(partTempObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(partTempObj.CostingPartDetails.TotalConversionCost)
-
-        //   partTempObj.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partTempObj.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(bopGrid);
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partTempObj.Quantity;
-        //   tempObj.CostingChildPartDetails = Object.assign([...tempObj.CostingChildPartDetails], { [partTempIndex]: partTempObj })
-
-        //   //SUBAMMSEMBLY CALCULATION WILL COME HERE 
-        //   tempObj.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(tempObj.CostingChildPartDetails, params);
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = tempObj.CostingPartDetails.TotalBoughtOutPartCost + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(i.CostingPartDetails.TotalConversionCost)
-
-        //   //BELOW KEYS FOR COST WITH QUANTITY
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * tempObj.Quantity;
-        //   tempObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = getBOPTotalCostForAssemblyWithQuantity(tempObj.CostingChildPartDetails, params)
-
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [tempIndex]: tempObj })
-        //   // setBOPCostInDataList(bopGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-        // }
-        // else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-        //   let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(i.CostingPartDetails.TotalConversionCost);
-
-        //   i.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost + checkForNull(i.CostingPartDetails.BOPHandlingCharges);
-        //   i.CostingPartDetails.TotalBoughtOutPartCost = checkForNull(netBOPCost(bopGrid)) + checkForNull(i.CostingPartDetails.BOPHandlingCharges);
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
-
-        // }
-        // else {
-        //   setBOPCostInDataList(bopGrid, params, i.CostingChildPartDetails)
-        // }
+          let Arr = tempArrForCosting && tempArrForCosting.filter(costing=>costing.PartNumber === item.PartNumber && costing.AssemblyPartNumber !== item.AssemblyPartNumber)
+          Arr && Arr.map(costingItem=>{
+            const level = costingItem.BOMLevel
+            const useLevel = level.split('L')[1]
+            let initialPartNo=''
+            let quant =''
+            for(let i= useLevel; i>=0; i--){
+              if(costingItem.PartType ==="Part"){
+                // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
+                if(i === useLevel){
+                  let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x)=> x.PartNumber === costingItem.PartNumber && x.AssemblyPartNumber === costingItem.AssemblyPartNumber)
+                  let partObj =  calculationForPart(bopGrid,costingItem,'BOP',BOPHandlingFields)
+                  tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
+                  initialPartNo = costingItem.AssemblyPartNumber
+                  quant= costingItem.CostingPartDetails.Quantity
+                }
+                else {
+                  let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
+                  let objectToUpdate = tempArrForCosting[indexForUpdate]
+                  if(objectToUpdate.PartType ==='Sub Assembly'){
+                    let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === initialPartNo )
+                    initialPartNo = objectToUpdate.AssemblyPartNumber
+                    let subAssemObj = calculationForSubAssembly(objectToUpdate,objectToUpdate.PartNumber,quant,'BOP',tempArr)
+                    quant = objectToUpdate.CostingPartDetails.Quantity
+                    tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
+                    console.log('tempArrForCosting in second BOP costing: ', tempArrForCosting);
+                  }
+                }
+              }
+          }
+          })
+          let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item=>item.BOMLevel === 'L1')
+          let assemblyObj = tempArrForCosting[0]
+          assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
+          tempArrForCosting = Object.assign([...tempArrForCosting],{[0]:assemblyObj})
+          localStorage.setItem('costingArray',[])
+          localStorage.setItem('costingArray',JSON.stringify(tempArrForCosting))
         return i;
       });
+      
+      const mapArray=(data)=> data.map(item=>{
+        let newItem = item
+        let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
+        let obj = updatedArr && updatedArr.find(updateditem=>updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
+        newItem.CostingPartDetails.TotalBoughtOutPartCost = checkForNull(obj.CostingPartDetails.TotalBoughtOutPartCost)
+        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost =checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCost)
+        newItem.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = obj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity
+        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = obj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity
+        if(item.CostingChildPartDetails.length >0){
+          mapArray(item.CostingChildPartDetails)
+        }
+        return newItem
+      })
+       const updatedArr=  mapArray(RMCCTabData)
+       dispatch(setRMCCData(updatedArr, () => { }))
 
     } catch (error) {
 
@@ -783,49 +849,12 @@ function TabRMCC(props) {
    * @method setBOPHandlingCost
    * @description SET BOP COST
    */
-  const setBOPHandlingCost = (bopGrid, BOPHandlingFields, params) => {
-    let arr = setBOPHandlingCostInDataList(bopGrid, BOPHandlingFields, params, RMCCTabData)
-    // dispatch(setRMCCData(arr, () => { }))
+  const setBOPHandlingCost = (bopGrid, BOPHandlingFields, params,item) => {
+    let arr =setBOPCost(bopGrid,params,item,BOPHandlingFields)
+    
   }
 
-  const setBOPHandlingCostInDataList = (bopGrid, BOPHandlingFields, params, arr) => {
-    let tempArr = [];
-    try {
-      tempArr = arr && arr.map(i => {
-        if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(netBOPCost(bopGrid)), params) + checkForNull(BOPHandlingFields.BOPHandlingCharges);
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'BOP', checkForNull(netBOPCost(bopGrid)), params) + checkForNull(BOPHandlingFields.BOPHandlingCharges);
-
-          // BELOW KEYS USED FOR BOP COST WITH QUANTITY
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getBOPCostWithQuantity(i.CostingChildPartDetails, checkForNull(netBOPCost(bopGrid)), params);
-          i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = getBOPTotalCostForAssemblyWithQuantity(i.CostingChildPartDetails, checkForNull(netBOPCost(bopGrid)), params);
-          setBOPHandlingCostInDataList(bopGrid, BOPHandlingFields, params, i.CostingChildPartDetails)
-
-        } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-          let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(i.CostingPartDetails.TotalConversionCost);
-
-          i.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost + checkForNull(BOPHandlingFields.BOPHandlingCharges);
-          i.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(bopGrid) + checkForNull(BOPHandlingFields.BOPHandlingCharges);
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
-
-          i.CostingPartDetails.IsApplyBOPHandlingCharges = BOPHandlingFields.IsApplyBOPHandlingCharges;
-          i.CostingPartDetails.BOPHandlingPercentage = checkForNull(BOPHandlingFields.BOPHandlingPercentage);
-          i.CostingPartDetails.BOPHandlingCharges = checkForNull(BOPHandlingFields.BOPHandlingCharges);
-
-        } else {
-          setBOPHandlingCostInDataList(bopGrid, BOPHandlingFields, params, i.CostingChildPartDetails)
-        }
-        return i;
-      });
-
-    } catch (error) {
-
-    }
-    return tempArr;
-  }
 
   /**
   * @method getBOPCostWithQuantity
@@ -861,152 +890,98 @@ function TabRMCC(props) {
    */
   const setProcessCost = (conversionGrid, params, item) => {
     let arr = setProcessCostInDataList(conversionGrid, params, RMCCTabData, item)
-    if (RMCCTabData[0].PartNumber === params.PartNumber && RMCCTabData[0].BOMLevel === params.BOMLevel) {
-      // dispatch(setRMCCData(arr, () => { }))
-    } else {
-      const arr1 =arr // THIS FUNCTION IS FOR ASSEMBLY CALCULATION
-      // dispatch(setRMCCData(arr1, () => { }))
-    }
+
   }
 
   const setProcessCostInDataList = (conversionGrid, params, arr, item) => {
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
-
-
-
         const level = params.BOMLevel
         const useLevel = level.split('L')[1]
         let initialPartNo=''
-        let tempArrForCosting  = setArrayForCosting        
+        let quant =''
+        let tempArrForCosting  = JSON.parse(localStorage.getItem('costingArray'))        
         for(let i= useLevel; i>=0; i--){
             if(item.PartType ==="Part" || item.PartType === 'BOP'){
               // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
               if(i === useLevel){
-                let partIndex = setArrayForCosting && setArrayForCosting.findIndex((x)=> x.PartNumber === params.PartNumber)
+                let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x)=> x.PartNumber === params.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
                 let partObj =  calculationForPart(conversionGrid,item,'CC') 
                 tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
                 initialPartNo = item.AssemblyPartNumber
-                dispatch(setAllCostingInArray(tempArrForCosting,true))
+                quant= item.CostingPartDetails.Quantity
               }else {
-                let indexForUpdate = setArrayForCosting && setArrayForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
-                let objectToUpdate = setArrayForCosting[indexForUpdate]
+                let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
+                let objectToUpdate = tempArrForCosting[indexForUpdate]
                 if(objectToUpdate.PartType ==='Sub Assembly' || objectToUpdate.PartType === 'Assembly'){
+                  let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === initialPartNo)
                   initialPartNo = objectToUpdate.AssemblyPartNumber
-                  let subAssemObj = calculationForSubAssembly(objectToUpdate.PartNumber,objectToUpdate.CostingPartDetails.Quantity,'CC')
-                  console.log('subAssemObj: ', subAssemObj);
-                  objectToUpdate.CostingPartDetails.TotalConversionCost = subAssemObj.TotalConversionCost
-                  objectToUpdate.CostingPartDetails.TotalConversionCostWithQuantity = subAssemObj.TotalConversionCostWithQuantity
-                  tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: objectToUpdate })
-                  console.log('tempArrForCosting: ', tempArrForCosting);
-                  dispatch(setAllCostingInArray(tempArrForCosting,true))
+                  let subAssemObj = calculationForSubAssembly(objectToUpdate,objectToUpdate.PartNumber,quant,'CC',tempArr)
+                  quant = objectToUpdate.CostingPartDetails.Quantity
+                  tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
                 }
 
               }
-
-            }
-            else if(item.PartType ==="Sub Assembly"){
-              // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-              console.log("SUBASSEMBLY?");
-            }
-            else if(item.PartType === 'BOP'){
-
             }
         }
+        let Arr = tempArrForCosting && tempArrForCosting.filter(costing=>costing.PartNumber === item.PartNumber && costing.AssemblyPartNumber !== item.AssemblyPartNumber)
+          Arr && Arr.map(costingItem=>{
+            const level = costingItem.BOMLevel
+            const useLevel = level.split('L')[1]
+            let initialPartNo=''
+            let quant =''
+            for(let i= useLevel; i>=0; i--){
+              if(costingItem.PartType ==="Part"){
+                // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
+                if(i === useLevel){
+                  let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x)=> x.PartNumber === costingItem.PartNumber && x.AssemblyPartNumber === costingItem.AssemblyPartNumber)
+                  let partObj =  calculationForPart(conversionGrid,costingItem,'CC')
+                  tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
+                  initialPartNo = costingItem.AssemblyPartNumber
+                  quant= costingItem.CostingPartDetails.Quantity
+                }
+                else {
+                  let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
+                  let objectToUpdate = tempArrForCosting[indexForUpdate]
+                  if(objectToUpdate.PartType ==='Sub Assembly'){
+                    let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === initialPartNo )
+                    initialPartNo = objectToUpdate.AssemblyPartNumber
+                    let subAssemObj = calculationForSubAssembly(objectToUpdate,objectToUpdate.PartNumber,quant,'CC',tempArr)
+                    quant = objectToUpdate.CostingPartDetails.Quantity
+                    tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
+                    console.log('tempArrForCosting in second CC Array: ', tempArrForCosting);
+                  }
+                }
+              }
+          }
+          })
+          let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item=>item.BOMLevel === 'L1')
+          let assemblyObj = tempArrForCosting[0]
+          assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
+          tempArrForCosting = Object.assign([...tempArrForCosting],{[0]:assemblyObj})
+          localStorage.setItem('costingArray',[])
+          localStorage.setItem('costingArray',JSON.stringify(tempArrForCosting))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // let tempIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.AssemblyPartNumber && x.PartType === 'Sub Assembly')
-        // if ((item.PartType === 'Part' || item.PartType === 'BOP') && item.BOMLevel === LEVEL1) {
-        //   let partOrBopIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && (x.PartType === 'Part' || x.PartType === 'BOP'))
-        //   let partOrBopObj = i.CostingChildPartDetails[partOrBopIndex]
-        //   partOrBopObj.CostingPartDetails.TotalProcessCost = conversionGrid.ProcessCostTotal
-        //   partOrBopObj.CostingPartDetails.TotalConversionCost = conversionGrid.NetConversionCost
-        //   partOrBopObj.CostingPartDetails.TotalOtherOperationCostPerSubAssembly = conversionGrid.OtherOperationCostTotal
-        //   let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
-        //     return el;
-        //   })
-        //   partOrBopObj.CostingPartDetails.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: data };
-        //   let GrandTotalCost = checkForNull(partOrBopObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partOrBopObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(partOrBopObj.CostingPartDetails.TotalConversionCost)
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partOrBopObj.CostingPartDetails.TotalConversionCostWithQuantity = partOrBopObj.CostingPartDetails.TotalConversionCost
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partOrBopObj.Quantity;
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [partOrBopIndex]: partOrBopObj })
-        //   setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-
-        // }
-        // else if (item.PartType === 'Sub Assembly' && params.BOMLevel === LEVEL1) {
-        //   //ASSEMBLY CALCULATION WILL COME HERE 
-
-        // } else if (item.PartType === 'Sub Assembly' && params.BOMLevel !== LEVEL1) { // INNER SUBASSEMBLY WILL COME HERE
-        // }
-        // else if (item.PartType === 'Part' && tempIndex !== -1) {
-        //   let tempObj = i.CostingChildPartDetails[tempIndex]
-        //   let partTempIndex = tempObj.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && x.PartType === 'Part')
-        //   let partTempObj = tempObj.CostingChildPartDetails[partTempIndex]
-        //   // //PART CALCULATION WILL COME HERE
-        //   let GrandTotalCost = checkForNull(partTempObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partTempObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(conversionGrid.NetConversionCost)
-
-        //   //   // partTempObj.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
-        //   partTempObj.CostingPartDetails.TotalProcessCost = conversionGrid.ProcessCostTotal
-        //   partTempObj.CostingPartDetails.TotalConversionCost = conversionGrid.NetConversionCost
-        //   partTempObj.CostingPartDetails.TotalOtherOperationCostPerSubAssembly = conversionGrid.OtherOperationCostTotal
-        //   partTempObj.CostingPartDetails.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: conversionGrid.CostingProcessCostResponse };
-        //   partTempObj.CostingPartDetails.TotalConversionCost = conversionGrid.NetConversionCost;
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partTempObj.Quantity;
-        //   tempObj.CostingChildPartDetails = Object.assign([...tempObj.CostingChildPartDetails], { [partTempIndex]: partTempObj })
-
-        //   //SUBAMMSEMBLY CALCULATION WILL COME HERE 
-        //   tempObj.CostingPartDetails.TotalProcessCost = getProcessTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOperationCost = getOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOtherOperationCost = getOtherOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOperationCostPerAssembly = getOtherOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(tempObj.CostingChildPartDetails, params);
-        //   tempObj.CostingPartDetails.TotalOperationCostComponent = checkForNull(tempObj.CostingPartDetails.TotalConversionCost) * tempObj.CostingPartDetails.Quantity
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = checkForNull(tempObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(i.CostingPartDetails.TotalConversionCost)
-
-        //   //BELOW KEYS FOR COST WITH QUANTITY
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * tempObj.Quantity;
-        //   tempObj.CostingPartDetails.TotalConversionCostWithQuantity = getCCTotalCostForAssemblyWithQuantity(tempObj.CostingChildPartDetails, params)
-
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [tempIndex]: tempObj })
-        //   // setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-        // }
-        // else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-        //   let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) +
-        //     checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) +
-        //     checkForNull(conversionGrid && conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0);
-
-        //   let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
-        //     return el;
-        //   })
-
-        //   i.CostingPartDetails.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: data };
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   i.CostingPartDetails.TotalConversionCost = conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0;
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
-
-
-        // }
-        // else {
-        //   setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails)
-        // }
         return i;
       });
+
+      const mapArray=(data)=> data.map(item=>{
+        let newItem = item
+        let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
+        let obj = updatedArr && updatedArr.find(updateditem=>updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
+        newItem.CostingPartDetails.TotalConversionCost = checkForNull(obj.CostingPartDetails.TotalConversionCost)
+        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost =checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCost)
+        newItem.CostingPartDetails.TotalConversionCostWithQuantity = obj.CostingPartDetails.TotalConversionCostWithQuantity
+        newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = obj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity
+        if(item.CostingChildPartDetails.length >0){
+          mapArray(item.CostingChildPartDetails)
+        }
+        return newItem
+      })
+       const updatedArr=  mapArray(RMCCTabData)
+       dispatch(setRMCCData(updatedArr, () => { }))
 
     } catch (error) {
 
@@ -1035,308 +1010,25 @@ function TabRMCC(props) {
    * @description SET OPERATION COST
    */
   const setOperationCost = (operationGrid, params, item) => {
-    let arr = setOperationCostInDataList(operationGrid, params, RMCCTabData, item)
-    if (RMCCTabData[0].PartNumber === params.PartNumber && RMCCTabData[0].BOMLevel === params.BOMLevel) {
-      // dispatch(setRMCCData(arr, () => { }))
-    } else {
-      const arr1 = arr // THIS FUNCTION IS FOR ASSEMBLY CALCULATION
-      // dispatch(setRMCCData(arr1, () => { }))
-    }
+//  let arr = setOperationCostInDataList(operationGrid, params, RMCCTabData, item)
+//     if (RMCCTabData[0].PartNumber === params.PartNumber && RMCCTabData[0].BOMLevel === params.BOMLevel) {
+//       // dispatch(setRMCCData(arr, () => { }))
+//     } else {
+//       const arr1 = arr // THIS FUNCTION IS FOR ASSEMBLY CALCULATION
+//       // dispatch(setRMCCData(arr1, () => { }))
+//     }
   }
 
 
-  const setOperationCostInDataList = (operationGrid, params, arr, item) => {
-    let tempArr = [];
-    try {
-      tempArr = arr && arr.map(i => {
-        const level = params.BOMLevel
-        console.log('level: ', level);
-        const useLevel = level.split('L')[1]
-        let initialPartNo=''
-        let tempArrForCosting  = setArrayForCosting 
-        for(let i= useLevel; i>=0; i--){
-            if(item.PartType ==="Part" || item.PartType === 'BOP'){
-              // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-              if(i === useLevel){
-                let partIndex = setArrayForCosting && setArrayForCosting.findIndex((x)=> x.PartNumber === params.PartNumber)
-                let partObj =  calculationForPart(operationGrid,item,'CC') 
-                tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
-                initialPartNo = item.AssemblyPartNumber
-                dispatch(setAllCostingInArray(tempArrForCosting,true))
-              }else {
-                let indexForUpdate = setArrayForCosting && setArrayForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
-                let objectToUpdate = setArrayForCosting[indexForUpdate]
-                if(objectToUpdate.PartType ==='Sub Assembly' || objectToUpdate.PartType === 'Assembly'){
-                  initialPartNo = objectToUpdate.AssemblyPartNumber
-                  let subAssemObj = calculationForSubAssembly(objectToUpdate.PartNumber,objectToUpdate.CostingPartDetails.Quantity,'CC')
-                  objectToUpdate.CostingPartDetails.TotalConversionCost = subAssemObj.TotalConversionCost
-                  objectToUpdate.CostingPartDetails.TotalConversionCostWithQuantity = subAssemObj.TotalConversionCostWithQuantity
-                  tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: objectToUpdate })
-                  dispatch(setAllCostingInArray(tempArrForCosting,true))
-                }
-
-              }
-
-            }
-            else if(item.PartType ==="Sub Assembly"){
-              // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-              console.log("SUBASSEMBLY?");
-            }
-            else if(item.PartType === 'BOP'){
-
-            }
-        }
-
-
-
-        // let tempIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.AssemblyPartNumber && x.PartType === 'Sub Assembly')
-
-        // if ((item.PartType === 'Part' || item.PartType === 'BOP') && item.BOMLevel === LEVEL1) {
-        //   let partOrBopIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && (x.PartType === 'Part' || x.PartType === 'BOP'))
-        //   let partOrBopObj = i.CostingChildPartDetails[partOrBopIndex]
-        //   partOrBopObj.CostingPartDetails.TotalOperationCost = operationGrid.OperationCostTotal
-        //   partOrBopObj.CostingPartDetails.TotalOtherOperationCostPerSubAssembly = operationGrid.OtherOperationCostTotal
-        //   partOrBopObj.CostingPartDetails.TotalConversionCost = operationGrid.NetConversionCost
-        //   let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
-        //     return el;
-        //   })
-        //   partOrBopObj.CostingPartDetails.CostingConversionCost = { ...operationGrid, CostingOperationCostResponse: data };
-        //   let GrandTotalCost = checkForNull(partOrBopObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partOrBopObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(partOrBopObj.CostingPartDetails.TotalConversionCost)
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partOrBopObj.CostingPartDetails.TotalConversionCostWithQuantity = partOrBopObj.CostingPartDetails.TotalConversionCost
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partOrBopObj.Quantity;
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [partOrBopIndex]: partOrBopObj })
-        //   setOperationCostInDataList(operationGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-        // }
-        // else if (item.PartType === 'Sub Assembly' && params.BOMLevel === LEVEL1) {
-        //   //ASSEMBLY CALCULATION WILL COME HERE 
-
-        // } else if (item.PartType === 'Sub Assembly' && params.BOMLevel !== LEVEL1) { // INNER SUBASSEMBLY WILL COME HERE
-        // }
-        // else if (item.PartType === 'Part' && tempIndex !== -1) {
-        //   let tempObj = i.CostingChildPartDetails[tempIndex]
-        //   let partTempIndex = tempObj.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && x.PartType === 'Part')
-        //   let partTempObj = tempObj.CostingChildPartDetails[partTempIndex]
-        //   // //PART CALCULATION WILL COME HERE
-        //   let GrandTotalCost = checkForNull(partTempObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partTempObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(operationGrid.NetConversionCost)
-
-        //   partTempObj.CostingPartDetails.TotalOperationCost = operationGrid.OperationCostTotal
-        //   partTempObj.CostingPartDetails.CostingConversionCost = { ...operationGrid, CostingOperationCostResponse: operationGrid.CostingOperationCostResponse };
-        //   partTempObj.CostingPartDetails.TotalConversionCost = operationGrid.NetConversionCost;
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partTempObj.Quantity;
-        //   tempObj.CostingChildPartDetails = Object.assign([...tempObj.CostingChildPartDetails], { [partTempIndex]: partTempObj })
-          
-        //   //SUBAMMSEMBLY CALCULATION WILL COME HERE 
-        //   tempObj.CostingPartDetails.TotalProcessCost = getProcessTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOperationCost = getOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOtherOperationCost = getOtherOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOperationCostPerAssembly = getOtherOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(tempObj.CostingChildPartDetails, params);
-        
-        //   tempObj.CostingPartDetails.TotalOperationCostComponent = tempObj.CostingPartDetails.TotalConversionCost * tempObj.CostingPartDetails.Quantity
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = tempObj.CostingPartDetails.TotalBoughtOutPartCost + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(i.CostingPartDetails.TotalConversionCost)
-
-        //   //BELOW KEYS FOR COST WITH QUANTITY
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * tempObj.Quantity;
-        //   tempObj.CostingPartDetails.TotalConversionCostWithQuantity = getCCTotalCostForAssemblyWithQuantity(tempObj.CostingChildPartDetails, params)
-
-
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [tempIndex]: tempObj })
-        //   // setOperationCostInDataList(operationGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-        // }
-
-        // else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-        //   let GrandTotalCost = checkForNull(i.TotalRawMaterialsCost) +
-        //     checkForNull(i.TotalBoughtOutPartCost) +
-        //     checkForNull(operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0)
-
-        //   let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
-        //     return el;
-        //   })
-
-        //   i.GrandTotalCost = GrandTotalCost;
-        //   i.CostingPartDetails.CostingConversionCost = { ...operationGrid, CostingOperationCostResponse: data };
-        //   i.TotalConversionCost = operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0;
-        //   i.CostingPartDetails.TotalConversionCost = operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0;
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
-
-        // }
-        // else {
-        //   setOperationCostInDataList(operationGrid, params, i.CostingChildPartDetails)
-        // }
-        return i;
-      });
-    } catch (error) {
-
-    }
-    return tempArr;
-  }
 
   const setOtherOperationCost = (otherOperationGrid, params, item) => {
-    let arr = setOtherOperationCostInDataList(otherOperationGrid, params, RMCCTabData, item)
-    if (RMCCTabData[0].PartNumber === params.PartNumber && RMCCTabData[0].BOMLevel === params.BOMLevel) {
-      // dispatch(setRMCCData(arr, () => { }))
-    } else {
-      const arr1 = arr // THIS FUNCTION IS FOR ASSEMBLY CALCULATION
-      // dispatch(setRMCCData(arr1, () => { }))
-    }
-  }
-
-  const setOtherOperationCostInDataList = (otherOperationGrid, params, arr, item) => {
-    let tempArr = [];
-    try {
-      tempArr = arr && arr.map(i => {
-
-
-
-
-
-
-        const level = params.BOMLevel
-        const useLevel = level.split('L')[1]
-        let initialPartNo=''
-        let tempArrForCosting  = setArrayForCosting        
-        for(let i= useLevel; i>=0; i--){
-            if(item.PartType ==="Part" || item.PartType === 'BOP'){
-              // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-              if(i === useLevel){
-                let partIndex = setArrayForCosting && setArrayForCosting.findIndex((x)=> x.PartNumber === params.PartNumber)
-                let partObj =  calculationForPart(otherOperationGrid,item,'CC') 
-                tempArrForCosting = Object.assign([...tempArrForCosting], { [partIndex]: partObj })
-                initialPartNo = item.AssemblyPartNumber
-                dispatch(setAllCostingInArray(tempArrForCosting,true))
-              }else {
-                let indexForUpdate = setArrayForCosting && setArrayForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
-                let objectToUpdate = setArrayForCosting[indexForUpdate]
-                if(objectToUpdate.PartType ==='Sub Assembly' || objectToUpdate.PartType === 'Assembly'){
-                  initialPartNo = objectToUpdate.AssemblyPartNumber
-                  let subAssemObj = calculationForSubAssembly(objectToUpdate.PartNumber,objectToUpdate.CostingPartDetails.Quantity,'CC')
-                  objectToUpdate.CostingPartDetails.TotalConversionCost = subAssemObj.TotalConversionCost
-                  objectToUpdate.CostingPartDetails.TotalConversionCostWithQuantity = subAssemObj.TotalConversionCostWithQuantity
-                  tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: objectToUpdate })
-                  dispatch(setAllCostingInArray(tempArrForCosting,true))
-                }
-
-              }
-
-            }
-            else if(item.PartType ==="Sub Assembly"){
-              // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-              console.log("SUBASSEMBLY?");
-            }
-            else if(item.PartType === 'BOP'){
-
-            }
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // let tempIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.AssemblyPartNumber && x.PartType === 'Sub Assembly')
-
-        // if ((item.PartType === 'Part' || item.PartType === 'BOP') && item.BOMLevel === LEVEL1) {
-        //   let partOrBopIndex = i.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && (x.PartType === 'Part' || x.PartType === 'BOP'))
-        //   let partOrBopObj = i.CostingChildPartDetails[partOrBopIndex]
-        //   partOrBopObj.CostingPartDetails.TotalOtherOperationCost = otherOperationGrid.OtherOperationCostTotal
-        //   partOrBopObj.CostingPartDetails.TotalOtherOperationCostPerSubAssembly = otherOperationGrid.OtherOperationCostTotal
-        //   partOrBopObj.CostingPartDetails.TotalConversionCost = otherOperationGrid.NetConversionCost
-        //   let data = otherOperationGrid && otherOperationGrid.CostingOperationCostResponse && otherOperationGrid.CostingOperationCostResponse.map(el => {
-        //     return el;
-        //   })
-        //   partOrBopObj.CostingPartDetails.CostingConversionCost = { ...otherOperationGrid, OtherOperationCostResponse: data };
-        //   let GrandTotalCost = checkForNull(partOrBopObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partOrBopObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(partOrBopObj.CostingPartDetails.TotalConversionCost)
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partOrBopObj.CostingPartDetails.TotalConversionCostWithQuantity = partOrBopObj.CostingPartDetails.TotalConversionCost
-        //   partOrBopObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partOrBopObj.Quantity;
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [partOrBopIndex]: partOrBopObj })
-        //   setOtherOperationCostInDataList(otherOperationGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-        // }
-        // else if (item.PartType === 'Sub Assembly' && params.BOMLevel === LEVEL1) {
-        //   //ASSEMBLY CALCULATION WILL COME HERE 
-
-        // } else if (item.PartType === 'Sub Assembly' && params.BOMLevel !== LEVEL1) { // INNER SUBASSEMBLY WILL COME HERE
-        // }
-        // else if (item.PartType === 'Part' && tempIndex !== -1) {
-        //   let tempObj = i.CostingChildPartDetails[tempIndex]
-        //   let partTempIndex = tempObj.CostingChildPartDetails.findIndex((x) => x.PartNumber === item.PartNumber && x.PartType === 'Part')
-        //   let partTempObj = tempObj.CostingChildPartDetails[partTempIndex]
-        //   // //PART CALCULATION WILL COME HERE
-        //   let GrandTotalCost = checkForNull(partTempObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(partTempObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(otherOperationGrid.NetConversionCost)
-        //   partTempObj.CostingPartDetails.TotalOtherOperationCost = otherOperationGrid.OtherOperationCostTotal
-        //   partTempObj.CostingPartDetails.CostingConversionCost = { ...otherOperationGrid, CostingOtherOperationCostResponse: otherOperationGrid.CostingOtherOperationCostResponse };
-        //   partTempObj.CostingPartDetails.TotalConversionCost = otherOperationGrid.NetConversionCost;
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        //   partTempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partTempObj.Quantity;
-        //   tempObj.CostingChildPartDetails = Object.assign([...tempObj.CostingChildPartDetails], { [partTempIndex]: partTempObj })
-         
-
-        //   //SUBAMMSEMBLY CALCULATION WILL COME HERE 
-        //   tempObj.CostingPartDetails.TotalProcessCost = getProcessTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOperationCost = getOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOtherOperationCost = getOtherOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalOperationCostPerAssembly = getOtherOperationTotalCost(tempObj.CostingChildPartDetails, params)
-        //   tempObj.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(tempObj.CostingChildPartDetails, params);
-        //   tempObj.CostingPartDetails.TotalOperationCostComponent = tempObj.CostingPartDetails.TotalConversionCost * tempObj.CostingPartDetails.Quantity
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = tempObj.CostingPartDetails.TotalBoughtOutPartCost + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(i.CostingPartDetails.TotalConversionCost)
-
-        //   //BELOW KEYS FOR COST WITH QUANTITY
-        //   tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = tempObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * tempObj.Quantity;
-        //   tempObj.CostingPartDetails.TotalConversionCostWithQuantity = getCCTotalCostForAssemblyWithQuantity(tempObj.CostingChildPartDetails, params)
-
-
-        //   i.CostingChildPartDetails = Object.assign([...i.CostingChildPartDetails], { [tempIndex]: tempObj })
-        //   // setOtherOperationCostInDataList(otherOperationGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
-        // }
-
-
-        // // if (i.IsAssemblyPart === true) {
-
-        // //   i.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(otherOperationGrid.NetConversionCost), params);
-        // //   i.CostingPartDetails.TotalOperationCost = getOperationTotalCost(i.CostingChildPartDetails, checkForNull(otherOperationGrid.OperationCostTotal), params);
-        // //   i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(otherOperationGrid.NetConversionCost), params);
-        // //   i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getCCCostWithQuantity(i.CostingChildPartDetails, checkForNull(otherOperationGrid.NetConversionCost), params);
-        // //   setOtherOperationCostInDataList(otherOperationGrid, params, i.CostingChildPartDetails)
-
-        // // } 
-        // else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
-        //   let GrandTotalCost = checkForNull(i.TotalRawMaterialsCost) +
-        //     checkForNull(i.TotalBoughtOutPartCost) +
-        //     checkForNull(otherOperationGrid && otherOperationGrid.NetConversionCost !== null ? otherOperationGrid.NetConversionCost : 0)
-
-        //   let data = otherOperationGrid && otherOperationGrid.OtherOperationCostResponse && otherOperationGrid.OtherOperationCostResponse.map(el => {
-        //     return el;
-        //   })
-
-        //   i.GrandTotalCost = GrandTotalCost;
-        //   i.CostingPartDetails.CostingConversionCost = { ...otherOperationGrid, OtherOperationCostResponse: data };
-        //   i.TotalConversionCost = otherOperationGrid.NetConversionCost !== null ? otherOperationGrid.NetConversionCost : 0;
-        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
-
-        // }
-        // else {
-        //   setOtherOperationCostInDataList(otherOperationGrid, params, i.CostingChildPartDetails)
-        // }
-        return i;
-      });
-    } catch (error) {
-
-    }
-    return tempArr;
+    // let arr = setOtherOperationCostInDataList(otherOperationGrid, params, RMCCTabData, item)
+    // if (RMCCTabData[0].PartNumber === params.PartNumber && RMCCTabData[0].BOMLevel === params.BOMLevel) {
+    //   // dispatch(setRMCCData(arr, () => { }))
+    // } else {
+    //   const arr1 = arr // THIS FUNCTION IS FOR ASSEMBLY CALCULATION
+    //   // dispatch(setRMCCData(arr1, () => { }))
+    // }
   }
 
   /**
@@ -1397,7 +1089,6 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
-    console.log("COMING IN ASSEMBLY");
     let arr = setAssembly(BOMLevel, PartNumber, Children, RMCCTabData)
     // let arr1 = arr
     // arr[0].CostingPartDetails.TotalRawMaterialsCostWithQuantity =assyCalculation(arr)
@@ -1410,86 +1101,126 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const setAssembly = (BOMLevel, PartNumber, Children, RMCCTabData) => {
-    console.log("In Assembly");
-    
     let tempArr = [];
+    let updatedArr=[]
     try {
 
       tempArr = RMCCTabData && RMCCTabData.map(i => {
 
         const { CostingChildPartDetails, } = Children;
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
+        console.log('params: ', params);
 
         if (i.IsAssemblyPart === true && i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
           
           i.CostingChildPartDetails = BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, BOMLevel) : i.CostingChildPartDetails;
           i.CostingPartDetails = Children.CostingPartDetails;
-
-     
-          // i.CostingPartDetails.TotalRawMaterialsCost = setRMCostForAssembly(CostingChildPartDetails);
-          // i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalBoughtOutPartCost, params);
-          // i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly (CostingChildPartDetails);
-          // i.CostingPartDetails.TotalProcessCost = getProcessTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params);
-          // i.CostingPartDetails.TotalOperationCost = getOperationTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params);
-          // i.CostingPartDetails.TotalToolCost = getToolTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalToolCost, params);
-
-          // i.CostingPartDetails.TotalConversionCost = getProcessTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params) +
-          //   getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params) +
-          //   GetOperationCostTotal(CostingPartDetails.CostingOperationCostResponse) +
-          //   GetToolCostTotal(CostingPartDetails.CostingToolCostResponse);
-
-          // i.CostingPartDetails.TotalConversionCost = getProcessTotalCost(CostingChildPartDetails, CostingPartDetails.TotalProcessCost, params) +
-          //   getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
-          //   getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCostPerAssembly, params) +
-          //   getToolTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalToolCostPerAssembly, params);
-          // i.CostingPartDetails.TotalConversionCost = setConversionCostAssembly(CostingChildPartDetails) 
-          // +
-          // getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
-          // getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCostPerAssembly, params) +
-          // getToolTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalToolCostPerAssembly, params);
-          // checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) +
-          // checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
-
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = (getTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails, 'ALL', 0, params)) +
-          //   checkForNull(CostingPartDetails.TotalOperationCostPerAssembly);
-
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getRMTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalRawMaterialsCost, params) +
-          //   getBOPTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalBoughtOutPartCost, params) +
-          //   getProcessTotalCost(CostingChildPartDetails, CostingPartDetails.TotalProcessCost, params) +
-          //   getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
-          //   getOperationTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalOperationCostPerAssembly, params) +
-          //   getToolTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalToolCostPerAssembly, params);
-
-
           i.IsAssemblyPart = true;
           i.IsOpen = !i.IsOpen;
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getRMBOPCCTotalCostWithQuantity(CostingChildPartDetails) * i.CostingPartDetails.Quantity;
-          // i.CostingPartDetails.TotalRawMaterialsCostWithQuantity = getRMTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
-          // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = getBOPTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
-          // i.CostingPartDetails.TotalConversionCostWithQuantity = getCCTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
-          // i.CostingPartDetails.TotalRawMaterialsCostWithQuantity =    i.CostingPartDetails.TotalRawMaterialsCost *  i.CostingPartDetails.Quantity;
-          // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity =  i.CostingPartDetails.TotalBoughtOutPartCost *  i.CostingPartDetails.Quantity;
-          // i.CostingPartDetails.TotalConversionCostWithQuantity =  i.CostingPartDetails.TotalConversionCost *  i.CostingPartDetails.Quantity;
-          // const total = i.CostingPartDetails.TotalRawMaterialsCostWithQuantity +i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity +  i.CostingPartDetails.TotalConversionCostWithQuantity
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = total
-          // i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =(total) * i.CostingPartDetails.Quantity;
-          setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
+          console.log('i.CostingPartDetails: ', i.CostingPartDetails);
+          let tempArrForCosting  = JSON.parse(localStorage.getItem('costingArray'))
+         console.log('tempArrForCosting: ', tempArrForCosting);
+          if(params.BOMLevel !== LEVEL0){ 
+
+          let childArray = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === params.PartNumber)
+          console.log('childArray: ', childArray);
+          let subbAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex(item=>item.PartNumber === params.PartNumber)
+          console.log('subbAssemblyIndex: ', subbAssemblyIndex);
+          let subAssemblyToUpdate = tempArrForCosting[subbAssemblyIndex]
+          console.log('subAssemblyToUpdate: ', subAssemblyToUpdate);
+          // subAssemblyToUpdate.CostingChildPartDetails = CostingChildPartDetails
+          subAssemblyToUpdate.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(childArray)
+          subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(childArray)
+          subAssemblyToUpdate.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(childArray)
+          subAssemblyToUpdate.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalConversionCostWithQuantity)
+          console.log('subAssemblyToUpdate: ', subAssemblyToUpdate);
+          tempArrForCosting = Object.assign([...tempArrForCosting],{[subbAssemblyIndex]:subAssemblyToUpdate})
+          console.log('tempArrForCosting after update: ', tempArrForCosting);
+
+          const level = params.BOMLevel
+          const useLevel = level.split('L')[1]
+          let initialPartNo = subAssemblyToUpdate.CostingPartDetails.AssemblyPartNumber
+          let quant =subAssemblyToUpdate.CostingPartDetails.Quantity
+
+          if(useLevel >1){
+            for(let i= useLevel; i>=0; i--){
+                // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY 
+                  let indexForUpdate = tempArrForCosting && tempArrForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
+                  let objectToUpdate = tempArrForCosting[indexForUpdate]
+                  if(objectToUpdate.PartType ==='Sub Assembly'){
+                    let tempArr = tempArrForCosting && tempArrForCosting.filter(item=>item.PartNumber === initialPartNo)
+                    initialPartNo = objectToUpdate.AssemblyPartNumber
+                    let subAssemObj = calculationForSubAssembly(objectToUpdate,objectToUpdate.PartNumber,quant,'Sub Assembly',tempArr)
+                    quant = objectToUpdate.CostingPartDetails.Quantity
+                    tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
+                    console.log('tempArrForCosting in First Condition: ', tempArrForCosting);
+                  }
+                 
+                  //  dispatch(setRMCCData(updatedArr, () => { }))
+            }
+          }
         }
-        else {
-          // i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly(i.CostingChildPartDetails)
-          // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity =    i.CostingPartDetails.TotalBoughtOutPartCost * i.CostingPartDetails.Quantity
-          const total = i.CostingPartDetails.TotalRawMaterialsCostWithQuantity + i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity + i.CostingPartDetails.TotalConversionCostWithQuantity
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = total
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = i.CostingPartDetails.TotalCalculatedRMBOPCCCost * i.CostingPartDetails.Quantity;
-          setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
+          let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item=>item.BOMLevel === 'L1')
+          let assemblyObj = tempArrForCosting[0]
+
+          assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(subAssemblyArray)
+          assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray)
+
+          assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
+          console.log('assemblyObj: ', assemblyObj);
+          tempArrForCosting = Object.assign([...tempArrForCosting],{[0]:assemblyObj})
+          localStorage.setItem('costingArray',[])
+          localStorage.setItem('costingArray',JSON.stringify(tempArrForCosting))
+
+          const mapArray=(data)=> data.map(item=>{
+            let newItem = item
+            let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
+            console.log('updatedArr: ', updatedArr);
+            let obj = updatedArr && updatedArr.find(updateditem=>updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
+            console.log('obj: ', obj);
+            let childArray = updatedArr && updatedArr.filter(updateditem=>updateditem.AssemblyPartNumber === obj.PartNumber && updateditem.BOMLevel !== LEVEL0)
+            console.log('childArray: ', childArray);
+            newItem.CostingPartDetails.CostingChildPartDetails = childArray
+            newItem.CostingPartDetails.TotalRawMaterialsCost = checkForNull(obj.CostingPartDetails.TotalRawMaterialsCost)
+            newItem.CostingPartDetails.TotalRawMaterialsCostWithQuantity = obj.CostingPartDetails.TotalRawMaterialsCostWithQuantity
+            newItem.CostingPartDetails.TotalBoughtOutPartCost = obj.CostingPartDetails.TotalBoughtOutPartCost
+            newItem.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = obj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity
+            newItem.CostingPartDetails.TotalConversionCost = obj.CostingPartDetails.TotalConversionCost
+            newItem.CostingPartDetails.TotalConversionCostWithQuantity = obj.CostingPartDetails.TotalConversionCostWithQuantity
+            
+            //Operation for subassembly key will come here
+            newItem.CostingPartDetails.TotalCalculatedRMBOPCCCost =checkForNull(obj.CostingPartDetails.TotalCalculatedRMBOPCCCost)
+            newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = obj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity
+            if(item.CostingChildPartDetails.length >0){
+              mapArray(item.CostingChildPartDetails)
+            }
+            return newItem
+          })
+            updatedArr=  mapArray(RMCCTabData)
+            console.log('updatedArr: ', updatedArr);
+
+
+
+        
+      
+        // setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
         }
+        // else {
+        //   // i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly(i.CostingChildPartDetails)
+        //   // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity =    i.CostingPartDetails.TotalBoughtOutPartCost * i.CostingPartDetails.Quantity
+        //   const total = i.CostingPartDetails.TotalRawMaterialsCostWithQuantity + i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity + i.CostingPartDetails.TotalConversionCostWithQuantity
+        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCost = total
+        //   i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = i.CostingPartDetails.TotalCalculatedRMBOPCCCost * i.CostingPartDetails.Quantity;
+        //   setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
+        // }
         return i;
       });
 
     } catch (error) {
 
     }
-    return tempArr;
+    return updatedArr;
 
   }
 
@@ -1524,7 +1255,6 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (BOMLevel, PartNumber, Data, item) => {
-    console.log("COMING IN PART DETAIL");
   if(item.PartType === 'Component'){
     let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData, item)
    dispatch(setRMCCData(arr, () => { }))
@@ -1616,7 +1346,6 @@ function TabRMCC(props) {
       if(IsGridChanged){
 
           const level = params.BOMLevel
-          console.log('level: ', level);
           const useLevel = level.split('L')[1]
           let initialPartNo=''
           let tempArrForCosting  = setArrayForCosting 
@@ -1646,7 +1375,6 @@ function TabRMCC(props) {
               }
               else if(item.PartType ==="Sub Assembly"){
                 // IF LEVEL WE ARE WOKRING IS OF SUBASSEMBLY TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
-                console.log("SUBASSEMBLY?");
 
                 if(i === useLevel){ // SUB ASSEMBLY LEVEL HERE
                   let subAssemblyIndex = setArrayForCosting && setArrayForCosting.findIndex((x)=> x.PartNumber === params.PartNumber)
@@ -1659,26 +1387,25 @@ function TabRMCC(props) {
                   let GrandTotalCost =checkForNull(subAssembObj.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(subAssembObj.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(subAssembObj.CostingPartDetails.TotalConversionCost)
                   subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
                   subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCost * subAssembObj.CostingPartDetails.Quantity
-                  console.log('subAssembObj from 1 if: ', subAssembObj);
+                
                   tempArrForCosting = Object.assign([...tempArrForCosting], { [subAssemblyIndex]: subAssembObj })
                   initialPartNo = item.AssemblyPartNumber
-                  dispatch(setAllCostingInArray(tempArrForCosting,true))
+                  // dispatch(setAllCostingInArray(tempArrForCosting,true))
                 }else{
-                  console.log("COMING IN ELSE");
+              
                   let indexForUpdate = setArrayForCosting && setArrayForCosting.findIndex((x)=>x.PartNumber === initialPartNo)
                   let objectToUpdate = setArrayForCosting[indexForUpdate]
-                  console.log('objectToUpdate: ', objectToUpdate);
                   if(objectToUpdate.PartType ==='Sub Assembly' || objectToUpdate.PartType === 'Assembly'){
                     initialPartNo = objectToUpdate.AssemblyPartNumber
                     let subAssemObj = calculationForSubAssembly(objectToUpdate.PartNumber,objectToUpdate.CostingPartDetails.Quantity,'Sub Assembly Operation')
-                    console.log('subAssemObj from 2 inside: ', subAssemObj);
+                 
                     objectToUpdate.CostingPartDetails.TotalOperationCostComponent = subAssemObj.TotalOperationCostComponent
                     objectToUpdate.CostingPartDetails.TotalOperationCostSubAssembly = subAssemObj.TotalOperationCostSubAssembly
                     objectToUpdate.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(OperationGrid);
                     objectToUpdate.CostingPartDetails.TotalConversionCost =objectToUpdate.CostingPartDetails.TotalOperationCostComponent + objectToUpdate.CostingPartDetails.TotalOperationCostSubAssembly + objectToUpdate.CostingPartDetails.TotalOperationCostPerAssembly
                     objectToUpdate.CostingPartDetails.TotalConversionCostWithQuantity = objectToUpdate.CostingPartDetails.TotalConversionCost
                     tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: objectToUpdate })
-                    dispatch(setAllCostingInArray(tempArrForCosting,true))
+                    // dispatch(setAllCostingInArray(tempArrForCosting,true))
                   }
                 }
 
@@ -1802,7 +1529,6 @@ function TabRMCC(props) {
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
     if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false  && checkIsDataChange === true) {
-      console.log('ComponentItemData: ', ComponentItemData);
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
