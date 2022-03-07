@@ -172,7 +172,7 @@ export function ProcessListingSimulation(props) {
     const onRowSelect = () => {
         var selectedRowsList = gridApi.getSelectedRows();
         let length = gridApi.getSelectedRows().length
-       
+
         props.apply(selectedRowsList)
         setSelectedRows(selectedRowsList)
     }
@@ -221,7 +221,7 @@ export function ProcessListingSimulation(props) {
                 <Col>
 
 
-                    <div className={`ag-grid-wrapper height-width-wrapper  ${processCostingList && processCostingList?.length <=0 ?"overlay-contain": ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper  ${processCostingList && processCostingList?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className="ag-grid-header">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
@@ -252,7 +252,7 @@ export function ProcessListingSimulation(props) {
                                 <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={190}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" editable='false' field="ConversionCost" headerName="Net CC" minWidth={190}></AgGridColumn>
-                                <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn>
+                                {/* <AgGridColumn field="RemainingTotal" editable='false' headerName="Remaining Fields Total" minWidth={190}></AgGridColumn> */}
                                 <AgGridColumn suppressSizeToFit="true" field="TotalCost" headerName="Total" minWidth={190}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateFormatter'></AgGridColumn>
                                 <AgGridColumn field="CostingId" headerName="CostingId" hide></AgGridColumn>
