@@ -171,6 +171,19 @@ class Level extends Component {
       return temp;
     }
 
+    if (label === 'technology' && this.state.levelType === 'Master') {
+      let arrayOfTechnology = []
+      const myArray = getConfigurationKey().ApprovalMasterArrayList.split(",");
+      myArray && myArray.map((item) => {
+        let tempObj = {}
+        let temp = item.split('=')
+        tempObj.label = temp[0]
+        tempObj.value = temp[1]
+        arrayOfTechnology.push(tempObj)
+      })
+      return arrayOfTechnology
+    }
+
     if (label === 'level') {
       let level = 5
 

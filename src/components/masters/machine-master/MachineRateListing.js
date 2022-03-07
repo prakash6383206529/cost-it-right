@@ -177,26 +177,19 @@ class MachineRateListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID)) {
+        
             if (EditAccessibility && !rowData.IsMachineAssociated) {
                 isEditable = true
             } else {
                 isEditable = false
             }
-        } else {
-            isEditable = EditAccessibility
-        }
 
 
-        if (CheckApprovalApplicableMaster(MACHINE_MASTER_ID)) {
             if (DeleteAccessibility && !rowData.IsMachineAssociated) {
                 isDeleteButton = true
             } else {
                 isDeleteButton = false
             }
-        } else {
-            isDeleteButton = DeleteAccessibility
-        }
 
         return (
             <>

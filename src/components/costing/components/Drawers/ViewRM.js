@@ -13,7 +13,7 @@ import 'reactjs-popup/dist/index.css'
 
 function ViewRM(props) {
 
-  const { viewRMData, rmMBDetail, isAssemblyCosting } = props
+  const { viewRMData, rmMBDetail, isAssemblyCosting, isPDFShow } = props
 
 
   /*
@@ -73,26 +73,12 @@ function ViewRM(props) {
   const closeWeightDrawer = (e = "") => {
     setWeightCalculatorDrawer(false)
   }
-  return (
-    <>
-      <Drawer
-        anchor={props.anchor}
-        open={props.isOpen}
+  const tableData=()=> {
+    return <>
+            <Col md="12">
+              <div className="left-border mt-4 mb-3">Raw Material</div>
+            </Col>
 
-      >
-        <Container className={`${isAssemblyCosting && "drawer-1200"}`}>
-          <div className={"drawer-wrapper drawer-1500px"}>
-            <Row className="drawer-heading">
-              <Col>
-                <div className={"header-wrapper left"}>
-                  <h3>{"View RM Cost:"}</h3>
-                </div>
-                <div
-                  onClick={(e) => toggleDrawer(e)}
-                  className={"close-button right"}
-                ></div>
-              </Col>
-            </Row>
             <Col>
               <Table className="table cr-brdr-main" size="sm">
                 <thead>
@@ -105,7 +91,7 @@ function ViewRM(props) {
                     <th>{`Gross Weight (Kg)`}</th>
                     <th>{`Finish Weight (Kg)`}</th>
                     <th>{`Scrap Weight`}</th>
-                    <th>{`Calculator`}</th>
+                    {!isPDFShow && <th>{`Calculator`}</th>}
                     <th>{`Freight Cost`}</th>
                     <th>{`Shearing Cost`}</th>
                     <th>{`Burning Loss Weight`}</th>
@@ -126,12 +112,12 @@ function ViewRM(props) {
                         <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                         <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                         <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                        <td><button
+                        {!isPDFShow && <td><button
                           className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                           type={"button"}
                           disabled={item.WeightCalculationId === EMPTY_GUID}
                           onClick={() => { getWeightData(index) }}
-                        /></td>
+                        /></td>}
                         <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                         <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
@@ -143,7 +129,7 @@ function ViewRM(props) {
                       </tr>
                     )
                   })}
-                  {viewRM.length === 0 && (
+                  {viewRM?.length === 0 && (
                     <tr>
                       <td colSpan={13}>
                         <NoContentFound title={EMPTY_DATA} />
@@ -160,7 +146,7 @@ function ViewRM(props) {
                   <div className="left-border mt-4 mb-3">Master Batch</div>
                 </Col>
                 <Col>
-                  <Table className="table cr-brdr-main" size="sm">
+                  <Table className="table cr-brdr-main mb-0" size="sm">
                     <thead>
                       <tr>
                         <th>{`MB Name`}</th>
@@ -187,7 +173,31 @@ function ViewRM(props) {
                   </Table>
                 </Col>
               </>}
-
+         </>
+  }
+  return (
+    <>
+    {!isPDFShow ? 
+      <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+        className='view-rm-cost'
+      >
+        <Container className={`${isAssemblyCosting && "drawer-1200"}`}>
+          <div className={"drawer-wrapper drawer-1500px"}>
+            <Row className="drawer-heading">
+              <Col>
+                <div className={"header-wrapper left"}>
+                  <h3>{"View RM Cost:"}</h3>
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  className={"close-button right"}
+                ></div>
+              </Col>
+            </Row>
+             <Row>
+              {tableData()}
             {weightCalculatorDrawer && (
               <WeightCalculator
                 rmRowData={viewRM !== undefined ? calciData : {}}
@@ -201,9 +211,10 @@ function ViewRM(props) {
                 CostingViewMode={true}   // THIS KEY WILL BE USE TO OPEN CALCI IN VIEW MODE
               />
             )}
+            </Row>
           </div>
         </Container>
-      </Drawer>
+      </Drawer> :(viewRM.length !== 0 &&  <Row className='mt-1'>{tableData()}</Row>  )}
     </>
   );
 }
