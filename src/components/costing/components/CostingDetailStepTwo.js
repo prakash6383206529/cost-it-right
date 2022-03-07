@@ -260,6 +260,7 @@ function CostingDetailStepTwo(props) {
       switch (Text) {
         case 'RM':
           totalCost = headCostData.NetRawMaterialsCost * calculatePercentage(percent)
+          console.log('totalCost: ', totalCost);
           break;
 
         case 'BOP':
@@ -329,7 +330,8 @@ function CostingDetailStepTwo(props) {
         }
 
         // const discountedCost =data.DiscountCostType==='Percentage'? checkForNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage)):data.DiscountsAndOtherCost;
-        const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountCostApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
+        const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
+        console.log('discountedCost: ', discountedCost);
         const discountValues = {
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
