@@ -252,11 +252,11 @@ function ColdForging(props) {
 
     const calculateTotalInputWeight = () => {
       
-      
       const forgedWeight = forgeWeightValue  
       
       const EndBitLoss =  dataSend.EndBitLoss  
-      const TotalInputWeight = forgedWeight + lostWeight + EndBitLoss
+      console.log(forgedWeight,lostWeight,EndBitLoss);
+      const TotalInputWeight = checkForNull(forgedWeight) + checkForNull(lostWeight) + checkForNull(EndBitLoss)
       
     let obj = dataSend
     obj.TotalInputWeight = TotalInputWeight
