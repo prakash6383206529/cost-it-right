@@ -223,28 +223,20 @@ class BOPImportListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
+        
             if (EditAccessibility && !rowData.IsBOPAssociated) {
                 isEditable = true
             } else {
                 isEditable = false
             }
-        } else {
-            isEditable = EditAccessibility
-        }
-
-        if (CheckApprovalApplicableMaster(BOP_MASTER_ID)) {
+        
+        
             if (DeleteAccessibility && !rowData.IsBOPAssociated) {
                 isDeleteButton = true
             } else {
                 isDeleteButton = false
             }
-        } else {
-            isDeleteButton = DeleteAccessibility
-        }
-
-
-
+        
 
         return (
             <>

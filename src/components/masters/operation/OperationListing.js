@@ -265,26 +265,19 @@ class OperationListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        if (CheckApprovalApplicableMaster(OPERATIONS_ID)) {
+
             if (EditAccessibility && !rowData.IsOperationAssociated) {
                 isEditable = true
             } else {
                 isEditable = false
             }
-        } else {
-            isEditable = EditAccessibility
-        }
+        
 
-
-        if (CheckApprovalApplicableMaster(OPERATIONS_ID)) {
             if (DeleteAccessibility && !rowData.IsOperationAssociated) {
                 isDeleteButton = true
             } else {
                 isDeleteButton = false
             }
-        } else {
-            isDeleteButton = DeleteAccessibility
-        }
 
 
         return (
@@ -423,7 +416,8 @@ class OperationListing extends Component {
     */
     costingHeadFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue ? 'Vendor Based' : 'Zero Based';
+        let data = (cellValue === true || cellValue === 'Vendor Based' || cellValue === 'VBC') ? 'Vendor Based' : 'Zero Based';
+        return data;
     }
 
     /**
