@@ -1111,7 +1111,7 @@ const setBOPCostForSubAssembly = (arr)=> {
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
         console.log('params: ', params);
 
-        if (i.IsAssemblyPart === true && i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+        // if (i.IsAssemblyPart === true && i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
           
           i.CostingChildPartDetails = BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, BOMLevel) : i.CostingChildPartDetails;
           i.CostingPartDetails = Children.CostingPartDetails;
@@ -1123,19 +1123,14 @@ const setBOPCostForSubAssembly = (arr)=> {
           if(params.BOMLevel !== LEVEL0){ 
 
           let childArray = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === params.PartNumber)
-          console.log('childArray: ', childArray);
           let subbAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex(item=>item.PartNumber === params.PartNumber)
-          console.log('subbAssemblyIndex: ', subbAssemblyIndex);
           let subAssemblyToUpdate = tempArrForCosting[subbAssemblyIndex]
-          console.log('subAssemblyToUpdate: ', subAssemblyToUpdate);
-          // subAssemblyToUpdate.CostingChildPartDetails = CostingChildPartDetails
+          subAssemblyToUpdate.CostingChildPartDetails = childArray
           subAssemblyToUpdate.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(childArray)
           subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(childArray)
           subAssemblyToUpdate.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(childArray)
           subAssemblyToUpdate.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(subAssemblyToUpdate.CostingPartDetails.TotalConversionCostWithQuantity)
-          console.log('subAssemblyToUpdate: ', subAssemblyToUpdate);
           tempArrForCosting = Object.assign([...tempArrForCosting],{[subbAssemblyIndex]:subAssemblyToUpdate})
-          console.log('tempArrForCosting after update: ', tempArrForCosting);
 
           const level = params.BOMLevel
           const useLevel = level.split('L')[1]
@@ -1160,28 +1155,25 @@ const setBOPCostForSubAssembly = (arr)=> {
             }
           }
         }
-          let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item=>item.BOMLevel === 'L1')
-          let assemblyObj = tempArrForCosting[0]
-
+        let assemblyObj = tempArrForCosting[0]
+        let subAssemblyArray = tempArrForCosting && tempArrForCosting.filter(item=>item.AssemblyPartNumber === assemblyObj.PartNumber && item.BOMLevel !== LEVEL0)
+        console.log('subAssemblyArray: ', subAssemblyArray);
+          assemblyObj.CostingChildPartDetails = subAssemblyArray
           assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity = setRMCostForAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = setBOPCostAssembly(subAssemblyArray)
           assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity = setConversionCostAssembly(subAssemblyArray)
 
           assemblyObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity =checkForNull(assemblyObj.CostingPartDetails.TotalRawMaterialsCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalBoughtOutPartCostWithQuantity) + checkForNull(assemblyObj.CostingPartDetails.TotalConversionCostWithQuantity)
-          console.log('assemblyObj: ', assemblyObj);
           tempArrForCosting = Object.assign([...tempArrForCosting],{[0]:assemblyObj})
           localStorage.setItem('costingArray',[])
           localStorage.setItem('costingArray',JSON.stringify(tempArrForCosting))
 
           const mapArray=(data)=> data.map(item=>{
             let newItem = item
-            let updatedArr = JSON.parse(localStorage.getItem('costingArray'))
-            console.log('updatedArr: ', updatedArr);
-            let obj = updatedArr && updatedArr.find(updateditem=>updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
-            console.log('obj: ', obj);
-            let childArray = updatedArr && updatedArr.filter(updateditem=>updateditem.AssemblyPartNumber === obj.PartNumber && updateditem.BOMLevel !== LEVEL0)
-            console.log('childArray: ', childArray);
-            newItem.CostingPartDetails.CostingChildPartDetails = childArray
+            let updatedArr1 = JSON.parse(localStorage.getItem('costingArray'))
+            let obj = updatedArr1 && updatedArr1.find(updateditem=>updateditem.PartNumber === newItem.PartNumber && updateditem.AssemblyPartNumber === newItem.AssemblyPartNumber)
+      
+            newItem.CostingChildPartDetails = obj.CostingChildPartDetails
             newItem.CostingPartDetails.TotalRawMaterialsCost = checkForNull(obj.CostingPartDetails.TotalRawMaterialsCost)
             newItem.CostingPartDetails.TotalRawMaterialsCostWithQuantity = obj.CostingPartDetails.TotalRawMaterialsCostWithQuantity
             newItem.CostingPartDetails.TotalBoughtOutPartCost = obj.CostingPartDetails.TotalBoughtOutPartCost
@@ -1205,7 +1197,7 @@ const setBOPCostForSubAssembly = (arr)=> {
         
       
         // setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
-        }
+        // }
         // else {
         //   // i.CostingPartDetails.TotalBoughtOutPartCost = setBOPCostAssembly(i.CostingChildPartDetails)
         //   // i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity =    i.CostingPartDetails.TotalBoughtOutPartCost * i.CostingPartDetails.Quantity
