@@ -77,7 +77,7 @@ function TabDiscountOther(props) {
           AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
           DiscountCostType: checkForNull(DiscountCostData !== undefined && DiscountCostData.DiscountCostType),
           HundiOrDiscountValue: DiscountCostData && checkForDecimalAndNull(DiscountCostData.HundiOrDiscountValue !== null ? DiscountCostData.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
-
+          DiscountApplicability: DiscountCostData && DiscountCostData.DiscountApplicability
         }
         props.setHeaderCost(topHeaderData, headerCosts, costData)
       }
@@ -207,7 +207,7 @@ function TabDiscountOther(props) {
               HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? checkForNull(OtherCostDetails.HundiOrDiscountPercentage) : '',
               DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountCostApplicability: OtherCostDetails.DiscountCostApplicability
+              DiscountApplicability: OtherCostDetails.DiscountApplicability
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -221,7 +221,7 @@ function TabDiscountOther(props) {
                 HundiOrDiscountValue: checkForNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : ''),
                 DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
                 OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-                DiscountCostApplicability: OtherCostDetails.DiscountCostApplicability
+                DiscountApplicability: OtherCostDetails.DiscountApplicability
               }
               props.setHeaderCost(topHeaderData, headerCosts, costData)
               // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
@@ -303,7 +303,7 @@ function TabDiscountOther(props) {
       PercentageOtherCost: checkForNull(discountObj?.OtherCostPercentage),
       DiscountCostType: hundiscountType.value,
       OtherCostApplicability: discountObj.OtherCostApplicability,
-      DiscountCostApplicability: discountObj.DiscountCostApplicability
+      DiscountApplicability: discountObj.DiscountApplicability
     }
     props.setHeaderCost(topHeaderData, headerCosts, costData)
 
@@ -798,7 +798,7 @@ function TabDiscountOther(props) {
       ...discountObj,
       HundiOrDiscountPercentage: 0,
       HundiOrDiscountValue: 0,
-      DiscountCostApplicability: value.label
+      DiscountApplicability: value.label
     })
   }
 

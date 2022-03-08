@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -63,7 +64,18 @@ class BOPImportListing extends Component {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList()
+
+        if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => { })
+            }
+            if (this.props.selectionForListingMasterAPI === 'Master') {
+                this.getDataList()
+            }
+        }
+        else {
+            this.getDataList()
+        }
     }
 
     /**
@@ -536,6 +548,7 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

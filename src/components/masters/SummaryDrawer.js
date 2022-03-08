@@ -102,15 +102,15 @@ function SummaryDrawer(props) {
 
 
                                 {isRMApproval &&
-                                    <RMDomesticListing isMasterSummaryDrawer={true} />}
+                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
                                 {isBOPApproval &&
-                                    <BOPDomesticListing isMasterSummaryDrawer={true} />}
+                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
                                 {isOperationApproval &&
-                                    <OperationListing isMasterSummaryDrawer={true} />}
+                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
                                 {isMachineApproval &&
-                                    <MachineRateListing isMasterSummaryDrawer={true} />}
+                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
 
                             </Col>

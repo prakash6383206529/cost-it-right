@@ -26,7 +26,7 @@ const gridOptions = {
 
 
 function ProfitSimulation(props) {
-    const { list, technology, master, isImpactedMaster } = props
+    const { list, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -205,7 +205,6 @@ function ProfitSimulation(props) {
                     return 'foo';
             }
         })
-        console.log(tempObj, 'tempObjtempObjtempObj');
         list && list.map((item) => {
             tempRM = 0
             tempCC = 0
@@ -429,6 +428,14 @@ function ProfitSimulation(props) {
                 return null;
             }
         })
+        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
+            let obj = {}
+            obj.SimulationId = item.value
+            return obj
+
+        })
+        obj.SimulationIds = tempObject
+
         obj.SimulationRawMaterials = tempArr
 
 
