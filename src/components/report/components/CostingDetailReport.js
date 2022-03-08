@@ -1323,7 +1323,8 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
-
+    const lastWeekFilter = (props) => {
+    }
 
     return (
         <div className="container-fluid report-listing-page ag-grid-react">
@@ -1332,8 +1333,16 @@ function ReportListing(props) {
 
                 <h1 className="mb-0">Report</h1>
 
-                <Row className=" blue-before ">
+                <Row className="pt-3 blue-before ">
 
+                    {/* <Col md="8">
+                        <div className="warning-message mt-1">
+                            {warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
+                        </div>
+                    </Col> */}
+                    <Col md="6">
+                        <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
+                    </Col>
 
                     <Col md="8" lg="8" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
