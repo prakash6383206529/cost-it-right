@@ -365,7 +365,7 @@ function RMApproval(props) {
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
-
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'
