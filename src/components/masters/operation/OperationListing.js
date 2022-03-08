@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, RMDOMESTIC, SURFACETREATMENT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -28,6 +28,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -68,7 +69,16 @@ class OperationListing extends Component {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
-        this.getTableListData(null, null, null, null)
+        if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                    this.setState({ tableData: res.data.DataList })
+                })
+            }
+        }
+        if (this.props.selectionForListingMasterAPI === 'Master') {
+            this.getTableListData(null, null, null, null)
+        }
 
     }
 
@@ -764,6 +774,7 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {
