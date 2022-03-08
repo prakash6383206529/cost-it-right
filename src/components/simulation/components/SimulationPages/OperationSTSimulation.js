@@ -25,7 +25,7 @@ const gridOptions = {
 
 };
 function OperationSTSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, masterId, lastRevision, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -268,6 +268,14 @@ function OperationSTSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
+        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
+            let obj = {}
+            obj.SimulationId = item.value
+            return obj
+
+        })
+        obj.SimulationIds = tempObject
+
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)

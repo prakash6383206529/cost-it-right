@@ -269,6 +269,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
 
@@ -284,6 +285,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
+                                        selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
 

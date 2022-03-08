@@ -24,7 +24,7 @@ const gridOptions = {
 
 };
 function MRSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -238,6 +238,14 @@ function MRSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
+        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
+            let obj = {}
+            obj.SimulationId = item.value
+            return obj
+
+        })
+        obj.SimulationIds = tempObject
+
         obj.SimulationCombinedProcess = tempArr
         dispatch(runVerifyMachineRateSimulation(obj, res => {
             if (res.data.Result) {
@@ -302,7 +310,7 @@ function MRSimulation(props) {
                         <form>
 
                             <Row>
-                                <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                                <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                     <div className="ag-grid-wrapper" style={{ width: '100%', height: '100%' }}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />

@@ -24,7 +24,7 @@ const gridOptions = {
 
 
 function OverheadSimulation(props) {
-    const { list, technology, master, isImpactedMaster } = props
+    const { list, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -408,6 +408,14 @@ function OverheadSimulation(props) {
         for (let item of tempObjVal) {
             objectSend.push(item)
         }
+
+        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
+            let obj = {}
+            obj.SimulationId = item.value
+            return obj
+
+        })
+        obj.SimulationIds = tempObject
 
         obj.SimulationOverheadProfit = objectSend
 

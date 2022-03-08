@@ -504,7 +504,7 @@ function ProcessCost(props) {
                           <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
-                          <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
+                          <td>{(item?.ProductionPerHour === '-' || item?.ProductionPerHour === 0 || item?.ProductionPerHour === null || item?.ProductionPerHour === undefined) ? '-' : checkForDecimalAndNull(item.ProductionPerHour, getConfigurationKey().NoOfDecimalForInputOutput)}</td>
                           <td style={{ width: 150 }}>
                             <span className="d-inline-block w90px mr-2">
                               {
@@ -572,7 +572,7 @@ function ProcessCost(props) {
                     })}
                   {gridData && gridData.length === 0 && (
                     <tr>
-                      <td colSpan={7}>
+                      <td colSpan={12}>
                         <NoContentFound title={EMPTY_DATA} />
                       </td>
                     </tr>

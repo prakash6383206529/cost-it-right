@@ -7,6 +7,7 @@ import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { ViewCostingContext } from '../../CostingDetails'
+import WarningMessage from '../../../../common/WarningMessage';
 
 function TransportationCost(props) {
   const { data, item } = props;
@@ -32,6 +33,7 @@ function TransportationCost(props) {
   const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState()
   const [transportCost, setTransportCost] = useState('')
+  const [percentageLimit, setPercentageLimit] = useState(false);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -113,6 +115,12 @@ function TransportationCost(props) {
         setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
+        if(event.target.value > 100) {
+          setPercentageLimit(true)
+        }
+        else if (event.target.value < 100) {
+          setPercentageLimit(false)
+        }
       } else {
         if (Quantity !== '') {
           const cost = Quantity * event.target.value;
@@ -127,6 +135,7 @@ function TransportationCost(props) {
       }
     } else {
       Toaster.warning('Please enter valid number.')
+      event.target.value ='';
     }
   }
 
@@ -183,7 +192,6 @@ function TransportationCost(props) {
     }
 
   }
-
   /**
 * @method onSubmit
 * @description Used to Submit the form
@@ -230,6 +238,7 @@ function TransportationCost(props) {
                 />
               </Col>
               <Col md="3">
+                <div className='p-relative'>
                 <TextFieldHookForm
                   label={`${TransportationType === 'Percentage' ? 'Percentage' : 'Rate'}`}
                   name={`Rate`}
@@ -255,6 +264,8 @@ function TransportationCost(props) {
                   errors={errors && errors.Rate}
                   disabled={TransportationType === 'Fixed' || CostingViewMode ? true : false}
                 />
+                 {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} message={"Percentage cannot be greater than 100"}/>}
+                 </div>
               </Col>
               <Col md="3">
                 <TextFieldHookForm
