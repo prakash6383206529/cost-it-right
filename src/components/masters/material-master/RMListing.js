@@ -38,7 +38,7 @@ class RMListing extends Component {
             rowData: null,
             showPopup: false,
             deletedId: '',
-            isLoader:false
+            isLoader: false
         }
     }
 
@@ -55,8 +55,8 @@ class RMListing extends Component {
     * @description Get list data
     */
     getListData = () => {
-        this.setState({isLoader:true})
-        this.props.getMaterialTypeDataListAPI(res => { this.setState({isLoader:false}) });
+        this.setState({ isLoader: true })
+        this.props.getMaterialTypeDataListAPI(res => { this.setState({ isLoader: false }) });
     }
 
     /**
@@ -64,7 +64,7 @@ class RMListing extends Component {
     * @description  used to cancel filter form
     */
     closeDrawer = (e = '') => {
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         this.setState({ isOpen: false }, () => {
             this.getListData()
         })
@@ -271,8 +271,8 @@ class RMListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            noRowsOverlayComponent: NoContentFound
         };
 
 
@@ -322,7 +322,7 @@ class RMListing extends Component {
 
                 <Row>
                     <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>

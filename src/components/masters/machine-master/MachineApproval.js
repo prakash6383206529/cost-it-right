@@ -14,6 +14,7 @@ import { masterFinalLevelUser } from '../actions/Material'
 import MasterSendForApproval from '../MasterSendForApproval';
 import Toaster from '../../common/Toaster'
 import DayTime from '../../common/DayTimeWrapper'
+import NoContentFound from '../../common/NoContentFound';
 
 
 
@@ -187,7 +188,7 @@ function MachineApproval(props) {
         statusFormatter: statusFormatter,
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
-
+        customNoRowsOverlay:NoContentFound
     };
 
     const isRowSelectable = rowNode => rowNode.data ? rowNode.data.Status === DRAFT : false
@@ -218,7 +219,7 @@ function MachineApproval(props) {
             <Row>
                 <Col>
                     <div className={`ag-grid-react`}>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${approvalList && approvalList?.length <= 0 ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${machineApprovalList && machineApprovalList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
