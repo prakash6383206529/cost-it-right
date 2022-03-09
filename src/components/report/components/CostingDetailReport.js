@@ -155,7 +155,7 @@ function ReportListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.Status}</div>
+        return <div className={cell}>{row.DisplayStatus}</div>
     }
 
     /**
@@ -677,7 +677,7 @@ function ReportListing(props) {
                         {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
 
 
                         {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}
