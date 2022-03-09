@@ -71,7 +71,9 @@ class OperationListing extends Component {
         this.props.getVendorWithVendorCodeSelectList()
         if (this.props.isSimulation) {
             if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
                 this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                    this.props?.changeSetLoader(false)
                     this.setState({ tableData: res.data.DataList })
                 })
             }
@@ -135,7 +137,13 @@ class OperationListing extends Component {
 
 
         if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(false)
+            }
             this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(true)
+                }
                 this.setState({ isLoader: false })
                 if (res.status === 204 && res.data === '') {
                     this.setState({ tableData: [], })
@@ -275,18 +283,18 @@ class OperationListing extends Component {
         let isDeleteButton = false
 
 
-            if (EditAccessibility && !rowData.IsOperationAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
-        
+        if (EditAccessibility && !rowData.IsOperationAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
 
-            if (DeleteAccessibility && !rowData.IsOperationAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+
+        if (DeleteAccessibility && !rowData.IsOperationAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
 
         return (
