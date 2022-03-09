@@ -618,11 +618,6 @@ function Tool(props) {
                           control={control}
                           register={register}
                           mandatory={false}
-                          // rules={{
-                          //     required: false,
-                          //     pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
-                          //     max: { value: 100, message: 'Percentage cannot be greater than 100' },
-                          // }}
                           rules={{
                             required: false,
                             pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
@@ -663,7 +658,7 @@ function Tool(props) {
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
-                          //errors={errors.maintanencePercentage}
+                          errors={errors.maintanencePercentage}
                           disabled={CostingViewMode ? true : false}
 
                         />
