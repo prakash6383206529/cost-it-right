@@ -158,23 +158,8 @@ function OPSImulation(props) {
                 return null;
             }
         })
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
         obj.SimulationIds = tokenForMultiSimulation
->>>>>>> 1bb9fa597 (Token API changes in impactedmaster and api calling checkbox)
-        obj.SimulationRawMaterials = tempArr
-        console.log('obj: ', obj);
-=======
-        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
-            let obj = {}
-            obj.SimulationId = item.value
-            return obj
->>>>>>> 04448985a (Token API integration)
-
-        })
-        obj.SimulationIds = tempObject
         obj.SimulationRawMaterials = tempArr
         dispatch(runSimulationOnSelectedOverheadProfitCosting(obj, res => {
 

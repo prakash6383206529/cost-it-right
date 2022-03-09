@@ -916,16 +916,19 @@ function Simulation(props) {
                                     </div>
                                 </div>
                             }
-                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn' onClick={callAPIOnClick}>
-                                <div className='save-icon'></div>
-                            </button>}
-                        </Col>
-                    </Row>
+                            {
+                                (token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn' onClick={callAPIOnClick}>
+                                    <div className='save-icon'></div>
+                                </button>
+                            }
+                        </Col >
+                    </Row >
 
                     {/* <RMDomesticListing isSimulation={true} /> */}
                     {showMasterList && renderModule(master)}
 
-                    {showMasterList &&
+                    {
+                        showMasterList &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
@@ -954,22 +957,25 @@ function Simulation(props) {
                     }
 
 
-                    {showUploadDrawer &&
+                    {
+                        showUploadDrawer &&
                         <SimulationUploadDrawer
                             isOpen={showUploadDrawer}
                             closeDrawer={closeDrawer}
                             anchor={"right"}
                             master={master}
-                        />}
-                </div>
+                        />
+                    }
+                </div >
             }
-            {loader ? <LoaderCustom /> :
+            {
+                loader ? <LoaderCustom /> :
 
-                <div className="simulation-edit">
-                    {showEditTable && editMasterPage(master.value)}
-                </div>
+                    <div className="simulation-edit">
+                        {showEditTable && editMasterPage(master.value)}
+                    </div>
             }
-        </div>
+        </div >
     );
 }
 

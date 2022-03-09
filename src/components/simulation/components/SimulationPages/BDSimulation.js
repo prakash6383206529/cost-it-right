@@ -436,7 +436,7 @@ function BDSimulation(props) {
                                             defaultColDef={defaultColDef}
                                             domLayout='autoHeight'
                                             // columnDefs={c}
-                                            rowData={list}
+                                            rowData={[]}
                                             pagination={true}
                                             paginationPageSize={10}
                                             onGridReady={onGridReady}

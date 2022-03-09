@@ -228,6 +228,11 @@ function RMDomesticListing(props) {
             isEditbale = false
         }
 
+        if (EditAccessibility && !rowData.IsRMAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
         if (DeleteAccessibility && !rowData.IsRMAssociated) {
             isDeleteButton = true
