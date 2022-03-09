@@ -12,11 +12,17 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import _ from 'lodash'
 import { checkForDecimalAndNull } from '../../../helper';
+import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
+import { AssemblyWiseImpact } from '../../../config/constants'
+import ReactExport from 'react-export-excel';
 
 const gridOptions = {};
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpactSummary(props) {
-    const { impactType, dataForAssemblyImpact, isPartImpactAssembly,isImpactDrawer } = props;
+    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -47,7 +53,7 @@ function AssemblyWiseImpactSummary(props) {
                 });
             
                 uniqueArr && uniqueArr.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta: isImpactDrawer?item.Variance:item.POVariance, IsSinglePartImpact: false })
+                    requestData.push({ CostingId: item.CostingId, delta: isImpactDrawer ? item.Variance : item.POVariance, IsSinglePartImpact: false })
                     return null
                 })
 
@@ -97,6 +103,28 @@ function AssemblyWiseImpactSummary(props) {
         sortable: true,
     };
 
+
+    const onBtExport = () => {
+        let tempArr = []
+        tempArr = simulationAssemblyListSummary
+
+
+        return returnExcelColumn(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
+    };
+
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+
+        return (
+
+            <ExcelSheet data={TempData} name={AssemblyWiseImpact}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+
+
     /**
 * @method hyphenFormatter
 */
@@ -130,6 +158,12 @@ function AssemblyWiseImpactSummary(props) {
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
+                        <ExcelFile filename={'AssemblyWise Impact'} fileExtension={'.xls'} element={
+                            <button type="button" className={'user-btn mr5 ml-2'}><div className="download mr-0" title="Download"></div>
+                                {/* DOWNLOAD */}
+                            </button>}>
+                            {onBtExport()}
+                        </ExcelFile>
                     </div>
                     <div>
                     </div>
@@ -138,7 +172,7 @@ function AssemblyWiseImpactSummary(props) {
             <Row>
                 <Col>
                     {(loader) && <LoaderCustom />}
-                    <div className={`ag-grid-wrapper height-width-wrapper ${simulationAssemblyListSummary && simulationAssemblyListSummary?.length <=0 ?"overlay-contain": ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper ${simulationAssemblyListSummary && simulationAssemblyListSummary?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div
                             className="ag-theme-material"
                         >
