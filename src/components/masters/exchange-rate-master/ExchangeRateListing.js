@@ -419,6 +419,7 @@ class ExchangeRateListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={this.frameworkComponents}
                                 >

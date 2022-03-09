@@ -92,13 +92,13 @@
     .img_loader{
         max-width: 330px;
         object-fit: contain;
-        max-height: calc(100% - 2em);
+        max-height: 100%;
     }
 
     .loaderinner{
         display: inline-block;
         font-size: 30px;
-        padding: 1em;
+        padding: 0em;
         position: relative;
         vertical-align: top;
         transition: 0.3s color, 0.3s border, 0.3s transform, 0.3s opacity;
@@ -106,6 +106,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        max-height: 240px;
     }
     [class*=loader-] {
         display: inline-block;

@@ -332,7 +332,8 @@ class SpecificationListing extends Component {
 
         const frameworkComponents = {
             totalValueRenderer: this.buttonFormatter,
-            hyphenFormatter: this.hyphenFormatter
+            hyphenFormatter: this.hyphenFormatter,
+            customNoRowsOverlay: NoContentFound,
         };
 
 
