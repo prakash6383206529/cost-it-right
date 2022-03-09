@@ -1031,7 +1031,7 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='New Other Cost'></AgGridColumn>
                                                     <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Old Discount'></AgGridColumn>
                                                     <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='New Discount'></AgGridColumn>
-                                                    <AgGridColumn width={150} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={110} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                                                     {/* </>} */}
                                                 </AgGridReact>
 
