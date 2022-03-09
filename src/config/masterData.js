@@ -2911,3 +2911,17 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
 ]
+
+
+
+
+export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
+    { label: "Assembly Number", value: "PartNumber", },
+    { label: "Revision Number", value: "RevisionNumber", },
+    { label: "Name", value: "PartName", },
+    { label: "Child's Level", value: "Level", },
+    { label: "Old PO Price/Assembly", value: "OldPrice", },
+    { label: "New PO Price/Assembly", value: "NewPrice", },
+    { label: "Variance/Assembly", value: "Variance", },
+
+]
