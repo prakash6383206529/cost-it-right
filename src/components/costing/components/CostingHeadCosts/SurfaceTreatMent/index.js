@@ -11,6 +11,7 @@ import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
+import { useState } from 'react';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -27,6 +28,7 @@ function SurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const [transportationObject, setTransportationObject] = useState({})
 
   /**
   * @method toggleDrawer
@@ -49,11 +51,25 @@ function SurfaceTreatment(props) {
 
   const onSubmit = data => toggleDrawer('')
 
+
+
+  const setTransportationObj = (obj) => {
+
+    setTransportationObject(obj)
+
+  }
+
+
+
   /**
   * @method saveData
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
+
+    if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
+      return false
+    }
 
     if (props.IsAssemblyCalculation) {
       const tabData = RMCCTabData[0]
@@ -259,6 +275,7 @@ function SurfaceTreatment(props) {
                             index={props.index}
                             data={transportationData}
                             item={props.item}
+                            getTransportationObj={setTransportationObj}
                             setTransportationCost={props.setTransportationCost}
                             IsAssemblyCalculation={props.IsAssemblyCalculation}
                             setAssemblyTransportationCost={props.setAssemblyTransportationCost}
