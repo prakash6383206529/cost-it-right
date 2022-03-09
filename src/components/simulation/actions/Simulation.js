@@ -45,7 +45,7 @@ import {
     EXCHANGE_RATE_DATALIST,
     PROCESS,
     GET_RM_DOMESTIC_LIST,
-    GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION,
+    GET_VALUE_TO_SHOW_COSTING_SIMULATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -211,7 +211,7 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                     IsSurfaceTreatmentSimulation: response.data.Data.IsSurfaceTreatmentSimulation
                 }
                 dispatch({
-                    type: GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION,
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
                     payload: tempData
                 })
                 dispatch({
@@ -619,15 +619,20 @@ export function uploadSimulationAttachment(data, callback) {
 export function getLastSimulationData(vendorId, effectiveDate, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
+        const structureOfData = {
+            ExchangeRateImpactedMasterDataList: [],
+            OperationImpactedMasterDataList: [],
+            RawMaterialImpactedMasterDataList: []
+        }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
         const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_LAST_SIMULATION_DATA,
-                    payload: response.data.Data,
-                });
+                    payload: response.status === 204 ? structureOfData : response.data.Data
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -641,15 +646,19 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
 export function getImpactedMasterData(simulationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
+        const structureOfData = {
+            ExchangeRateImpactedMasterDataList: [],
+            OperationImpactedMasterDataList: [],
+            RawMaterialImpactedMasterDataList: []
+        }
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,
-                    payload: response.data.Data,
-                    // payload: response.data.Data.ImpactedMasterDataList,
-                });
+                    payload: response.status === 204 ? structureOfData : response.data.Data
+                })
                 callback(response);
             }
         }).catch((error) => {
