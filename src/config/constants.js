@@ -1736,6 +1736,7 @@ export const Sob = "SOB"
 
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
+export const AssemblyWiseImpactt = "AssemblyWise-Impact"
 
 export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
@@ -1792,4 +1793,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.55";
+export const VERSION = "V1.2.56";
