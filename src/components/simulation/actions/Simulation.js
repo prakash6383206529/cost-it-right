@@ -202,13 +202,13 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
     return (dispatch) => {
         const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 let tempData = {
-                    IsBoughtOutPartSimulation: response.data.Data.IsBoughtOutPartSimulation,
-                    IsExchangeRateSimulation: response.data.Data.IsExchangeRateSimulation,
-                    IsOperationSimulation: response.data.Data.IsOperationSimulation,
-                    IsRawMaterialSimulation: response.data.Data.IsRawMaterialSimulation,
-                    IsSurfaceTreatmentSimulation: response.data.Data.IsSurfaceTreatmentSimulation
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -216,7 +216,7 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                 })
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
-                    payload: response.data.Data.SimulatedCostingList
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
                 callback(response)
             }
@@ -472,6 +472,7 @@ export function simulationApprovalRequestBySender(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
@@ -585,10 +586,21 @@ export function getExchangeCostingSimulationList(token, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                }
+                dispatch({
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+                    payload: tempData
+                })
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
-                    payload: response.data.Data.SimulatedCostingList
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
                 callback(response)
             }
@@ -724,11 +736,22 @@ export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatr
         const request = axios.get(`${API.getCostingSurfaceTreatmentSimulationList}?simulationId=${token}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                }
+                dispatch({
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+                    payload: tempData
+                })
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
                     payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
-                callback(response);
+                callback(response)
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

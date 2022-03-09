@@ -146,6 +146,7 @@ function OtherCostingSimulation(props) {
 
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+    const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
@@ -398,12 +399,13 @@ function OtherCostingSimulation(props) {
             hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost && costingList[0]?.NewDiscountCost === 0 ? true : false,
             hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost && costingList[0]?.NewNetOverheadAndProfitCost === 0 ? true : false
         })
-        setShowExchangeRateColumn(true)
-        setShowMachineRateColumn(true)
-        setShowSurfaceTreatmentColumn(true)
-        setShowOperationColumn(true)
-        setShowRMColumn(true)
-        setShowBOPColumn(true)
+
+        setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
+        setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
+        setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
+        setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
+        setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
+        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
 
     }
 
