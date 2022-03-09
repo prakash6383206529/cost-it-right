@@ -505,8 +505,6 @@ export const API = {
   saveComponentCostingSurfaceTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-surface-treatment`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
   getSurfaceTreatmentDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-surface-treatment-operation-list`,
-  draftSurfaceTreatmentSimulation: `${BASE_URL}/simulation/draft-simulation-surface-treatment`,
-  runSimulationOnSelectedSurfaceTreatmentCosting: `${BASE_URL}/simulation/run-simulation-on-surface-treatment-costing`,
 
   getOverheadProfitTabData: `${BASE_URL}/costing/get-costing-detail-for-overhead-and-profit`,
   getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
@@ -893,7 +891,6 @@ export const API = {
   draftCombinedProcessSimulation: `${BASE_URL}/simulation/draft-simulation-combined-process`,
   getverifyCombinedProcessSimulationList: `${BASE_URL}/simulation/get-all-combined-process-impacted-simulation-costings`,
   runSimulationOnSelectedCombinedProcessCosting: `${BASE_URL}/simulation/run-simulation-on-selected-combined-process-costing`,
-  getverifySurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-verify-surface-treatment-simulation-list`,
   getCombinedProcessCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-combined-process-costings`,
   getSelectListOfSimulationLinkingTokens: `${BASE_URL}/simulation/select-list-get-simulation-linking-tokens`,
   getFgWiseImpactData: `${BASE_URL}/sap-integration/get-fg-wise-impact-data`,
