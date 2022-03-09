@@ -79,6 +79,7 @@ function TransportationCost(props) {
       props.setAssemblyTransportationCost(tempObj, Params, JSON.stringify(tempObj) !== JSON.stringify(OldTransportObj) ? true : false)
     } else {
       props.setTransportationCost(tempObj, Params)
+      props.getTransportationObj(tempObj)
     }
 
   }, [uom, Rate, Quantity, transportCost]);
@@ -115,7 +116,7 @@ function TransportationCost(props) {
         setTransportCost(checkForNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value)))
         setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
         setRate(event.target.value)
-        if(event.target.value > 100) {
+        if (event.target.value > 100) {
           setPercentageLimit(true)
         }
         else if (event.target.value < 100) {
@@ -135,7 +136,7 @@ function TransportationCost(props) {
       }
     } else {
       Toaster.warning('Please enter valid number.')
-      event.target.value ='';
+      event.target.value = '';
     }
   }
 
@@ -239,33 +240,33 @@ function TransportationCost(props) {
               </Col>
               <Col md="3">
                 <div className='p-relative'>
-                <TextFieldHookForm
-                  label={`${TransportationType === 'Percentage' ? 'Percentage' : 'Rate'}`}
-                  name={`Rate`}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.'
-                    },
-                  }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  handleChange={(e) => {
-                    e.preventDefault()
-                    handleRateChange(e)
-                  }}
-                  errors={errors && errors.Rate}
-                  disabled={TransportationType === 'Fixed' || CostingViewMode ? true : false}
-                />
-                 {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} message={"Percentage cannot be greater than 100"}/>}
-                 </div>
+                  <TextFieldHookForm
+                    label={`${TransportationType === 'Percentage' ? 'Percentage' : 'Rate'}`}
+                    name={`Rate`}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.'
+                      },
+                    }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    handleChange={(e) => {
+                      e.preventDefault()
+                      handleRateChange(e)
+                    }}
+                    errors={errors && errors.Rate}
+                    disabled={TransportationType === 'Fixed' || CostingViewMode ? true : false}
+                  />
+                  {TransportationType === 'Percentage' && percentageLimit && <WarningMessage dClass={"error-message"} message={"Percentage cannot be greater than 100"} />}
+                </div>
               </Col>
               <Col md="3">
                 <TextFieldHookForm
