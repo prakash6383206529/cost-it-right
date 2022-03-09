@@ -85,8 +85,13 @@ class BOPDomesticListing extends Component {
 
 
         if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
-
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(false)
+            }
             this.props.getBOPDomesticDataList(filterData, (res) => {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(true)
+                }
                 this.setState({ isLoader: false })
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
@@ -168,20 +173,19 @@ class BOPDomesticListing extends Component {
 
         let isEditbale = false
         let isDeleteButton = false
-        
-            if (EditAccessibility && !rowData.IsBOPAssociated) {
-                isEditbale = true
-            } else {
-                isEditbale = false
-            }
-        
+        if (EditAccessibility && !rowData.IsBOPAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
-            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
-        
+
+        if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
+
 
         return (
             <>
@@ -305,7 +309,11 @@ class BOPDomesticListing extends Component {
     getFilterBOPData = () => {
         if (this.props.isSimulation) {
             if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, () => { })
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, () => {
+                    this.props?.changeSetLoader(false)
+
+                })
             }
             if (this.props.selectionForListingMasterAPI === 'Master') {
                 return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)

@@ -119,13 +119,8 @@ function BDSimulation(props) {
             }
             return null;
         })
-        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
-            let obj = {}
-            obj.SimulationId = item.value
-            return obj
 
-        })
-        obj.SimulationIds = tempObject
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
 
         dispatch(runSimulationOnSelectedBoughtOutPartCosting(obj, res => {
