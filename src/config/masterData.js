@@ -1740,7 +1740,7 @@ export const SurfaceTreatmentPartGetJSON = [
     }
 ]
 
-export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume']
+export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
 export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
 export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
@@ -2910,4 +2910,18 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
     { label: "CreatedBy", value: "CreatedBy", }
+]
+
+
+
+
+export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
+    { label: "Assembly Number", value: "PartNumber", },
+    { label: "Revision Number", value: "RevisionNumber", },
+    { label: "Name", value: "PartName", },
+    { label: "Child's Level", value: "Level", },
+    { label: "Old PO Price/Assembly", value: "OldPrice", },
+    { label: "New PO Price/Assembly", value: "NewPrice", },
+    { label: "Variance/Assembly", value: "Variance", },
+
 ]
