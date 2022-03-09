@@ -170,13 +170,13 @@ function AssemblyPart(props) {
               type="button"
               className={'user-btn add-oprn-btn'}
               onClick={DrawerToggle}>
-              <div className={'fa fa-eye pr-1'}></div>View OPER</button>
+              <div className={'fa fa-eye pr-1'}></div>OPER</button>
             :
             <button
               type="button"
               className={'user-btn add-oprn-btn'}
               onClick={DrawerToggle}>
-              <div className={'plus'}></div>{`${CostingViewMode ? 'View OPER' : 'OPER'}`}</button>}
+              <div className={ `${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{ 'OPER'}</button>}
         </td>
       </tr>
 
