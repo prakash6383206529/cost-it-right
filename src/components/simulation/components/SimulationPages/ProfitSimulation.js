@@ -429,6 +429,9 @@ function ProfitSimulation(props) {
                 return null;
             }
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
+
         obj.SimulationRawMaterials = tempArr
 
 

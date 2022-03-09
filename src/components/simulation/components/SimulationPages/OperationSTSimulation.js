@@ -267,6 +267,9 @@ function OperationSTSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
+
         obj.SimulationSurfaceTreatmentAndOperation = tempArr
         dispatch(runVerifySurfaceTreatmentSimulation(obj, res => {
             setIsDisable(false)

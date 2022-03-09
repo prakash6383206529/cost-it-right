@@ -186,6 +186,17 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
         const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.data.Data.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.data.Data.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.data.Data.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.data.Data.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.data.Data.IsSurfaceTreatmentSimulation
+                }
+                dispatch({
+                    type: GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION,
+                    payload: tempData
+                })
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
                     payload: response.data.Data.SimulatedCostingList
@@ -766,7 +777,7 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_LAST_SIMULATION_DATA,
-                    payload: response.data.Data.ImpactedMasterDataList,
+                    payload: response.data.Data,
                 });
                 callback(response);
             }

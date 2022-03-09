@@ -13,7 +13,7 @@ import {
     GET_COMBINED_PROCESS_LIST,
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_FG_WISE_IMPACT_DATA,
-    SET_SELECTED_VENDOR_SIMULATION,    
+    SET_SELECTED_VENDOR_SIMULATION,
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
@@ -22,7 +22,7 @@ import {
 
 const initialState = {
 
-count:1
+    count: 1
 
 
 
@@ -162,6 +162,19 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 getShowSimulationPage: action.payload
             };
+        case GET_TOKEN_SELECT_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                getTokenSelectList: action.payload
+            };
+        case GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION:
+            return {
+                ...state,
+                loading: false,
+                costingSimulationListAllKeys: action.payload
+            }
 
         default:
             return state;

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList,setShowSimulationPage } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -324,6 +324,7 @@ function CostingSimulation(props) {
     }
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
+    const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
@@ -732,6 +733,27 @@ function CostingSimulation(props) {
             hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost === 0 ? true : false,
             hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost === 0 ? true : false
         })
+
+        setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
+        setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
+        setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
+        setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
+        setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
+        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
+
+
+
+        // let arr = [], countFalse = 0
+        // costingList && costingList.map((item) => {
+        //     // item.IsBoughtOutPartSimulation
+        //     arr.push(item.IsBoughtOutPartSimulation)
+        //     countFalse = item.IsBoughtOutPartSimulation === false ? countFalse++ : countFalse
+        //     if (countFalse === costingList.length) {
+        //         setShowBOPColumn(false)
+        //     } else {
+        //         setShowBOPColumn(true)
+        //     }
+        // })
     }
 
 
@@ -860,12 +882,12 @@ function CostingSimulation(props) {
         oldRMFormatter: oldRMFormatter,
         buttonFormatter: buttonFormatter,
         newRMFormatter: newRMFormatter,
-        newOPERFormatter:newOPERFormatter,
-        oldOPERFormatter:oldOPERFormatter,
-        newSTFormatter:newSTFormatter,
-        oldSTFormatter:oldSTFormatter,
-        newNetSTFormatter:newNetSTFormatter,
-        oldNetSTFormatter:oldNetSTFormatter,
+        newOPERFormatter: newOPERFormatter,
+        oldOPERFormatter: oldOPERFormatter,
+        newSTFormatter: newSTFormatter,
+        oldSTFormatter: oldSTFormatter,
+        newNetSTFormatter: newNetSTFormatter,
+        oldNetSTFormatter: oldNetSTFormatter,
         // customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
         varianceFormatter: varianceFormatter,
@@ -1003,8 +1025,8 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="NewSurfaceTreatmentCost" headerName='New ST Cost' cellRenderer="newSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OldTranspotationCost" headerName='Old Extra Cost' ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewTranspotationCost" headerName='New Extra Cost' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost'  cellRenderer="oldNetSTFormatter"></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost'  cellRenderer="newNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName='Old Net ST Cost' cellRenderer="oldNetSTFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName='New Net ST Cost' cellRenderer="newNetSTFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetSurfaceTreatmentCostVariance" headerName='ST Variance' cellRenderer='varianceSTFormatter' ></AgGridColumn>
                                                     </>}
                                                     {isOperation && <>

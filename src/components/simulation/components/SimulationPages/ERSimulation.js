@@ -21,7 +21,7 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo,master } = props
+    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo, master } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -200,6 +200,8 @@ function ERSimulation(props) {
 
             return null;
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationExchangeRates = tempArr
 
         dispatch(runVerifyExchangeRateSimulation(obj, res => {
@@ -211,7 +213,7 @@ function ERSimulation(props) {
         // setShowVerifyPage(true)
     })
 
-   
+
     return (
         <div>
             <div className={`ag-grid-react`}>

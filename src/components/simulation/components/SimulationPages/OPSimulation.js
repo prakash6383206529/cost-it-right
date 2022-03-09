@@ -164,6 +164,11 @@ function OPSImulation(props) {
                 return null;
             }
         })
+<<<<<<< HEAD
+=======
+
+        obj.SimulationIds = tokenForMultiSimulation
+>>>>>>> 1bb9fa597 (Token API changes in impactedmaster and api calling checkbox)
         obj.SimulationRawMaterials = tempArr
         console.log('obj: ', obj);
 

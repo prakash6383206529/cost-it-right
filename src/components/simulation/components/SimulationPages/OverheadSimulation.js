@@ -409,6 +409,8 @@ function OverheadSimulation(props) {
             objectSend.push(item)
         }
 
+        obj.SimulationIds = tokenForMultiSimulation
+
         obj.SimulationOverheadProfit = objectSend
 
         dispatch(runVerifyOverheadSimulation(obj, res => {

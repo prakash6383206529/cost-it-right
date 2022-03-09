@@ -7,7 +7,7 @@ import {
   , getVendorListByVendorType
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -86,9 +86,21 @@ function RMImportListing(props) {
 
     if (isSimulation) {
 
+      if (selectionForListingMasterAPI === 'Combined') {
+        props?.changeSetLoader(true)
+        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+          props?.changeSetLoader(false)
+
+        }))
+      }
       setvalue({ min: 0, max: 0 });
     }
-    getDataList()
+    if (selectionForListingMasterAPI === 'Master') {
+      if (isSimulation) {
+        props?.changeTokenCheckBox(false)
+      }
+      getDataList()
+    }
   }, [])
 
 
@@ -125,6 +137,9 @@ function RMImportListing(props) {
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
       dispatch(getRMImportDataList(filterData, (res) => {
+        if (isSimulation) {
+          props?.changeTokenCheckBox(true)
+        }
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           let DynamicData = res.data.DynamicData;
@@ -207,20 +222,20 @@ function RMImportListing(props) {
     let isEditbale = false
     let isDeleteButton = false
 
-    
-      if (EditAccessibility && !rowData.IsRMAssociated) {
-        isEditbale = true
-      } else {
-        isEditbale = false
-      }
-    
-    
-      if (DeleteAccessibility && !rowData.IsRMAssociated) {
-        isDeleteButton = true
-      } else {
-        isDeleteButton = false
-      }
-    
+
+    if (EditAccessibility && !rowData.IsRMAssociated) {
+      isEditbale = true
+    } else {
+      isEditbale = false
+    }
+
+
+    if (DeleteAccessibility && !rowData.IsRMAssociated) {
+      isDeleteButton = true
+    } else {
+      isDeleteButton = false
+    }
+
 
     return (
       <>
@@ -524,8 +539,8 @@ function RMImportListing(props) {
                 <AgGridColumn field="Currency"></AgGridColumn>
                 <AgGridColumn field="BasicRate"></AgGridColumn>
                 <AgGridColumn field="ScrapRate"></AgGridColumn>
-                 {/* SHEARING AND FREIGHT COST WILL NOT COME HERE IN RE      */}
-                 <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
+                {/* SHEARING AND FREIGHT COST WILL NOT COME HERE IN RE      */}
+                <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                 <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost(INR)" cellRenderer='costFormatter'></AgGridColumn>
 
                 <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

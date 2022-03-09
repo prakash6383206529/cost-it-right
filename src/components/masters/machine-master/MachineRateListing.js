@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, MACHINE_MASTER_ID } from '../../../config/constants';
+import { EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID } from '../../../config/constants';
 import {
     getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
     getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
@@ -64,7 +64,18 @@ class MachineRateListing extends Component {
         this.props.getInitialVendorWithVendorCodeSelectList(() => { })
         this.props.getInitialMachineTypeSelectList(() => { })
         this.props.getInitialProcessesSelectList(() => { })
-        this.getDataList()
+        if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
+                    this.props?.changeSetLoader(false)
+
+                })
+            }
+        }
+        if (this.props.selectionForListingMasterAPI === 'Master') {
+            this.getDataList()
+        }
     }
 
 
@@ -79,8 +90,14 @@ class MachineRateListing extends Component {
         }
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(false)
+            }
             this.setState({ isLoader: true })
             this.props.getMachineDataList(filterData, (res) => {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(true)
+                }
                 this.setState({ isLoader: false })
 
             })
@@ -177,19 +194,19 @@ class MachineRateListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        
-            if (EditAccessibility && !rowData.IsMachineAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
+
+        if (EditAccessibility && !rowData.IsMachineAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
 
 
-            if (DeleteAccessibility && !rowData.IsMachineAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+        if (DeleteAccessibility && !rowData.IsMachineAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
         return (
             <>

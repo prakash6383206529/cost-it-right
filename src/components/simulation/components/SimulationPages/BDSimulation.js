@@ -119,6 +119,8 @@ function BDSimulation(props) {
             }
             return null;
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
 
         dispatch(runSimulationOnSelectedBoughtOutPartCosting(obj, res => {
@@ -422,7 +424,7 @@ function BDSimulation(props) {
                             </Row>
                         }
                         <Row>
-                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -434,7 +436,7 @@ function BDSimulation(props) {
                                             defaultColDef={defaultColDef}
                                             domLayout='autoHeight'
                                             // columnDefs={c}
-                                            rowData={list}
+                                            rowData={[]}
                                             pagination={true}
                                             paginationPageSize={10}
                                             onGridReady={onGridReady}
