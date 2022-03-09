@@ -112,7 +112,7 @@ const FetchDrawer = (props) => {
 
                                 <Col md="12">
                                     <TextFieldHookForm
-                                        label="Part Code"
+                                        label="Product Code"
                                         name={'partCode'}
                                         Controller={Controller}
                                         control={control}
