@@ -13,7 +13,7 @@ import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import _ from 'lodash'
 import { checkForDecimalAndNull } from '../../../helper';
 import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
-import { AssemblyWiseImpact } from '../../../config/constants'
+import { AssemblyWiseImpactt } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 
 const gridOptions = {};
@@ -118,7 +118,7 @@ function AssemblyWiseImpactSummary(props) {
 
         return (
 
-            <ExcelSheet data={TempData} name={AssemblyWiseImpact}>
+            <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
