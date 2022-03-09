@@ -27,7 +27,7 @@ const gridOptions = {
 
 
 function BDSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -119,6 +119,8 @@ function BDSimulation(props) {
             }
             return null;
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
 
         dispatch(runSimulationOnSelectedBoughtOutPartCosting(obj, res => {
@@ -422,7 +424,7 @@ function BDSimulation(props) {
                             </Row>
                         }
                         <Row>
-                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <=0 ?"overlay-contain": ""}`}>
+                            <Col className={`add-min-height mb-3 sm-edit-page  ${list && list?.length <= 0 ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />

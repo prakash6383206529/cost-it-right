@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ERSimulation from './SimulationPages/ERSimulation';
@@ -12,29 +12,51 @@ export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
 
     const renderMaster = () => {
-        switch (String(masterId)) {
-            case EXCHNAGERATE:
-                return <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} />
-            case RMDOMESTIC:
-                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
-            case RMIMPORT:
-                return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
-            case SURFACETREATMENT:
-                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />
-            case OPERATIONS:
-                return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />
-            case MACHINERATE:
-                return <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
-            case BOPDOMESTIC:
-                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
-            case BOPIMPORT:
-                return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+        let rmListing = data?.RawMaterialImpactedMasterDataList?.length === 0 ? false : true
+        let operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
+        let exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
+        let bopListing = data?.BOPImpactedMasterDataList?.length === 0 ? false : true
+        let surfaceTreatment = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
+        let machineRateListing = data?.MachineRateImpactedMasterDataList?.length === 0 ? false : true
 
 
-            default:
-                break;
-        }
+        return (<>
+            {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.RawMaterialImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />}
+            {operationListing && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
+            {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} />}
+            {/* {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />} */}
+            {/* {surfaceTreatment && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />} */}
+            {/* {machineRateListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
+            {/* {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
+            {/* {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
+        </>
+        )
+
     }
+
+    //     switch (String(masterId)) {
+    //         case EXCHNAGERATE:
+    //             return <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} />
+    //         case RMDOMESTIC:
+    //             return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
+    //         case RMIMPORT:
+    //             return <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />
+    //         case SURFACETREATMENT:
+    //             return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />
+    //         case OPERATIONS:
+    //             return <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />
+    //         case MACHINERATE:
+    //             return <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+    //         case BOPDOMESTIC:
+    //             return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+    //         case BOPIMPORT:
+    //             return <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />
+
+
+    //         default:
+    //             break;
+    //     }
+    // }
 
     return (
         <>

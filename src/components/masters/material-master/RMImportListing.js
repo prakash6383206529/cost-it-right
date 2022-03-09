@@ -7,7 +7,7 @@ import {
   , getVendorListByVendorType
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMIMPORT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -29,6 +29,7 @@ import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -38,7 +39,7 @@ const gridOptions = {};
 
 
 function RMImportListing(props) {
-  const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, ViewRMAccessibility } = props;
+  const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
 
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
@@ -86,9 +87,21 @@ function RMImportListing(props) {
 
     if (isSimulation) {
 
+      if (selectionForListingMasterAPI === 'Combined') {
+        props?.changeSetLoader(true)
+        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+          props?.changeSetLoader(false)
+
+        }))
+      }
       setvalue({ min: 0, max: 0 });
     }
-    getDataList()
+    if (selectionForListingMasterAPI === 'Master') {
+      if (isSimulation) {
+        props?.changeTokenCheckBox(false)
+      }
+      getDataList()
+    }
   }, [])
 
 
@@ -125,6 +138,9 @@ function RMImportListing(props) {
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
       dispatch(getRMImportDataList(filterData, (res) => {
+        if (isSimulation) {
+          props?.changeTokenCheckBox(true)
+        }
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           let DynamicData = res.data.DynamicData;
@@ -207,20 +223,20 @@ function RMImportListing(props) {
     let isEditbale = false
     let isDeleteButton = false
 
-    
-      if (EditAccessibility && !rowData.IsRMAssociated) {
-        isEditbale = true
-      } else {
-        isEditbale = false
-      }
-    
-    
-      if (DeleteAccessibility && !rowData.IsRMAssociated) {
-        isDeleteButton = true
-      } else {
-        isDeleteButton = false
-      }
-    
+
+    if (EditAccessibility && !rowData.IsRMAssociated) {
+      isEditbale = true
+    } else {
+      isEditbale = false
+    }
+
+
+    if (DeleteAccessibility && !rowData.IsRMAssociated) {
+      isDeleteButton = true
+    } else {
+      isDeleteButton = false
+    }
+
 
     return (
       <>

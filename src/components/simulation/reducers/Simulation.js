@@ -14,6 +14,8 @@ import {
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
     SET_SHOW_SIMULATION_PAGE,
+    GET_TOKEN_SELECT_LIST,
+    GET_VALUE_TO_SHOW_COSTING_SIMULATION,
 } from '../../../config/constants';
 
 const initialState = {
@@ -121,6 +123,19 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 getShowSimulationPage: action.payload
             };
+        case GET_TOKEN_SELECT_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                getTokenSelectList: action.payload
+            };
+        case GET_VALUE_TO_SHOW_COSTING_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                costingSimulationListAllKeys: action.payload
+            }
 
         default:
             return state;

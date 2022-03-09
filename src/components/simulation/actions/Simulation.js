@@ -27,6 +27,25 @@ import {
     GET_VERIFY_OVERHEAD_SIMULATION_LIST,
     GET_VERIFY_PROFIT_SIMULATION_LIST,
     SET_SHOW_SIMULATION_PAGE,
+    GET_TOKEN_SELECT_LIST,
+    GET_RAW_MATERIAL_FILTER_DYNAMIC_DATA,
+    RMDOMESTIC,
+    RMIMPORT,
+    BOPDOMESTIC,
+    GET_RM_IMPORT_LIST,
+    GET_BOP_DOMESTIC_DATA_LIST,
+    BOPIMPORT,
+    GET_BOP_IMPORT_DATA_LIST,
+    OPERATIONS,
+    GET_OPERATION_COMBINED_DATA_LIST,
+    SURFACETREATMENT,
+    MACHINERATE,
+    GET_MACHINE_DATALIST_SUCCESS,
+    EXCHNAGERATE,
+    EXCHANGE_RATE_DATALIST,
+    PROCESS,
+    GET_RM_DOMESTIC_LIST,
+    GET_VALUE_TO_SHOW_COSTING_SIMULATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -184,6 +203,17 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
         const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                }
+                dispatch({
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+                    payload: tempData
+                })
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
                     payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
@@ -589,15 +619,20 @@ export function uploadSimulationAttachment(data, callback) {
 export function getLastSimulationData(vendorId, effectiveDate, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
+        const structureOfData = {
+            ExchangeRateImpactedMasterDataList: [],
+            OperationImpactedMasterDataList: [],
+            RawMaterialImpactedMasterDataList: []
+        }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
         const request = axios.get(`${API.getLastSimulationData}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_LAST_SIMULATION_DATA,
-                    payload: response.data.Data.ImpactedMasterDataList,
-                });
+                    payload: response.status === 204 ? structureOfData : response.data.Data
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -611,14 +646,19 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
 export function getImpactedMasterData(simulationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
+        const structureOfData = {
+            ExchangeRateImpactedMasterDataList: [],
+            OperationImpactedMasterDataList: [],
+            RawMaterialImpactedMasterDataList: []
+        }
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_IMPACTED_MASTER_DATA,
-                    payload: response.data.Data.ImpactedMasterDataList,
-                });
+                    payload: response.status === 204 ? structureOfData : response.data.Data
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -951,3 +991,155 @@ export function setShowSimulationPage(Data) {
         // callback();
     }
 };
+
+/**
+* @method getTokenSelectList
+* @description Used to get select list of Vendor's
+*/
+export function getTokenSelectListAPI(obj, callback) {
+
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_TOKEN_SELECT_LIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getListingForSimulationCombined(requestData, master, callback) {
+    return (dispatch) => {
+        switch (master) {
+            case RMDOMESTIC:
+                dispatch({
+                    type: GET_RM_DOMESTIC_LIST,
+                    payload: []
+                })
+                break;
+
+            case RMIMPORT:
+                dispatch({
+                    type: GET_RM_IMPORT_LIST,
+                    payload: []
+                })
+                break;
+
+            case BOPDOMESTIC:
+                dispatch({
+                    type: GET_BOP_DOMESTIC_DATA_LIST,
+                    payload: []
+                })
+                break;
+
+            case BOPIMPORT:
+                dispatch({
+                    type: GET_BOP_IMPORT_DATA_LIST,
+                    payload: []
+                })
+                break;
+
+            case OPERATIONS:
+            case SURFACETREATMENT:
+                dispatch({
+                    type: GET_OPERATION_COMBINED_DATA_LIST,
+                    payload: []
+                })
+                break;
+
+            case MACHINERATE:
+                dispatch({
+                    type: GET_MACHINE_DATALIST_SUCCESS,
+                    payload: []
+                })
+                break;
+
+            case EXCHNAGERATE:
+                dispatch({
+                    type: EXCHANGE_RATE_DATALIST,
+                    payload: []
+                })
+                break;
+
+            //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
+
+            default:
+                break;
+        }
+        const request = axios.post(`${API.getListingForSimulationCombined}`, requestData, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                switch (master) {
+                    case RMDOMESTIC:
+                        dispatch({
+                            type: GET_RM_DOMESTIC_LIST,
+                            payload: response.data.DataList
+                        })
+                        break;
+
+                    case RMIMPORT:
+                        dispatch({
+                            type: GET_RM_IMPORT_LIST,
+                            payload: response.data.DataList
+                        })
+                        break;
+
+                    case BOPDOMESTIC:
+                        dispatch({
+                            type: GET_BOP_DOMESTIC_DATA_LIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case BOPIMPORT:
+                        dispatch({
+                            type: GET_BOP_IMPORT_DATA_LIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case OPERATIONS:
+                    case SURFACETREATMENT:
+                        dispatch({
+                            type: GET_OPERATION_COMBINED_DATA_LIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case MACHINERATE:
+                        dispatch({
+                            type: GET_MACHINE_DATALIST_SUCCESS,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    case EXCHNAGERATE:
+                        dispatch({
+                            type: EXCHANGE_RATE_DATALIST,
+                            payload: response.data.Data
+                        })
+                        break;
+
+                    //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
+
+                    default:
+                        break;
+                }
+
+            }
+            callback(response)
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+

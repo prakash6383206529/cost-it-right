@@ -8,7 +8,7 @@ import {
     getRawMaterialFilterSelectList,
 } from '../actions/Material';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -26,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -37,8 +38,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility } = props;
-
+    const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
 
 
 
@@ -88,12 +88,19 @@ function RMDomesticListing(props) {
 
 
     useEffect(() => {
-
-        if (isSimulation) {
-
-            setvalue({ min: 0, max: 0 });
+        if (isSimulation && selectionForListingMasterAPI === 'Combined') {
+            props?.changeSetLoader(true)
+            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
+                props?.changeSetLoader(false)
+            }))
         }
-        getDataList()
+        setvalue({ min: 0, max: 0 });
+        if (selectionForListingMasterAPI === 'Master') {
+            if (isSimulation) {
+                props?.changeTokenCheckBox(false)
+            }
+            getDataList()
+        }
     }, [])
 
 
@@ -129,6 +136,9 @@ function RMDomesticListing(props) {
         setloader(true)
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, (res) => {
+                if (isSimulation) {
+                    props?.changeTokenCheckBox(true)
+                }
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     let DynamicData = res.data.DynamicData;
@@ -210,19 +220,19 @@ function RMDomesticListing(props) {
         let isEditbale = false
         let isDeleteButton = false
 
-    
-            if (EditAccessibility && !rowData.IsRMAssociated) {
-                isEditbale = true
-            } else {
-                isEditbale = false
-            }
+
+        if (EditAccessibility && !rowData.IsRMAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
 
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+        if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
 
         return (
@@ -274,9 +284,9 @@ function RMDomesticListing(props) {
     }
 
     /**
-  * @method shearingCostFormatter
-  * @description Renders buttons
-  */
+    * @method shearingCostFormatter
+    * @description Renders buttons
+    */
     const shearingCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-';

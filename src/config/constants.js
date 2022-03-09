@@ -906,6 +906,8 @@ export const API = {
   draftOverheadSimulation: `${BASE_URL}/simulation/draft-simulation-overhead`,
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
   getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
+  getTokenSelectListAPI: `${BASE_URL}/simulation/select-list-get-draft-token-number-by-technologyId`,
+  getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
 
   //SIMULATION APPROVAL
   getAllSimulationApprovalDepartment: `${BASE_URL}/app-simulation-approval-system/get-all-simulation-approval-department`,
@@ -1487,6 +1489,8 @@ export const SET_DATA_TEMP = 'SET_DATA_TEMP'
 export const GET_VERIFY_OVERHEAD_SIMULATION_LIST = 'GET_VERIFY_OVERHEAD_SIMULATION_LIST'
 export const GET_VERIFY_PROFIT_SIMULATION_LIST = 'GET_VERIFY_PROFIT_SIMULATION_LIST'
 export const SET_SHOW_SIMULATION_PAGE = 'SET_SHOW_SIMULATION_PAGE'
+export const GET_TOKEN_SELECT_LIST = 'GET_TOKEN_SELECT_LIST'
+export const GET_VALUE_TO_SHOW_COSTING_SIMULATION = 'GET_VALUE_TO_SHOW_COSTING_SIMULATION'
 
 //SIMULATION APPROVAL
 export const GET_SIMULATION_DEPARTMENT_LIST = 'GET_SIMULATION_DEPARTMENT_LIST'
@@ -1732,6 +1736,7 @@ export const Sob = "SOB"
 
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
+export const AssemblyWiseImpactt = "AssemblyWise-Impact"
 
 export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
@@ -1788,4 +1793,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.50";
+export const VERSION = "V1.2.56";
