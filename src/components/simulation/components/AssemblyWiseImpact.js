@@ -11,11 +11,17 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import { checkForDecimalAndNull } from '../../../helper';
+import ReactExport from 'react-export-excel';
+import { ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl } from '../../../config/masterData'
+import { AssemblyWiseImpactt } from '../../../config/constants'
 
 const gridOptions = {};
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function AssemblyWiseImpact(props) {
-    const { impactType, dataForAssemblyImpact, isPartImpactAssembly,isImpactDrawer } = props;
+    const { impactType, dataForAssemblyImpact, isPartImpactAssembly, isImpactDrawer } = props;
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null);
     const [loader, setloader] = useState(false);
@@ -35,14 +41,14 @@ function AssemblyWiseImpact(props) {
             if (isPartImpactAssembly) {
                 let obj = {
                     CostingId: dataForAssemblyImpact?.CostingId,
-                    delta: isImpactDrawer? dataForAssemblyImpact?.Variance :dataForAssemblyImpact.POVariance,
+                    delta: isImpactDrawer ? dataForAssemblyImpact?.Variance : dataForAssemblyImpact.POVariance,
                     IsSinglePartImpact: true
                 }
                 requestData = [obj]
 
             } else {
                 dataForAssemblyImpact && dataForAssemblyImpact.map(item => {
-                    requestData.push({ CostingId: item.CostingId, delta:isImpactDrawer? item.Variance :item.POVariance, IsSinglePartImpact: false })
+                    requestData.push({ CostingId: item.CostingId, delta: isImpactDrawer ? item.Variance : item.POVariance, IsSinglePartImpact: false })
                     return null
                 })
             }
@@ -62,13 +68,39 @@ function AssemblyWiseImpact(props) {
 
     }, [dataForAssemblyImpact])
 
+
+    const onBtExport = () => {
+
+        let tempArr = []
+        tempArr = simulationAssemblyList
+
+
+        return returnExcelColumn(ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, tempArr)
+    };
+
+
+    const returnExcelColumn = (data = [], TempData) => {
+
+
+        return (
+
+            <ExcelSheet data={TempData} name={AssemblyWiseImpactt}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+
+
+
+
+
+
     /**
     * @method hyphenFormatter
     */
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-        
+
     }
 
     /**
@@ -125,6 +157,12 @@ function AssemblyWiseImpact(props) {
                         <button type="button" className={`user-btn`} title="Reset Grid" onClick={() => resetState()}>
                             <div className="refresh mr-0"></div>
                         </button>
+                        <ExcelFile filename={'AssemblyWise Impact'} fileExtension={'.xls'} element={
+                            <button type="button" className={'user-btn mr5 ml-2'}><div className="download mr-0" title="Download"></div>
+                                {/* DOWNLOAD */}
+                            </button>}>
+                            {onBtExport()}
+                        </ExcelFile>
                     </div>
                     <div>
                     </div>
@@ -133,7 +171,7 @@ function AssemblyWiseImpact(props) {
             <Row>
                 <Col>
                     {(loader) && <LoaderCustom />}
-                    <div className={`ag-grid-wrapper height-width-wrapper  ${simulationAssemblyList && simulationAssemblyList?.length <=0 ?"overlay-contain": ""}`}>
+                    <div className={`ag-grid-wrapper height-width-wrapper  ${simulationAssemblyList && simulationAssemblyList?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div
                             className="ag-theme-material"
                         >
