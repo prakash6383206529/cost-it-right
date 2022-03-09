@@ -395,6 +395,13 @@ function OtherCostingSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
+    const VarianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return String(master) === String(EXCHNAGERATE) ? row.Variance : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
     const fourDecimalFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
@@ -600,7 +607,8 @@ function OtherCostingSimulation(props) {
         oldCCFormatter: oldCCFormatter,
         newCCFormatter: newCCFormatter,
         vendorFormatter: vendorFormatter,
-        fourDecimalFormatter: fourDecimalFormatter
+        fourDecimalFormatter: fourDecimalFormatter,
+        VarianceFormatter: VarianceFormatter
     };
 
     const VerifyImpact = () => {
@@ -702,7 +710,7 @@ function OtherCostingSimulation(props) {
                                                             <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='fourDecimalFormatter'></AgGridColumn>
                                                         </>
                                                     }
-                                                    <AgGridColumn width={140} field="NetCCVariance" headerName='Variance' cellRenderer='fourDecimalFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NetCCVariance" headerName='Variance' cellRenderer='VarianceFormatter'></AgGridColumn>
                                                     <AgGridColumn width={100} field="CostingId" headerName='Actions' type="rightAligned" cellRenderer='buttonFormatter'></AgGridColumn>
 
                                                 </AgGridReact>
