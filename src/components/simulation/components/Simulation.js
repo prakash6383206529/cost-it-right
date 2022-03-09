@@ -715,42 +715,12 @@ function Simulation(props) {
 
     const callAPIOnClick = () => {
         setloader(true)
-        // let temp = userDetails().Department
-        // temp = temp && temp.map((item) => {
-        //     item = item.DepartmentCode
-        //     return item
-        // })
-        // let tempValue = token
-        // tempValue = tempValue && tempValue.map((item) => {
-        //     let object = {}
-        //     object.SimulationId = item.value
-        //     return object
-        // })
-
-
-        // let obj = {
-
-        //     MasterId: Number(master.value),
-        //     TechnologyId: Number(technology.value),
-        //     // DepartmentCode: temp.join(),
-        //     DepartmentCode: '',
-        //     SimulationIds: tempValue
-        // }
-        // dispatch(getListingForSimulationCombined(obj, RMDOMESTIC, () => { }))
         setSelectionForListingMasterAPI('Combined')
-        // setObjectForCombinedTokenAPI(obj)
-
         setShowMasterList(false)
         setEditWarning(true);
-        // renderModule('')
         setTimeout(() => {
-            // dispatch(setTechnologyForSimulation(value))
-            // if (value !== '' && Object.keys(master).length > 0) {
-            // }
             setShowMasterList(true)
-            // renderModule(master)
         }, 700);
-
     }
 
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS

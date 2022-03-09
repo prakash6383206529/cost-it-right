@@ -73,8 +73,8 @@ function SimulationApprovalSummary(props) {
     const [loader, setLoader] = useState(true)
     const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
-    const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])    // from callback
-    const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])   //from reducer
+    const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
+    const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
 
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
