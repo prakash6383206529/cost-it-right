@@ -14,7 +14,8 @@ export const minValue = min => value =>
     value && value < min ? `Min value must be ${min}.` : undefined;
 
 
-export const minValue1 = minValue(0.1);
+export const minValue1 = minValue(1);
+export const minValueLessThan1 = minValue(0.1);
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
