@@ -1753,7 +1753,7 @@ function TabRMCC(props) {
                                   type="button"
                                   className={'user-btn add-oprn-btn'}
                                   onClick={bopHandlingDrawer}>
-                                  <div className={'plus'}></div>{`${CostingViewMode ? 'View BOP H' : 'BOP H'}`}</button>}
+                                  <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>}
                               </th>
                             }
                           </tr>

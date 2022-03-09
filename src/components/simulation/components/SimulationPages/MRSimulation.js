@@ -24,7 +24,7 @@ const gridOptions = {
 
 };
 function MRSimulation(props) {
-    const { list, isbulkUpload, rowCount, isImpactedMaster } = props
+    const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')

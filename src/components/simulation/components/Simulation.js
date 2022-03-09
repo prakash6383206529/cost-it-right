@@ -21,7 +21,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { applyEditCondSimulation, getFilteredData, getOtherCostingSimulation, isUploadSimulation } from '../../../helper';
+import { applyEditCondSimulation, getFilteredData, getOtherCostingSimulation, isUploadSimulation, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OtherCostingSimulation from './OtherCostingSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
@@ -230,7 +230,31 @@ function Simulation(props) {
         setTokenCheckBox(value)
     }
 
+
+
     const renderModule = (value) => {
+
+        let temp = userDetails().Department
+        temp = temp && temp.map((item) => {
+            item = item.DepartmentCode
+            return item
+        })
+        let tempValue = token
+        tempValue = tempValue && tempValue.map((item) => {
+            let object = {}
+            object.SimulationId = item.value
+            return object
+        })
+
+        let obj = {
+
+            MasterId: master.value,
+            TechnologyId: technology.value,
+            // DepartmentCode: temp.join(),
+            DepartmentCode: '',
+            SimulationIds: tempValue
+        }
+
         switch (value.value) {
             case RMDOMESTIC:
                 return (<RMDomesticListing isSimulation={true} technology={technology.value} apply={editTable} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} loaderTokenAPI={loader} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
@@ -253,7 +277,7 @@ function Simulation(props) {
             // case BOPIMPORT:
             //     return (<ProfitListing isSimulation={true} technology={technology.value} apply={editTable} />)
             case COMBINED_PROCESS:
-                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} />)
+                return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} />)
             default:
                 return <div className="empty-table-paecholder" />;
         }

@@ -23,6 +23,8 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
+
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -540,6 +542,7 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getPlantSelectListByVendor,
     getVendorWithVendorCodeSelectList,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,

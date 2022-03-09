@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -479,7 +480,8 @@ export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
     getCurrencySelectList,
-    getExchangeRateData
+    getExchangeRateData,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'ExchangeRateListing',
     onSubmitFail: errors => {

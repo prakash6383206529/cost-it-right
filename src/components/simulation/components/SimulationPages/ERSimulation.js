@@ -21,7 +21,7 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo, master } = props
+    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo, master, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')

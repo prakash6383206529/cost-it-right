@@ -26,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import { CheckApprovalApplicableMaster, getConfigurationKey, getFilteredData } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -37,7 +38,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility, selectionForListingMasterAPI } = props;
+    const { AddAccessibility, BulkUploadAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, ViewRMAccessibility, selectionForListingMasterAPI, objectForMultipleSimulation } = props;
 
 
 

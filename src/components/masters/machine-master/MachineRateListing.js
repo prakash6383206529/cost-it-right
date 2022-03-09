@@ -26,6 +26,7 @@ import ReactExport from 'react-export-excel';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { getFilteredData, CheckApprovalApplicableMaster } from '../../../helper'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -588,6 +589,7 @@ export default connect(mapStateToProps, {
     getMachineTypeSelectListByTechnology,
     getMachineTypeSelectListByVendor,
     getProcessSelectListByMachineType,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'MachineRateListing',
     enableReinitialize: true,

@@ -26,7 +26,7 @@ const gridOptions = {
 
 
 function ProfitSimulation(props) {
-    const { list, technology, master, isImpactedMaster } = props
+    const { list, technology, master, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
