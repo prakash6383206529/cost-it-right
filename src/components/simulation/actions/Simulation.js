@@ -45,7 +45,7 @@ import {
     EXCHANGE_RATE_DATALIST,
     PROCESS,
     GET_RM_DOMESTIC_LIST,
-    GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION,
+    GET_VALUE_TO_SHOW_COSTING_SIMULATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -211,7 +211,7 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                     IsSurfaceTreatmentSimulation: response.data.Data.IsSurfaceTreatmentSimulation
                 }
                 dispatch({
-                    type: GET_COLUMN_SHOWING_VALUE_COSTINGSIMULATION,
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
                     payload: tempData
                 })
                 dispatch({
