@@ -1732,6 +1732,7 @@ export const Sob = "SOB"
 
 export const AssemblyPart = "Assembly-part"
 export const ComponentPart = "Component-part"
+export const AssemblyWiseImpact = "AssemblyWise-Impact"
 
 export const MachineRate = "Machine-rate"
 export const ProcessMaster = "Process "
