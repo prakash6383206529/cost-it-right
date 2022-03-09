@@ -2937,7 +2937,6 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "AnyOtherCost", value: "AnyOtherCost", },
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
-    { label: "CreatedBy", value: "CreatedBy", },
     { label: 'SANumber', value: 'SANumber' },
     { label: 'LineNumber', value: 'LineNumber' }
 ]
@@ -2956,5 +2955,19 @@ export const REPORT_DOWNLOAD_SAP_EXCEl = [
 export const decimalOption = [
     { label: 'Round Off', value: 'RoundOff' },
     { label: 'Truncate', value: 'Truncate' },
-    { label: 'Per 100', value: 'Per100' }
+    { label: 'Per 100', value: 'Per100' },
+    { label: "CreatedBy", value: "CreatedBy", }
+
+]
+
+
+export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
+    { label: "Assembly Number", value: "PartNumber", },
+    { label: "Revision Number", value: "RevisionNumber", },
+    { label: "Name", value: "PartName", },
+    { label: "Child's Level", value: "Level", },
+    { label: "Old PO Price/Assembly", value: "OldPrice", },
+    { label: "New PO Price/Assembly", value: "NewPrice", },
+    { label: "Variance/Assembly", value: "Variance", },
+
 ]
