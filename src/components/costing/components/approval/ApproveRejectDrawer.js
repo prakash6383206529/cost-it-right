@@ -478,20 +478,20 @@ function ApproveRejectDrawer(props) {
 
             } else {
               if (IsFinalLevel) {
-                let pushObj = {}
-                let temp = []
-                let uniqueArr = _.uniqBy(costingList, function (o) {
-                  return o.CostingId;
-                });
+                // let pushObj = {}
+                // let temp = []
+                // let uniqueArr = _.uniqBy(costingList, function (o) {
+                //   return o.CostingId;
+                // });
 
-                uniqueArr && uniqueArr.map(item => {
-                  const vendor = item.VendorName.split('(')[1]
-                  temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
-                  return null
-                })
-                pushObj.LoggedInUserId = userLoggedIn
-                pushObj.AmmendentDataRequests = temp
-                dispatch(pushAPI(pushObj, () => { }))
+                // uniqueArr && uniqueArr.map(item => {
+                //   const vendor = item.VendorName.split('(')[1]
+                //   temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+                //   return null
+                // })
+                // pushObj.LoggedInUserId = userLoggedIn
+                // pushObj.AmmendentDataRequests = temp
+                // dispatch(pushAPI(pushObj, () => { }))
                 Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
                 props.closeDrawer('', 'submit', status)
               } else {
