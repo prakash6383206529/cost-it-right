@@ -7156,3 +7156,13 @@ left: 17rem;
     margin: 5px 0 2px 0 !important;
   }
 }
+.fg-wise-table {
+  .text-overflow {
+    @media screen and (max-width:$miniDesktop) {
+      max-width: 100px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}
