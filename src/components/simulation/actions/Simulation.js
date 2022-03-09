@@ -183,10 +183,10 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
     return (dispatch) => {
         const request = axios.get(`${API.getCostingSimulationList}?simulationId=${token}&plantId=${plantId}&rawMaterilId=${rawMatrialId}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
-                    payload: response.data.Data.SimulatedCostingList
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
                 callback(response)
             }
@@ -555,10 +555,10 @@ export function getExchangeCostingSimulationList(token, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
-                    payload: response.data.Data.SimulatedCostingList
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
                 callback(response)
             }
