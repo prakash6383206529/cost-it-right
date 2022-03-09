@@ -89,10 +89,16 @@ function RMDomesticListing(props) {
 
     useEffect(() => {
         if (isSimulation && selectionForListingMasterAPI === 'Combined') {
-            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, () => { }))
+            props?.changeSetLoader(true)
+            dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMDOMESTIC, (res) => {
+                props?.changeSetLoader(false)
+            }))
         }
         setvalue({ min: 0, max: 0 });
         if (selectionForListingMasterAPI === 'Master') {
+            if (isSimulation) {
+                props?.changeTokenCheckBox(false)
+            }
             getDataList()
         }
     }, [])
@@ -130,6 +136,9 @@ function RMDomesticListing(props) {
         setloader(true)
         if (!props.isMasterSummaryDrawer) {
             dispatch(getRMDomesticDataList(filterData, (res) => {
+                if (isSimulation) {
+                    props?.changeTokenCheckBox(true)
+                }
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
                     let DynamicData = res.data.DynamicData;
@@ -211,19 +220,19 @@ function RMDomesticListing(props) {
         let isEditbale = false
         let isDeleteButton = false
 
-    
-            if (EditAccessibility && !rowData.IsRMAssociated) {
-                isEditbale = true
-            } else {
-                isEditbale = false
-            }
+
+        if (EditAccessibility && !rowData.IsRMAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
 
-            if (DeleteAccessibility && !rowData.IsRMAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+        if (DeleteAccessibility && !rowData.IsRMAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
 
         return (

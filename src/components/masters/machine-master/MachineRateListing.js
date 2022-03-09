@@ -67,7 +67,11 @@ class MachineRateListing extends Component {
         this.props.getInitialProcessesSelectList(() => { })
         if (this.props.isSimulation) {
             if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => { })
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, MACHINERATE, () => {
+                    this.props?.changeSetLoader(false)
+
+                })
             }
         }
         if (this.props.selectionForListingMasterAPI === 'Master') {
@@ -87,8 +91,14 @@ class MachineRateListing extends Component {
         }
 
         if (this.props.isMasterSummaryDrawer !== undefined && !this.props.isMasterSummaryDrawer) {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(false)
+            }
             this.setState({ isLoader: true })
             this.props.getMachineDataList(filterData, (res) => {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(true)
+                }
                 this.setState({ isLoader: false })
 
             })
@@ -185,19 +195,19 @@ class MachineRateListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        
-            if (EditAccessibility && !rowData.IsMachineAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
+
+        if (EditAccessibility && !rowData.IsMachineAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
 
 
-            if (DeleteAccessibility && !rowData.IsMachineAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+        if (DeleteAccessibility && !rowData.IsMachineAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
         return (
             <>

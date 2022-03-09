@@ -67,7 +67,11 @@ class BOPImportListing extends Component {
 
         if (this.props.isSimulation) {
             if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => { })
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
+                    this.props?.changeSetLoader(false)
+
+                })
             }
             if (this.props.selectionForListingMasterAPI === 'Master') {
                 this.getDataList()
@@ -83,8 +87,9 @@ class BOPImportListing extends Component {
     * @description GET DATALIST OF IMPORT BOP
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
-
-
+        if (this.props.isSimulation) {
+            this.props?.changeTokenCheckBox(false)
+        }
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -93,6 +98,9 @@ class BOPImportListing extends Component {
         }
         this.setState({ isLoader: true })
         this.props.getBOPImportDataList(filterData, (res) => {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(true)
+            }
             this.setState({ isLoader: false })
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
@@ -183,20 +191,20 @@ class BOPImportListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        
-            if (EditAccessibility && !rowData.IsBOPAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
-        
-        
-            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
-        
+
+        if (EditAccessibility && !rowData.IsBOPAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
+
+
+        if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
+
 
         return (
             <>

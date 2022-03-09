@@ -119,13 +119,8 @@ function BDSimulation(props) {
             }
             return null;
         })
-        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
-            let obj = {}
-            obj.SimulationId = item.value
-            return obj
 
-        })
-        obj.SimulationIds = tempObject
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
 
         dispatch(runSimulationOnSelectedBoughtOutPartCosting(obj, res => {
@@ -441,7 +436,7 @@ function BDSimulation(props) {
                                             defaultColDef={defaultColDef}
                                             domLayout='autoHeight'
                                             // columnDefs={c}
-                                            rowData={list}
+                                            rowData={[]}
                                             pagination={true}
                                             paginationPageSize={10}
                                             onGridReady={onGridReady}

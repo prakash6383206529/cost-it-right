@@ -409,13 +409,7 @@ function OverheadSimulation(props) {
             objectSend.push(item)
         }
 
-        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
-            let obj = {}
-            obj.SimulationId = item.value
-            return obj
-
-        })
-        obj.SimulationIds = tempObject
+        obj.SimulationIds = tokenForMultiSimulation
 
         obj.SimulationOverheadProfit = objectSend
 
