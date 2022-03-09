@@ -141,7 +141,7 @@ export default function SimulationReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                costingSimulationListALLKEYS: action.payload
+                costingSimulationListAllKeys: action.payload
             }
 
         default:

@@ -63,7 +63,10 @@ class ExchangeRateListing extends Component {
             this.props.getCurrencySelectList(() => { })
             if (this.props.isSimulation) {
                 if (this.props.selectionForListingMasterAPI === 'Combined') {
-                    this.props.getListingForSimulationCombined(this.props.tokenArray, EXCHNAGERATE, () => { })
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.tokenArray, EXCHNAGERATE, () => {
+                        this.props?.changeSetLoader(false)
+                    })
                 }
                 if (this.props.selectionForListingMasterAPI === 'Master') {
                     this.getTableListData()
@@ -120,7 +123,13 @@ class ExchangeRateListing extends Component {
         let filterData = {
             currencyId: currencyId,
         }
+        if (this.props.isSimulation) {
+            this.props?.changeTokenCheckBox(false)
+        }
         this.props.getExchangeRateDataList(true, filterData, res => {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(true)
+            }
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {

@@ -302,7 +302,7 @@ function CostingSimulation(props) {
     }
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
-    const costingSimulationListALLKEYS = useSelector(state => state.simulation.costingSimulationListALLKEYS)
+    const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
 
@@ -720,12 +720,12 @@ function CostingSimulation(props) {
             hideOveheadAndProfit: costingList && costingList.length > 0 && NewNetOverheadAndProfitCostReducer(costingList, 'NewNetOverheadAndProfitCost')
         })
 
-        setShowBOPColumn(costingSimulationListALLKEYS?.IsBoughtOutPartSimulation === true ? true : false)
-        setShowSurfaceTreatmentColumn(costingSimulationListALLKEYS?.IsSurfaceTreatmentSimulation === true ? true : false)
-        setShowOperationColumn(costingSimulationListALLKEYS?.IsOperationSimulation === true ? true : false)
-        setShowRMColumn(costingSimulationListALLKEYS?.IsRawMaterialSimulation === true ? true : false)
-        setShowExchangeRateColumn(costingSimulationListALLKEYS?.IsExchangeRateSimulation === true ? true : false)
-        setShowMachineRateColumn(costingSimulationListALLKEYS?.IsMachineRateSimulation === true ? true : false)
+        setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
+        setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
+        setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
+        setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
+        setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
+        setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineRateSimulation === true ? true : false)
 
 
 

@@ -238,13 +238,8 @@ function MRSimulation(props) {
             tempArr.push(tempObj)
             return null
         })
-        let tempObject = tokenForMultiSimulation && tokenForMultiSimulation.map((item) => {
-            let obj = {}
-            obj.SimulationId = item.value
-            return obj
 
-        })
-        obj.SimulationIds = tempObject
+        obj.SimulationIds = tokenForMultiSimulation
 
         obj.SimulationCombinedProcess = tempArr
         dispatch(runVerifyMachineRateSimulation(obj, res => {

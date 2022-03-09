@@ -13,21 +13,22 @@ export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
 
     const renderMaster = () => {
-        let bopListing = data?.BOPImpactedMasterDataList?.length === 0 ? false : true
         let rmListing = data?.RawMaterialImpactedMasterDataList?.length === 0 ? false : true
         let operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
-        let surfaceTreatment = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
         let exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
+        let bopListing = data?.BOPImpactedMasterDataList?.length === 0 ? false : true
+        let surfaceTreatment = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
         let machineRateListing = data?.MachineRateImpactedMasterDataList?.length === 0 ? false : true
 
+
         return (<>
-            {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />}
+            {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.RawMaterialImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />}
+            {operationListing && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
+            {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} />}
             {/* {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />} */}
-            {operationListing && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
-            {surfaceTreatment && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
-            {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} />}
-            {machineRateListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />}
-            {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />}
+            {/* {surfaceTreatment && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />} */}
+            {/* {machineRateListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
+            {/* {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
             {/* {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
         </>
         )

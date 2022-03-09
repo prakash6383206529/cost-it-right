@@ -75,8 +75,8 @@ function SimulationApprovalSummary(props) {
     const [effectiveDate, setEffectiveDate] = useState('')
     const [oldCostingList, setOldCostingList] = useState([])
     const [showPushDrawer, setShowPushDrawer] = useState(false)
-    const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
-    const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
+    const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])    // from callback
+    const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])   //from reducer
 
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
@@ -196,8 +196,8 @@ function SimulationApprovalSummary(props) {
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                    const Data = res.data.Data.ImpactedMasterDataList
-                    const masterId = res.data.Data.SimulationTechnologyId;
+                    const Data = res.data.Data
+                    const masterId = res.data.Data?.SimulationTechnologyId;
 
                     if (res) {
                         setImpactedMasterDataListForLastRevisionData(Data)

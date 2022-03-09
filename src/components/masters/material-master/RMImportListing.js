@@ -88,11 +88,18 @@ function RMImportListing(props) {
     if (isSimulation) {
 
       if (selectionForListingMasterAPI === 'Combined') {
-        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => { }))
+        props?.changeSetLoader(true)
+        dispatch(getListingForSimulationCombined(objectForMultipleSimulation, RMIMPORT, (res) => {
+          props?.changeSetLoader(false)
+
+        }))
       }
       setvalue({ min: 0, max: 0 });
     }
     if (selectionForListingMasterAPI === 'Master') {
+      if (isSimulation) {
+        props?.changeTokenCheckBox(false)
+      }
       getDataList()
     }
   }, [])
@@ -132,6 +139,9 @@ function RMImportListing(props) {
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props.isMasterSummaryDrawer) {
       dispatch(getRMImportDataList(filterData, (res) => {
+        if (isSimulation) {
+          props?.changeTokenCheckBox(true)
+        }
         if (res && res.status === 200) {
           let Data = res.data.DataList;
           let DynamicData = res.data.DynamicData;
