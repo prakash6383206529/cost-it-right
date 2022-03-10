@@ -54,6 +54,18 @@ export function Fgwiseimactdata(props) {
 
     }
 
+    const toggleAcc = (value) => {
+        let temp=acc1
+        if(temp.currentIndex!==value) {    
+            setAcc1({ currentIndex: temp.currentIndex, isClicked: false })
+            setTimeout(() => {
+            setAcc1({ currentIndex: value, isClicked: true })
+            }, 200);
+        }else {     
+            setAcc1({ currentIndex: value, isClicked: !acc1.isClicked })
+        }
+    }
+
     return (
         <>
             {/* FG wise Impact section start */}
@@ -62,7 +74,7 @@ export function Fgwiseimactdata(props) {
                 <Col md="12">
                     {/* {impactType} */}
                     <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
-                    <table className="table cr-brdr-main accordian-table-with-arrow">
+                    <table className="table cr-brdr-main accordian-table-with-arrow fg-wise-table">
                             <thead>
                                 {loader && <LoaderCustom />}
                                 <tr>
@@ -86,11 +98,11 @@ export function Fgwiseimactdata(props) {
                             {showTableData && impactData && impactData.map((item, index) => {
 
                                 return (<>
-                                    <tbody>
-                                        <tr className="accordian-with-arrow">
-                                            <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked }) }></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                    <tbody >
+                                        <tr className="accordian-with-arrow" key={index} id={"fg-wise"}>
+                                            <td className="arrow-accordian"><span><Link to={"fg-wise"} spy={true} smooth={true} delay={0}><div class="Close" onClick={()=>{toggleAcc(index)}}></div></Link>{item.PartNumber ? item.PartNumber : "-"}</span></td>
                                             <td><span>{'-'}</span></td>
-                                            <td><span>{item.PartName}</span></td>
+                                            <td><span className='text-overflow' title={item.PartName}>{item.PartName}</span></td>
                                             <td><span>{'-'}</span></td>
                                             <td><span>{'-'}</span></td>
                                             <td><span>{'-'}</span></td>
@@ -113,7 +125,7 @@ export function Fgwiseimactdata(props) {
                                                 <tr className="accordian-content">
                                                     <td><span>{item.PartNumber}</span></td>
                                                     <td className="text-center"><span>{item.RevisionNumber}</span></td>
-                                                    <td><span>{item.PartName}</span></td>
+                                                    <td><span className='text-overflow' title={item.PartName}>{item.PartName}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
                                                     <td><span>{item.Quantity}</span></td>
