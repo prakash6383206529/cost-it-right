@@ -1,16 +1,13 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom';
 import NoContentFound from '../../common/NoContentFound';
 import { useDispatch, useSelector } from 'react-redux';
 import ERSimulation from './SimulationPages/ERSimulation';
-import { BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import RMSimulation from './SimulationPages/RMSimulation';
 import CPSimulation from './SimulationPages/CPSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
-import MRSimulation from './SimulationPages/MRSimulation';
-import BDSimulation from './SimulationPages/BDSimulation';
 
 const gridOptions = {};
 
