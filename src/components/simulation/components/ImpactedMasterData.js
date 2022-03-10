@@ -1,12 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ERSimulation from './SimulationPages/ERSimulation';
-import { BOPDOMESTIC, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPIMPORT } from '../../../config/constants';
 import RMSimulation from './SimulationPages/RMSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
-import MRSimulation from './SimulationPages/MRSimulation';
-import BDSimulation from './SimulationPages/BDSimulation';
 
 export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
