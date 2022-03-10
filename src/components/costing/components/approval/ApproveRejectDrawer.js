@@ -792,7 +792,7 @@ function ApproveRejectDrawer(props) {
                 </div>
 
                 {
-                  isSimulation && type === 'Sender' && !isSimulationApprovalListing &&
+                  isSimulation && type === 'Sender' &&
                   <AttachmentSec
                     token={simulationDetail?.TokenNo}
                     type={type}
