@@ -175,6 +175,11 @@ function OtherVerifySimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
+    const decimalFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
     const descriptionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cell != null && cell.length !== 0) ? cell : '-'
@@ -314,6 +319,7 @@ function OtherVerifySimulation(props) {
         revisionFormatter: revisionFormatter,
         buttonFormatter: buttonFormatter,
         newExchangeRateFormatter: newExchangeRateFormatter,
+        decimalFormatter: decimalFormatter,
         customLoadingOverlay: LoaderCustom,
         customNoRowsOverlay: NoContentFound,
     };
@@ -342,7 +348,7 @@ function OtherVerifySimulation(props) {
                         <Col>
                             <Col>
                                 <div className={`ag-grid-react`}>
-                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <=0 ?"overlay-contain": ""}`}>
+                                    <div className={`ag-grid-wrapper height-width-wrapper ${verifyList && verifyList?.length <= 0 ? "overlay-contain" : ""}`}>
                                         <div className="ag-grid-header">
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
@@ -391,9 +397,9 @@ function OtherVerifySimulation(props) {
                                                 }
                                                 {isCombinedProcess &&
                                                     <>
-                                                        <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old"></AgGridColumn>
-                                                        <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldNetCC" headerName="Old CC"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={130} field="NewPOPrice" headerName="PO Price New" cellRenderer='decimalFormatter'></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldNetCC" headerName="Old CC" cellRenderer='decimalFormatter'></AgGridColumn>
                                                         <AgGridColumn width={150} field="NewNetCC" cellRenderer='newExchangeRateFormatter' headerName="New CC"></AgGridColumn>
                                                     </>
                                                 }
