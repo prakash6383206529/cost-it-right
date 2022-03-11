@@ -22,7 +22,6 @@ import {
     SET_ATTACHMENT_FILE_DATA,
     GET_ASSEMBLY_SIMULATION_LIST,
     GET_VERIFY_MACHINERATE_SIMULATION_LIST,
-    GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
     GET_VERIFY_OVERHEAD_SIMULATION_LIST,
@@ -659,7 +658,8 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
         const structureOfData = {
             ExchangeRateImpactedMasterDataList: [],
             OperationImpactedMasterDataList: [],
-            RawMaterialImpactedMasterDataList: []
+            RawMaterialImpactedMasterDataList: [],
+            BoughtOutPartImpactedMasterDataList: []
         }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
@@ -686,7 +686,8 @@ export function getImpactedMasterData(simulationId, callback) {
         const structureOfData = {
             ExchangeRateImpactedMasterDataList: [],
             OperationImpactedMasterDataList: [],
-            RawMaterialImpactedMasterDataList: []
+            RawMaterialImpactedMasterDataList: [],
+            BoughtOutPartImpactedMasterDataList: []
         }
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, headers);
@@ -815,6 +816,22 @@ export function runSimulationOnSelectedMachineRateCosting(data, callback) {
     };
 }
 
+export function runVerifyBoughtOutPartSimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.draftBoughtOutpartSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+
 export function runSimulationOnSelectedBoughtOutPartCosting(data, callback) {
     return (dispatch) => {
         const request = axios.post(API.runSimulationOnSelectedBoughtOutPartCosting, data, headers);
@@ -857,8 +874,37 @@ export function getVerifyBoughtOutPartSimulationList(token, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_VERIFY_BOUGHTOUTPART_SIMULATION_LIST,
-                    payload: response.data.Data.SimulationExchangeRateImpactedCostings
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.simulationBoughtOutPartImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function getCostingBoughtOutPartSimulationList(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostingBoughtOutPartSimulationList}?simulationId=${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result || response.status === 204) {
+                let tempData = {
+                    IsBoughtOutPartSimulation: response.status === 204 ? false : response?.data?.Data?.IsBoughtOutPartSimulation,
+                    IsExchangeRateSimulation: response.status === 204 ? false : response?.data?.Data?.IsExchangeRateSimulation,
+                    IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
+                    IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
+                    IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation
+                }
+                dispatch({
+                    type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
+                    payload: tempData
+                })
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
                 callback(response)
             }
