@@ -316,7 +316,7 @@ function CostingSimulation(props) {
                             }
                             item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                             //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            const STVariance = (item.OldNetBoughtOutPartCost - item.NetBoughtOutPartCostVariance).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                             item.STVariance = STVariance
                             return item
                         })
@@ -1054,19 +1054,16 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
-                                                    {
-                                                        (isBOPDomesticOrImport || showBOPColumn) && <>
-                                                            <AgGridColumn width={140} field="OldBOPCost" headerName='Old BOP Cost' cellRenderer={fourDecimal} ></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewBOPCost" headerName='New BOP Cost' cellRenderer={fourDecimal}></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={fourDecimal} ></AgGridColumn>
-                                                        </>}
+                                                    {(isBOPDomesticOrImport || showBOPColumn) && <>
+                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Basic Rate' cellRenderer={fourDecimal} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Basic Rate' cellRenderer={fourDecimal}></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={fourDecimal} ></AgGridColumn>
+                                                    </>}
 
-                                                    {
-                                                        (isMachineRate || showMachineRateColumn) && <>
-                                                            <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
-                                                        </>
-                                                    }
+                                                    {(isMachineRate || showMachineRateColumn) && <>
+                                                        <AgGridColumn width={140} field="OldMachineRate" headerName='Old Machine Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewMachineRate" headerName='New Machine Rate' ></AgGridColumn>
+                                                    </>}
 
                                                     {
                                                         showExchangeRateColumn &&
