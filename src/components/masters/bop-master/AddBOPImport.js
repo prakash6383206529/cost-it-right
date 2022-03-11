@@ -1456,7 +1456,7 @@ class AddBOPImport extends Component {
                 isOpen={this.state.approveDrawer}
                 closeDrawer={this.closeApprovalDrawer}
                 isEditFlag={false}
-                // masterId={BOP_MASTER_ID}
+                masterId={BOP_MASTER_ID}
                 type={'Sender'}
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}
