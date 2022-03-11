@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, userDetails } from '../../../helper';
@@ -133,8 +133,6 @@ function CostingSimulation(props) {
         switch (Number(selectedMasterForSimulation?.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
-            case Number(BOPDOMESTIC):
-            case Number(BOPIMPORT):
                 dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
                     if (res.data.Result) {
                         const tokenNo = res.data.Data.SimulationTokenNumber
@@ -298,6 +296,58 @@ function CostingSimulation(props) {
                     // SimulatedCostingList[0].Technology  ,VendorName
                 }))
                 break;
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                    if (res.data.Result) {
+                        const tokenNo = res.data.Data.SimulationTokenNumber
+                        const Data = res.data.Data
+                        setStatus(Data.SapMessage)
+                        var vendorId = Data.VendorId
+                        var SimulationTechnologyId = Data.SimulationTechnologyId
+                        var SimulationType = Data.SimulationType
+                        setVendorIdState(vendorId)
+                        setSimulationTechnologyIdState(SimulationTechnologyId)
+                        setSimulationTypeState(SimulationType)
+
+                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
+                            if (item.IsLockedBySimulation) {
+                                setSelectedCostingIds(item.CostingId)
+                            }
+                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
+                            const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            item.STVariance = STVariance
+                            return item
+                        })
+                        let uniqeArray = []
+                        const map = new Map();
+                        for (const item of Data.SimulatedCostingList) {
+                            if (!map.has(item.CostingNumber)) {
+
+                                map.set(item.CostingNumber, true);    // set any value to Map
+                                uniqeArray.push(item);
+                            }
+                        }
+                        setTableData(uniqeArray)
+                        setTokenNo(tokenNo)
+                        setCostingArr(Data.SimulatedCostingList)
+                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
+                        setLoader(false)
+                        let tempObj = {}
+                        tempObj.EffectiveDate = Data.EffectiveDate
+                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
+                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
+                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+                        setAmendmentDetails(tempObj)
+                    }
+
+                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
+                    // SimulatedCostingList[0].Technology  ,VendorName
+                }))
+                break;
+
             default:
                 break;
         }

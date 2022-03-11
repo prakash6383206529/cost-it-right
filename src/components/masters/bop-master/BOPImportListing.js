@@ -220,8 +220,15 @@ class BOPImportListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue
+
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue === true) {
+            cellValue = 'Vendor Based'
+        } else if (cellValue === false) {
+            cellValue = 'Zero Based'
+        }
+        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {

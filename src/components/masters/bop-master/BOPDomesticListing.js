@@ -196,17 +196,19 @@ class BOPDomesticListing extends Component {
         )
     };
 
-
-
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
 
-        const rowData = props.data
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return rowData.CostingHead ? rowData.CostingHead : cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue === true) {
+            cellValue = 'Vendor Based'
+        } else if (cellValue === false) {
+            cellValue = 'Zero Based'
+        }
+        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
 
     }
 

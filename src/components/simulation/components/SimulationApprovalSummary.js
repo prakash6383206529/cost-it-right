@@ -208,7 +208,8 @@ function SimulationApprovalSummary(props) {
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
                         OperationImpactedMasterDataList: [],
-                        RawMaterialImpactedMasterDataList: []
+                        RawMaterialImpactedMasterDataList: [],
+                        BoughtOutPartImpactedMasterDataList: []
                     }
                     let masterId
                     let Data = []
