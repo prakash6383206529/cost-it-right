@@ -255,17 +255,17 @@ function SimulationApprovalSummary(props) {
             setApproveDrawer(false)
             setShowListing(true)
             setRejectDrawer(false)
-            if (status === 200 && showFinalLevelButtons === true && approveDrawer === true) {
-                simulationDetail.Attachements && simulationDetail.Attachements.map((Data) => {
+            // if (status === 200 && showFinalLevelButtons === true && approveDrawer === true) {
+            //     simulationDetail.Attachements && simulationDetail.Attachements.map((Data) => {
 
-                    let Category = Data.AttachementCategory.replaceAll(' ', '_')
-                    let path = `${Category}\\\\${Data.FileName}`
-                    let uploadData = new FormData()
-                    uploadData.append('path', path)
-                    dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
+            //         let Category = Data.AttachementCategory.replaceAll(' ', '_')
+            //         let path = `${Category}\\\\${Data.FileName}`
+            //         let uploadData = new FormData()
+            //         uploadData.append('path', path)
+            //         dispatch(uploadSimulationAttachmentonFTP(uploadData, (res) => { }))
 
-                })
-            }
+            //     })
+            // }
 
         } else {
             setApproveDrawer(false)
