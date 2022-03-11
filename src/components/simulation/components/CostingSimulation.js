@@ -314,7 +314,7 @@ function CostingSimulation(props) {
                             }
                             item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                             //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                            const STVariance = (item.OldNetBoughtOutPartCost - item.NetBoughtOutPartCostVariance).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                             item.STVariance = STVariance
                             return item
                         })
@@ -688,6 +688,13 @@ function CostingSimulation(props) {
         return cell != null ? checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
+    const fourDecimal = (props) => {
+
+        const cell = props?.value;
+        const row = props?.data;
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+    }
+
     const varianceSTFormatter = (props) => {
         // const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         // const sumold = oldRMCalc(row)
@@ -940,7 +947,8 @@ function CostingSimulation(props) {
         newRMCFormatter: newRMCFormatter,
         varianceRMCFormatter: varianceRMCFormatter,
         varianceSTFormatter: varianceSTFormatter,
-        variancePOFormatter: variancePOFormatter
+        variancePOFormatter: variancePOFormatter,
+        fourDecimal: fourDecimal,
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -1053,14 +1061,15 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {(isOperation || showOperationColumn) && <>
-                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter"></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldOperationCost" headerName='Old Oper Cost' cellRenderer="oldOPERFormatter" ></AgGridColumn>
                                                         <AgGridColumn width={140} field="NewOperationCost" headerName='New Oper Cost' cellRenderer="newOPERFormatter"></AgGridColumn>
                                                         <AgGridColumn width={140} field="OperationCostVariance" headerName='Oper Variance' ></AgGridColumn>
                                                     </>}
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <>
-                                                        <AgGridColumn width={140} field="OldBasicRate" headerName='Old Basic Rate' ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewBasicRate" headerName='New Basic Rate' ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Basic Rate' cellRenderer={fourDecimal} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Basic Rate' cellRenderer={fourDecimal}></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={fourDecimal} ></AgGridColumn>
                                                     </>}
 
                                                     {(isMachineRate || showMachineRateColumn) && <>
