@@ -52,6 +52,7 @@ function ReportListing(props) {
 
 
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
+    const [isLastWeek, setIsLastWeek] = useState(false)
 
 
     const dispatch = useDispatch()
@@ -163,10 +164,9 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = (skip, take, isPagination, data) => {
+    const getTableData = (skip, take, isPagination, data, isLastWeek) => {
 
-
-        dispatch(getCostingReport(skip, take, isPagination, data, (res) => {
+        dispatch(getCostingReport(skip, take, isPagination, data, isLastWeek, (res) => {
             if (res) {
                 setLoader(false)
             }
@@ -179,7 +179,7 @@ function ReportListing(props) {
     useEffect(() => {
 
         setLoader(true)
-        getTableData(0, 100, true, floatingFilterData);
+        getTableData(0, 100, true, floatingFilterData, false);
 
 
     }, [])
@@ -194,7 +194,7 @@ function ReportListing(props) {
             setPageNo(pageNo + 1)
             const nextNo = currentRowIndex + 10;
 
-            getTableData(nextNo, 100, true, floatingFilterData);
+            getTableData(nextNo, 100, true, floatingFilterData, false);
             setCurrentRowIndex(nextNo)
         }
 
@@ -207,7 +207,7 @@ function ReportListing(props) {
             setPageNo(pageNo - 1)
             const previousNo = currentRowIndex - 10;
 
-            getTableData(previousNo, 100, true, floatingFilterData);
+            getTableData(previousNo, 100, true, floatingFilterData, false);
             setCurrentRowIndex(previousNo)
 
         }
@@ -379,7 +379,7 @@ function ReportListing(props) {
 
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-        getTableData(0, 100, true, floatingFilterData);
+        getTableData(0, 100, true, floatingFilterData, false);
 
         setEnableSearchFilterButton(true)
 
@@ -478,7 +478,7 @@ function ReportListing(props) {
 
 
         setPageNo(1)
-        getTableData(0, 100, true, emptyObj);
+        getTableData(0, 100, true, emptyObj, false);
 
 
 
@@ -528,7 +528,8 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
-    const lastWeekFilter = (props) => {
+    const lastWeekFilter = () => {
+        getTableData(0, 100, true, floatingFilterData, true);
     }
 
     return (
