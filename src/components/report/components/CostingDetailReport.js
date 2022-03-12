@@ -52,6 +52,7 @@ function ReportListing(props) {
 
 
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
+    const [isLastWeek, setIsLastWeek] = useState(false)
 
 
     const dispatch = useDispatch()
@@ -155,7 +156,7 @@ function ReportListing(props) {
     const statusFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.Status}</div>
+        return <div className={cell}>{row.DisplayStatus}</div>
     }
 
     /**
@@ -163,10 +164,9 @@ function ReportListing(props) {
    * @description getting approval list table
    */
 
-    const getTableData = (skip, take, isPagination, data) => {
+    const getTableData = (skip, take, isPagination, data, isLastWeek) => {
 
-
-        dispatch(getCostingReport(skip, take, isPagination, data, (res) => {
+        dispatch(getCostingReport(skip, take, isPagination, data, isLastWeek, (res) => {
             if (res) {
                 setLoader(false)
             }
@@ -179,7 +179,7 @@ function ReportListing(props) {
     useEffect(() => {
 
         setLoader(true)
-        getTableData(0, 100, true, floatingFilterData);
+        getTableData(0, 100, true, floatingFilterData, false);
 
 
     }, [])
@@ -194,7 +194,7 @@ function ReportListing(props) {
             setPageNo(pageNo + 1)
             const nextNo = currentRowIndex + 10;
 
-            getTableData(nextNo, 100, true, floatingFilterData);
+            getTableData(nextNo, 100, true, floatingFilterData, false);
             setCurrentRowIndex(nextNo)
         }
 
@@ -207,7 +207,7 @@ function ReportListing(props) {
             setPageNo(pageNo - 1)
             const previousNo = currentRowIndex - 10;
 
-            getTableData(previousNo, 100, true, floatingFilterData);
+            getTableData(previousNo, 100, true, floatingFilterData, false);
             setCurrentRowIndex(previousNo)
 
         }
@@ -379,7 +379,7 @@ function ReportListing(props) {
 
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
-        getTableData(0, 100, true, floatingFilterData);
+        getTableData(0, 100, true, floatingFilterData, false);
 
         setEnableSearchFilterButton(true)
 
@@ -478,7 +478,7 @@ function ReportListing(props) {
 
 
         setPageNo(1)
-        getTableData(0, 100, true, emptyObj);
+        getTableData(0, 100, true, emptyObj, false);
 
 
 
@@ -528,7 +528,8 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
-    const lastWeekFilter = (props)=> {
+    const lastWeekFilter = () => {
+        getTableData(0, 100, true, floatingFilterData, true);
     }
 
     return (
@@ -545,9 +546,9 @@ function ReportListing(props) {
                             {warningMessage && <WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} />}
                         </div>
                     </Col> */}
-                       <Col md="6">
-                       <button  title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
-                       </Col>
+                    <Col md="6">
+                        <button title="Last Week" type="button" class="user-btn mr5" onClick={() => lastWeekFilter()}><div class="swap rotate90 mr-2"></div>Last Week</button>
+                    </Col>
 
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100 mb-4 pb-2">
@@ -650,12 +651,13 @@ function ReportListing(props) {
                         <AgGridColumn field='FreightType' headerName='Freight Type' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='DiscountCost' headerName='Discount Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='NetDiscountsCost' headerName='Net Discounts Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='HundiOrDiscountPercentage' headerName='Hundi/Discount Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='HundiOrDiscountValue' headerName='Hundi/Discount Value' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ToolCost' headerName='Tool Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolLife' headerName='Tool Life' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='ToolLife' headerName='Amortization Quantity (Tool Life)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='ToolMaintenanceCost' headerName='Tool Maintenance Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolPrice' headerName='Tool Price' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='ToolQuantity' headerName='Tool Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='ToolPrice' headerName='Tool Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
+                        {/* <AgGridColumn field='ToolQuantity' headerName='Tool Quantity' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='NetToolCost' headerName='Net Tool Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -672,11 +674,11 @@ function ReportListing(props) {
 
 
                         <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetConvertedPOPrice' headerName='Net Converted PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
+                        {/* <AgGridColumn field='NetPOPrice' headerName='Net PO Price' cellRenderer='hyphenFormatter'></AgGridColumn> */}
                         <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                        <AgGridColumn pinned="right" field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
+                        <AgGridColumn pinned="right" field="Status" headerName="Status" cellRenderer={'statusFormatter'}></AgGridColumn>
 
 
                         {/* <AgGridColumn field='BaseCostingId' headerName='BaseCostingId' cellRenderer='hyphenFormatter'></AgGridColumn> */}
