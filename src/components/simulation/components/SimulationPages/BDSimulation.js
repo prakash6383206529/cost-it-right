@@ -4,19 +4,17 @@ import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
-import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import Toaster from '../../../common/Toaster';
 import { runVerifyBoughtOutPartSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import VerifySimulation from '../VerifySimulation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { data } from 'jquery';
 import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
@@ -31,7 +29,6 @@ function BDSimulation(props) {
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
-    const [colorClass, setColorClass] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
@@ -56,7 +53,6 @@ function BDSimulation(props) {
 
     const verifySimulation = debounce(() => {
         let basicRateCount = 0
-        let basicScrapCount = 0
 
         list && list.map((li) => {
 
@@ -64,18 +60,15 @@ function BDSimulation(props) {
 
                 basicRateCount = basicRateCount + 1
             }
-            if (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined) {
-                basicScrapCount = basicScrapCount + 1
-            }
+
             return null;
         })
 
-        if (basicRateCount === list.length && basicScrapCount === list.length) {
+        if (basicRateCount === list.length) {
             Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             return false
         }
         basicRateCount = 0
-        basicScrapCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
@@ -89,7 +82,7 @@ function BDSimulation(props) {
         // }
         let tempArr = []
         list && list.map(item => {
-            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+            if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
                 let tempObj = {}
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
@@ -113,28 +106,7 @@ function BDSimulation(props) {
 
 
     const cancelVerifyPage = () => {
-
         setShowVerifyPage(false)
-    }
-
-    /**
-     * @method shearingCostFormatter
-     * @description Renders buttons
-     */
-    const shearingCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
-    }
-
-    /**
-    * @method freightCostFormatter
-    * @description Renders buttons
-    */
-    const freightCostFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? cell : '-';
     }
 
     const effectiveDateFormatter = (props) => {
@@ -175,36 +147,6 @@ function BDSimulation(props) {
                         <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
-            </>
-        )
-    }
-
-    const newScrapRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        row.NewScrapRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
-                }
-            </>
-        )
-    }
-
-    const oldScrapRateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
-        return (
-            <>
-                {
-                    isImpactedMaster ?
-                        row.OldScrapRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
-                }
             </>
         )
     }
@@ -271,16 +213,12 @@ function BDSimulation(props) {
 
     const runSimulation = () => {
         let basicRateCount = 0
-        let basicScrapCount = 0
         list && list.map((li) => {
             if (li.BasicRate === li.NewBasicRate) {
                 basicRateCount = basicRateCount + 1
             }
-            if (li.ScrapRate === li.NewScrapRate) {
-                basicScrapCount = basicScrapCount + 1
-            }
 
-            if (basicRateCount === list.length || basicScrapCount === list.length) {
+            if (basicRateCount === list.length) {
                 Toaster.warning('There is no changes in new value. Please correct the data, then run simulation')
             } else {
                 setShowRunSimulationDrawer(true)
@@ -331,9 +269,6 @@ function BDSimulation(props) {
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
-        shearingCostFormatter: shearingCostFormatter,
-        freightCostFormatter: freightCostFormatter,
-        newScrapRateFormatter: newScrapRateFormatter,
         NewcostFormatter: NewcostFormatter,
         OldcostFormatter: OldcostFormatter,
         costFormatter: costFormatter,
@@ -341,7 +276,6 @@ function BDSimulation(props) {
         newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
-        oldScrapRateFormatter: oldScrapRateFormatter,
     };
 
     return (
