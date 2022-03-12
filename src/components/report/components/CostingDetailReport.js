@@ -895,6 +895,7 @@ function ReportListing(props) {
     const [warningMessage, setWarningMessage] = useState(true)
     const [totalRecordCount, setTotalRecordCount] = useState(0)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
+    const [isLastWeek, setIsLastWeek] = useState(false)
 
 
     const dispatch = useDispatch()
