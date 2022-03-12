@@ -21,7 +21,7 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
 
-  const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(props.data ? props.data : [])
   const [OldGridData, setOldGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -38,7 +38,7 @@ function OperationCost(props) {
       index: 0,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
-      PartType:props.item.PartType
+      PartType: props.item.PartType
     }
     if (!CostingViewMode) {
       if (props.IsAssemblyCalculation) {
@@ -47,7 +47,7 @@ function OperationCost(props) {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
 
-      if(JSON.stringify(gridData) !== JSON.stringify(OldGridData)){
+      if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
         dispatch(isDataChange(true))
       }
     }
