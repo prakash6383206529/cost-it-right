@@ -127,7 +127,7 @@ function CostingSimulation(props) {
         dispatch(setShowSimulationPage(true))
     };
 
-    const manageResponce = (res) => {
+    const setCommonStateForList = (res) => {
         if (res.data.Result) {
             const tokenNo = res.data.Data.SimulationTokenNumber
             const Data = res.data.Data
@@ -148,35 +148,17 @@ function CostingSimulation(props) {
                 switch (Number(selectedMasterForSimulation.value)) {
                     case Number(RMIMPORT):
                     case Number(RMDOMESTIC):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
                         const RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                         item.RMCVariance = RMCVariance
                         return item
                     case Number(SURFACETREATMENT):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
                         const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                         item.STVariance = STVariance
                         return item
                     case Number(OPERATIONS):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
                         const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                         item.OperationVariance = OperationVariance
                         return item
-                    case Number(BOPDOMESTIC):
-                    case Number(BOPIMPORT):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                        // const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        // item.OperationVariance = OperationVariance
-                        return item
-
                     default:
                         break;
                 }
@@ -212,23 +194,23 @@ function CostingSimulation(props) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
                 dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(SURFACETREATMENT):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(OPERATIONS):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(BOPDOMESTIC):
             case Number(BOPIMPORT):
                 dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
 
