@@ -184,15 +184,6 @@ function Simulation(props) {
                 temp = TempData
                 break;
             case Number(BOPDOMESTIC):
-                temp = TempData && TempData.map((item) => {
-                    if (item.IsVendor === true) {
-                        item.IsVendor = 'Vendor Based'
-                    } else if (item.IsVendor === false) {
-                        item.IsVendor = 'Zero Based'
-                    }
-                    return item
-                })
-                break;
             case Number(BOPIMPORT):
                 temp = TempData && TempData.map((item) => {
                     if (item.IsVendor === true) {
