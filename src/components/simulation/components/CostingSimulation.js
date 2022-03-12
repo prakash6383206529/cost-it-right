@@ -127,222 +127,108 @@ function CostingSimulation(props) {
         dispatch(setShowSimulationPage(true))
     };
 
+    const manageResponce = (res) => {
+        if (res.data.Result) {
+            const tokenNo = res.data.Data.SimulationTokenNumber
+            const Data = res.data.Data
+            setStatus(Data.SapMessage)
+            var vendorId = Data.VendorId
+            var SimulationTechnologyId = Data.SimulationTechnologyId
+            var SimulationType = Data.SimulationType
+            setVendorIdState(vendorId)
+            setSimulationTechnologyIdState(SimulationTechnologyId)
+            setSimulationTypeState(SimulationType)
 
+            Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
+                if (item.IsLockedBySimulation) {
+                    setSelectedCostingIds(item.CostingId)
+                }
+                item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
+                switch (Number(selectedMasterForSimulation.value)) {
+                    case Number(RMIMPORT):
+                    case Number(RMDOMESTIC):
+                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
+                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                        const RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.RMCVariance = RMCVariance
+                        return item
+                    case Number(SURFACETREATMENT):
+                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
+                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                        const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.STVariance = STVariance
+                        return item
+                    case Number(OPERATIONS):
+                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
+                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                        const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.OperationVariance = OperationVariance
+                        return item
+                    case Number(BOPDOMESTIC):
+                    case Number(BOPIMPORT):
+                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
+                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
+                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
+                        // const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        // item.OperationVariance = OperationVariance
+                        return item
+
+                    default:
+                        break;
+                }
+
+
+            })
+            let uniqeArray = []
+            const map = new Map();
+            for (const item of Data.SimulatedCostingList) {
+                if (!map.has(item.CostingNumber)) {
+
+                    map.set(item.CostingNumber, true);    // set any value to Map
+                    uniqeArray.push(item);
+                }
+            }
+            setTableData(uniqeArray)
+            setTokenNo(tokenNo)
+            setCostingArr(Data.SimulatedCostingList)
+            setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
+            setLoader(false)
+            let tempObj = {}
+            tempObj.EffectiveDate = Data.EffectiveDate
+            tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
+            tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
+            tempObj.Technology = Data.SimulatedCostingList[0].Technology
+            tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+            setAmendmentDetails(tempObj)
+        }
+    }
 
     const getCostingList = (plantId = '', rawMatrialId = '') => {
         switch (Number(selectedMasterForSimulation?.value)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
                 dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    if (res.data.Result) {
-                        const tokenNo = res.data.Data.SimulationTokenNumber
-                        const Data = res.data.Data
-                        setStatus(Data.SapMessage)
-                        var vendorId = Data.VendorId
-                        var SimulationTechnologyId = Data.SimulationTechnologyId
-                        var SimulationType = Data.SimulationType
-                        setVendorIdState(vendorId)
-                        setSimulationTechnologyIdState(SimulationTechnologyId)
-                        setSimulationTypeState(SimulationType)
-
-                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                            if (item.IsLockedBySimulation) {
-                                setSelectedCostingIds(item.CostingId)
-                            }
-                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            switch (Number(selectedMasterForSimulation.value)) {
-                                case Number(RMIMPORT):
-                                case Number(RMDOMESTIC):
-                                    // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                                    // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                                    // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                                    // ********** THIS IS RE SPECIFIC **********
-                                    item.RMCVariance = (item.OldRMPrice - item.NewRMPrice)
-                                    return item
-
-                                default:
-                                    break;
-                            }
-
-
-                        })
-                        let uniqeArray = []
-                        const map = new Map();
-                        for (const item of Data.SimulatedCostingList) {
-                            if (!map.has(item.CostingNumber)) {
-
-                                map.set(item.CostingNumber, true);    // set any value to Map
-                                uniqeArray.push(item);
-                            }
-                        }
-                        setTableData(uniqeArray)
-                        setTokenNo(tokenNo)
-                        setCostingArr(Data.SimulatedCostingList)
-                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                        setLoader(false)
-                        let tempObj = {}
-                        tempObj.EffectiveDate = Data.EffectiveDate
-                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
-                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
-                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
-                        setAmendmentDetails(tempObj)
-
-
-                    }
-
-                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
-                    // SimulatedCostingList[0].Technology  ,VendorName
+                    manageResponce(res)
                 }))
                 break;
             case Number(SURFACETREATMENT):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    if (res.data.Result) {
-                        const tokenNo = res.data.Data.SimulationTokenNumber
-                        const Data = res.data.Data
-                        setStatus(Data.SapMessage)
-                        var vendorId = Data.VendorId
-                        var SimulationTechnologyId = Data.SimulationTechnologyId
-                        var SimulationType = Data.SimulationType
-                        setVendorIdState(vendorId)
-                        setSimulationTechnologyIdState(SimulationTechnologyId)
-                        setSimulationTypeState(SimulationType)
-
-                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                            if (item.IsLockedBySimulation) {
-                                setSelectedCostingIds(item.CostingId)
-                            }
-                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            item.STVariance = STVariance
-                            return item
-                        })
-                        let uniqeArray = []
-                        const map = new Map();
-                        for (const item of Data.SimulatedCostingList) {
-                            if (!map.has(item.CostingNumber)) {
-
-                                map.set(item.CostingNumber, true);    // set any value to Map
-                                uniqeArray.push(item);
-                            }
-                        }
-                        setTableData(uniqeArray)
-                        setTokenNo(tokenNo)
-                        setCostingArr(Data.SimulatedCostingList)
-                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                        setLoader(false)
-                        let tempObj = {}
-                        tempObj.EffectiveDate = Data.EffectiveDate
-                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
-                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
-                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
-                        setAmendmentDetails(tempObj)
-                    }
-
-                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
-                    // SimulatedCostingList[0].Technology  ,VendorName
+                    manageResponce(res)
                 }))
                 break;
             case Number(OPERATIONS):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    if (res.data.Result) {
-                        const tokenNo = res.data.Data.SimulationTokenNumber
-                        const Data = res.data.Data
-                        setStatus(Data.SapMessage)
-                        var vendorId = Data.VendorId
-                        var SimulationTechnologyId = Data.SimulationTechnologyId
-                        var SimulationType = Data.SimulationType
-                        setVendorIdState(vendorId)
-                        setSimulationTechnologyIdState(SimulationTechnologyId)
-                        setSimulationTypeState(SimulationType)
-
-                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                            if (item.IsLockedBySimulation) {
-                                setSelectedCostingIds(item.CostingId)
-                            }
-                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            item.OperationVariance = OperationVariance
-                            return item
-                        })
-                        let uniqeArray = []
-                        const map = new Map();
-                        for (const item of Data.SimulatedCostingList) {
-                            if (!map.has(item.CostingNumber)) {
-
-                                map.set(item.CostingNumber, true);    // set any value to Map
-                                uniqeArray.push(item);
-                            }
-                        }
-                        setTableData(uniqeArray)
-                        setTokenNo(tokenNo)
-                        setCostingArr(Data.SimulatedCostingList)
-                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                        setLoader(false)
-                        let tempObj = {}
-                        tempObj.EffectiveDate = Data.EffectiveDate
-                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
-                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
-                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
-                        setAmendmentDetails(tempObj)
-                    }
-
-                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
-                    // SimulatedCostingList[0].Technology  ,VendorName
+                    manageResponce(res)
                 }))
                 break;
             case Number(BOPDOMESTIC):
             case Number(BOPIMPORT):
                 dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                    if (res.data.Result) {
-                        const tokenNo = res.data.Data.SimulationTokenNumber
-                        const Data = res.data.Data
-                        setStatus(Data.SapMessage)
-                        var vendorId = Data.VendorId
-                        var SimulationTechnologyId = Data.SimulationTechnologyId
-                        var SimulationType = Data.SimulationType
-                        setVendorIdState(vendorId)
-                        setSimulationTechnologyIdState(SimulationTechnologyId)
-                        setSimulationTypeState(SimulationType)
-
-                        Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
-                            if (item.IsLockedBySimulation) {
-                                setSelectedCostingIds(item.CostingId)
-                            }
-                            item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                            //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                            return item
-                        })
-                        let uniqeArray = []
-                        const map = new Map();
-                        for (const item of Data.SimulatedCostingList) {
-                            if (!map.has(item.CostingNumber)) {
-
-                                map.set(item.CostingNumber, true);    // set any value to Map
-                                uniqeArray.push(item);
-                            }
-                        }
-                        setTableData(uniqeArray)
-                        setTokenNo(tokenNo)
-                        setCostingArr(Data.SimulatedCostingList)
-                        setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-                        setLoader(false)
-                        let tempObj = {}
-                        tempObj.EffectiveDate = Data.EffectiveDate
-                        tempObj.CostingHead = Data.SimulatedCostingList[0].CostingHead
-                        tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-                        tempObj.Technology = Data.SimulatedCostingList[0].Technology
-                        tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
-                        setAmendmentDetails(tempObj)
-                    }
-
-                    // EffectiveDate  SimulatedCostingList[0].CostingHead   SimulationAppliedOn
-                    // SimulatedCostingList[0].Technology  ,VendorName
+                    manageResponce(res)
                 }))
                 break;
 

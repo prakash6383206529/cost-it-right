@@ -1886,7 +1886,8 @@ export const BOPDomesticSimulation = [
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
 ]
 
 export const BOPImportSimulation = [
@@ -1900,7 +1901,8 @@ export const BOPImportSimulation = [
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
 ]
 
 export const OverheadProfitSimulation = [
