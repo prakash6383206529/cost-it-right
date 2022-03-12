@@ -168,8 +168,20 @@ function SimulationApprovalSummary(props) {
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
             if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0)) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
-                    const Data = res.data.Data
-                    const masterId = res.data.Data?.SimulationTechnologyId;
+                    const structureOfData = {
+                        ExchangeRateImpactedMasterDataList: [],
+                        OperationImpactedMasterDataList: [],
+                        RawMaterialImpactedMasterDataList: [],
+                        BoughtOutPartImpactedMasterDataList: []
+                    }
+                    let masterId
+                    let Data = []
+                    if (Number(res?.status) === 204) {
+                        Data = structureOfData
+                    } else {
+                        Data = res?.data?.Data
+                        masterId = res?.data?.Data?.SimulationTechnologyId;
+                    }
 
                     if (res) {
                         setImpactedMasterDataListForLastRevisionData(Data)
@@ -1097,7 +1109,7 @@ function SimulationApprovalSummary(props) {
 
                                 <div className="accordian-content w-100 px-3 impacted-min-height">
                                     {showLastRevisionData && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={simulationDetail.masterId} viewCostingAndPartNo={false} lastRevision={true} />}
-                                    {impactedMasterDataListForLastRevisionData.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
+                                    {impactedMasterDataListForLastRevisionData?.length === 0 ? <div className='border'><NoContentFound title={EMPTY_DATA} /></div> : ""}
                                 </div>
                             }
                             {showViewAssemblyDrawer &&

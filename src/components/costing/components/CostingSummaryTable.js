@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, calculatePercentage } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, REJECTED, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, EMPTY_GUID_0, FILE_URL, OPERATIONS, REJECTED, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -124,23 +124,23 @@ const CostingSummaryTable = (props) => {
   }, [topAndLeftMenuData, selectedTechnology])
 
   useEffect(() => {
-   if(viewCostingData && viewCostingData.length=== 1) {
-    viewBop(0)
-    viewRM(0)
-    viewConversionCost(0)
-    viewSurfaceTreatmentCost(0)
-    overHeadProfit(0)
-    viewToolCostData(0)
-    viewPackagingAndFrieghtData(0)
-    setIsViewPackagingFreight(false)
-    setIsViewOverheadProfit(false)
-    setIsViewToolCost(false)
-    setIsViewRM(false)
-    setIsViewConversionCost(false)
-    setViewBOP(false)
-   }
+    if (viewCostingData && viewCostingData.length === 1) {
+      viewBop(0)
+      viewRM(0)
+      viewConversionCost(0)
+      viewSurfaceTreatmentCost(0)
+      overHeadProfit(0)
+      viewToolCostData(0)
+      viewPackagingAndFrieghtData(0)
+      setIsViewPackagingFreight(false)
+      setIsViewOverheadProfit(false)
+      setIsViewToolCost(false)
+      setIsViewRM(false)
+      setIsViewConversionCost(false)
+      setViewBOP(false)
+    }
   }, [viewCostingData])
-  
+
 
 
   /**
@@ -688,14 +688,14 @@ const CostingSummaryTable = (props) => {
 
     return checkForDecimalAndNull(arr, initialConfiguration.NoOfDecimalForInputOutput)
   }
-  
+
   // We have used jsPDF to Generate PDF
   const generatorPDF = () => {
     setLoader(true)
     var height = document.querySelector("#summaryPdf").clientHeight;
     var width = document.querySelector("#summaryPdf").offsetWidth;
     var doc = new jsPDF('p', "ex", [width, height])
-   
+
     // var doc = new jsPDF('l', "mm", [width, height])
     // var doc = new jsPDF('l', "mm", [1244, 1700])
     // var doc = new jsPDF('l', "pc", [width, height])  
@@ -716,23 +716,23 @@ const CostingSummaryTable = (props) => {
     setLoader(true)
     setDrawerDetailPDF(true);
     setTimeout(() => {
-    var height = document.querySelector("#summaryPdf").clientHeight;
-    var width = document.querySelector("#summaryPdf").offsetWidth;
-    var doc = new jsPDF('p', "ex", [width, height])
-    setIcon(false)
-    doc.html(document.querySelector("#summaryPdf"), {
-      margin: [0, 5, 0, 5],
-      callback: function (pdf) {
-        // pdf.deletePage(2)
-        pdf.save("CostingSummary.pdf");
-        setDrawerDetailPDF(false);
-        setIcon(true);
-        setLoader(false)
-      }
-    });
-  }, 2000);
+      var height = document.querySelector("#summaryPdf").clientHeight;
+      var width = document.querySelector("#summaryPdf").offsetWidth;
+      var doc = new jsPDF('p', "ex", [width, height])
+      setIcon(false)
+      doc.html(document.querySelector("#summaryPdf"), {
+        margin: [0, 5, 0, 5],
+        callback: function (pdf) {
+          // pdf.deletePage(2)
+          pdf.save("CostingSummary.pdf");
+          setDrawerDetailPDF(false);
+          setIcon(true);
+          setLoader(false)
+        }
+      });
+    }, 2000);
   }
-   
+
   return (
 
     <Fragment>
@@ -750,7 +750,7 @@ const CostingSummaryTable = (props) => {
             {
               !simulationMode &&
               <Col md="8" className="text-right">
-                <button Type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length < 2 ?  false:true }  onClick={generatorAllDetailPDF}> <div className='pdf-detail'></div>  D </button>
+                <button Type="button" className="user-btn mr-1 mb-2 px-2" title='pdf' disabled={viewCostingData?.length < 2 ? false : true} onClick={generatorAllDetailPDF}> <div className='pdf-detail'></div>  D </button>
                 <button Type="button" className="mr-1 mb-2 user-btn pdf-detail px-0" title='pdf' onClick={generatorPDF}>  <div className='pdf-detail'></div></button>
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
@@ -772,8 +772,8 @@ const CostingSummaryTable = (props) => {
             }
           </Row>
 
-          <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border':''}`}>
-            {(drawerDetailPDF || pdfHead ) &&
+          <Row id="summaryPdf" className={`${customClass} ${drawerDetailPDF ? 'remove-space-border' : ''}`}>
+            {(drawerDetailPDF || pdfHead) &&
               <>
                 <Col md="12" className='pdf-header-wrapper'>
                   <img src={cirHeader} className="pdf-header-img" />
@@ -800,25 +800,25 @@ const CostingSummaryTable = (props) => {
                               <div class="element w-60 d-inline-flex align-items-center">
                                 {
                                   (data.status === DRAFT || data.status === REJECTED) && <>
-                                 {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
-                                    <label
-                                      className="custom-checkbox pl-0 mb-0"
-                                      onChange={() => moduleHandler(data.costingId)}
-                                    >
-                                      {''}
-                                      <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        // disabled={true}
-                                        checked={multipleCostings.includes(data.costingId)}
-                                      />
-                                      <span
-                                        className=" before-box"
-                                        checked={multipleCostings.includes(data.costingId)}
+                                    {!pdfHead && !drawerDetailPDF && <div class="custom-check1 d-inline-block">
+                                      <label
+                                        className="custom-checkbox pl-0 mb-0"
                                         onChange={() => moduleHandler(data.costingId)}
-                                      />
-                                    </label>
-                                  </div>}
+                                      >
+                                        {''}
+                                        <input
+                                          type="checkbox"
+                                          value={"All"}
+                                          // disabled={true}
+                                          checked={multipleCostings.includes(data.costingId)}
+                                        />
+                                        <span
+                                          className=" before-box"
+                                          checked={multipleCostings.includes(data.costingId)}
+                                          onChange={() => moduleHandler(data.costingId)}
+                                        />
+                                      </label>
+                                    </div>}
                                   </>
                                 }
                                 {
@@ -861,7 +861,7 @@ const CostingSummaryTable = (props) => {
                                         class="text-primary d-inline-block change-version-block"
                                         onClick={() => editHandler(index)}
                                       >
-                                      {(!drawerDetailPDF && !pdfHead) &&  <small>Change version</small>}
+                                        {(!drawerDetailPDF && !pdfHead) && <small>Change version</small>}
                                       </a>
                                     }
                                   </span>
@@ -933,19 +933,19 @@ const CostingSummaryTable = (props) => {
                             </td>
                           )
                         })}
-                    </tr>: <tr><th colSpan={2} className='py-0'> 
-                        <ViewRM
-                          isOpen={isViewRM}
-                          viewRMData={viewRMData}
-                          closeDrawer={closeViewDrawer}
-                          isAssemblyCosting={isAssemblyCosting}
-                          anchor={'right'}
-                          index={index}
-                          technologyId={technologyId}
-                          rmMBDetail={rmMBDetail}
-                          isPDFShow={true}
-                        />
-                       </th></tr>} 
+                    </tr> : <tr><th colSpan={2} className='py-0'>
+                      <ViewRM
+                        isOpen={isViewRM}
+                        viewRMData={viewRMData}
+                        closeDrawer={closeViewDrawer}
+                        isAssemblyCosting={isAssemblyCosting}
+                        anchor={'right'}
+                        index={index}
+                        technologyId={technologyId}
+                        rmMBDetail={rmMBDetail}
+                        isPDFShow={true}
+                      />
+                    </th></tr>}
 
                     <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netRM > viewCostingData[1].netRM ? 'green-row' : viewCostingData[0].netRM < viewCostingData[1].netRM ? 'red-row' : '' : '-'}`}>
                       <th>Net RM Cost {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
@@ -955,7 +955,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span>{checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                (data.CostingHeading !== VARIANCE  && icons) &&
+                                (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -968,14 +968,15 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
                     {drawerDetailPDF && <tr><th className='py-0' colSpan={2}> <ViewBOP
-                    isOpen={isViewBOP}
-                    viewBOPData={viewBOPData}
-                    closeDrawer={closeViewDrawer}
-                    anchor={'right'}
-                    isPDFShow={true}
-                     /></th></tr>}
+                      isOpen={isViewBOP}
+                      viewBOPData={viewBOPData}
+                      closeDrawer={closeViewDrawer}
+                      anchor={'right'}
+                      isPDFShow={true}
+                    /></th></tr>}
                     <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].netBOP > viewCostingData[1].netBOP ? 'green-row' : viewCostingData[0].netBOP < viewCostingData[1].netBOP ? 'red-row' : '' : '-'}`}>
-                      <th>Net BOP Cost</th>
+                      <th>Net BOP Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
+
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
@@ -995,7 +996,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-                   {!drawerDetailPDF ? <tr>
+                    {!drawerDetailPDF ? <tr>
                       <td>
                         <span class="d-block small-grey-text">Process Cost</span>
                         <span class="d-block small-grey-text">Operation Cost</span>
@@ -1017,16 +1018,16 @@ const CostingSummaryTable = (props) => {
                             </td>
                           )
                         })}
-                    </tr> : <tr><th className='py-0' colSpan={2}> 
+                    </tr> : <tr><th className='py-0' colSpan={2}>
                       <ViewConversionCost
-                      isOpen={isViewConversionCost}
-                      viewConversionCostData={viewConversionCostData}
-                      closeDrawer={closeViewDrawer}
-                      anchor={'right'}
-                      index={index}
-                      isPDFShow={true}
-                    />
-                     </th></tr>}
+                        isOpen={isViewConversionCost}
+                        viewConversionCostData={viewConversionCostData}
+                        closeDrawer={closeViewDrawer}
+                        anchor={'right'}
+                        index={index}
+                        isPDFShow={true}
+                      />
+                    </th></tr>}
 
                     <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nConvCost > viewCostingData[1].nConvCost ? 'green-row' : viewCostingData[0].nConvCost < viewCostingData[1].nConvCost ? 'red-row' : '' : '-'}`}>
                       <th>Net Conversion Cost{simulationDrawer && (Number(master) === Number(OPERATIONS)) && '(Old)'}</th>
@@ -1037,7 +1038,7 @@ const CostingSummaryTable = (props) => {
 
                               <span>{data.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}</span>
                               {
-                                (data.CostingHeading !== VARIANCE &&  icons) &&
+                                (data.CostingHeading !== VARIANCE && icons) &&
                                 <button
                                   type="button"
                                   class="float-right mb-0 View "
@@ -1049,7 +1050,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-                  {!drawerDetailPDF ?  <tr>
+                    {!drawerDetailPDF ? <tr>
                       <td>
                         <span class="d-block small-grey-text">
                           Surface Treatment
@@ -1071,18 +1072,18 @@ const CostingSummaryTable = (props) => {
                             </td>
                           )
                         })}
-                    </tr> :<tr><th className='py-0' colSpan={2}> 
+                    </tr> : <tr><th className='py-0' colSpan={2}>
                       <ViewConversionCost
-                      isOpen={isViewConversionCost}
-                      viewConversionCostData={viewConversionCostData}
-                      closeDrawer={closeViewDrawer}
-                      anchor={'right'}
-                      index={index}
-                      isPDFShow={true}
-                      stCostShow ={true}
-                    />
-                     </th></tr>}
-                   
+                        isOpen={isViewConversionCost}
+                        viewConversionCostData={viewConversionCostData}
+                        closeDrawer={closeViewDrawer}
+                        anchor={'right'}
+                        index={index}
+                        isPDFShow={true}
+                        stCostShow={true}
+                      />
+                    </th></tr>}
+
 
 
                     <tr className={`background-light-blue  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nsTreamnt > viewCostingData[1].nsTreamnt ? 'green-row' : viewCostingData[0].nsTreamnt < viewCostingData[1].nsTreamnt ? 'red-row' : '' : '-'}`}>
@@ -1108,7 +1109,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
 
 
-                   { !drawerDetailPDF ? <tr>
+                    {!drawerDetailPDF ? <tr>
                       <td>
                         <span class="d-block small-grey-text">
                           Model Type For Overhead/Profit
@@ -1184,16 +1185,16 @@ const CostingSummaryTable = (props) => {
                             </td>
                           )
                         })}
-                    </tr> :<tr><td colSpan={2} className='pb-0 px-0'><ViewOverheadProfit
-                    isOpen={isViewOverheadProfit}
-                    overheadData={viewOverheadData}
-                    profitData={viewProfitData}
-                    rejectAndModelType={viewRejectAndModelType}
-                    iccPaymentData={iccPaymentData}
-                    closeDrawer={closeViewDrawer}
-                    anchor={'right'}
-                    isPDFShow={true}
-                    /></td></tr> }
+                    </tr> : <tr><td colSpan={2} className='pb-0 px-0'><ViewOverheadProfit
+                      isOpen={isViewOverheadProfit}
+                      overheadData={viewOverheadData}
+                      profitData={viewProfitData}
+                      rejectAndModelType={viewRejectAndModelType}
+                      iccPaymentData={iccPaymentData}
+                      closeDrawer={closeViewDrawer}
+                      anchor={'right'}
+                      isPDFShow={true}
+                    /></td></tr>}
 
                     <tr class={`background-light-blue ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nOverheadProfit > viewCostingData[1].nOverheadProfit ? 'green-row' : viewCostingData[0].nOverheadProfit < viewCostingData[1].nOverheadProfit ? 'red-row' : ' ' : '-'}`}>
                       <th>Net Overheads & Profits</th>
@@ -1217,7 +1218,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
 
-                     {!drawerDetailPDF ? <tr>
+                    {!drawerDetailPDF ? <tr>
                       <td>
                         <span class="d-block small-grey-text">Packaging Cost</span>
                         <span class="d-block small-grey-text">Freight</span>
@@ -1236,11 +1237,11 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr> : <tr><th colSpan={2}><ViewPackagingAndFreight
-                        isOpen={isViewPackagingFreight}
-                        packagingAndFreightCost={viewPackagingFreight}
-                        closeDrawer={closeViewDrawer}
-                        anchor={'right'} 
-                        isPDFShow={true}/></th></tr>}
+                      isOpen={isViewPackagingFreight}
+                      packagingAndFreightCost={viewPackagingFreight}
+                      closeDrawer={closeViewDrawer}
+                      anchor={'right'}
+                      isPDFShow={true} /></th></tr>}
 
                     <tr class="background-light-blue">
                       <th>Net Packaging & Freight</th>
@@ -1277,7 +1278,7 @@ const CostingSummaryTable = (props) => {
                       {viewCostingData &&
                         viewCostingData.map((data) => {
                           return (
-                            <td className={`align-table ${pdfHead || drawerDetailPDF ? 'border-none': ''}`}>
+                            <td className={`align-table ${pdfHead || drawerDetailPDF ? 'border-none' : ''}`}>
                               <div class="d-flex mt7">
                                 <span class="d-inline-block w-50">
                                   {data.CostingHeading !== VARIANCE ? data.toolApplicability.applicability : ''}
@@ -1312,7 +1313,7 @@ const CostingSummaryTable = (props) => {
                       closeDrawer={closeViewDrawer}
                       anchor={'right'}
                       isPDFShow={true}
-                     /> </th> </tr>}
+                    /> </th> </tr>}
 
                     <tr class="background-light-blue">
                       <th>Net Tool Cost</th>
@@ -1335,7 +1336,7 @@ const CostingSummaryTable = (props) => {
                           )
                         })}
                     </tr>
-                  
+
                     <tr class="background-light-blue">
                       <th>Total Cost</th>
                       {viewCostingData &&
@@ -1424,7 +1425,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
                     {
-                     
+
                       <tr class={`background-light-blue netPo-row ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPrice > viewCostingData[1].nPOPrice ? 'green-row' : viewCostingData[0].nPOPrice < viewCostingData[1].nPOPrice ? 'red-row' : '' : '-'}`}>
                         <th>Net PO Price (INR){simulationDrawer && '(Old)'}</th>
                         {viewCostingData &&
@@ -1452,7 +1453,7 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
                     {
-                     
+
                       <tr class={`background-light-blue netRm-row  ${isApproval ? viewCostingData.length > 0 && viewCostingData[0].nPOPriceWithCurrency > viewCostingData[1].nPOPriceWithCurrency ? 'green-row' : viewCostingData[0].nPOPriceWithCurrency < viewCostingData[1].nPOPriceWithCurrency ? 'red-row' : '' : '-'}`}>
                         <th>Net PO Price ({(viewCostingData[0]?.currency?.currencyTitle) !== "-" ? viewCostingData[0]?.currency?.currencyTitle : 'INR'}){simulationDrawer && '(Old)'}</th>
                         {/* {viewCostingData &&
