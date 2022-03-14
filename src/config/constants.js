@@ -909,7 +909,6 @@ export const API = {
   runSimulationOnSelectedProfitCosting: `${BASE_URL}/simulation/run-simulation-on-profit-costing`,
   draftOverheadSimulation: `${BASE_URL}/simulation/draft-simulation-overhead`,
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
-  getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
   getTokenSelectListAPI: `${BASE_URL}/simulation/select-list-get-draft-token-number-by-technologyId`,
   getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
 
