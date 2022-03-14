@@ -703,7 +703,6 @@ function CostingSimulation(props) {
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
         })
 
-        console.log('costingList: ', costingList);
         switch (Number(master)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
