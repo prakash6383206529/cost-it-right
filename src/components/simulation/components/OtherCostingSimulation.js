@@ -125,14 +125,18 @@ function OtherCostingSimulation(props) {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
             }
-            if (Number(master) === Number(EXCHNAGERATE)) {
-                item.POVariance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
-                item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
-            } if (Number(master) === Number(COMBINED_PROCESS)) {
-                item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
-                item.Variance = checkForDecimalAndNull(item.OldNetCC - item.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)
+            switch (master) {
+                case EXCHNAGERATE:
+                    item.POVariance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
+                    item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
+                    break;
+                case COMBINED_PROCESS:
+                    item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
+                    item.Variance = checkForDecimalAndNull(item.OldNetCC - item.NewNetCC, getConfigurationKey().NoOfDecimalForPrice)
+                    break;
+                default:
+                    break;
             }
-            return null
         })
         let uniqeArray = []
         const map = new Map();

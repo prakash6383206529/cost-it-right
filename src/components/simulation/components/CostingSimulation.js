@@ -145,25 +145,6 @@ function CostingSimulation(props) {
                 }
                 item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                 //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
-                switch (Number(selectedMasterForSimulation.value)) {
-                    case Number(RMIMPORT):
-                    case Number(RMDOMESTIC):
-                        const RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        item.RMCVariance = RMCVariance
-                        return item
-                    case Number(SURFACETREATMENT):
-                        const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        item.STVariance = STVariance
-                        return item
-                    case Number(OPERATIONS):
-                        const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        item.OperationVariance = OperationVariance
-                        return item
-                    default:
-                        break;
-                }
-
-
             })
             let uniqeArray = []
             const map = new Map();
