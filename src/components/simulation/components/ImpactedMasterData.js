@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ERSimulation from './SimulationPages/ERSimulation';
-import { BOPDOMESTIC, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPIMPORT } from '../../../config/constants';
 import RMSimulation from './SimulationPages/RMSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
-import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
 
 export function Impactedmasterdata(props) {
@@ -15,7 +13,7 @@ export function Impactedmasterdata(props) {
         let rmListing = data?.RawMaterialImpactedMasterDataList?.length === 0 ? false : true
         let operationListing = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
         let exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
-        let bopListing = data?.BOPImpactedMasterDataList?.length === 0 ? false : true
+        let bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
         let surfaceTreatment = data?.OperationImpactedMasterDataList?.length === 0 ? false : true
         let machineRateListing = data?.MachineRateImpactedMasterDataList?.length === 0 ? false : true
 
@@ -24,10 +22,10 @@ export function Impactedmasterdata(props) {
             {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.RawMaterialImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />}
             {operationListing && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
             {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} />}
+            {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} />}
             {/* {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />} */}
             {/* {surfaceTreatment && <OperationSTSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />} */}
             {/* {machineRateListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
-            {/* {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
             {/* {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
         </>
         )

@@ -164,7 +164,7 @@ function VerifySimulation(props) {
                 dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
-                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                        if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
                             Toaster.warning('No approved costing exist for this bought out part.')
                             setHideRunButton(true)
                             return false
@@ -172,7 +172,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        // setVerifyList(data.simulationBoughtOutPartImpactedCostings)
                         setHideRunButton(false)
                     }
                 }))
@@ -182,7 +182,7 @@ function VerifySimulation(props) {
                 dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
                     if (res.data.Result) {
                         const data = res.data.Data
-                        if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                        if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
                             Toaster.warning('No approved costing exist for this bought out part.')
                             setHideRunButton(true)
                             return false
@@ -190,7 +190,7 @@ function VerifySimulation(props) {
                         setTokenNo(data.TokenNumber)
                         setSimualtionId(data.SimulationId)
                         // setMasterId(data.SimulationtechnologyId)
-                        // setVerifyList(data.SimulationCombinedProcessImpactedCostings)
+                        // setVerifyList(data.simulationBoughtOutPartImpactedCostings)
                         setHideRunButton(false)
                     }
                 }))
@@ -366,6 +366,17 @@ function VerifySimulation(props) {
                 })
                 break;
 
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.BoughtOutPartId = item.BoughtOutPartId
+                    tempObj.CostingId = item.CostingId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+                break;
+
             default:
                 break;
         }
@@ -376,6 +387,7 @@ function VerifySimulation(props) {
         setSimulationDrawer(true)
 
     }, 500)
+
     const assemblySimulation = debounce(() => {
         if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one costing.')
@@ -384,6 +396,7 @@ function VerifySimulation(props) {
         // setShowAssemblyPage(true)   // REJECTED ASSEMBLY
 
     }, 500)
+
     const closeDrawer = (e = '', mode) => {
         if (mode === true) {
             setSimulationDrawer(false)
@@ -527,10 +540,10 @@ function VerifySimulation(props) {
 
                                                 {isBOPDomesticOrImport === true &&
                                                     <>
-                                                        <AgGridColumn width={130} field="BoughtOutPartNumber" headerName="BOP Number"></AgGridColumn>
+                                                        <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>
                                                         <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                                                        <AgGridColumn width={145} field="OldBasicRate" headerName="Old Basic Rate"></AgGridColumn>
-                                                        <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Old Basic Rate"></AgGridColumn>
+                                                        <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="New Basic Rate"></AgGridColumn>
                                                     </>
                                                 }
 
