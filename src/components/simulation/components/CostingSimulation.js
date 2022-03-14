@@ -146,17 +146,17 @@ function CostingSimulation(props) {
                 switch (Number(selectedMasterForSimulation.value)) {
                     case Number(RMIMPORT):
                     case Number(RMDOMESTIC):
-                        item.RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.RMCVariance = (checkForNull(item.OldRMPrice) - checkForNull(item.NewRMPrice))
                         return item
                     case Number(SURFACETREATMENT):
-                        item.STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost) - checkForNull(item.NewSurfaceTreatmentCost))
                         return item
                     case Number(OPERATIONS):
-                        item.OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.OperationVariance = (checkForNull(item.OldOperationCost) - checkForNull(item.NewOperationCost))
                         return item
                     case Number(BOPDOMESTIC):
                     case Number(BOPIMPORT):
-                        item.BOPVariance = (item.OldBOPCost - item.NewBOPCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.BOPVariance = (checkForNull(item.OldBOPCost) - checkForNull(item.NewBOPCost))
                         return item
                     default:
                         break;
