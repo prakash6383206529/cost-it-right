@@ -5,8 +5,8 @@ import Toaster from "../common/Toaster";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, minLength5,minLength10, maxLength11, maxLength12,maxLength25, required, email,passwordValidate,validatePassword , noSpace, alphabetsOnlyForName, minLength7, maxLength18,
-  maxLength10, maxLength6, vlidatePhoneNumber,checkWhiteSpaces, alphaNumeric ,maxLength15 , postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6, minLength5, minLength10, maxLength11, maxLength12, maxLength25, required, email, passwordValidate, validatePassword, noSpace, alphabetsOnlyForName, minLength7, maxLength18,
+  maxLength10, maxLength6, vlidatePhoneNumber, checkWhiteSpaces, alphaNumeric, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, } from "../layout/FormInputs";
 import {
@@ -1235,7 +1235,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required,minLength3, maxLength15]}
+                          validate={[required, minLength3, maxLength15]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -1264,7 +1264,7 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[postiveNumber,minLength10, maxLength12, checkWhiteSpaces]}
+                          validate={[postiveNumber, minLength10, maxLength12, checkWhiteSpaces]}
                           required={false}
                           // maxLength={10}
                           customClassName={'withBorder'}
@@ -1278,7 +1278,7 @@ class UserRegistration extends Component {
                               name={"PhoneNumber"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[postiveNumber, minLength10, maxLength12 ]}
+                              validate={[postiveNumber, minLength10, maxLength12]}
                               component={renderText}
                               //required={true}
                               maxLength={12}
@@ -1329,7 +1329,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required,minLength3, maxLength15]}
+                            validate={[required, minLength3, maxLength15]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}
@@ -1346,7 +1346,7 @@ class UserRegistration extends Component {
                               component={renderPasswordInputField}
                               onChange={this.passwordPatternHandler}
                               validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
-                             
+
                               isShowHide={this.state.isShowHidePassword}
                               showHide={this.showHidePasswordHandler}
                               required={true}
@@ -1425,7 +1425,7 @@ class UserRegistration extends Component {
                           name={"ZipCode"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[postiveNumber, minLength5 , maxLength5]}
+                          validate={[postiveNumber, minLength5, maxLength5]}
                           component={renderText}
                           //required={true}
                           maxLength={6}
@@ -1556,7 +1556,7 @@ class UserRegistration extends Component {
 
                     <Row>
                       <Col md="8">
-                        <HeaderTitle title={'Technology & Level:'} customClass={''} />
+                        <HeaderTitle title={'Costing Approval Level:'} customClass={''} />
                       </Col>
                       <Col md="4" className="text-right">
                         <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc1: !this.state.acc1 }) }}>
@@ -1669,7 +1669,7 @@ class UserRegistration extends Component {
 
                     <Row>
                       <Col md="8">
-                        <HeaderTitle title={'Simulation Heads & Level:'} customClass={''} />
+                        <HeaderTitle title={'Simulation Approval Level:'} customClass={''} />
                       </Col>
                       <Col md="4" className="text-right">
                         <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc2: !this.state.acc2 }) }}>
@@ -1775,7 +1775,7 @@ class UserRegistration extends Component {
                       <>
                         <Row>
                           <Col md="8">
-                            <HeaderTitle title={'Masters & Level:'} customClass={''} />
+                            <HeaderTitle title={'Master Approval Level:'} customClass={''} />
                           </Col>
                           <Col md="4" className="text-right">
                             <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { this.setState({ acc3: !this.state.acc3 }) }}>
