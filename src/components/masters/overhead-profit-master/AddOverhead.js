@@ -13,7 +13,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { FILE_URL ,ZBC} from '../../../config/constants';
+import { FILE_URL, ZBC } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
@@ -143,7 +143,7 @@ class AddOverhead extends Component {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList, plantSelectList } = this.props;
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
+            // const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
             const plantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.PlantId)
             let Head = '';
@@ -161,7 +161,7 @@ class AddOverhead extends Component {
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
               ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               plant: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
@@ -627,7 +627,7 @@ class AddOverhead extends Component {
   */
   onSubmit = debounce((values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant,uploadAttachements } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged, plant, uploadAttachements } = this.state;
     const userDetail = userDetails()
 
 
@@ -879,18 +879,18 @@ class AddOverhead extends Component {
                         {this.state.IsVendor && costingHead === "vendor" && (
                           <>
                             <Col md="4" >
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
-                            <AsyncSelect
-                              name="vendorName"
-                              ref={this.myRef}
-                              key={this.state.updateAsyncDropdown}
-                              loadOptions={promiseOptions}
-                              onChange={(e) => this.handleVendorName(e)}
-                              value={this.state.vendorName}
-                              noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                              isDisabled={isEditFlag ? true : false} />
-                             {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader masters-vendor-loader`} />}
+                              <AsyncSelect
+                                name="vendorName"
+                                ref={this.myRef}
+                                key={this.state.updateAsyncDropdown}
+                                loadOptions={promiseOptions}
+                                onChange={(e) => this.handleVendorName(e)}
+                                value={this.state.vendorName}
+                                noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                isDisabled={isEditFlag ? true : false} />
+                              {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
                             </Col>
                             <Col md="4" >
                               <Field
