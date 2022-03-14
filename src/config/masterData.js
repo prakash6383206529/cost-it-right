@@ -2557,6 +2557,45 @@ export const CostingSimulationDownloadOperation = [
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+export const CostingSimulationDownloadBOP = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+
+    { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
+    { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
+    { label: "BOPVariance", value: "BOPVariance" },
+
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
 
     { label: "Costing Id", value: "CostingNumber" },
