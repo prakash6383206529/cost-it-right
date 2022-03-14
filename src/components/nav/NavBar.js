@@ -30,7 +30,7 @@ import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import {  VERSION } from '../../config/constants';
+import { VERSION } from '../../config/constants';
 import Calculator from "../common/Calculator/component/Calculator";
 import Draggable from 'react-draggable';
 
@@ -46,7 +46,8 @@ class SideBar extends Component {
       isLeftMenuRendered: false,
       CostingsAwaitingApprovalDashboard: false,
       showPopup: false,
-      updatedObj: {}
+      updatedObj: {},
+      isShowCal: false
     };
   }
 
@@ -71,6 +72,7 @@ class SideBar extends Component {
   //   // }
 
   // }
+
 
 
   /**
@@ -106,6 +108,9 @@ class SideBar extends Component {
     this.setState({ menu: !this.state.menu })
   }
 
+
+
+
   /**
    * @method logout
    * @description logout
@@ -137,7 +142,7 @@ class SideBar extends Component {
       dropdownOpen: !prevState.dropdownOpen,
     }));
   };
-  showCalculator =()=> {
+  showCalculator = () => {
     this.setState({ isShowCal: !this.state.isShowCal })
   }
   /**
@@ -155,24 +160,24 @@ class SideBar extends Component {
    * @method renderMenus
    * @description Render menus according to user access.
    */
-  renderMenus = (module) => {
+  renderMenus = (module, LandingPageURL) => {
     switch (module) {
       case "Dashboard":
-        return this.renderDashboard(module);
+        return this.renderDashboard(module, LandingPageURL);
       case "Master":
-        return this.renderMaster(module);
+        return this.renderMaster(module, LandingPageURL);
       case "Additional Masters":
-        return this.renderAdditionalMaster(module);
+        return this.renderAdditionalMaster(module, LandingPageURL);
       case "Costing":
-        return this.renderCosting(module);
+        return this.renderCosting(module, LandingPageURL);
       case "Simulation":
-        return this.renderSimulation(module);
+        return this.renderSimulation(module, LandingPageURL);
       case "Reports And Analytics":
-        return this.renderReportAnalytics(module);
+        return this.renderReportAnalytics(module, LandingPageURL);
       case "Users":
-        return this.renderUser(module);
+        return this.renderUser(module, LandingPageURL);
       case "Audit":
-        return this.renderAudit(module);
+        return this.renderAudit(module, LandingPageURL);
       default:
         return null
     }
@@ -206,8 +211,9 @@ class SideBar extends Component {
    * @method renderDashboard
    * @description Render dashboard menu.
    */
-  renderDashboard = (module) => {
-    const { menusData, topAndLeftMenuData } = this.props
+  renderDashboard = (module, LandingPageURL) => {
+
+    const { topAndLeftMenuData } = this.props
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -248,8 +254,19 @@ class SideBar extends Component {
    * @method renderMaster
    * @description Render master menu.
    */
-  renderMaster = (module) => {
-    const { menusData, leftMenuData, menuData, topAndLeftMenuData } = this.props
+  renderMaster = (module, LandingPageURL) => {
+    const { topAndLeftMenuData } = this.props
+
+    if (window.location.href.includes(LandingPageURL)) {
+      topAndLeftMenuData &&
+        topAndLeftMenuData.map((el, i) => {
+          if (el.ModuleName === module) {
+            this.setLeftMenu(el.ModuleId)
+          }
+        })
+    }
+
+
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -334,8 +351,20 @@ class SideBar extends Component {
    * @method renderAdditionalMaster
    * @description Render Addtional master menu.
    */
-  renderAdditionalMaster = (module) => {
-    const { menusData, leftMenuData, menuData, topAndLeftMenuData } = this.props
+  renderAdditionalMaster = (module, LandingPageURL) => {
+
+    const { topAndLeftMenuData } = this.props
+
+
+    if (window.location.href.includes(LandingPageURL)) {
+      topAndLeftMenuData &&
+        topAndLeftMenuData.map((el, i) => {
+          if (el.ModuleName === module) {
+            this.setLeftMenu(el.ModuleId)
+          }
+        })
+    }
+
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -396,8 +425,19 @@ class SideBar extends Component {
    * @method renderReportAnalytics
    * @description Render Report & Analytics menu.
    */
-  renderReportAnalytics = (module) => {
-    const { menusData, topAndLeftMenuData } = this.props;
+  renderReportAnalytics = (module, LandingPageURL) => {
+    const { topAndLeftMenuData } = this.props;
+
+    if (window.location.href.includes(LandingPageURL)) {
+      topAndLeftMenuData &&
+        topAndLeftMenuData.map((el, i) => {
+          if (el.ModuleName === module) {
+            this.setLeftMenu(el.ModuleId)
+          }
+        })
+    }
+
+
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
@@ -497,8 +537,18 @@ class SideBar extends Component {
    * @method renderSimulation
    * @description Render Simulation.
    */
-  renderSimulation = (module) => {
-    const { menusData, menuData, topAndLeftMenuData } = this.props
+  renderSimulation = (module, LandingPageURL) => {
+    const { topAndLeftMenuData } = this.props
+
+    if (window.location.href.includes(LandingPageURL)) {
+      topAndLeftMenuData &&
+        topAndLeftMenuData.map((el, i) => {
+          if (el.ModuleName === module) {
+            this.setLeftMenu(el.ModuleId)
+          }
+        })
+    }
+
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
@@ -574,8 +624,19 @@ class SideBar extends Component {
    * @method renderUser
    * @description Render User menu.
    */
-  renderUser = (module) => {
-    const { menusData, topAndLeftMenuData } = this.props
+  renderUser = (module, LandingPageURL) => {
+    const { topAndLeftMenuData } = this.props
+
+    if (window.location.href.includes(LandingPageURL)) {
+      topAndLeftMenuData &&
+        topAndLeftMenuData.map((el, i) => {
+          if (el.ModuleName === module) {
+            this.setLeftMenu(el.ModuleId)
+          }
+        })
+    }
+
+
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -762,7 +823,8 @@ class SideBar extends Component {
                 <ul className="navbar-nav mr-auto">
                   {topAndLeftMenuData &&
                     topAndLeftMenuData.map((item, index) => {
-                      return this.renderMenus(item.ModuleName);
+
+                      return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
                 </ul>
               </nav>
