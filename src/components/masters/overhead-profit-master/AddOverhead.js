@@ -145,9 +145,8 @@ class AddOverhead extends Component {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
+            // const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
-
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
               Head = 'vendor';
@@ -163,7 +162,7 @@ class AddOverhead extends Component {
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
               ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
-              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              vendorName: Data.VendorName && Data.VendorName !== undefined ? { label: Data.VendorName, value: Data.VendorId } : [],
               client: clientObj && clientObj !== undefined ? { label: clientObj.Text, value: clientObj.Value } : [],
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
