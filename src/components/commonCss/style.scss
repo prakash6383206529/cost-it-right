@@ -7224,3 +7224,9 @@ left: 17rem;
     }
 }
 // <-------END simulation token dropdown css------>
+
+.simulation-labels {
+  .flex-fills.label {
+    min-width: fit-content !important;
+  }
+}
