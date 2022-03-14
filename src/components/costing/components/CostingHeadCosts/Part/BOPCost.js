@@ -199,6 +199,24 @@ function BOPCost(props) {
   */
   const onPressApplyBOPCharges = () => {
     setIsApplyBOPHandlingCharges(!IsApplyBOPHandlingCharges)
+    setValue('BOPHandlingPercentage', 0)
+    setValue('BOPHandlingCharges', 0)
+    setTimeout(() => {
+      const Params = {
+        BOMLevel: item.BOMLevel,
+        PartNumber: item.PartNumber,
+      }
+
+      const BOPHandlingFields = {
+        IsApplyBOPHandlingCharges: !IsApplyBOPHandlingCharges,
+        BOPHandlingPercentage: 0,
+        BOPHandlingCharges: 0,
+      }
+      if (!CostingViewMode) {
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      }
+    }, 200)
+    dispatch(isDataChange(true))
   }
 
   /**
