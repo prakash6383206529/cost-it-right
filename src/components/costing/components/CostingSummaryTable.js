@@ -785,13 +785,13 @@ const CostingSummaryTable = (props) => {
             {
               !simulationMode &&
               <Col md="8" className="text-right">
-                <ReactToPrint
+                {/* <ReactToPrint
                   content={reactToPrintContent}
                   onAfterPrint={handleAfterPrint}
                   onBeforeGetContent={handleOnBeforeGetContent}
                   onBeforePrint={handleBeforePrint}
                   trigger={reactToPrintTrigger}
-                />
+                /> */}
                 <button Type="button" className="mr-1 mb-2 user-btn pdf-detail px-0" title='pdf' onClick={generatorPDF}>  <div className='pdf-detail'></div></button>
                 {(!viewMode && !isFinalApproverShow) && (
                   <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
