@@ -16,7 +16,7 @@ import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
+import { CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -143,6 +143,25 @@ function CostingSimulation(props) {
                 }
                 item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                 //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
+                switch (Number(selectedMasterForSimulation.value)) {
+                    case Number(RMIMPORT):
+                    case Number(RMDOMESTIC):
+                        item.RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        return item
+                    case Number(SURFACETREATMENT):
+                        item.STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        return item
+                    case Number(OPERATIONS):
+                        item.OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        return item
+                    case Number(BOPDOMESTIC):
+                    case Number(BOPIMPORT):
+                        item.BOPVariance = (item.OldNetBoughtOutPartCost - item.NewNetBoughtOutPartCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        return item
+                    default:
+                        break;
+                }
+
             })
             let uniqeArray = []
             const map = new Map();
@@ -229,7 +248,7 @@ function CostingSimulation(props) {
         }
         setId(id)
         setPricesDetail({
-            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost, OldBOPCost: data.OldNetBoughtOutPartCost, NewBOPCost: data.NewNetBoughtOutPartCost
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -674,6 +693,7 @@ function CostingSimulation(props) {
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
         })
 
+        console.log('costingList: ', costingList);
         switch (Number(master)) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
@@ -682,6 +702,9 @@ function CostingSimulation(props) {
                 return returnExcelColumn(CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(OPERATIONS):
                 return returnExcelColumn(CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                return returnExcelColumn(CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             default:
                 return 'foo'
         }
