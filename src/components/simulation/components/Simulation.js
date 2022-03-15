@@ -946,27 +946,23 @@ function Simulation(props) {
                             </div>
                         </Row>
                     }
-
-
-                    {
-                        showUploadDrawer &&
-                        <SimulationUploadDrawer
-                            isOpen={showUploadDrawer}
-                            closeDrawer={closeDrawer}
-                            anchor={"right"}
-                            master={master}
-                        />
-                    }
-                </div >
+                </div>
             }
-            {
-                loader ? <LoaderCustom /> :
 
-                    <div className="simulation-edit">
-                        {showEditTable && editMasterPage(master.value)}
-                    </div>
+            {loader ? <LoaderCustom /> :
+
+                <div className="simulation-edit">
+                    {showEditTable && editMasterPage(master.value)}
+                </div>
             }
-        </div >
+            {showUploadDrawer &&
+                <SimulationUploadDrawer
+                    isOpen={showUploadDrawer}
+                    closeDrawer={closeDrawer}
+                    anchor={"right"}
+                    master={master}
+                />}
+        </div>
     );
 }
 
