@@ -87,8 +87,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = Number(item.BasicRate) / Number(item.NumberOfPieces)
-                tempObj.NewNetLandedCost = Number(item.NewBasicRate) / Number(item.NumberOfPieces)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
                 tempArr.push(tempObj)
             }
             return null;

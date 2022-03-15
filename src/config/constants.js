@@ -1727,6 +1727,7 @@ export const PROFIT = 'Profits'
 // export constse
 
 export const REASON_ID = 2
+export const TOFIXEDVALUE = 10
 
 // MASTER PAGES NAME
 export const RmDomestic = "Raw-material-domestic"
@@ -1796,4 +1797,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.72";
+export const VERSION = "V1.2.73";
