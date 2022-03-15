@@ -7,10 +7,10 @@ import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow
 import ViewDrawer from '../../costing/components/approval/ViewDrawer'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
+import { costingHeadObjs, SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, SIMULATIONAPPROVALSUMMARYDOWNLOADOperation, SIMULATIONAPPROVALSUMMARYDOWNLOADST } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getAmmendentStatus, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment } from '../actions/Simulation'
-import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, FILE_URL, SURFACETREATMENT, OPERATIONS } from '../../../config/constants';
+import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, ZBC, FILE_URL, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
@@ -420,6 +420,9 @@ function SimulationApprovalSummary(props) {
             case SURFACETREATMENT:
             case OPERATIONS:
                 return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADST, dataForDownload.length > 0 ? dataForDownload : [])
+            case BOPDOMESTIC:
+            case BOPIMPORT:
+                return returnExcelColumn(SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, dataForDownload.length > 0 ? dataForDownload : [])
             default:
                 break;
         }
@@ -513,6 +516,21 @@ function SimulationApprovalSummary(props) {
         const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
+
+    const oldBOPFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newBOPFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
     const rmNameFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -522,6 +540,11 @@ function SimulationApprovalSummary(props) {
     const varianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice)
+    }
+
+    const BOPVarianceFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const POVarianceFormatter = (props) => {
@@ -706,6 +729,9 @@ function SimulationApprovalSummary(props) {
         newPOCurrencyFormatter: newPOCurrencyFormatter,
         POVarianceFormatter: POVarianceFormatter,
         operationNameFormatter: operationNameFormatter,
+        oldBOPFormatter: oldBOPFormatter,
+        newBOPFormatter: newBOPFormatter,
+        BOPVarianceFormatter: BOPVarianceFormatter,
     };
 
     const errorBoxClass = () => {
@@ -1004,7 +1030,6 @@ function SimulationApprovalSummary(props) {
                                                                     </>
                                                                 }
                                                                 {
-
                                                                     String(SimulationTechnologyId) === EXCHNAGERATE &&
                                                                     <>
                                                                         <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Old PO Price (in Currency)"></AgGridColumn>
@@ -1013,6 +1038,14 @@ function SimulationApprovalSummary(props) {
                                                                         <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Exchange Rate Old" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NewExchangeRate" cellRenderer='newERFormatter' headerName="Exchange Rate New" ></AgGridColumn>
                                                                         <AgGridColumn width={140} field="Variance" headerName="Exchange Rate Variance" cellRenderer='varianceFormatter' ></AgGridColumn>
+                                                                    </>
+                                                                }
+                                                                {
+                                                                    (String(SimulationTechnologyId) === BOPDOMESTIC || String(SimulationTechnologyId) === BOPIMPORT) &&
+                                                                    <>
+                                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
                                                                 <AgGridColumn width={130} field="SimulationCostingId" pinned="right" cellRenderer='buttonFormatter' floatingFilter={false} headerName="Actions" type="rightAligned"></AgGridColumn>
