@@ -478,14 +478,14 @@ function SimulationApprovalSummary(props) {
     const oldBOPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newBOPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
+        const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
@@ -983,8 +983,8 @@ function SimulationApprovalSummary(props) {
                                                                 {
                                                                     (String(SimulationTechnologyId) === BOPDOMESTIC || String(SimulationTechnologyId) === BOPIMPORT) &&
                                                                     <>
-                                                                       <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" ></AgGridColumn>
-                                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Old BOP Cost" cellRenderer='oldBOPFormatter' ></AgGridColumn>
+                                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="New BOP Cost" cellRenderer='newBOPFormatter'></AgGridColumn>
                                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="BOP Variance" cellRenderer='BOPVarianceFormatter' ></AgGridColumn>
                                                                     </>
                                                                 }
