@@ -1727,6 +1727,7 @@ export const PROFIT = 'Profits'
 // export constse
 
 export const REASON_ID = 2
+export const TOFIXEDVALUE = 10
 
 // MASTER PAGES NAME
 export const RmDomestic = "Raw-material-domestic"
