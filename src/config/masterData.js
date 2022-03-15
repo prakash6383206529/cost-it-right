@@ -2682,11 +2682,14 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "ECN Number", value: "ECNNumber" },
     { label: "Revision Number", value: "RevisionNumber" },
     { label: "Vendor Name", value: "VendorName" },
-
-    { label: "Operation Name", value: "OperationName" },
-    { label: "Operation Code", value: "OperationCode" },
-
     { label: "Plant", value: "PlantName" },
+
+    { label: "BOP Name", value: "BoughtOutPartName" },
+    { label: "BOP Number", value: "BoughtOutPartNumber" },
+    { label: "Old BOP Cost", value: "OldBOPCost" },
+    { label: "New BOP Cost", value: "NewBOPCost" },
+    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },
