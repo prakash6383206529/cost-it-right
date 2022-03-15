@@ -35,16 +35,14 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, } = props
 
-    const { register, control, formState: { errors }, getValues, setValue } = useForm({
+    const { formState: getValues, setValue } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
 
-    const [shown, setshown] = useState(false);
 
     const [selectedRowData, setSelectedRowData] = useState([]);
-    const [selectedIds, setSelectedIds] = useState([])
     const [tokenNo, setTokenNo] = useState('')
     const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
@@ -68,9 +66,7 @@ function CostingSimulation(props) {
     const [simulationTypeState, setSimulationTypeState] = useState("")
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [tableData, setTableData] = useState([])
-    const [isSuccessfullyInsert, setIsSuccessfullyInsert] = useState(true)
     const [status, setStatus] = useState('')
-    const [noContent, setNoContent] = useState(false)
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: false,
         hideProfit: false,
@@ -554,10 +550,9 @@ function CostingSimulation(props) {
         return cell != null ? checkForDecimalAndNull(row.Variance, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
-    const fourDecimal = (props) => {
+    const decimalFormatter = (props) => {
 
         const cell = props?.value;
-        const row = props?.data;
         return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
@@ -633,14 +628,14 @@ function CostingSimulation(props) {
 
     const hideColumn = (props) => {
         setHideDataColumn({
-            hideOverhead: costingList && costingList.length > 0 && NewOverheadCostReducer(costingList, 'NewOverheadCost'),
-            hideProfit: costingList && costingList.length > 0 && NewProfitCostReducer(costingList, 'NewProfitCost'),
-            hideRejection: costingList && costingList.length > 0 && NewRejectionCost(costingList, 'NewRejectionCost'),
-            hideICC: costingList && costingList.length > 0 && NewICCCostReducer(costingList, 'NewICCCost'),
-            hidePayment: costingList && costingList.length > 0 && NewPaymentTermsCostReducer(costingList, 'NewPaymentTermsCost'),
-            hideOtherCost: costingList && costingList.length > 0 && NewOtherCostReducer(costingList, 'NewOtherCost'),
-            hideDiscount: costingList && costingList.length > 0 && NewDiscountCostReducer(costingList, 'NewDiscountCost'),
-            hideOveheadAndProfit: costingList && costingList.length > 0 && NewNetOverheadAndProfitCostReducer(costingList, 'NewNetOverheadAndProfitCost')
+            hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
+            hideProfit: costingList && costingList.length > 0 && (costingList[0].NewProfitCost === 0 || costingList[0].OldProfitCost === costingList[0].NewProfitCost) ? true : false,
+            hideRejection: costingList && costingList.length > 0 && (costingList[0].NewRejectionCost === 0 || costingList[0].OldRejectionCost === costingList[0].NewRejectionCost) ? true : false,
+            hideICC: costingList && costingList.length > 0 && (costingList[0].NewICCCost === 0 || costingList[0].OldICCCost === costingList[0].NewICCCost) ? true : false,
+            hidePayment: costingList && costingList.length > 0 && (costingList[0].NewPaymentTermsCost === 0 || costingList[0].OldPaymentTermsCost === costingList[0].NewPaymentTermsCost) ? true : false,
+            hideOtherCost: costingList && costingList.length > 0 && (costingList[0].NewOtherCost === 0 || costingList[0].OldOtherCost === costingList[0].NewOtherCost) ? true : false,
+            hideDiscount: costingList && costingList.length > 0 && (costingList[0].NewDiscountCost === 0 || costingList[0].OldDiscountCost === costingList[0].NewDiscountCost) ? true : false,
+            hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false
         })
 
         setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
@@ -817,7 +812,7 @@ function CostingSimulation(props) {
         varianceRMCFormatter: varianceRMCFormatter,
         varianceSTFormatter: varianceSTFormatter,
         variancePOFormatter: variancePOFormatter,
-        fourDecimal: fourDecimal,
+        decimalFormatter: decimalFormatter,
     };
 
     // const isRowSelectable = rowNode => rowNode.data ? selectedCostingIds.length > 0 && !selectedCostingIds.includes(rowNode.data.CostingId) : false;
@@ -936,9 +931,9 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <>
-                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old BOP Cost' cellRenderer={fourDecimal} ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New BOP Cost' cellRenderer={fourDecimal}></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={fourDecimal} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old BOP Cost' cellRenderer={decimalFormatter} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New BOP Cost' cellRenderer={decimalFormatter}></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={decimalFormatter} ></AgGridColumn>
                                                     </>}
 
                                                     {(isMachineRate || showMachineRateColumn) && <>
