@@ -16,7 +16,7 @@ import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
 import { getPlantSelectListByType } from '../../../actions/Common';
 import { setCostingViewData } from '../../costing/actions/Costing';
-import { CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
+import { CostingSimulationDownloadBOP, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -125,7 +125,7 @@ function CostingSimulation(props) {
         dispatch(setShowSimulationPage(true))
     };
 
-    const manageResponce = (res) => {
+    const setCommonStateForList = (res) => {
         if (res.data.Result) {
             const tokenNo = res.data.Data.SimulationTokenNumber
             const Data = res.data.Data
@@ -146,39 +146,21 @@ function CostingSimulation(props) {
                 switch (Number(selectedMasterForSimulation.value)) {
                     case Number(RMIMPORT):
                     case Number(RMDOMESTIC):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                        const RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        item.RMCVariance = RMCVariance
+                        item.RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                         return item
                     case Number(SURFACETREATMENT):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                        const STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        item.STVariance = STVariance
+                        item.STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                         return item
                     case Number(OPERATIONS):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                        const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        item.OperationVariance = OperationVariance
+                        item.OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                         return item
                     case Number(BOPDOMESTIC):
                     case Number(BOPIMPORT):
-                        // item.OldRMCSum = reducerOldRMPrice(Data.SimulatedCostingList, item)
-                        // item.NewRMCSum = reducerNewRMPrice(Data.SimulatedCostingList, item)
-                        // item.RMVarianceSum = checkForDecimalAndNull(Number(item.OldRMCSum) - Number(item.NewRMCSum), getConfigurationKey().NoOfDecimalForPrice)
-                        // const OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
-                        // item.OperationVariance = OperationVariance
+                        item.BOPVariance = (item.OldBOPCost - item.NewBOPCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                         return item
-
                     default:
                         break;
                 }
-
 
             })
             let uniqeArray = []
@@ -210,23 +192,23 @@ function CostingSimulation(props) {
             case Number(RMDOMESTIC):
             case Number(RMIMPORT):
                 dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(SURFACETREATMENT):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(OPERATIONS):
                 dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
             case Number(BOPDOMESTIC):
             case Number(BOPIMPORT):
                 dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                    manageResponce(res)
+                    setCommonStateForList(res)
                 }))
                 break;
 
@@ -266,7 +248,7 @@ function CostingSimulation(props) {
         }
         setId(id)
         setPricesDetail({
-            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost
+            CostingNumber: data.CostingNumber, PlantCode: data.PlantCode, OldPOPrice: data.OldPOPrice, NewPOPrice: data.NewPOPrice, OldRMPrice: data.OldNetRawMaterialsCost, NewRMPrice: data.NewNetRawMaterialsCost, CostingHead: data.CostingHead, OldNetSurfaceTreatmentCost: data.OldNetSurfaceTreatmentCost, NewNetSurfaceTreatmentCost: data.NewNetSurfaceTreatmentCost, OldOperationCost: data.OldOperationCost, NewOperationCost: data.NewOperationCost, OldBOPCost: data.OldBOPCost, NewBOPCost: data.NewBOPCost
         })
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
@@ -719,6 +701,9 @@ function CostingSimulation(props) {
                 return returnExcelColumn(CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             case Number(OPERATIONS):
                 return returnExcelColumn(CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                return returnExcelColumn(CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : costingList && costingList?.length > 0 ? costingList : [])
             default:
                 return 'foo'
         }
@@ -929,8 +914,8 @@ function CostingSimulation(props) {
                                                     </>}
 
                                                     {(isBOPDomesticOrImport || showBOPColumn) && <>
-                                                        <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Old Basic Rate' cellRenderer={fourDecimal} ></AgGridColumn>
-                                                        <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='New Basic Rate' cellRenderer={fourDecimal}></AgGridColumn>
+                                                        <AgGridColumn width={140} field="OldBOPCost" headerName='Old BOP Cost' cellRenderer={fourDecimal} ></AgGridColumn>
+                                                        <AgGridColumn width={140} field="NewBOPCost" headerName='New BOP Cost' cellRenderer={fourDecimal}></AgGridColumn>
                                                         <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='BOP Variance' cellRenderer={fourDecimal} ></AgGridColumn>
                                                     </>}
 

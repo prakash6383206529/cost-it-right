@@ -73,7 +73,7 @@ function BDSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].IsVendor === 'Vendor Based' ? VBC : ZBC
+        obj.CostingHead = ((isbulkUpload ? list[0].CostingHead : list[0].IsVendor) === 'Vendor Based') ? VBC : ZBC
         obj.LoggedInUserId = loggedInUserId()
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
@@ -87,6 +87,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
+                tempObj.OldNetLandedCost = Number(item.BasicRate) / Number(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = Number(item.NewBasicRate) / Number(item.NumberOfPieces)
                 tempArr.push(tempObj)
             }
             return null;
@@ -162,9 +164,9 @@ function BDSimulation(props) {
     }
 
     /**
-  * @method beforeSaveCell
-  * @description CHECK FOR ENTER NUMBER IN CELL
-  */
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
     const beforeSaveCell = (props) => {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
