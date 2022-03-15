@@ -5,11 +5,11 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../config/constants';
+import { EMPTY_DATA, TOFIXEDVALUE } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingSimulationList, getExchangeCostingSimulationList, saveSimulationForRawMaterial } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formatRMSimulationObject, formViewData, getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, EXCHNAGERATE, ZBC } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -114,8 +114,11 @@ function OtherCostingSimulation(props) {
             }
             switch (master) {
                 case EXCHNAGERATE:
-                    item.POVariance = checkForDecimalAndNull(item.OldNetPOPriceOtherCurrency - item.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)
-                    item.Variance = checkForDecimalAndNull(item.OldExchangeRate - item.NewExchangeRate, getConfigurationKey().NoOfDecimalForPrice)
+                    item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
+                        checkForNull(item.NewNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE))
+                    item.Variance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
+                        checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
+
                     break;
                 default:
                     break;
