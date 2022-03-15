@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialNameChild } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
-import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
@@ -144,17 +144,21 @@ function CostingSimulation(props) {
                 switch (Number(selectedMasterForSimulation.value)) {
                     case Number(RMIMPORT):
                     case Number(RMDOMESTIC):
-                        item.RMCVariance = (item.OldRMPrice - item.NewRMPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.RMCVariance = (checkForNull(item.OldRMPrice).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewRMPrice).toFixed(TOFIXEDVALUE))
                         return item
                     case Number(SURFACETREATMENT):
-                        item.STVariance = (item.OldSurfaceTreatmentCost - item.NewSurfaceTreatmentCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.STVariance = (checkForNull(item.OldSurfaceTreatmentCost).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewSurfaceTreatmentCost).toFixed(TOFIXEDVALUE))
                         return item
                     case Number(OPERATIONS):
-                        item.OperationVariance = (item.OldOperationCost - item.NewOperationCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.OperationVariance = (checkForNull(item.OldOperationCost).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewOperationCost).toFixed(TOFIXEDVALUE))
                         return item
                     case Number(BOPDOMESTIC):
                     case Number(BOPIMPORT):
-                        item.BOPVariance = (item.OldBOPCost - item.NewBOPCost).toFixed(getConfigurationKey().NoOfDecimalForPrice)
+                        item.BOPVariance = (checkForNull(item.OldBOPCost).toFixed(TOFIXEDVALUE) -
+                            checkForNull(item.NewBOPCost).toFixed(TOFIXEDVALUE))
                         return item
                     default:
                         break;
