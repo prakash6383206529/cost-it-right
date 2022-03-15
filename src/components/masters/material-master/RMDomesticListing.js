@@ -484,7 +484,7 @@ function RMDomesticListing(props) {
                 {
                     // SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY
                     (!isSimulation && !props.isMasterSummaryDrawer) &&
-                    <Col md="6" lg="6" className="search-user-block mb-3">
+                    <Col md="6" lg="6" className={`search-user-block mb-3  ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 <>
@@ -541,7 +541,7 @@ function RMDomesticListing(props) {
             <Row>
                 <Col>
                     <div className={`ag-grid-wrapper height-width-wrapper ${getFilterRMData() && getFilterRMData()?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header">
+                        <div className={`ag-grid-header  ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${(loader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>

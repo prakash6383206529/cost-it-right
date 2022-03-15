@@ -80,28 +80,36 @@ class BOPDomesticListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
         }
-        this.setState({ isLoader: true })
         const { isMasterSummaryDrawer } = this.props
 
+        if (this.props.isSimulation && this.props.selectionForListingMasterAPI === 'Combined') {
+            this.props?.changeSetLoader(true)
+            this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
+                this.props?.changeSetLoader(false)
 
-        if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
-            if (this.props.isSimulation) {
-                this.props?.changeTokenCheckBox(false)
-            }
-            this.props.getBOPDomesticDataList(filterData, (res) => {
-                if (this.props.isSimulation) {
-                    this.props?.changeTokenCheckBox(true)
-                }
-                this.setState({ isLoader: false })
-                if (res && res.status === 200) {
-                    let Data = res.data.DataList;
-                    this.setState({ tableData: Data })
-                } else if (res && res.response && res.response.status === 412) {
-                    this.setState({ tableData: [] })
-                } else {
-                    this.setState({ tableData: [] })
-                }
             })
+        } else {
+
+            this.setState({ isLoader: true })
+            if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(false)
+                }
+                this.props.getBOPDomesticDataList(filterData, (res) => {
+                    this.setState({ isLoader: false })
+                    if (this.props.isSimulation) {
+                        this.props?.changeTokenCheckBox(true)
+                    }
+                    if (res && res.status === 200) {
+                        let Data = res.data.DataList;
+                        this.setState({ tableData: Data })
+                    } else if (res && res.response && res.response.status === 412) {
+                        this.setState({ tableData: [] })
+                    } else {
+                        this.setState({ tableData: [] })
+                    }
+                })
+            }
         }
     }
 
@@ -370,16 +378,7 @@ class BOPDomesticListing extends Component {
 
     getFilterBOPData = () => {
         if (this.props.isSimulation) {
-            if (this.props.selectionForListingMasterAPI === 'Combined') {
-                this.props?.changeSetLoader(true)
-                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, () => {
-                    this.props?.changeSetLoader(false)
-
-                })
-            }
-            if (this.props.selectionForListingMasterAPI === 'Master') {
-                return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
-            }
+            return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
         }
         else {
             return this.props.bopDomesticList
@@ -442,7 +441,7 @@ class BOPDomesticListing extends Component {
                 {/* {this.state.isLoader && <LoaderCustom />} */}
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                    <Row className={`pt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter' : ''}`}>
+                    <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
 
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
@@ -505,7 +504,7 @@ class BOPDomesticListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
+                            <div className={`ag-grid-header  ${this.props.isSimulation ? 'zindex-0 ' : ''}`}>
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>

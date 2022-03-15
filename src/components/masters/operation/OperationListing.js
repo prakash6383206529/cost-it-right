@@ -625,7 +625,7 @@ class OperationListing extends Component {
         return (
             <div className="container-fluid">
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
-                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""} ${isSimulation ? "zindex-0" : ""}`}>
                     <form>
 
                         <Row className="pt-4 filter-row-large blue-before">
@@ -691,7 +691,7 @@ class OperationListing extends Component {
                     </form>
 
                     <div className={`ag-grid-wrapper height-width-wrapper ${this.getFilterOperationData() && this.getFilterOperationData()?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header">
+                        <div className={`ag-grid-header ${isSimulation ? "zindex-0" : ""}`}>
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </div>
                         <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
