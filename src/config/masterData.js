@@ -2595,8 +2595,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "PO Price New", value: "NewPOPrice" },
     { label: "PO Variance", value: "Variance" },
 
-    { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
-    { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
+    { label: "OldBOPCost", value: "OldBOPCost" },
+    { label: "NewBOPCost", value: "NewBOPCost" },
     { label: "BOPVariance", value: "BOPVariance" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
@@ -2671,6 +2671,26 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [
     { label: "Old CC", value: "OldNetCC" },
     { label: "New CC", value: "NewNetCC" },
     { label: "CC Variance", value: "Variance" },
+
+]
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+
+    { label: "Operation Name", value: "OperationName" },
+    { label: "Operation Code", value: "OperationCode" },
+
+    { label: "Plant", value: "PlantName" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+
 
 ]
 
