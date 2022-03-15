@@ -393,14 +393,14 @@ function OtherCostingSimulation(props) {
     }
     const hideColumn = (props) => {
         setHideDataColumn({
-            hideOverhead: costingList && costingList.length > 0 && costingList[0]?.NewOverheadCost === 0 ? true : false,
-            hideProfit: costingList && costingList.length > 0 && costingList[0].NewProfitCost && costingList[0]?.NewProfitCost === 0 ? true : false,
-            hideRejection: costingList && costingList.length > 0 && costingList[0].NewRejectionCost && costingList[0]?.NewRejectionCost === 0 ? true : false,
-            hideICC: costingList && costingList.length > 0 && costingList[0].NewICCCost && costingList[0]?.NewICCCost === 0 ? true : false,
-            hidePayment: costingList && costingList.length > 0 && costingList[0].NewPaymentTermsCost && costingList[0]?.NewPaymentTermsCost === 0 ? true : false,
-            hideOtherCost: costingList && costingList.length > 0 && costingList[0].NewOtherCost && costingList[0]?.NewOtherCost === 0 ? true : false,
-            hideDiscount: costingList && costingList.length > 0 && costingList[0].NewDiscountCost && costingList[0]?.NewDiscountCost === 0 ? true : false,
-            hideOveheadAndProfit: costingList && costingList.length > 0 && costingList[0].NewNetOverheadAndProfitCost && costingList[0]?.NewNetOverheadAndProfitCost === 0 ? true : false
+            hideOverhead: costingList && costingList.length > 0 && (costingList[0].NewOverheadCost === 0 || costingList[0].OldOverheadCost === costingList[0].NewOverheadCost) ? true : false,
+            hideProfit: costingList && costingList.length > 0 && (costingList[0].NewProfitCost === 0 || costingList[0].OldProfitCost === costingList[0].NewProfitCost) ? true : false,
+            hideRejection: costingList && costingList.length > 0 && (costingList[0].NewRejectionCost === 0 || costingList[0].OldRejectionCost === costingList[0].NewRejectionCost) ? true : false,
+            hideICC: costingList && costingList.length > 0 && (costingList[0].NewICCCost === 0 || costingList[0].OldICCCost === costingList[0].NewICCCost) ? true : false,
+            hidePayment: costingList && costingList.length > 0 && (costingList[0].NewPaymentTermsCost === 0 || costingList[0].OldPaymentTermsCost === costingList[0].NewPaymentTermsCost) ? true : false,
+            hideOtherCost: costingList && costingList.length > 0 && (costingList[0].NewOtherCost === 0 || costingList[0].OldOtherCost === costingList[0].NewOtherCost) ? true : false,
+            hideDiscount: costingList && costingList.length > 0 && (costingList[0].NewDiscountCost === 0 || costingList[0].OldDiscountCost === costingList[0].NewDiscountCost) ? true : false,
+            hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false
         })
 
         setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
