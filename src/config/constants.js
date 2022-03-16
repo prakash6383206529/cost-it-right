@@ -909,7 +909,6 @@ export const API = {
   runSimulationOnSelectedProfitCosting: `${BASE_URL}/simulation/run-simulation-on-profit-costing`,
   draftOverheadSimulation: `${BASE_URL}/simulation/draft-simulation-overhead`,
   draftProfitSimulation: `${BASE_URL}/simulation/draft-simulation-profit`,
-  getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
   getTokenSelectListAPI: `${BASE_URL}/simulation/select-list-get-draft-token-number-by-technologyId`,
   getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
 
@@ -1585,6 +1584,7 @@ export const TAX = 'Tax'
 export const COSTING_DETAILS_REPORT = 'Costing Details Report'
 export const SIMULATION_APPROVAL_SUM = ' Simulation Approval Summary'
 export const SIMULATION_INSIGNTS = 'Simulation Insignts'
+export const COSTING_DETAIL = 'Costing Details'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -1727,6 +1727,7 @@ export const PROFIT = 'Profits'
 // export constse
 
 export const REASON_ID = 2
+export const TOFIXEDVALUE = 10
 
 // MASTER PAGES NAME
 export const RmDomestic = "Raw-material-domestic"
@@ -1796,4 +1797,4 @@ export const LEVEL1 = 'L1';
 export const SUB_ASSEMBLY = 'Sub Assembly';
 
 //VERSION 
-export const VERSION = "V1.2.64";
+export const VERSION = "V1.2.75";

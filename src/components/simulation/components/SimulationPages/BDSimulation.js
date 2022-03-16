@@ -73,7 +73,7 @@ function BDSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.CostingHead = list[0].IsVendor === 'Vendor Based' ? VBC : ZBC
+        obj.CostingHead = ((isbulkUpload ? list[0].CostingHead : list[0].IsVendor) === 'Vendor Based') ? VBC : ZBC
         obj.LoggedInUserId = loggedInUserId()
         obj.TechnologyId = selectedTechnologyForSimulation.value
         obj.TechnologyName = selectedTechnologyForSimulation.label
@@ -87,6 +87,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
                 tempArr.push(tempObj)
             }
             return null;
@@ -162,9 +164,9 @@ function BDSimulation(props) {
     }
 
     /**
-  * @method beforeSaveCell
-  * @description CHECK FOR ENTER NUMBER IN CELL
-  */
+    * @method beforeSaveCell
+    * @description CHECK FOR ENTER NUMBER IN CELL
+    */
     const beforeSaveCell = (props) => {
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
@@ -246,7 +248,7 @@ function BDSimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit();
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         if (isImpactedMaster) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
@@ -357,24 +359,24 @@ function BDSimulation(props) {
                                             stopEditingWhenCellsLoseFocus={true}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={190}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={190}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor" minWidth={190}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="DestinationPlant" editable='false' headerName="DestinationPlant" minWidth={190}></AgGridColumn>}
+                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="Vendor" editable='false' headerName="Vendor" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="DestinationPlant" editable='false' headerName="DestinationPlant" minWidth={140}></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Basic Rate (INR)" marryChildren={true} >
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName="Basic Rate (INR)" marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' headerName="Old" cellRenderer='oldBasicRateFormatter' colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="New" colId='NewBasicRate'></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)">
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Cost (INR)" marryChildren={true}>
                                                 {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate/data.NumberOfPieces' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                            <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
 

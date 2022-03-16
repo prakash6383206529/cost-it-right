@@ -185,15 +185,6 @@ function Simulation(props) {
                 temp = TempData
                 break;
             case Number(BOPDOMESTIC):
-                temp = TempData && TempData.map((item) => {
-                    if (item.IsVendor === true) {
-                        item.IsVendor = 'Vendor Based'
-                    } else if (item.IsVendor === false) {
-                        item.IsVendor = 'Zero Based'
-                    }
-                    return item
-                })
-                break;
             case Number(BOPIMPORT):
                 temp = TempData && TempData.map((item) => {
                     if (item.IsVendor === true) {
@@ -767,9 +758,9 @@ function Simulation(props) {
                     </Row>
                     <ScrollToTop pointProp={"go-to-top"} />
                     <Row>
-                        <Col md="12" className="filter-block zindex-12">
+                        <Col md="12" className="filter-block zindex-9 simulation-labels">
 
-                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                            <div className="d-inline-flex justify-content-start align-items-center mr-3 ">
                                 <div className="flex-fills label">Masters:</div>
                                 <div className="hide-label flex-fills pl-0">
                                     <SearchableSelectHookForm
@@ -811,7 +802,7 @@ function Simulation(props) {
                                 </div>
                             }
                             {showTokenDropdown &&
-                                <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                <div className="d-inline-flex justify-content-start align-items-center">
                                     <div className="flex-fills label">Token:</div>
                                     <div className="flex-fills hide-label pl-0">
                                         <SearchableSelectHookForm
@@ -866,23 +857,22 @@ function Simulation(props) {
                             </div>
                         </Row>
                     }
-
-
-                    {showUploadDrawer &&
-                        <SimulationUploadDrawer
-                            isOpen={showUploadDrawer}
-                            closeDrawer={closeDrawer}
-                            anchor={"right"}
-                            master={master}
-                        />}
                 </div>
             }
+
             {loader ? <LoaderCustom /> :
 
                 <div className="simulation-edit">
                     {showEditTable && editMasterPage(master.value)}
                 </div>
             }
+            {showUploadDrawer &&
+                <SimulationUploadDrawer
+                    isOpen={showUploadDrawer}
+                    closeDrawer={closeDrawer}
+                    anchor={"right"}
+                    master={master}
+                />}
         </div>
     );
 }

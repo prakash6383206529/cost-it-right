@@ -4084,6 +4084,7 @@ body{
 }
 .zindex-15{z-index: 15;}
 .zindex-12{z-index: 12;}
+.zindex-0{z-index: 0 !important;}
 .switch {
  .left-title,.right-title{vertical-align: middle;} 
  >.switch-level > div{
@@ -7186,5 +7187,14 @@ left: 17rem;
     max-height: 60px;
     overflow-y: auto;
   }
+  .css-4ljt47-MenuList {
+    z-index: 50 !important;
+  }
 }
 // <-------END simulation token dropdown css------>
+
+.simulation-labels {
+  .flex-fills.label {
+    min-width: fit-content !important;
+  }
+}

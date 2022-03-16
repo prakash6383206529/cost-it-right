@@ -2534,6 +2534,45 @@ export const CostingSimulationDownloadOperation = [
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+export const CostingSimulationDownloadBOP = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+
+    { label: "OldBOPCost", value: "OldBOPCost" },
+    { label: "NewBOPCost", value: "NewBOPCost" },
+    { label: "BOPVariance", value: "BOPVariance" },
+
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
 
     { label: "Costing Id", value: "CostingNumber" },
@@ -2565,6 +2604,29 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Operation Name", value: "OperationName" },
     { label: "Operation Code", value: "OperationCode" },
     { label: "Plant", value: "PlantName" },
+    { label: "Old PO Price", value: "OldPOPrice" },
+    { label: "New PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+
+
+]
+
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+
+    { label: "BOP Name", value: "BoughtOutPartName" },
+    { label: "BOP Number", value: "BoughtOutPartNumber" },
+    { label: "Old BOP Cost", value: "OldBOPCost" },
+    { label: "New BOP Cost", value: "NewBOPCost" },
+    { label: "BOP Variance", value: "NetBoughtOutPartCostVariance" },
+
     { label: "Old PO Price", value: "OldPOPrice" },
     { label: "New PO Price", value: "NewPOPrice" },
     { label: "PO Variance", value: "POVariance" },

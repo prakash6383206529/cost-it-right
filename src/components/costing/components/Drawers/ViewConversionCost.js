@@ -90,12 +90,12 @@ function ViewConversionCost(props) {
       setTransportCost(transportCost)
       setSurfaceTreatmentCost(surfaceCost)
     } else {
-      setCostingProcessCost(CostingProcessCostResponse[1])
+      setCostingProcessCost(CostingProcessCostResponse ? CostingProcessCostResponse : [])
       setCostingOperationCostResponse(CostingOperationCostResponse ? CostingOperationCostResponse : [])
       // setcostingToolsCost(CostingToolsCostResponse)
       setOtherCostingOperationCostResponse(CostingOtherOperationCostResponse ? CostingOtherOperationCostResponse : [])
-      setTransportCost(netTransportationCostView)
-      setSurfaceTreatmentCost(surfaceTreatmentDetails)
+      setTransportCost(netTransportationCostView ? netTransportationCostView : [])
+      setSurfaceTreatmentCost(surfaceTreatmentDetails ? surfaceTreatmentDetails : [])
     }
 
   }, [])
