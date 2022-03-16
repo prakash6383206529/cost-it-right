@@ -445,7 +445,7 @@ class BOPDomesticListing extends Component {
                         <Col md="6" lg="6">
                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                         </Col>
-                        <Col md="6" lg="6" className="mb-2 pr-0">
+                        <Col md="6" lg="6" className="mb-2">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
