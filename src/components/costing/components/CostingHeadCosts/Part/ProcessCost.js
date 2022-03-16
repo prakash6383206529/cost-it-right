@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import OperationCost from './OperationCost';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
@@ -16,13 +16,14 @@ import { getProcessCalculation } from '../../../actions/CostWorking';
 import { gridDataAdded, isDataChange, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
+import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 
 let counter = 0;
 function ProcessCost(props) {
   const { data, item } = props
 
-  const { register, control, formState: { errors }, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -44,6 +45,9 @@ function ProcessCost(props) {
   const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
+  const [remarkPopUpData, setRemarkPopUpData] = useState("")
+
+
 
   const dispatch = useDispatch()
 
@@ -171,6 +175,43 @@ function ProcessCost(props) {
     setIsOpen(!isOpen)
   }
 
+
+  const onRemarkPopUpClickk = (index) => {
+
+    setRemarkPopUpData(getValues(`${ProcessGridFields}.${index}.remarkPopUp`))
+    let tempArr = []
+    let tempData = gridData[index]
+
+    tempData = {
+      ...tempData,
+
+      Remark: getValues(`${ProcessGridFields}.${index}.remarkPopUp`)
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    // setGridData(tempArr)
+
+    if (getValues(`${ProcessGridFields}.${index}.remarkPopUp`)) {
+      Toaster.success('Remark saved successfully')
+    }
+
+
+    setTabData(tempArr)
+
+    var button = document.getElementById(`popUpTriggers${index}`)
+    button.click()
+
+
+  }
+
+
+  const onRemarkPopUpClosee = (index) => {
+
+    var button = document.getElementById(`popUpTriggers${index}`)
+    button.click()
+  }
+
+
+
   useEffect(() => {
     dispatch(setIsToolCostUsed(isOpen))
   }, [isOpen])
@@ -212,7 +253,8 @@ function ProcessCost(props) {
           ProcessCost: el.MachineRate * processQuantity,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId,
-          ProductionPerHour: '-'
+          ProductionPerHour: '-',
+
         }
       })
 
@@ -235,6 +277,7 @@ function ProcessCost(props) {
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: tempArr,
+
       }
 
       setGridData(tempArr)
@@ -284,6 +327,7 @@ function ProcessCost(props) {
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: tempArrAfterDelete,
+
       }
 
       let selectedIds = []
@@ -332,6 +376,7 @@ function ProcessCost(props) {
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: gridTempArr,
+
       }
 
       setTabData(tempArr)
@@ -566,6 +611,45 @@ function ProcessCost(props) {
                           </td>
                           <td>
                             {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+
+                            <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box ml-2" type={'button'} />}
+                              position="top center">
+                              <TextAreaHookForm
+                                label="Remark:"
+                                name={`${ProcessGridFields}.${index}.remarkPopUp`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+
+
+                                  maxLength: {
+                                    value: 75,
+                                    message: "Remark should be less than 75 word"
+                                  },
+                                }}
+
+                                handleChange={(e) => { }}
+                                defaultValue={item.Remark ?? item.Remark}
+                                className=""
+                                customClassName={"withBorder"}
+                                errors={errors && errors.ProcessGridFields && errors.ProcessGridFields[index] !== undefined ? errors.ProcessGridFields[index].remarkPopUp : ''}
+                                //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                disabled={CostingViewMode ? true : false}
+                                hidden={false}
+                              />
+                              <Row>
+                                <Col md="12" className='remark-btn-container'>
+                                  <button className='submit-button mr-2' disabled={CostingViewMode ? true : false} onClick={() => onRemarkPopUpClickk(index)} > <div className='save-icon'></div> </button>
+                                  <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
+                                </Col>
+                              </Row>
+
+                            </Popup>
+
+
+
                           </td>
                         </tr>
                       )
