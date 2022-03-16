@@ -101,9 +101,11 @@ function Simulation(props) {
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
     const processCostingList = useSelector(state => state.simulation.combinedProcessList)
 
-    // useEffect(() => {
-    //     editTable()
-    // }, [rmDomesticListing, rmImportListing])
+    useEffect(() => {
+        if (technology && (technology?.value !== undefined && technology?.value !== '')) {
+            setShowTokenDropdown(true)
+        }
+    }, [technology])
 
     useEffect(() => {
         renderListing('vendor')
