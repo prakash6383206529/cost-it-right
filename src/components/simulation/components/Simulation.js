@@ -870,7 +870,7 @@ function Simulation(props) {
                                 </div>
                             }
 
-                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn' onClick={callAPIOnClick}>
+                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
                                 <div className='save-icon'></div>
                             </button>}
                         </Col>
