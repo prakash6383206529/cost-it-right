@@ -843,7 +843,7 @@ import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster, ReportSAPMaster, EMPTY_DATA }
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData } from '../../../helper'
+import { formViewData, checkForDecimalAndNull } from '../../../helper'
 
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -909,12 +909,7 @@ function ReportListing(props) {
 
     const partSelectList = useSelector((state) => state.costing.partSelectList)
     let reportListingData = useSelector((state) => state.report.reportListing)
-    const statusSelectList = useSelector((state) => state.approval.costingStatusList)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const approvalList = useSelector(state => state.approval.approvalList)
-
-    const userList = useSelector(state => state.auth.userList)
-    // const { bopDrawerList } = useSelector(state => state.costing)
 
     const getData = () => {
 
@@ -1108,38 +1103,7 @@ function ReportListing(props) {
         //paginationShowsTotal: this.renderPaginationShowsTotal,
     }
 
-    const renderDropdownListing = (label) => {
-        const tempDropdownList = []
 
-        if (label === 'PartList') {
-            partSelectList &&
-                partSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-
-            return tempDropdownList
-        }
-
-        if (label === 'Status') {
-            statusSelectList &&
-                statusSelectList.map((item) => {
-                    if (item.Value === '0') return false
-                    tempDropdownList.push({ label: item.Text, value: item.Value })
-                    return null
-                })
-            return tempDropdownList
-        }
-        if (label === 'users') {
-            userList && userList.map((item) => {
-                if (item.Value === '0') return false
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null
-            })
-            return tempDropdownList
-        }
-    }
 
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -1191,7 +1155,6 @@ function ReportListing(props) {
         statusFormatter: statusFormatter,
         //customLoadingOverlay: LoaderCustom
         hyperLinkableFormatter: hyperLinkableFormatter,
-
     };
 
     /**
