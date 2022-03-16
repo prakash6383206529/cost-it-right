@@ -188,10 +188,9 @@ function BDSimulation(props) {
             return row.NewNetBoughtOutPartCost
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
+            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
             const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
-            const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-
-
+            const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
             return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}            </span> : ''
 
         }
@@ -203,11 +202,8 @@ function BDSimulation(props) {
             return row.OldNetBoughtOutPartCost
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
-            const classGreen = (BasicRate > row.NetLandedCost) ? 'red-value form-control' : (BasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
 
-
-            return row.BasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}            </span> : ''
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
     }
