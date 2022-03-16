@@ -89,9 +89,11 @@ function Simulation(props) {
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
 
-    // useEffect(() => {
-    //     editTable()
-    // }, [rmDomesticListing, rmImportListing])
+    useEffect(() => {
+        if (technology && (technology?.value !== undefined && technology?.value !== '')) {
+            setShowTokenDropdown(true)
+        }
+    }, [technology])
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
