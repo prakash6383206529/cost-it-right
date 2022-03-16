@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC } from '../../../config/constants';
 import {
     getBOPDomesticDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList,
     getPlantSelectList, getPlantSelectListByVendor,
@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -84,8 +85,13 @@ class BOPDomesticListing extends Component {
 
 
         if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
-
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(false)
+            }
             this.props.getBOPDomesticDataList(filterData, (res) => {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(true)
+                }
                 this.setState({ isLoader: false })
                 if (res && res.status === 200) {
                     let Data = res.data.DataList;
@@ -227,20 +233,19 @@ class BOPDomesticListing extends Component {
 
         let isEditbale = false
         let isDeleteButton = false
-        
-            if (EditAccessibility && !rowData.IsBOPAssociated) {
-                isEditbale = true
-            } else {
-                isEditbale = false
-            }
-        
+        if (EditAccessibility && !rowData.IsBOPAssociated) {
+            isEditbale = true
+        } else {
+            isEditbale = false
+        }
 
-            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
-        
+
+        if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
+
 
         return (
             <>
@@ -251,17 +256,19 @@ class BOPDomesticListing extends Component {
         )
     };
 
-
-
     /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
 
-        const rowData = props.data
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return rowData.CostingHead ? rowData.CostingHead : cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue === true) {
+            cellValue = 'Vendor Based'
+        } else if (cellValue === false) {
+            cellValue = 'Zero Based'
+        }
+        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
 
     }
 
@@ -361,19 +368,23 @@ class BOPDomesticListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
-
     getFilterBOPData = () => {
         if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, () => {
+                    this.props?.changeSetLoader(false)
 
-
-            return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
-        } else {
-
+                })
+            }
+            if (this.props.selectionForListingMasterAPI === 'Master') {
+                return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
+            }
+        }
+        else {
             return this.props.bopDomesticList
         }
     }
-
-
     /**
     * @method render
     * @description Renders the component
@@ -589,6 +600,7 @@ export default connect(mapStateToProps, {
     getAllVendorSelectList,
     getPlantSelectListByVendor,
     getVendorWithVendorCodeSelectList,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'BOPDomesticListing',
     enableReinitialize: true,

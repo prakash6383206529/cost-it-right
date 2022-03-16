@@ -11,7 +11,7 @@ import RMImportListing from './RMImportListing';
 
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE,RM_MASTER_ID } from '../../../config/constants';
+import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
 import { getConfigurationKey } from '../../../helper';
 
 import { useState, useEffect } from 'react';
@@ -268,7 +268,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
-                                        ViewRMAccessibility={ViewRMAccessibility}
+                                        selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
 
@@ -284,7 +284,7 @@ function RowMaterialMaster(props) {
                                         DeleteAccessibility={DeleteAccessibility}
                                         BulkUploadAccessibility={BulkUploadAccessibility}
                                         DownloadAccessibility={DownloadAccessibility}
-                                        ViewRMAccessibility={ViewRMAccessibility}
+                                        selectionForListingMasterAPI='Master'
                                     />
                                 </TabPane>}
 

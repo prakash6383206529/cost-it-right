@@ -1766,7 +1766,7 @@ export const SurfaceTreatmentPartGetJSON = [
     }
 ]
 
-export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume']
+export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
 export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
 export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
@@ -1916,7 +1916,8 @@ export const BOPDomesticSimulation = [
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
 ]
 
 export const BOPImportSimulation = [
@@ -1930,7 +1931,8 @@ export const BOPImportSimulation = [
     { label: "BasicRate", value: "BasicRate" },
     { label: "NewBasicRate", value: "NewBasicRate" },
     { label: "NetLandedCost", value: "NetLandedCost" },
-    { label: "EffectiveDate", value: "EffectiveDate" }
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "BoughtOutPartId", value: "BoughtOutPartId" }
 ]
 
 export const OverheadProfitSimulation = [
@@ -2421,7 +2423,7 @@ export const ENDMILL = 'End Mill'
 export const getTechnology = [1, 8, 7, 2, 4, 20, 23, 6]
 export const technologyForDensity = [1, 2, 7]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
-export const getTechnologyForSimulation = ['1', '2', '3', '6', '7', '9']
+export const getTechnologyForSimulation = ['1', '2', '3', '4', '5', '6', '7', '9']
 
 
 export const CostingSimulationDownloadRM = [
@@ -2534,6 +2536,45 @@ export const CostingSimulationDownloadOperation = [
     { label: "OldOperationCost", value: "OldOperationCost" },
     { label: "NewOperationCost", value: "NewOperationCost" },
     { label: "OperationVariance", value: "OperationVariance" },
+
+    { label: "OldOverheadCost", value: "OldOverheadCost" },
+    { label: "NewOverheadCost", value: "NewOverheadCost" },
+    { label: "OldProfitCost", value: "OldProfitCost" },
+    { label: "NewProfitCost", value: "NewProfitCost" },
+    { label: "OldRejectionCost", value: "OldRejectionCost" },
+    { label: "NewRejectionCost", value: "NewRejectionCost" },
+    { label: "OldICCCost", value: "OldICCCost" },
+    { label: "NewICCCost", value: "NewICCCost" },
+    { label: "OldPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "NewPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "OldOtherCost", value: "OldOtherCost" },
+    { label: "NewOtherCost", value: "NewOtherCost" },
+    { label: "OldDiscountCost", value: "OldDiscountCost" },
+    { label: "NewDiscountCost", value: "NewDiscountCost" },
+    { label: "OldNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "NewNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+export const CostingSimulationDownloadBOP = [
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant Code", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "PO Price Old", value: "OldPOPrice" },
+    { label: "PO Price New", value: "NewPOPrice" },
+    { label: "PO Variance", value: "Variance" },
+
+    { label: "OldNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
+    { label: "NewNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
+    { label: "BOPVariance", value: "BOPVariance" },
 
     { label: "OldOverheadCost", value: "OldOverheadCost" },
     { label: "NewOverheadCost", value: "NewOverheadCost" },
@@ -2937,7 +2978,6 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "AnyOtherCost", value: "AnyOtherCost", },
     { label: "NetPOPrice", value: "NetPOPrice", },
     { label: "Remark", value: "Remark", },
-    { label: "CreatedBy", value: "CreatedBy", },
     { label: 'SANumber', value: 'SANumber' },
     { label: 'LineNumber', value: 'LineNumber' }
 ]
@@ -2956,5 +2996,19 @@ export const REPORT_DOWNLOAD_SAP_EXCEl = [
 export const decimalOption = [
     { label: 'Round Off', value: 'RoundOff' },
     { label: 'Truncate', value: 'Truncate' },
-    { label: 'Per 100', value: 'Per100' }
+    { label: 'Per 100', value: 'Per100' },
+    { label: "CreatedBy", value: "CreatedBy", }
+
+]
+
+
+export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
+    { label: "Assembly Number", value: "PartNumber", },
+    { label: "Revision Number", value: "RevisionNumber", },
+    { label: "Name", value: "PartName", },
+    { label: "Child's Level", value: "Level", },
+    { label: "Old PO Price/Assembly", value: "OldPrice", },
+    { label: "New PO Price/Assembly", value: "NewPrice", },
+    { label: "Variance/Assembly", value: "Variance", },
+
 ]

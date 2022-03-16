@@ -1561,7 +1561,7 @@ class AddMachineRate extends Component {
                                   <div className={'plus'}></div>ADD</button>
                                 <button
                                   type="button"
-                                  disabled={this.state.isViewFlag ? true : false}
+                                  disabled={isViewMode}
                                   className={`${isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'}  mt30 pull-left`}
                                   onClick={this.resetProcessGridData}
                                 >Reset</button>

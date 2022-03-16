@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, RMDOMESTIC, SURFACETREATMENT } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import {
     getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
@@ -28,6 +28,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -68,7 +69,18 @@ class OperationListing extends Component {
         this.props.getTechnologySelectList(() => { })
         this.props.getOperationSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList()
-        this.getTableListData(null, null, null, null)
+        if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, OPERATIONS, (res) => {
+                    this.props?.changeSetLoader(false)
+                    this.setState({ tableData: res.data.DataList })
+                })
+            }
+        }
+        if (this.props.selectionForListingMasterAPI === 'Master') {
+            this.getTableListData(null, null, null, null)
+        }
 
     }
 
@@ -125,7 +137,13 @@ class OperationListing extends Component {
 
 
         if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(false)
+            }
             this.props.getOperationsDataList(filterData, this.props.isOperationST, res => {
+                if (this.props.isSimulation) {
+                    this.props?.changeTokenCheckBox(true)
+                }
                 this.setState({ isLoader: false })
                 if (res.status === 204 && res.data === '') {
                     this.setState({ tableData: [], })
@@ -266,18 +284,18 @@ class OperationListing extends Component {
         let isDeleteButton = false
 
 
-            if (EditAccessibility && !rowData.IsOperationAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
-        
+        if (EditAccessibility && !rowData.IsOperationAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
 
-            if (DeleteAccessibility && !rowData.IsOperationAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
+
+        if (DeleteAccessibility && !rowData.IsOperationAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
 
 
         return (
@@ -765,6 +783,7 @@ export default connect(mapStateToProps, {
     getVendorListByOperation,
     getTechnologyListByVendor,
     getOperationListByVendor,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'OperationListing',
     onSubmitFail: errors => {

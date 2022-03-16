@@ -136,7 +136,7 @@ function AssemblySurfaceTreatment(props) {
                 // DrawerToggle()
               }}
             >
-              <div className={'fa fa-eye pr-1'}></div>View Surface Treatment</button>
+              <div className={'fa fa-eye pr-1'}></div>Surface T</button>
             :
             <button
               type="button"
@@ -147,7 +147,7 @@ function AssemblySurfaceTreatment(props) {
                 // DrawerToggle()
               }}
             >
-              <div className={'plus'}></div> Surface T.</button>
+              <div className={`${CostingViewMode ? 'fa fa-eye pr-1':'plus' }`}></div> Surface T.</button>
           }
         </td>
       </tr>

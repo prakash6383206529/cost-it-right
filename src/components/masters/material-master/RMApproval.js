@@ -322,7 +322,7 @@ function RMApproval(props) {
     };
 
     const isRowSelectable = (rowNode) => {
-        if (rowNode?.data?.Status === DRAFT || rowNode?.data?.Status === PENDING) {
+        if (rowNode?.data?.Status === DRAFT) {
             return true;
         } else {
             return false
@@ -365,7 +365,7 @@ function RMApproval(props) {
                                     paginationPageSize={10}
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
-
+                                    noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
                                         imagClass: 'imagClass'

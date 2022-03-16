@@ -21,7 +21,7 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo } = props
+    const { isDomestic, list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -200,6 +200,8 @@ function ERSimulation(props) {
 
             return null;
         })
+
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationExchangeRates = tempArr
 
         dispatch(runVerifyExchangeRateSimulation(obj, res => {

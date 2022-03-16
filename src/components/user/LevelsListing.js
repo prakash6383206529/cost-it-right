@@ -469,7 +469,7 @@ class LevelsListing extends Component {
 														enableBrowserTooltips={true}
 													>
 														{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Tehnology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
+														<AgGridColumn width="250" suppressSizeToFit={true} field="Technology" headerName={`Technology/Heads${getConfigurationKey().IsMasterApprovalAppliedConfigure ? '/Masters' : ''}`}></AgGridColumn>
 														<AgGridColumn width="100" field="Level" suppressSizeToFit={true} headerName="Level"></AgGridColumn>
 														<AgGridColumn field="Users" tooltipField="Users" headerName="Users"></AgGridColumn>
 													</AgGridReact>

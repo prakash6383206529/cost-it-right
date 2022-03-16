@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { EMPTY_DATA } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA } from '../../../config/constants';
 import { getBOPImportDataList, deleteBOP, getBOPCategorySelectList, getAllVendorSelectList, } from '../actions/BoughtOutParts';
 import { getPlantSelectList, } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -63,7 +64,22 @@ class BOPImportListing extends Component {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
         this.props.getVendorWithVendorCodeSelectList(() => { })
-        this.getDataList()
+
+        if (this.props.isSimulation) {
+            if (this.props.selectionForListingMasterAPI === 'Combined') {
+                this.props?.changeSetLoader(true)
+                this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPIMPORT, () => {
+                    this.props?.changeSetLoader(false)
+
+                })
+            }
+            if (this.props.selectionForListingMasterAPI === 'Master') {
+                this.getDataList()
+            }
+        }
+        else {
+            this.getDataList()
+        }
     }
 
     /**
@@ -71,8 +87,9 @@ class BOPImportListing extends Component {
     * @description GET DATALIST OF IMPORT BOP
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
-
-
+        if (this.props.isSimulation) {
+            this.props?.changeTokenCheckBox(false)
+        }
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -81,6 +98,9 @@ class BOPImportListing extends Component {
         }
         this.setState({ isLoader: true })
         this.props.getBOPImportDataList(filterData, (res) => {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(true)
+            }
             this.setState({ isLoader: false })
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
@@ -223,20 +243,20 @@ class BOPImportListing extends Component {
         let isEditable = false
         let isDeleteButton = false
 
-        
-            if (EditAccessibility && !rowData.IsBOPAssociated) {
-                isEditable = true
-            } else {
-                isEditable = false
-            }
-        
-        
-            if (DeleteAccessibility && !rowData.IsBOPAssociated) {
-                isDeleteButton = true
-            } else {
-                isDeleteButton = false
-            }
-        
+
+        if (EditAccessibility && !rowData.IsBOPAssociated) {
+            isEditable = true
+        } else {
+            isEditable = false
+        }
+
+
+        if (DeleteAccessibility && !rowData.IsBOPAssociated) {
+            isDeleteButton = true
+        } else {
+            isDeleteButton = false
+        }
+
 
         return (
             <>
@@ -252,8 +272,15 @@ class BOPImportListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue
+
+        let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cellValue === true) {
+            cellValue = 'Vendor Based'
+        } else if (cellValue === false) {
+            cellValue = 'Zero Based'
+        }
+        return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
+
     }
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
@@ -614,6 +641,7 @@ export default connect(mapStateToProps, {
     getPlantSelectList,
     getAllVendorSelectList,
     getVendorWithVendorCodeSelectList,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

@@ -6,7 +6,7 @@ import { focusOnError } from "../../layout/FormInputs";
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
+import { EMPTY_DATA, EXCHNAGERATE, GET_FINANCIAL_YEAR_SELECTLIST } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
+import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,10 +58,23 @@ class ExchangeRateListing extends Component {
 
     componentDidMount() {
         this.applyPermission(this.props.topAndLeftMenuData)
-        this.setState({isLoader:true})
+        this.setState({ isLoader: true })
         setTimeout(() => {
             this.props.getCurrencySelectList(() => { })
-            this.getTableListData()
+            if (this.props.isSimulation) {
+                if (this.props.selectionForListingMasterAPI === 'Combined') {
+                    this.props?.changeSetLoader(true)
+                    this.props.getListingForSimulationCombined(this.props.tokenArray, EXCHNAGERATE, () => {
+                        this.props?.changeSetLoader(false)
+                    })
+                }
+                if (this.props.selectionForListingMasterAPI === 'Master') {
+                    this.getTableListData()
+                }
+            }
+            else {
+                this.getTableListData()
+            }
         }, 500);
     }
 
@@ -109,7 +123,13 @@ class ExchangeRateListing extends Component {
         let filterData = {
             currencyId: currencyId,
         }
+        if (this.props.isSimulation) {
+            this.props?.changeTokenCheckBox(false)
+        }
         this.props.getExchangeRateDataList(true, filterData, res => {
+            if (this.props.isSimulation) {
+                this.props?.changeTokenCheckBox(true)
+            }
             if (res.status === 204 && res.data === '') {
                 this.setState({ tableData: [], })
             } else if (res && res.data && res.data.DataList) {
@@ -389,7 +409,7 @@ class ExchangeRateListing extends Component {
                             </Row>
                         </form>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <=0 ?"overlay-contain": ""}`}>
+                        <div className={`ag-grid-wrapper height-width-wrapper ${this.props.exchangeRateDataList && this.props.exchangeRateDataList?.length <= 0 ? "overlay-contain" : ""}`}>
                             <div className="ag-grid-header">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                             </div>
@@ -407,6 +427,7 @@ class ExchangeRateListing extends Component {
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                     noRowsOverlayComponentParams={{
                                         title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
                                     }}
                                     frameworkComponents={this.frameworkComponents}
                                 >
@@ -459,7 +480,8 @@ export default connect(mapStateToProps, {
     getExchangeRateDataList,
     deleteExchangeRate,
     getCurrencySelectList,
-    getExchangeRateData
+    getExchangeRateData,
+    getListingForSimulationCombined
 })(reduxForm({
     form: 'ExchangeRateListing',
     onSubmitFail: errors => {
