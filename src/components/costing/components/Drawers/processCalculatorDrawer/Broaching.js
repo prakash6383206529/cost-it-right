@@ -513,7 +513,7 @@ function Broaching(props) {
 
 
                                             <TextFieldHookForm
-                                                label={`Cutting Speed Forward (m/Min)`}
+                                                label={`Cutting Speed Forward (m/min)`}
                                                 name={'cuttingSpeedForward'}
                                                 Controller={Controller}
                                                 control={control}
@@ -548,7 +548,7 @@ function Broaching(props) {
 
 
                                             <TextFieldHookForm
-                                                label={`Cutting Speed Return (m/Min)`}
+                                                label={`Cutting Speed Return (m/min)`}
                                                 name={'cuttingSpeedReturn'}
                                                 Controller={Controller}
                                                 control={control}
