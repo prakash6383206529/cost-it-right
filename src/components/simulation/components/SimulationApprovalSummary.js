@@ -1279,7 +1279,7 @@ domLayout='autoHeight'
                                 <Fragment>
                                     <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
                                         <div className={"save-icon"}></div>{" "}
-                                        {"Push"}
+                                        {"RePush"}
                                     </button>
                                 </Fragment>
                             </div>
