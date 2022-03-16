@@ -170,6 +170,7 @@ function Plastic(props) {
 
   const onSubmit = () => {
     let obj = {}
+    obj.LayoutType = 'Pipe'
     obj.WeightCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000"
     obj.IsChangeApplied = true //Need to make it dynamic
     obj.PartId = costData.PartId
@@ -317,7 +318,7 @@ function Plastic(props) {
                 burningLoss={setBurningAllowance}
                 burningValue={WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== null ? WeightCalculatorRequest.BurningValue : ''}
                 isPlastic={true}
-                isLossStandard = {false}
+                isLossStandard={false}
                 isNonFerrous={false}
               />
 
