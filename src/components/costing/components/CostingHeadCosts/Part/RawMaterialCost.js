@@ -14,7 +14,7 @@ import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWor
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, INR, KG, MG } from '../../../../../config/constants'
 import { gridDataAdded, isDataChange, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow, FORGINING } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow } from '../../../../../config/masterData'
 import TooltipCustom from '../../../../common/Tooltip'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -22,7 +22,7 @@ import 'reactjs-popup/dist/index.css';
 let counter = 0;
 function RawMaterialCost(props) {
   const { item } = props;
-  
+
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, reset, setError } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -38,7 +38,7 @@ function RawMaterialCost(props) {
 
   const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
-  
+
   const CostingViewMode = useContext(ViewCostingContext);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false)
@@ -57,7 +57,7 @@ function RawMaterialCost(props) {
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
-  const isScrapRecoveryPercentageApplied = Number(costData.TechnologyId) === Number(FORGINING) ? true:false
+  const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
 
 
   const dispatch = useDispatch()
@@ -95,24 +95,24 @@ function RawMaterialCost(props) {
       }
       selectedIds(gridData)
 
-       // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
-       if (Object.keys(gridData).length > 0 ) {
-        let isCutOffApplicableCount=0
-        let totalCutOff=0
-        gridData && gridData.map(item=>{
-          
-          if(item.IsCutOffApplicable){
-            isCutOffApplicableCount = isCutOffApplicableCount +1
+      // BELOW CODE IS USED TO SET CUTOFFRMC IN REDUCER TO GET VALUE IN O&P TAB.
+      if (Object.keys(gridData).length > 0) {
+        let isCutOffApplicableCount = 0
+        let totalCutOff = 0
+        gridData && gridData.map(item => {
+
+          if (item.IsCutOffApplicable) {
+            isCutOffApplicableCount = isCutOffApplicableCount + 1
             totalCutOff = totalCutOff + checkForNull(item.CutOffRMC)
           }
-          else{
-            totalCutOff = totalCutOff +checkForNull(item.NetLandedCost)
+          else {
+            totalCutOff = totalCutOff + checkForNull(item.NetLandedCost)
           }
-          
+
         })
-        
+
         // dispatch(setRMCutOff({ IsCutOffApplicable: gridData[0].IsCutOffApplicable, CutOffRMC: gridData[0].CutOffRMC }))
-        dispatch(setRMCutOff({ IsCutOffApplicable:isCutOffApplicableCount >0 ?true:false, CutOffRMC: totalCutOff }))
+        dispatch(setRMCutOff({ IsCutOffApplicable: isCutOffApplicableCount > 0 ? true : false, CutOffRMC: totalCutOff }))
       }
 
 
@@ -134,7 +134,7 @@ function RawMaterialCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
-      let tempArray=[]
+      let tempArray = []
       if (isMultipleRMAllow(costData.ETechnologyType)) {
         let rowArray = rowData && rowData.map(el => {
           return {
@@ -178,10 +178,10 @@ function RawMaterialCost(props) {
           IsCutOffApplicable: rowData.IsCutOffApplicable,
         }
         setGridData([...gridData, tempObj])
-        tempArray= [...gridData, tempObj]
+        tempArray = [...gridData, tempObj]
       }
       dispatch(gridDataAdded(true))
-      tempArray && tempArray.map((item,index)=>{
+      tempArray && tempArray.map((item, index) => {
         setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
         setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -579,17 +579,27 @@ function RawMaterialCost(props) {
     let tempData = gridData[editIndex]
     let grossWeight
     let finishWeight
+    let netLandedCost
 
     if (Object.keys(weightData).length > 0) {
       if (weightData.UOMForDimension === G) {
         grossWeight = weightData.GrossWeight / 1000
         finishWeight = weightData.FinishWeight / 1000
+        netLandedCost = weightData.NetLandedCost / 1000
       } else if (weightData.UOMForDimension === KG) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
+        netLandedCost = weightData.NetLandedCost
+
       } else if (weightData.UOMForDimension === MG) {
         grossWeight = weightData.GrossWeight / 1000000
         finishWeight = weightData.FinishWeight / 1000000
+        netLandedCost = weightData.NetLandedCost / 1000000
+
+      } else {
+        grossWeight = weightData.GrossWeight
+        finishWeight = weightData.FinishWeight
+        netLandedCost = weightData.NetLandedCost
       }
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
@@ -605,7 +615,7 @@ function RawMaterialCost(props) {
         ...tempData,
         FinishWeight: FinishWeight ? FinishWeight : 0,
         GrossWeight: GrossWeight ? GrossWeight : 0,
-        NetLandedCost: weightData.NetLandedCost,
+        NetLandedCost: netLandedCost,
         WeightCalculatorRequest: weightData,
         WeightCalculationId: weightData.WeightCalculationId,
         IsCalculatedEntry: true,
@@ -653,7 +663,7 @@ function RawMaterialCost(props) {
       return true;
     })
 
- tempArr && tempArr.map((item,index)=>{
+    tempArr && tempArr.map((item, index) => {
       setValue(`${rmGridFields}.${index}.GrossWeight`, checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.FinishWeight`, checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       setValue(`${rmGridFields}.${index}.ScrapRecoveryPercentage`, checkForDecimalAndNull(item.RecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput))
@@ -1058,15 +1068,15 @@ function RawMaterialCost(props) {
                                   mandatory={false}
                                   rules={{
 
-                                
+
                                     maxLength: {
                                       value: 75,
                                       message: "Remark should be less than 75 word"
                                     },
                                   }}
-                                 
+
                                   handleChange={(e) => { }}
-                                  defaultValue={item.Remark }
+                                  defaultValue={item.Remark ?? item.Remark}
                                   className=""
                                   customClassName={"withBorder"}
                                   errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].remarkPopUp : ''}

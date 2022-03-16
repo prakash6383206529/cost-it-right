@@ -1755,7 +1755,7 @@ export function isMultipleRMAllow(technology) {
 
 
 export const SHEETMETAL = 1
-export const FORGINING = 2
+export const FORGING = 2
 export const Non_Ferrous_LPDC = 3
 export const Non_Ferrous_HPDC = 4
 export const Non_Ferrous_GDC = 5
@@ -2389,6 +2389,8 @@ export const SIDEFACEMILING = 'Side Face Miling'
 export const SLOTCUTTING = 'Slot Cutting'
 export const CHAMFERINGMILLER = 'Chamfering Miller'
 export const ENDMILL = 'End Mill'
+export const BROACHING = 'Broaching'
+export const HARDFACING = 'Hard Facing'
 
 export const getTechnology = [1, 8, 7, 2, 4, 20, 23, 6]
 export const technologyForDensity = [1, 2, 7]

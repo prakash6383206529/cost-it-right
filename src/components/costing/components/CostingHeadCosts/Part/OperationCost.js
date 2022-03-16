@@ -3,18 +3,19 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
+import Popup from 'reactjs-popup';
 
 let counter = 0;
 function OperationCost(props) {
 
-  const { register, control, formState: { errors }, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -27,6 +28,7 @@ function OperationCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [remarkPopUpData, setRemarkPopUpData] = useState("")
 
   const CostingViewMode = useContext(ViewCostingContext);
 
@@ -113,6 +115,44 @@ function OperationCost(props) {
       return null;
     })
   }
+
+
+  const onRemarkPopUpClick = (index) => {
+
+    setRemarkPopUpData(getValues(`${OperationGridFields}.${index}.remarkPopUp`))
+    let tempArr = []
+    let tempData = gridData[index]
+
+    tempData = {
+      ...tempData,
+
+      Remark: getValues(`${OperationGridFields}.${index}.remarkPopUp`)
+    }
+    tempArr = Object.assign([...gridData], { [index]: tempData })
+    // setGridData(tempArr)
+
+    if (getValues(`${OperationGridFields}.${index}.remarkPopUp`)) {
+      Toaster.success('Remark saved successfully')
+    }
+
+
+    setGridData(tempArr)
+
+    var button = document.getElementById(`popUpTriggerss${index}`)
+    button.click()
+
+
+  }
+
+
+  const onRemarkPopUpClose = (index) => {
+
+    var button = document.getElementById(`popUpTriggerss${index}`)
+    button.click()
+  }
+
+
+
 
   const deleteItem = (index, OperationId) => {
     let tempArr = gridData && gridData.filter((el, i) => {
@@ -358,8 +398,45 @@ function OperationCost(props) {
                               <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                              {!CostingViewMode && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                              {!CostingViewMode && <button className="Edit  mr-2 " type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+
+                              <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box ml-2" type={'button'} />}
+                                position="top center">
+                                <TextAreaHookForm
+                                  label="Remark:"
+                                  name={`${OperationGridFields}.${index}.remarkPopUp`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+
+
+                                    maxLength: {
+                                      value: 75,
+                                      message: "Remark should be less than 75 word"
+                                    },
+                                  }}
+
+                                  handleChange={(e) => { }}
+                                  defaultValue={item.Remark ?? item.Remark}
+                                  className=""
+                                  customClassName={"withBorder"}
+                                  errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].remarkPopUp : ''}
+                                  //errors={errors && errors.remarkPopUp && errors.remarkPopUp[index] !== undefined ? errors.remarkPopUp[index] : ''}                        
+                                  disabled={CostingViewMode ? true : false}
+                                  hidden={false}
+                                />
+                                <Row>
+                                  <Col md="12" className='remark-btn-container'>
+                                    <button className='submit-button mr-2' disabled={CostingViewMode ? true : false} onClick={() => onRemarkPopUpClick(index)} > <div className='save-icon'></div> </button>
+                                    <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
+                                  </Col>
+                                </Row>
+
+                              </Popup>
+
                             </td>
                           </tr>
                       )
