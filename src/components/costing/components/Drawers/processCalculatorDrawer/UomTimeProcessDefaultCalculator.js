@@ -236,29 +236,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                 <Col md="12">
                                     <Row className={'mt15'}>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Cutter Diameter(mm)`}
-                                                name={'cutterDiameter'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.OuterDiameter}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Cutting Diameter(mm)`}
                                                 name={'cuttingDiameter'}
@@ -295,31 +273,9 @@ function UomTimeProcessDefaultCalculator(props) {
 
 
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Length of Area Cut(mm)`}
-                                                name={'cutLengthOfArea'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.cutLengthOfArea}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
                                             <TextFieldHookForm
-                                                label={`Cutting Speed`}
+                                                label={`Cutting Speed (m/min)`}
                                                 name={'cuttingSpeed'}
                                                 Controller={Controller}
                                                 control={control}
@@ -345,29 +301,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
 
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Width of area to cut`}
-                                                name={'areaWidth'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={onWidthChange}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.areaWidth}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Spindle Speed`}
                                                 name={'spindleSpeed'}
@@ -402,29 +336,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         <Col md="4">
 
-                                            {/* <TextFieldHookForm
-                                                label={`Material To be removed`}
-                                                name={'removedMaterial'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.removedMaterial}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
 
                                             <TextFieldHookForm
                                                 label={`Feed Per tooth`}
@@ -452,29 +364,7 @@ function UomTimeProcessDefaultCalculator(props) {
 
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Depth of cut`}
-                                                name={'doc'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: false,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={onDocChange}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.doc}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`No of Tooth`}
                                                 name={'noOfTooth'}
@@ -499,20 +389,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label="No. of Passes"
-                                                name={'numberOfPasses'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.numberOfPasses}
-                                                disabled={true}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label="Feed"
                                                 name={'feedAutoCalculated'}
@@ -537,31 +414,9 @@ function UomTimeProcessDefaultCalculator(props) {
                                 <Col md="12">
                                     <Row className={'mt15'}>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Cutting Speed(m/sec)`}
-                                                name={'cuttingSpeed'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={onSpeedChange}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.cuttingSpeed}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
                                             <TextFieldHookForm
-                                                label={`Depth of Cut`}
+                                                label={`Depth of Cut (mm)`}
                                                 name={'doc'}
                                                 Controller={Controller}
                                                 control={control}
@@ -593,20 +448,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`RPM`}
-                                                name={'rpm'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.rpm}
-                                                disabled={true}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Length / Depth`}
                                                 name={'lengthDepth'}
@@ -632,20 +474,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`No. of Teeth on Cutter`}
-                                                name={'toothNo'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.toothNo}
-                                                disabled={false}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`No of passes / Holes`}
                                                 name={'noOfPasses'}
@@ -670,28 +499,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Feed/ Tooth`}
-                                                name={'toothFeed'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: false,
-                                                    pattern: {
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={onToothFeedChange}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.toothFeed}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Total Length / Depth`}
                                                 name={'totalLengthDepth'}
@@ -716,20 +524,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Feed/Rev`}
-                                                name={'feedRev'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.feedRev}
-                                                disabled={true}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Cutting Time (mins)`}
                                                 name={'cuttingTimeMins'}
@@ -755,20 +550,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                 <Col md="12">
                                     <Row className={'mt15'}>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Total Cut time (min)`}
-                                                name={'cutTime'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.cutTime}
-                                                disabled={true}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Chip to Chip Timing (mins)`}
                                                 name={'chipToChipTiming'}
@@ -793,29 +575,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Additional Time(%)`}
-                                                name={'clampingPercentage'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={true}
-                                                rules={{
-                                                    required: true,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
-                                                }}
-                                                handleChange={onClampingPercantageChange}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.clampingPercentage}
-                                                disabled={props.CostingViewMode ? true : false}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Tool non cutting time (mins)`}
                                                 name={'totalNonCuttingTime'}
@@ -841,20 +601,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-                                            {/* <TextFieldHookForm
-                                                label={`Additional Time(min)`}
-                                                name={'clampingValue'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.clampingValue}
-                                                disabled={true}
-                                            /> */}
+
                                             <TextFieldHookForm
                                                 label={`Indexing table positioning time (mins)`}
                                                 name={'indexingTablePositioningTime'}
