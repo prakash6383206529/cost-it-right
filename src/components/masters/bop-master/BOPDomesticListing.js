@@ -70,6 +70,25 @@ class BOPDomesticListing extends Component {
     }
 
     /**
+    * @method componentDidUpdate
+    * @description Called after rendering the component
+    */
+    // componentDidUpdate() {
+    //     if (this.props.isSimulation) {
+    //         if (this.props.selectionForListingMasterAPI === 'Combined') {
+    //             this.props?.changeSetLoader(true)
+    //             this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, BOPDOMESTIC, () => {
+    //                 this.props?.changeSetLoader(false)
+
+    //             })
+    //         }
+    //         if (this.props.selectionForListingMasterAPI === 'Master') {
+    //             return getFilteredData(this.props.bopDomesticList, BOP_MASTER_ID)
+    //         }
+    //     }
+    // }
+
+    /**
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
@@ -379,7 +398,7 @@ class BOPDomesticListing extends Component {
 
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {/* {this.state.isLoader && <LoaderCustom />} */}
-                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
+                {/* {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />} */}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
                         <Col md="6" lg="6">
