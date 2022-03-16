@@ -45,6 +45,8 @@ function OperationCostExcludedOverhead(props) {
       } else {
         props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
+
+
       if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
         dispatch(isDataChange(true))
       }

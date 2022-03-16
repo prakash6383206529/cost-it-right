@@ -580,7 +580,7 @@ function RawMaterialCost(props) {
     let grossWeight
     let finishWeight
     let netLandedCost
-
+    // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
       if (weightData.UOMForDimension === G) {
         grossWeight = weightData.GrossWeight / 1000
