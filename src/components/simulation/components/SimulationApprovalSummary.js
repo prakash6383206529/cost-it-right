@@ -742,11 +742,14 @@ function SimulationApprovalSummary(props) {
 
     const errorBoxClass = () => {
         let temp
-        temp = isSuccessfullyInsert === false ? '' : 'success'
-        if (noContent === true) {
+        if (amendentStatus.startsWith('E')) {
+            temp = 'error';
+        }
+        else if (amendentStatus.startsWith('S')) {
+            temp = 'success';
+        }
+        else {
             temp = 'd-none'
-            setRecordInsertStatusBox(false)
-            setAmendmentStatusBox(false)
         }
         return temp
     }
@@ -788,7 +791,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteInsertStatusBox}
-                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
+                                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
                         }
@@ -800,7 +803,7 @@ function SimulationApprovalSummary(props) {
                                     className="float-right"
                                     alt={""}
                                     onClick={deleteAmendmentStatusBox}
-                                    src={errorBoxClass() === 'success' ? imgGreencross : imgRedcross}
+                                    src={errorBoxClass() === 'd-none' ? '' : errorBoxClass() === "success" ? imgGreencross : imgRedcross}
                                 ></img>
                             </div>
 
