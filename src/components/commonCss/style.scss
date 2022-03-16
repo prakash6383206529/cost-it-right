@@ -4391,7 +4391,7 @@ body{
   .green-row{
     th,td{
     background-color: #DBF4E2;
-    border-top: 1.1px solid #4DC771;
+    border-top: 1.2px solid #4DC771;
     border-color: #4DC771;
     color: #4DC771;
     }
@@ -4400,7 +4400,7 @@ body{
     th,td{
     background-color: #FEDCE2;
     border-color: #FC5774;
-    border-top: 1.1px solid #FC5774;
+    border-top: 1.2px solid #FC5774;
     color: #FC5774;
     }
   }
@@ -4530,8 +4530,8 @@ body{
 // error_box 
 .error_box{
   background-color: #FEDCE2;
-  border-color: #FEDCE2;
-  color: #FC5774;
+    border-color: #FEDCE2;
+    color: #FC5774;
   padding: 10px 20px;
   padding-right: 40px;  //for showing cross icon
   text-align: center;
@@ -6992,6 +6992,7 @@ left: 17rem;
   .calculator {
     right: -20px;
   }
+  
 }
 @-moz-document url-prefix() { 
   .calculator {
@@ -7139,7 +7140,41 @@ left: 17rem;
   border-bottom: none !important;
   border-top: none !important;
 }
+@media print { 
+  .table-responsive {
+  .header-name-left {
+    border-right: none !important;
+  }
+  .header-name {
+    border-left: none !important;
+  }
+}
+  .background-light-blue {
+    th {
+      background-color: #E7F2FC !important;
+      word-spacing: 1px;
+      border-right: none !important;
+    }
+    td {
+      border-left: none !important;
+      background-color: #E7F2FC !important;
+    }
+  }
+}
 .remove-space-border {
+  .table-responsive {
+    overflow: hidden;
+    .header-name {
+      border-left: none !important;
+      text-align: right !important;
+      .w-60 {
+        width: fit-content;
+      } 
+    }
+    .header-name-left {
+      border-right: none;
+    }
+  }
   .left-border {
     border-left: none !important;
     word-spacing: 2px;
@@ -7147,14 +7182,17 @@ left: 17rem;
     margin: 5px 0 2px 0 !important;
   }
   .background-light-blue {
+    background: #9fcffc !important;
     th {
-      word-spacing: 2px;
+      word-spacing: 1px;
       border-right: none;
+      -webkit-print-color-adjust:exact;
     }
     td {
       border-left: none !important;
       text-align: right;
       padding-right: 20px;
+      -webkit-print-color-adjust:exact;
       span {
         font-size: 16px;
         font-weight: 900;
@@ -7197,4 +7235,9 @@ left: 17rem;
   .flex-fills.label {
     min-width: fit-content !important;
   }
+}
+@media screen and (min-width:$middleDesktop) {
+  .freight-drawer {
+    width: 485px !important;
+  } 
 }
