@@ -145,9 +145,8 @@ class AddOverhead extends Component {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.OverheadApplicabilityId)
-            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
+            // const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
-
             let Head = '';
             if (Data.IsVendor === true && Data.VendorId != null) {
               Head = 'vendor';

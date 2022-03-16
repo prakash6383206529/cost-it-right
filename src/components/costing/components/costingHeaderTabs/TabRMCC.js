@@ -1276,7 +1276,6 @@ function TabRMCC(props) {
 
         if (i.IsAssemblyPart === true) {
           i.CostingPartDetails = { ...i.CostingPartDetails };
-          // i ={...i}
           // i.CostingPartDetails.TotalRawMaterialsCost = item.CostingPartDetails.TotalRawMaterialsCost
           // i.CostingPartDetails.TotalConversionCost = getProcessTotalCost(i.CostingChildPartDetails, Data.TotalProcessCost, params) +
           //   getOperationTotalCost(i.CostingChildPartDetails, Data.TotalOperationCost, params) + getOtherOperationTotalCost(i.CostingChildPartDetails, Data.TotalOtherOperationCost, params)
@@ -1474,7 +1473,7 @@ function TabRMCC(props) {
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
     if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && checkIsDataChange === true) {
-
+      console.log('ComponentItemData: ', ComponentItemData);
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -1519,7 +1518,7 @@ function TabRMCC(props) {
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
         tabData && tabData.CostingChildPartDetails && tabData.CostingChildPartDetails.map((item) => {
-
+          console.log('item from subaseembly request: ', item);
           if (item.PartType === 'Sub Assembly') {
             let subAssemblyObj = {
               "CostingId": item.CostingId,
@@ -1753,12 +1752,13 @@ function TabRMCC(props) {
                                 type="button"
                                 className={'user-btn add-oprn-btn'}
                                 onClick={bopHandlingDrawer}>
-                                <div className={'plus'}></div>{`${CostingViewMode ? 'View BOP H' : 'BOP H'}`}</button>}
+                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>}
                             </th>
                           }
                         </tr>
 
                       </thead>
+
                       <tbody>
                         {
                           RMCCTabData && RMCCTabData.map((item, index) => {

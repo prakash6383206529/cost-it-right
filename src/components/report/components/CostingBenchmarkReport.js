@@ -81,19 +81,19 @@ function NewReport(props) {
     const renderModule = (value) => {
         switch (value.value) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={false} technology={technology.value} />)
+                return (<RMDomesticListing isSimulation={false} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={false} technology={0} />)
+                return (<RMImportListing isSimulation={false} technology={0} selectionForListingMasterAPI='Master' />)
             case MACHINERATE:
-                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} />)
+                return (<MachineRateListing isMasterSummaryDrawer={false} isSimulation={true} technology={0} selectionForListingMasterAPI='Master' />)
             case BOPDOMESTIC:
-                return (<BOPDomesticListing isSimulation={true} technology={technology.value} />)
+                return (<BOPDomesticListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case BOPIMPORT:
-                return (<BOPImportListing isSimulation={true} technology={technology.value} />)
+                return (<BOPImportListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case EXCHNAGERATE:
-                return (<ExchangeRateListing isSimulation={true} technology={technology.value} />)
+                return (<ExchangeRateListing isSimulation={true} technology={technology.value} selectionForListingMasterAPI='Master' />)
             case OPERATIONS:
-                return (<OperationListing isSimulation={true} technology={null} />)
+                return (<OperationListing isSimulation={true} technology={null} selectionForListingMasterAPI='Master' />)
             default:
                 return <div className="empty-table-paecholder" />;
         }

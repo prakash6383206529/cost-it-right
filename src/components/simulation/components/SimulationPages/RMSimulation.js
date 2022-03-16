@@ -25,7 +25,7 @@ const gridOptions = {
 
 
 function RMSimulation(props) {
-    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo } = props
+    const { isDomestic, list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
     const [showSimulation, setShowSimulation] = useState(false)
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -131,6 +131,9 @@ function RMSimulation(props) {
             }
             return null;
         })
+
+
+        obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
         dispatch(runVerifySimulation(obj, res => {
             setIsDisable(false)
@@ -374,7 +377,7 @@ function RMSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if(isImpactedMaster) {
+        if (isImpactedMaster) {
             window.screen.width >= 1365 && params.api.sizeColumnsToFit();
         }
         params.api.paginationGoToPage(0);

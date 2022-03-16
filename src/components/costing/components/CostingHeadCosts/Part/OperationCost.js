@@ -21,7 +21,7 @@ function OperationCost(props) {
 
   const dispatch = useDispatch()
 
-  const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(props.data ? props.data : [])
   const [OldGridData, setOldGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -47,7 +47,7 @@ function OperationCost(props) {
         props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
 
-      if(JSON.stringify(gridData) !== JSON.stringify(OldGridData)){
+      if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
         dispatch(isDataChange(true))
       }
     }

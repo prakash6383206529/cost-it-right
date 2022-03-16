@@ -331,7 +331,6 @@ function CostingDetailStepTwo(props) {
 
         // const discountedCost =data.DiscountCostType==='Percentage'? checkForNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage)):data.DiscountsAndOtherCost;
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
-        
         const discountValues = {
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
