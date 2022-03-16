@@ -909,13 +909,12 @@ function Simulation(props) {
                                     </div>
                                 </div>
                             }
-                            {
-                                (token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn' onClick={callAPIOnClick}>
-                                    <div className='save-icon'></div>
-                                </button>
-                            }
-                        </Col >
-                    </Row >
+
+                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
+                                <div className='save-icon'></div>
+                            </button>}
+                        </Col>
+                    </Row>
 
                     {/* <RMDomesticListing isSimulation={true} /> */}
                     {showMasterList && renderModule(master)}

@@ -2540,6 +2540,9 @@ html {
 			&:last-child {
 				width: 255px;
 				padding-left: 15px;
+        @media  screen and (max-width:$miniDesktop) {
+          width: 236px;
+        }
 			}
 			&:nth-child(1) {
 				min-width: 90px;
