@@ -30,6 +30,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
+import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
 
@@ -701,7 +702,7 @@ function CostingDetails(props) {
    * @method addDetails
    * @description ADD DETAILS IN COSTING
    */
-  const addDetails = (index, type) => {
+  const addDetails = debounce((index, type) => {
     const userDetail = userDetails()
 
     if (CheckIsSOBChangedSaved()) {
@@ -852,7 +853,7 @@ function CostingDetails(props) {
     else {
       Toaster.warning('SOB Should not be greater than 100.')
     }
-  }
+  }, 500)
 
   /**
    * @method viewDetails
@@ -2121,7 +2122,7 @@ function CostingDetails(props) {
                                     item.Status === WAITING_FOR_APPROVAL ||
                                     item.Status === APPROVED || item.Status === REJECTED || item.Status === APPROVED_BY_SIMULATION) ? true : false;
 
-                                    let displayAddButton = userDetails().Role === 'SuperAdmin' ?true:false
+                                  let displayAddButton = userDetails().Role === 'SuperAdmin' ? true : false
                                   let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
                                   let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
