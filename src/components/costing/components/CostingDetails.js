@@ -31,6 +31,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import AddNCCDrawer from './AddNCCDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { debounce } from 'lodash';
 
 export const ViewCostingContext = React.createContext()
 
@@ -700,7 +701,7 @@ function CostingDetails(props) {
    * @method addDetails
    * @description ADD DETAILS IN COSTING
    */
-  const addDetails = (index, type) => {
+  const addDetails = debounce((index, type) => {
     const userDetail = userDetails()
 
     if (CheckIsSOBChangedSaved()) {
@@ -852,7 +853,7 @@ function CostingDetails(props) {
     else {
       Toaster.warning('SOB Should not be greater than 100.')
     }
-  }
+  }, 500)
 
   /**
    * @method viewDetails
