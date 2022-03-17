@@ -27,16 +27,13 @@ function ProcessCost(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-
   const [gridData, setGridData] = useState(data && data.CostingProcessCostResponse)
-
   const trimValue = getConfigurationKey()
   const trimForMeasurment = trimValue.NoOfDecimalForInputOutput
   const trimForCost = trimValue.NoOfDecimalForPrice
 
   const [calciIndex, setCalciIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-
   const [Ids, setIds] = useState([])
   const [MachineIds, setMachineIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
@@ -46,19 +43,12 @@ function ProcessCost(props) {
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
-
-
-
   const dispatch = useDispatch()
-
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
-
   const { rmFinishWeight } = props
-
   // const fieldValues = useWatch({
   //   control,
   //   name: ['ProcessGridFields'],
@@ -107,7 +97,6 @@ function ProcessCost(props) {
       }
     }))
     // setCalculatorData(calciData)
-
   }
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
@@ -192,7 +181,6 @@ function ProcessCost(props) {
     setTabData(tempArr)
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
-
   }
 
   const onRemarkPopUpClosee = (index) => {
@@ -315,7 +303,6 @@ function ProcessCost(props) {
         NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,) + checkForNull(tabData.OtherOperationCostTotal !== null ? tabData.OtherOperationCostTotal : 0),
         ProcessCostTotal: ProcessCostTotal,
         CostingProcessCostResponse: tempArrAfterDelete,
-
       }
 
       let selectedIds = []
@@ -335,10 +322,6 @@ function ProcessCost(props) {
       })
     }, 200)
   }
-
-
-
-
 
   const handleQuantityChange = (event, index) => {
     let tempArr = []
@@ -472,7 +455,6 @@ function ProcessCost(props) {
     dispatch(setRMCCErrors({}))
     counter = 0
   }
-
   const ProcessGridFields = 'ProcessGridFields'
 
   /**
@@ -512,7 +494,6 @@ function ProcessCost(props) {
           </Row>
 
           <Row>
-
             {/*OPERATION COST GRID */}
             <Col md="12">
               <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
@@ -574,9 +555,7 @@ function ProcessCost(props) {
                               onClick={() => toggleWeightCalculator(index)}
                             />
                           </td>
-
                           <td style={{ width: 100 }}>
-
                             {
                               <TextFieldHookForm
                                 label=""
@@ -595,11 +574,9 @@ function ProcessCost(props) {
                                 disabled={true}
                               />
                             }
-
                           </td>
                           <td>
                             {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
-
                             <Popup trigger={<button id={`popUpTriggers${index}`} className="Comment-box ml-2" type={'button'} />}
                               position="top center">
                               <TextAreaHookForm
@@ -610,14 +587,11 @@ function ProcessCost(props) {
                                 register={register}
                                 mandatory={false}
                                 rules={{
-
-
                                   maxLength: {
                                     value: 75,
                                     message: "Remark should be less than 75 word"
                                   },
                                 }}
-
                                 handleChange={(e) => { }}
                                 defaultValue={item.Remark ?? item.Remark}
                                 className=""
@@ -633,11 +607,7 @@ function ProcessCost(props) {
                                   <button className='reset' onClick={() => onRemarkPopUpClosee(index)} > <div className='cancel-icon'></div></button>
                                 </Col>
                               </Row>
-
                             </Popup>
-
-
-
                           </td>
                         </tr>
                       )
