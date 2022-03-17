@@ -18,9 +18,6 @@ import { debounce } from 'lodash'
 import Toaster from '../../common/Toaster'
 import { masterFinalLevelUser } from '../actions/Material'
 
-
-
-
 const gridOptions = {};
 
 function RMApproval(props) {
@@ -46,16 +43,12 @@ function RMApproval(props) {
             LoggedInUserLevelId: userDetails().LoggedInMasterLevelId,
             LoggedInUserId: loggedInUserId()
         }
-
         dispatch(masterFinalLevelUser(obj, (res) => {
             if (res.data.Result) {
                 setIsFinalApprover(res.data.Data.IsFinalApprovar)
             }
         }))
-
-
     }, [])
-
 
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -237,8 +230,6 @@ function RMApproval(props) {
         getTableData()
     }
 
-
-
     const onRowSelect = () => {
         var selectedRows = gridApi.getSelectedRows();
         setSelectedRowData(selectedRows)
@@ -259,7 +250,6 @@ function RMApproval(props) {
     }, 500)
 
     const sendForApproval = () => {
-
         if (selectedRowData.length > 0) {
             setApprovalDrawer(true)
         }
@@ -267,7 +257,6 @@ function RMApproval(props) {
             Toaster.warning('Please select draft token to send for approval.')
         }
     }
-
 
     const defaultColDef = {
         resizable: true,
@@ -316,13 +305,10 @@ function RMApproval(props) {
         effectiveDateFormatter: effectiveDateFormatter,
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter
-
-
-
     };
 
     const isRowSelectable = (rowNode) => {
-        if (rowNode?.data?.Status === DRAFT || rowNode?.data?.Status === PENDING) {
+        if (rowNode?.data?.Status === DRAFT) {
             return true;
         } else {
             return false

@@ -12,6 +12,7 @@ import Toaster from '../../../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SheetMetalBaicDrawer(props) {
+  /*******************************************************************************************************************************************************************/
 
   const { rmFinishWeight } = props
 
@@ -120,20 +121,11 @@ function SheetMetalBaicDrawer(props) {
   const onSubmit = (value) => {
     let obj = {}
     obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
-    obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
+    // obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
     obj.IsChangeApplied = tempProcessObj === value.ProcessCost ? false : true
     obj.TechnologyId = costData.TechnologyId
     obj.CostingId = costData.CostingId
-    obj.TechnologyName = costData.TechnologyName
-    obj.PartId = costData.PartId
     obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
-    obj.MachineRateId = props.calculatorData.MachineRateId
-    obj.PartNumber = costData.PartNumber
-    obj.ProcessId = props.calculatorData.ProcessId
-    obj.ProcessName = props.calculatorData.ProcessName
-    obj.ProcessDescription = props.calculatorData.ProcessDescription
-    obj.MachineName = costData.MachineName
-    obj.MachineRate = props.calculatorData.MHR
     obj.UOM = props.calculatorData.UOM
     obj.Tonnage = value.MachineTonnage
     obj.CycleTime = value.CycleTime
