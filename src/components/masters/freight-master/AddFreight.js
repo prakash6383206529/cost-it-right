@@ -52,8 +52,8 @@ class AddFreight extends Component {
       DeleteChanged: true,
       HandleChanged: true,
       setDisable: false,
-      isVendorNameNotSelected:false,
-      inputLoader:false
+      isVendorNameNotSelected: false,
+      inputLoader: false
     };
   }
   /**
@@ -79,8 +79,8 @@ class AddFreight extends Component {
       IsVendor: !this.state.IsVendor,
       vendorName: [],
     });
-    this.setState({inputLoader:true})
-    this.props.getVendorListByVendorType(true, () => {this.setState({inputLoader:false}) });
+    this.setState({ inputLoader: true })
+    this.props.getVendorListByVendorType(true, () => { this.setState({ inputLoader: false }) });
   };
   /**
    * @method handleTransportMoodChange
@@ -232,7 +232,7 @@ class AddFreight extends Component {
    */
   handleVendorName = (newValue, actionMeta) => {
     if (newValue && newValue !== "") {
-      this.setState({ vendorName: newValue,isVendorNameNotSelected:false });
+      this.setState({ vendorName: newValue, isVendorNameNotSelected: false });
     } else {
       this.setState({ vendorName: [] });
     }
@@ -481,7 +481,7 @@ class AddFreight extends Component {
 
 
     if (vendorName.length <= 0) {
-      this.setState({ isVendorNameNotSelected: true ,setDisable:false})      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
+      this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
     }
     this.setState({ isVendorNameNotSelected: false })
@@ -565,7 +565,7 @@ class AddFreight extends Component {
       let tempArr = []
 
       tempArr = this.renderListing("VendorNameList").filter(i =>
-        i.label!==null && i.label.toLowerCase().includes(inputValue.toLowerCase())
+        i.label !== null && i.label.toLowerCase().includes(inputValue.toLowerCase())
       );
 
       if (tempArr.length <= 100) {
@@ -664,29 +664,29 @@ class AddFreight extends Component {
                           </Col>
                           {this.state.IsVendor === true && (
                             <Col md="3">
-                            <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
-                            {this.state.inputLoader  && <LoaderCustom customClass={`input-loader vendor-input `}/>}
-                            <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
-                             <div className="fullinput-icon">
-                            <AsyncSelect 
-                            name="vendorName" 
-                            ref={this.myRef} 
-                            key={this.state.updateAsyncDropdown} 
-                            loadOptions={promiseOptions} 
-                            onChange={(e) => this.handleVendorName(e)} 
-                            value={this.state.vendorName} 
-                            noOptionsMessage={({inputValue}) => !inputValue ? "Please enter vendor name/code" : "No results found"}
-                            isDisabled={isEditFlag ? true : false} />
-                            {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
-                            </div>
-                           {!isEditFlag && (
-                                <div
-                                  onClick={this.vendorToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
-                              )}
-                           </div> 
-                           </Col>
+                              <label>{"Vendor Name"}<span className="asterisk-required">*</span></label>
+                              {this.state.inputLoader && <LoaderCustom customClass={`input-loader vendor-input `} />}
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon async-select">
+                                <div className="fullinput-icon">
+                                  <AsyncSelect
+                                    name="vendorName"
+                                    ref={this.myRef}
+                                    key={this.state.updateAsyncDropdown}
+                                    loadOptions={promiseOptions}
+                                    onChange={(e) => this.handleVendorName(e)}
+                                    value={this.state.vendorName}
+                                    noOptionsMessage={({ inputValue }) => !inputValue ? "Please enter vendor name/code" : "No results found"}
+                                    isDisabled={isEditFlag ? true : false} />
+                                  {this.state.isVendorNameNotSelected && <div className='text-help'>This field is required.</div>}
+                                </div>
+                                {!isEditFlag && (
+                                  <div
+                                    onClick={this.vendorToggler}
+                                    className={"plus-icon-square  right"}
+                                  ></div>
+                                )}
+                              </div>
+                            </Col>
                           )}
                           <Col md="3">
                             <Field
