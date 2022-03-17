@@ -22,7 +22,6 @@ function OperationCostExcludedOverhead(props) {
   });
 
   const dispatch = useDispatch()
-
   const [gridData, setGridData] = useState(props.data ? props.data : [])
   const [OldGridData, setOldGridData] = useState(props.data ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
@@ -30,9 +29,7 @@ function OperationCostExcludedOverhead(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
-
   const CostingViewMode = useContext(ViewCostingContext);
-
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
@@ -48,8 +45,6 @@ function OperationCostExcludedOverhead(props) {
       } else {
         props.setOtherOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
-
-
       if (JSON.stringify(gridData) !== JSON.stringify(OldGridData)) {
         dispatch(isDataChange(true))
       }
@@ -388,8 +383,6 @@ function OperationCostExcludedOverhead(props) {
                             <td>
                               {!CostingViewMode && <button className="Edit mr-2 " type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index, item.OtherOperationId)} />}
-
-
                               <Popup trigger={<button id={`popUppTriggerss${index}`} className="Comment-box ml-2" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
@@ -400,14 +393,11 @@ function OperationCostExcludedOverhead(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-
-
                                     maxLength: {
                                       value: 75,
                                       message: "Remark should be less than 75 word"
                                     },
                                   }}
-
                                   handleChange={(e) => { }}
                                   defaultValue={item.Remark ?? item.Remark}
                                   className=""
@@ -423,9 +413,7 @@ function OperationCostExcludedOverhead(props) {
                                     <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                   </Col>
                                 </Row>
-
                               </Popup>
-
                             </td>
                           </tr>
                       )

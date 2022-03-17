@@ -34,9 +34,7 @@ function PartCompoment(props) {
 
 
   const toggle = (BOMLevel, PartNumber) => {
-
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {

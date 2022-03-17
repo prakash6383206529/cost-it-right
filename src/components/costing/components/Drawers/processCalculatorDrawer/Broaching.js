@@ -266,8 +266,8 @@ function Broaching(props) {
                                                 errors={errors.minorDiameter}
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
-
                                         </Col>
+
                                         <Col md="4">
                                             <TextFieldHookForm
                                                 label={`Cutting Length`}
@@ -508,8 +508,8 @@ function Broaching(props) {
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
                                                 label={`Indexing table positioning time(min)`}
                                                 name={'indexingTablePositioningTime'}
