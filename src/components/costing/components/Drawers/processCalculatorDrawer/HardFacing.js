@@ -12,13 +12,10 @@ import Toaster from '../../../../common/Toaster'
 function HardFacing(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext);
-
     const dispatch = useDispatch()
-
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
 
     const defaultValues = {
-
         startDiameter: WeightCalculatorRequest && WeightCalculatorRequest.startDiameter !== undefined ? WeightCalculatorRequest.startDiameter : '',
         endDiameter: WeightCalculatorRequest && WeightCalculatorRequest.endDiameter !== undefined ? WeightCalculatorRequest.endDiameter : '',
         facingStock: WeightCalculatorRequest && WeightCalculatorRequest.facingStock !== undefined ? WeightCalculatorRequest.facingStock : '',
@@ -26,11 +23,8 @@ function HardFacing(props) {
         cuttingSpeed: WeightCalculatorRequest && WeightCalculatorRequest.cuttingSpeed !== undefined ? WeightCalculatorRequest.cuttingSpeed : '',
         spindleSpeed: WeightCalculatorRequest && WeightCalculatorRequest.spindleSpeed !== undefined ? WeightCalculatorRequest.spindleSpeed : '',
         feed: WeightCalculatorRequest && WeightCalculatorRequest.feed !== undefined ? WeightCalculatorRequest.feed : '',
-
         noOfPass: WeightCalculatorRequest && WeightCalculatorRequest.noOfPass !== undefined ? WeightCalculatorRequest.noOfPass : '',
         cuttingTime: WeightCalculatorRequest && WeightCalculatorRequest.cuttingTimeMins !== undefined ? WeightCalculatorRequest.cuttingTimeMins : '',
-
-
         chipToChipTiming: WeightCalculatorRequest && WeightCalculatorRequest.chipToChipTiming !== undefined ? WeightCalculatorRequest.chipToChipTiming : '',
         totalNonCuttingTime: WeightCalculatorRequest && WeightCalculatorRequest.totalNonCuttingTime !== undefined ? WeightCalculatorRequest.totalNonCuttingTime : '',
         indexingTablePositioningTime: WeightCalculatorRequest && WeightCalculatorRequest.indexingTablePositioningTime !== undefined ? WeightCalculatorRequest.indexingTablePositioningTime : '',
@@ -54,9 +48,6 @@ function HardFacing(props) {
 
     useEffect(() => {
         setSpindleSpeed()
-
-
-
         setTotalCycleTimeMins()   //totalCycleTimeMins
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
@@ -67,81 +58,48 @@ function HardFacing(props) {
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
 
 
-
-
-
-
     const setSpindleSpeed = () => {
-
         const cuttingSpeed = Number(getValues('cuttingSpeed'))
         const startDiameter = Number(getValues('startDiameter'))
         const facingStock = Number(getValues('facingStock'))
         const doc = Number(getValues('doc'))
-
         const spindleSpeed = (1000 * checkForNull(cuttingSpeed)) / (3.14 * checkForNull(startDiameter))
         setDataToSend(prevState => ({ ...prevState, spindleSpeed: spindleSpeed }))
         setValue('spindleSpeed', checkForDecimalAndNull(spindleSpeed, getConfigurationKey().NoOfDecimalForInputOutput))
-
         const noOfPass = Math.ceil(checkForNull(facingStock) / checkForNull(doc))
-
         setDataToSend(prevState => ({ ...prevState, noOfPass: noOfPass }))
         setValue('noOfPass', checkForDecimalAndNull(noOfPass, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
         setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: 1 }))
         setValue('cuttingTime', checkForDecimalAndNull(1, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
     }
 
 
-
-
-
-
-
-
     const setTotalCycleTimeMins = () => {
-
-
         const chipToChipTiming = Number(getValues('chipToChipTiming'))
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
         const indexingTablePositioningTime = Number(getValues('indexingTablePositioningTime'))
         const loadingAndUnloadingTime = Number(getValues('loadingAndUnloadingTime'))
-
         const totalCycleTimeMins = (checkForNull(dataToSend.cuttingTimeMins) + checkForNull(chipToChipTiming) + checkForNull(totalNonCuttingTime) + checkForNull(indexingTablePositioningTime) + checkForNull(loadingAndUnloadingTime))
-
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeMins: totalCycleTimeMins }))
         setValue('totalCycleTimeMins', checkForDecimalAndNull(totalCycleTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
-
         const totalCycleTimeSec = (totalCycleTimeMins * 60)
         setDataToSend(prevState => ({ ...prevState, totalCycleTimeSec: totalCycleTimeSec }))
         setValue('totalCycleTimeSec', checkForDecimalAndNull(totalCycleTimeSec, getConfigurationKey().NoOfDecimalForInputOutput))
-
     }
 
 
-
-
-
     const setPartsPerHour = () => {
-
         const efficiencyPercentage = Number(getValues('efficiencyPercentage'))
         const partsPerHour = (3600 / checkForNull(dataToSend.totalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
-
         setDataToSend(prevState => ({ ...prevState, partsPerHour: partsPerHour }))
         setValue('partsPerHour', checkForDecimalAndNull(partsPerHour, getConfigurationKey().NoOfDecimalForInputOutput))
-
         const processCost = (props?.calculatorData?.MHR) / partsPerHour
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
-
-
     }
 
 
     const onSubmit = (value) => {
-
         let obj = {}
         obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
         obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
@@ -161,9 +119,6 @@ function HardFacing(props) {
         obj.LoggedInUserId = loggedInUserId()
         obj.UnitTypeId = props.calculatorData.UOMTypeId
         obj.UnitType = props.calculatorData.UOMType
-
-
-
         obj.startDiameter = value.startDiameter
         obj.endDiameter = value.endDiameter
         obj.facingStock = value.facingStock
@@ -173,9 +128,6 @@ function HardFacing(props) {
         obj.feed = value.feed
         obj.noOfPass = dataToSend.noOfPass
         obj.cuttingTimeMins = dataToSend.cuttingTimeMins
-
-
-
         obj.chipToChipTiming = value.chipToChipTiming
         obj.totalNonCuttingTime = value.totalNonCuttingTime
         obj.indexingTablePositioningTime = value.indexingTablePositioningTime
@@ -185,14 +137,8 @@ function HardFacing(props) {
         obj.efficiencyPercentage = value.efficiencyPercentage
         obj.partsPerHour = dataToSend.partsPerHour
         obj.processCost = dataToSend.processCost
-
-
-
         obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
-
-
-
 
         dispatch(saveProcessCostCalculationData(obj, res => {
             if (res.data.Result) {
@@ -308,8 +254,6 @@ function HardFacing(props) {
 
                                         <Col md="4">
 
-
-
                                             <TextFieldHookForm
                                                 label={`Depth Of Cut (mm)`}
                                                 name={'doc'}
@@ -363,8 +307,6 @@ function HardFacing(props) {
                                         </Col>
                                         <Col md="4">
 
-
-
                                             <TextFieldHookForm
                                                 label="Spindle Speed"
                                                 name={'spindleSpeed'}
@@ -390,8 +332,6 @@ function HardFacing(props) {
                                     <Row className={'mt15'}>
                                         <Col md="4">
 
-
-
                                             <TextFieldHookForm
                                                 label={`Feed`}
                                                 name={'feed'}
@@ -399,15 +339,6 @@ function HardFacing(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                // rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //         //value: /^[0-9]*$/i,
-                                                //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //         message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                // }}
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -426,8 +357,6 @@ function HardFacing(props) {
                                         </Col>
                                         <Col md="4">
 
-
-
                                             <TextFieldHookForm
                                                 label={`No of Pass`}
                                                 name={'noOfPass'}
@@ -445,8 +374,6 @@ function HardFacing(props) {
                                         </Col>
                                         <Col md="4">
 
-
-
                                             <TextFieldHookForm
                                                 label={`Cutting Time (mins)`}
                                                 name={'cuttingTime'}
@@ -462,9 +389,6 @@ function HardFacing(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-
-
-
 
                                     </Row>
                                 </Col>
@@ -516,7 +440,6 @@ function HardFacing(props) {
                                                     },
 
                                                 }}
-                                                // handleChange={onClampingPercantageChange}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
