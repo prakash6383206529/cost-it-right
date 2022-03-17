@@ -382,8 +382,10 @@ class BOPDomesticListing extends Component {
                 {(this.state.isLoader && !this.props.isMasterSummaryDrawer) && <LoaderCustom />}
                 < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className={`mt-4 filter-row-large  ${this.props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
-
-                        <Col md="6" lg="6" className="search-user-block mb-3">
+                        <Col md="6" lg="6">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md="6" lg="6" className="mb-2">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {this.state.shown ? (
@@ -444,9 +446,7 @@ class BOPDomesticListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper height-width-wrapper ${this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0 ? "overlay-contain" : ""}`}>
-                            <div className={`ag-grid-header  ${this.props.isSimulation ? 'zindex-0 ' : ''}`}>
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
+
                             <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
