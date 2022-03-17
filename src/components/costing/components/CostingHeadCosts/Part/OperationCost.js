@@ -21,7 +21,6 @@ function OperationCost(props) {
   });
 
   const dispatch = useDispatch()
-
   const [gridData, setGridData] = useState(props.data ? props.data : [])
   const [OldGridData, setOldGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
@@ -29,9 +28,7 @@ function OperationCost(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [remarkPopUpData, setRemarkPopUpData] = useState("")
-
   const CostingViewMode = useContext(ViewCostingContext);
-
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate } = useSelector(state => state.costing)
 
@@ -387,7 +384,6 @@ function OperationCost(props) {
                             <td>
                               {!CostingViewMode && <button className="Edit  mr-2 " type={'button'} onClick={() => editItem(index)} />}
                               {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
-
                               <Popup trigger={<button id={`popUpTriggerss${index}`} className="Comment-box ml-2" type={'button'} />}
                                 position="top center">
                                 <TextAreaHookForm
@@ -398,14 +394,11 @@ function OperationCost(props) {
                                   register={register}
                                   mandatory={false}
                                   rules={{
-
-
                                     maxLength: {
                                       value: 75,
                                       message: "Remark should be less than 75 word"
                                     },
                                   }}
-
                                   handleChange={(e) => { }}
                                   defaultValue={item.Remark ?? item.Remark}
                                   className=""
@@ -421,9 +414,7 @@ function OperationCost(props) {
                                     <button className='reset' onClick={() => onRemarkPopUpClose(index)} > <div className='cancel-icon'></div></button>
                                   </Col>
                                 </Row>
-
                               </Popup>
-
                             </td>
                           </tr>
                       )
