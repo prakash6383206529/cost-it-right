@@ -559,16 +559,16 @@ function ApproveRejectDrawer(props) {
                   // Quantity: quantity
                 })
               })
-              let simObj = {
-                LoggedInUserId: loggedInUserId(),
-                Request: temp
-              }
-              dispatch(approvalPushedOnSap(simObj, res => {
-                if (res && res.status && (res.status === 200 || res.status === 204)) {
-                  Toaster.success('Approval pushed successfully.')
-                }
-              }))
-              
+              // let simObj = {
+              //   LoggedInUserId: loggedInUserId(),
+              //   Request: temp
+              // }
+              // dispatch(approvalPushedOnSap(simObj, res => {
+              //   if (res && res.status && (res.status === 200 || res.status === 204)) {
+              //     Toaster.success('Approval pushed successfully.')
+              //   }
+              // }))
+
               props.closeDrawer('', 'Push')
             } else {
               Toaster.success(IsFinalLevel ? 'The simulation token has been approved' : 'The simulation token has been sent to next level for approval')
