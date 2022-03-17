@@ -727,7 +727,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="Technology" filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn>
                                 <AgGridColumn field="OperationName" headerName="Operation Name"></AgGridColumn>
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="Plants" headerName="Plant(Code)" cellRenderer={'renderPlantFormatter'} ></AgGridColumn>
+                                <AgGridColumn field="Plants" headerName="Plant(Code)" ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor(Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="UnitOfMeasurement" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'hyphenFormatter'}></AgGridColumn>
