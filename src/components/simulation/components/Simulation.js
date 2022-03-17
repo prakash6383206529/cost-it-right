@@ -89,9 +89,11 @@ function Simulation(props) {
     const technologySelectList = useSelector(state => state.costing.technologySelectList)
     const exchangeRateDataList = useSelector(state => state.exchangeRate.exchangeRateDataList)
 
-    // useEffect(() => {
-    //     editTable()
-    // }, [rmDomesticListing, rmImportListing])
+    useEffect(() => {
+        if (technology && (technology?.value !== undefined && technology?.value !== '')) {
+            setShowTokenDropdown(true)
+        }
+    }, [technology])
 
     const handleMasterChange = (value) => {
         dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
@@ -825,7 +827,7 @@ function Simulation(props) {
                                 </div>
                             }
 
-                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn' onClick={callAPIOnClick}>
+                            {(token?.length !== 0 && token !== null && tokenCheckBox) && <button className='user-btn ml-2' onClick={callAPIOnClick}>
                                 <div className='save-icon'></div>
                             </button>}
                         </Col>
