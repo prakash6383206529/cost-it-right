@@ -312,37 +312,34 @@ function OverheadSimulation(props) {
                 Toaster.warning(`Please fill all values RM, CC and BOP or Overhead Percentage`);
                 stopflow = true
             }
+            if (item.OverheadApplicabilityType === item.NewOverheadApplicabilityType || item?.NewOverheadApplicabilityType === undefined) {
+                OverheadApplicabilityTypeCount = OverheadApplicabilityTypeCount + 1
+            }
+
+            if ((String(item.NewOverheadPercentage) !== '' ? String(item.OverheadPercentage) === String(item.NewOverheadPercentage) : true) || item?.NewOverheadPercentage === undefined
+                || item?.NewOverheadPercentage === null || item?.NewOverheadPercentage === '') {
+                OverheadPercentageCount = OverheadPercentageCount + 1
+            }
+            if (String(item.OverheadRMPercentage) === String(item.NewOverheadRMPercentage) || item?.NewOverheadRMPercentage === undefined
+                || item?.NewOverheadRMPercentage === null || item?.NewOverheadRMPercentage === '') {
+                OverheadRMPercentageCount = OverheadRMPercentageCount + 1
+            }
+            if (String(item.OverheadMachiningCCPercentage) === String(item.NewOverheadMachiningCCPercentage) || item?.NewOverheadMachiningCCPercentage === undefined
+                || item?.NewOverheadMachiningCCPercentage === null || item?.NewOverheadMachiningCCPercentage === '') {
+                OverheadMachiningCCPercentageCount = OverheadMachiningCCPercentageCount + 1
+            }
+
+            if (String(item.OverheadBOPPercentage) === String(item.NewOverheadBOPPercentage) || item?.NewOverheadBOPPercentage === undefined
+                || item?.NewOverheadBOPPercentage === null || item?.NewOverheadBOPPercentage === '') {
+                OverheadBOPPercentageCount = OverheadBOPPercentageCount + 1
+            }
+            return null;
         })
         if (stopflow) {
             return false
         }
 
         //CHECK IF THERE IS NO CHANGE IN THE TABLE
-        list && list.map((li) => {
-
-            if (li.OverheadApplicabilityType === li.NewOverheadApplicabilityType || li?.NewOverheadApplicabilityType === undefined) {
-                OverheadApplicabilityTypeCount = OverheadApplicabilityTypeCount + 1
-            }
-
-            if ((String(li.NewOverheadPercentage) !== '' ? String(li.OverheadPercentage) === String(li.NewOverheadPercentage) : true) || li?.NewOverheadPercentage === undefined
-                || li?.NewOverheadPercentage === null || li?.NewOverheadPercentage === '') {
-                OverheadPercentageCount = OverheadPercentageCount + 1
-            }
-            if (String(li.OverheadRMPercentage) === String(li.NewOverheadRMPercentage) || li?.NewOverheadRMPercentage === undefined
-                || li?.NewOverheadRMPercentage === null || li?.NewOverheadRMPercentage === '') {
-                OverheadRMPercentageCount = OverheadRMPercentageCount + 1
-            }
-            if (String(li.OverheadMachiningCCPercentage) === String(li.NewOverheadMachiningCCPercentage) || li?.NewOverheadMachiningCCPercentage === undefined
-                || li?.NewOverheadMachiningCCPercentage === null || li?.NewOverheadMachiningCCPercentage === '') {
-                OverheadMachiningCCPercentageCount = OverheadMachiningCCPercentageCount + 1
-            }
-
-            if (String(li.OverheadBOPPercentage) === String(li.NewOverheadBOPPercentage) || li?.NewOverheadBOPPercentage === undefined
-                || li?.NewOverheadBOPPercentage === null || li?.NewOverheadBOPPercentage === '') {
-                OverheadBOPPercentageCount = OverheadBOPPercentageCount + 1
-            }
-            return null;
-        })
 
         if (OverheadApplicabilityTypeCount === list.length && OverheadPercentageCount === list.length &&
             OverheadRMPercentageCount === list.length && OverheadMachiningCCPercentageCount === list.length &&
@@ -682,21 +679,21 @@ function OverheadSimulation(props) {
         };
     }
 
-    const EditableCallbackForBOP = (props) => {
+    const EditableCallback = (props, fieldName) => {
         const rowData = props?.data;
         let value = false
         const index = props?.node?.rowIndex
         switch (list[index]?.NewOverheadApplicabilityType) {
             case 'RM':
-                value = false
+                value = fieldName === 'RM' ? true : false
                 return value
 
             case 'CC':
-                value = false
+                value = fieldName === 'CC' ? true : false
                 return value
 
             case 'BOP':
-                value = true
+                value = fieldName === 'BOP' ? true : false
                 return value
 
             case 'Fixed':
@@ -704,7 +701,11 @@ function OverheadSimulation(props) {
                 return value
 
             case 'RM + CC':
-                value = false
+                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
+                    value = false
+                } else {
+                    value = true
+                }
                 return value
 
             case 'RM + BOP':
@@ -721,112 +722,6 @@ function OverheadSimulation(props) {
                 } else {
                     value = true
                 }
-                return value
-
-            case 'RM + CC + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
-                    value = false
-                } else {
-                    value = true
-                }
-                return value
-
-            default:
-                return 'foo';
-        }
-    }
-
-    const EditableCallbackForCC = (props) => {
-        const rowData = props?.data;
-        let value = false
-        const index = props?.node?.rowIndex
-        switch (list[index]?.NewOverheadApplicabilityType) {
-            case 'RM':
-                value = false
-                return value
-
-            case 'CC':
-                value = true
-                return value
-
-            case 'BOP':
-                value = false
-                return value
-
-            case 'Fixed':
-                value = false
-                return value
-
-            case 'RM + CC':
-                if (rowData.NewOverheadPercentage && (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ')) {
-                    value = false
-                } else {
-                    value = true
-                }
-                return value
-            case 'RM + BOP':
-                value = false
-                return value
-
-            case 'BOP + CC':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
-                    value = false
-                } else {
-                    value = true
-                }
-                return value
-
-            case 'RM + CC + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
-                    value = false
-                } else {
-                    value = true
-                }
-                return value
-
-            default:
-                return 'foo';
-        }
-    }
-
-    const EditableCallbackForRM = (props) => {
-        const rowData = props?.data;
-        let value = false
-        const index = props?.node?.rowIndex
-        switch (list[index]?.NewOverheadApplicabilityType) {
-            case 'RM':
-                value = true
-
-                return value
-            case 'CC':
-                value = false
-
-                return value
-            case 'BOP':
-                value = false
-
-                return value
-            case 'Fixed':
-                value = false
-
-                return value
-            case 'RM + CC':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
-                    value = false
-                } else {
-                    value = true
-                }
-                return value
-            case 'RM + BOP':
-                if (rowData.NewOverheadPercentage !== null && rowData.NewOverheadPercentage !== undefined && rowData.NewOverheadPercentage !== '' && rowData.NewOverheadPercentage !== ' ') {
-                    value = false
-                } else {
-                    value = true
-                }
-                return value
-
-            case 'BOP + CC':
-                value = false
                 return value
 
             case 'RM + CC + BOP':
@@ -986,9 +881,7 @@ function OverheadSimulation(props) {
         cellEditorSelector: cellEditorSelector,
         applicabilityCellEditor: applicabilityCellEditor,
         onCellValueChanged: onCellValueChanged,
-        EditableCallbackForBOP: EditableCallbackForBOP,
-        EditableCallbackForCC: EditableCallbackForCC,
-        EditableCallbackForRM: EditableCallbackForRM,
+        EditableCallback: EditableCallback,
         EditableCallbackForOP: EditableCallbackForOP,
         oldOverheadApplicabilityTypeFormatter: oldOverheadApplicabilityTypeFormatter,
         newOverheadBOPPercentageFormatter: newOverheadBOPPercentageFormatter,
@@ -1055,20 +948,20 @@ function OverheadSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead BOP Percentage" marryChildren={true} >
                                                 <AgGridColumn width={120} field="OverheadBOPPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadBOPPercentageFormatter' colId="OverheadBOPPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadBOPPercentageFormatter' field="NewOverheadBOPPercentage" headerName="New" colId='NewOverheadBOPPercentage' editable={EditableCallbackForBOP}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadBOPPercentageFormatter' field="NewOverheadBOPPercentage" headerName="New" colId='NewOverheadBOPPercentage' editable={(props) => EditableCallback(props, 'BOP')}></AgGridColumn>
                                             </AgGridColumn>
-                                            {/* <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" minWidth={190} editable={EditableCallbackForBOP} ></AgGridColumn> */}
+                                            {/* <AgGridColumn field="OverheadBOPPercentage" headerName="Overhead BOP Percentage" minWidth={190} editable={EditableCallback} ></AgGridColumn> */}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead Machining CC Percentage" marryChildren={true} >
                                                 <AgGridColumn width={120} field="OverheadMachiningCCPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadMachiningCCPercentageFormatter' colId="OverheadMachiningCCPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadMachiningCCPercentageFormatter' field="NewOverheadMachiningCCPercentage" headerName="New" colId='NewOverheadMachiningCCPercentage' editable={EditableCallbackForCC}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadMachiningCCPercentageFormatter' field="NewOverheadMachiningCCPercentage" headerName="New" colId='NewOverheadMachiningCCPercentage' editable={(props) => EditableCallback(props, 'CC')}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadMachiningCCPercentage" headerName="Overhead Machining CC Percentage" editable={EditableCallbackForCC} minWidth={190}></AgGridColumn> */}
 
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead RM Percentage" marryChildren={true} >
                                                 <AgGridColumn width={120} field="OverheadRMPercentage" editable='false' headerName="Old" cellRenderer='oldOverheadRMPercentageFormatter' colId="OverheadRMPercentage"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newOverheadRMPercentageFormatter' field="NewOverheadRMPercentage" headerName="New" colId='NewOverheadRMPercentage' editable={EditableCallbackForRM}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newOverheadRMPercentageFormatter' field="NewOverheadRMPercentage" headerName="New" colId='NewOverheadRMPercentage' editable={(props) => EditableCallback(props, 'RM')}></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadRMPercentage" headerName="Overhead RM Percentage" minWidth={190} editable={EditableCallbackForRM} ></AgGridColumn> */}
 
