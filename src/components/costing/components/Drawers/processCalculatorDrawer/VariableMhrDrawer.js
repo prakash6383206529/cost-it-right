@@ -198,7 +198,6 @@ function VariableMhrDrawer(props) {
             )
 
 
-
         }
       } else {
 
@@ -213,9 +212,6 @@ function VariableMhrDrawer(props) {
           />
         )
       }
-
-
-
 
 
     }
