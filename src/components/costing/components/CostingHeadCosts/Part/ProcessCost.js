@@ -175,15 +175,12 @@ function ProcessCost(props) {
     setIsOpen(!isOpen)
   }
 
-
   const onRemarkPopUpClickk = (index) => {
     setRemarkPopUpData(getValues(`${ProcessGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
-
     tempData = {
       ...tempData,
-
       Remark: getValues(`${ProcessGridFields}.${index}.remarkPopUp`)
     }
     tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -192,20 +189,16 @@ function ProcessCost(props) {
     if (getValues(`${ProcessGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
-
     setTabData(tempArr)
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
 
   }
 
-
   const onRemarkPopUpClosee = (index) => {
     var button = document.getElementById(`popUpTriggers${index}`)
     button.click()
   }
-
-
 
   useEffect(() => {
     dispatch(setIsToolCostUsed(isOpen))

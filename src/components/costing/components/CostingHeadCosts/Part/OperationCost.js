@@ -116,13 +116,10 @@ function OperationCost(props) {
     })
   }
 
-
   const onRemarkPopUpClick = (index) => {
-
     setRemarkPopUpData(getValues(`${OperationGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
-
     tempData = {
       ...tempData,
 
@@ -134,25 +131,15 @@ function OperationCost(props) {
     if (getValues(`${OperationGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
-
-
     setGridData(tempArr)
-
     var button = document.getElementById(`popUpTriggerss${index}`)
     button.click()
-
-
   }
-
 
   const onRemarkPopUpClose = (index) => {
-
     var button = document.getElementById(`popUpTriggerss${index}`)
     button.click()
   }
-
-
-
 
   const deleteItem = (index, OperationId) => {
     let tempArr = gridData && gridData.filter((el, i) => {
