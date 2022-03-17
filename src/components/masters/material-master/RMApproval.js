@@ -322,7 +322,7 @@ function RMApproval(props) {
     };
 
     const isRowSelectable = (rowNode) => {
-        if (rowNode?.data?.Status === DRAFT || rowNode?.data?.Status === PENDING) {
+        if (rowNode?.data?.Status === DRAFT) {
             return true;
         } else {
             return false
