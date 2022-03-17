@@ -102,16 +102,12 @@ function OperationCostExcludedOverhead(props) {
     setDrawerOpen(false)
   }
 
-
   const onRemarkPopUpClick = (index) => {
-
     setRemarkPopUpData(getValues(`${OperationGridFields}.${index}.remarkPopUp`))
     let tempArr = []
     let tempData = gridData[index]
-
     tempData = {
       ...tempData,
-
       Remark: getValues(`${OperationGridFields}.${index}.remarkPopUp`)
     }
     tempArr = Object.assign([...gridData], { [index]: tempData })
@@ -120,24 +116,15 @@ function OperationCostExcludedOverhead(props) {
     if (getValues(`${OperationGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
-
-
     setGridData(tempArr)
-
     var button = document.getElementById(`popUppTriggerss${index}`)
     button.click()
-
-
   }
-
 
   const onRemarkPopUpClose = (index) => {
-
     var button = document.getElementById(`popUppTriggerss${index}`)
     button.click()
   }
-
-
 
   /**
   * @method selectedIds
