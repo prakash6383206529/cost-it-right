@@ -185,13 +185,13 @@ function BDSimulation(props) {
     const NewcostFormatter = (props) => {
         const row = props?.data;
         if (isImpactedMaster) {
-            return row.NewNetBoughtOutPartCost
+            return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
             const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
             const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}            </span> : ''
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
         }
     }
@@ -199,7 +199,7 @@ function BDSimulation(props) {
     const OldcostFormatter = (props) => {
         const row = props?.data;
         if (isImpactedMaster) {
-            return row.OldNetBoughtOutPartCost
+            return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
 
