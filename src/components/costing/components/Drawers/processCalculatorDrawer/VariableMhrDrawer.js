@@ -121,14 +121,8 @@ function VariableMhrDrawer(props) {
           )
 
       }
-
-
     }
-
   }
-
-
-
 
   return (
     <div>

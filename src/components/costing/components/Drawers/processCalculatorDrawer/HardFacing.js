@@ -34,7 +34,6 @@ function HardFacing(props) {
         efficiencyPercentage: WeightCalculatorRequest && WeightCalculatorRequest.efficiencyPercentage !== undefined ? WeightCalculatorRequest.efficiencyPercentage : '',
         partsPerHour: WeightCalculatorRequest && WeightCalculatorRequest.partsPerHour !== undefined ? WeightCalculatorRequest.partsPerHour : '',
         processCost: WeightCalculatorRequest && WeightCalculatorRequest.processCost !== undefined ? WeightCalculatorRequest.processCost : '',
-
     }
     const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -43,7 +42,7 @@ function HardFacing(props) {
     })
     const fieldValues = useWatch({
         control,
-        name: ['startDiameter', 'endDiameter', 'facingStock', 'doc', 'cuttingSpeed', 'feed', '/noOfPasses', 'chipToChipTiming', 'totalNonCuttingTime', 'indexingTablePositioningTime', 'loadingAndUnloadingTime', 'efficiencyPercentage', 'doc', 'cuttingSpeed', 'toothFeed', 'clampingPercentage', 'toothNo'],
+        name: ['startDiameter', 'endDiameter', 'facingStock', 'doc', 'cuttingSpeed', 'feed', 'chipToChipTiming', 'totalNonCuttingTime', 'indexingTablePositioningTime', 'loadingAndUnloadingTime', 'efficiencyPercentage', 'doc', 'cuttingSpeed', 'toothFeed', 'clampingPercentage', 'toothNo'],
     })
 
     useEffect(() => {
@@ -52,11 +51,9 @@ function HardFacing(props) {
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
 
-
     const trim = getConfigurationKey().NoOfDecimalForInputOutput
     const { technology, process, calculateMachineTime } = props
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
-
 
     const setSpindleSpeed = () => {
         const cuttingSpeed = Number(getValues('cuttingSpeed'))
@@ -73,7 +70,6 @@ function HardFacing(props) {
         setValue('cuttingTime', checkForDecimalAndNull(1, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
-
     const setTotalCycleTimeMins = () => {
         const chipToChipTiming = Number(getValues('chipToChipTiming'))
         const totalNonCuttingTime = Number(getValues('totalNonCuttingTime'))
@@ -87,7 +83,6 @@ function HardFacing(props) {
         setValue('totalCycleTimeSec', checkForDecimalAndNull(totalCycleTimeSec, getConfigurationKey().NoOfDecimalForInputOutput))
     }
 
-
     const setPartsPerHour = () => {
         const efficiencyPercentage = Number(getValues('efficiencyPercentage'))
         const partsPerHour = (3600 / checkForNull(dataToSend.totalCycleTimeSec)) * (checkForNull(efficiencyPercentage) / 100)
@@ -97,7 +92,6 @@ function HardFacing(props) {
         setDataToSend(prevState => ({ ...prevState, processCost: processCost }))
         setValue('processCost', checkForDecimalAndNull(processCost, getConfigurationKey().NoOfDecimalForInputOutput))
     }
-
 
     const onSubmit = (value) => {
         let obj = {}
@@ -139,7 +133,6 @@ function HardFacing(props) {
         obj.processCost = dataToSend.processCost
         obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
-
         dispatch(saveProcessCostCalculationData(obj, res => {
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
@@ -164,9 +157,8 @@ function HardFacing(props) {
                                 <Col md="12">
                                     <Row className={'mt15'}>
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Start Diameter (mm)`}
+                                                label={`Start Diameter(mm)`}
                                                 name={'startDiameter'}
                                                 Controller={Controller}
                                                 control={control}
@@ -176,7 +168,6 @@ function HardFacing(props) {
                                                     required: true,
                                                     pattern: {
                                                         value: /^[0-9]*$/i,
-                                                        // value: /^[0-9]\d*(\.\d+)?$/i,
                                                         message: 'Invalid Number.',
                                                     },
                                                     maxLength: 4,
@@ -190,11 +181,9 @@ function HardFacing(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`End Diameter (mm)`}
+                                                label={`End Diameter(mm)`}
                                                 name={'endDiameter'}
                                                 Controller={Controller}
                                                 control={control}
@@ -206,7 +195,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -217,10 +205,7 @@ function HardFacing(props) {
                                             />
                                         </Col>
 
-
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Facing Stock`}
                                                 name={'facingStock'}
@@ -234,9 +219,7 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
-                                                //handleChange={onWidthChange}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -244,18 +227,13 @@ function HardFacing(props) {
                                                 errors={errors.facingStock}
                                                 disabled={false}
                                             />
-
-
                                         </Col>
-
                                     </Row>
 
                                     <Row>
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Depth Of Cut (mm)`}
+                                                label={`Depth Of Cut(mm)`}
                                                 name={'doc'}
                                                 Controller={Controller}
                                                 control={control}
@@ -267,7 +245,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -276,14 +253,11 @@ function HardFacing(props) {
                                                 errors={errors.doc}
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
-
-
                                         </Col>
+
                                         <Col md="4">
-
-
                                             <TextFieldHookForm
-                                                label={`Cutting Speed (m/min)`}
+                                                label={`Cutting Speed(m/min)`}
                                                 name={'cuttingSpeed'}
                                                 Controller={Controller}
                                                 control={control}
@@ -295,7 +269,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -305,8 +278,8 @@ function HardFacing(props) {
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
                                                 label="Spindle Speed"
                                                 name={'spindleSpeed'}
@@ -326,12 +299,11 @@ function HardFacing(props) {
                                 </Col>
 
                                 <Col md="12 mt-25">
-                                    {/* <div className="left-border">{'Speed:'}</div> */}
                                 </Col>
                                 <Col md="12">
                                     <Row className={'mt15'}>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
                                                 label={`Feed`}
                                                 name={'feed'}
@@ -345,7 +317,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -355,8 +326,8 @@ function HardFacing(props) {
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
                                                 label={`No of Pass`}
                                                 name={'noOfPass'}
@@ -372,10 +343,10 @@ function HardFacing(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Cutting Time (mins)`}
+                                                label={`Cutting Time(min)`}
                                                 name={'cuttingTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -389,7 +360,6 @@ function HardFacing(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-
                                     </Row>
                                 </Col>
 
@@ -398,10 +368,10 @@ function HardFacing(props) {
                                 </Col>
                                 <Col md="12">
                                     <Row className={'mt15'}>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Chip to Chip Timing (mins)`}
+                                                label={`Chip to Chip Timing(min)`}
                                                 name={'chipToChipTiming'}
                                                 Controller={Controller}
                                                 control={control}
@@ -414,7 +384,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 defaultValue={''}
                                                 className=""
@@ -423,10 +392,10 @@ function HardFacing(props) {
                                                 disabled={false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Tool non cutting time (mins)`}
+                                                label={`Tool non cutting time(min)`}
                                                 name={'totalNonCuttingTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -438,7 +407,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -448,10 +416,10 @@ function HardFacing(props) {
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Indexing table positioning time (mins)`}
+                                                label={`Indexing table positioning time(min)`}
                                                 name={'indexingTablePositioningTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -464,7 +432,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 defaultValue={''}
                                                 className=""
@@ -475,9 +442,8 @@ function HardFacing(props) {
                                         </Col>
 
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Loading & Unloading (mins)`}
+                                                label={`Loading & Unloading(min)`}
                                                 name={'loadingAndUnloadingTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -490,7 +456,6 @@ function HardFacing(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 defaultValue={''}
                                                 className=""
@@ -500,11 +465,9 @@ function HardFacing(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Total Cycle Time (mins)`}
+                                                label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
                                                 Controller={Controller}
                                                 control={control}
@@ -519,11 +482,7 @@ function HardFacing(props) {
                                             />
                                         </Col>
 
-
-
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Total Cycle Time (sec)`}
                                                 name={'totalCycleTimeSec'}
@@ -540,11 +499,9 @@ function HardFacing(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Efficiency (Percentage)`}
+                                                label={`Efficiency(%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
                                                 control={control}
@@ -557,7 +514,6 @@ function HardFacing(props) {
                                                         value: /^\d*\.?\d*$/,
                                                         message: 'Invalid Number.'
                                                     },
-
                                                     max: {
                                                         value: 100,
                                                         message: "Should not be greater than 100"
@@ -571,11 +527,7 @@ function HardFacing(props) {
                                             />
                                         </Col>
 
-
-
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Parts per hour`}
                                                 name={'partsPerHour'}
@@ -592,9 +544,7 @@ function HardFacing(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Process Cost`}
                                                 name={'processCost'}
@@ -610,10 +560,8 @@ function HardFacing(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-
                                     </Row>
                                 </Col>
-
                             </div>
                         </Col>
                         <div className="mt25 col-md-12 text-right">
