@@ -361,7 +361,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
