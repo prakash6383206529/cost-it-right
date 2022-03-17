@@ -12,9 +12,7 @@ import Toaster from '../../../../common/Toaster'
 function UomTimeProcessDefaultCalculator(props) {
     const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
     const costData = useContext(costingInfoContext);
-
     const dispatch = useDispatch()
-
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
 
     const defaultValues = {
@@ -53,16 +51,13 @@ function UomTimeProcessDefaultCalculator(props) {
         setSpindleSpeed()
         setFeed()
         setTotalLengthDepth()
-
         setTotalCycleTimeMins()   //totalCycleTimeMins
         setPartsPerHour()    //partsPerHour
     }, [fieldValues])
 
-
     const trim = getConfigurationKey().NoOfDecimalForInputOutput
     const { technology, process, calculateMachineTime } = props
     const [totalMachiningTime, setTotalMachiningTime] = useState(WeightCalculatorRequest && WeightCalculatorRequest.TotalMachiningTime !== undefined ? WeightCalculatorRequest.TotalMachiningTime : '')
-
 
     const setSpindleSpeed = () => {
         const cuttingDiameter = Number(getValues('cuttingDiameter'))
@@ -89,7 +84,6 @@ function UomTimeProcessDefaultCalculator(props) {
         const cuttingTimeMins = totalLengthDepth / checkForNull(dataToSend.feed);
         setDataToSend(prevState => ({ ...prevState, cuttingTimeMins: cuttingTimeMins }))
         setValue('cuttingTimeMins', checkForDecimalAndNull(cuttingTimeMins, getConfigurationKey().NoOfDecimalForInputOutput))
-
     }
 
     const setTotalCycleTimeMins = () => {
@@ -158,7 +152,6 @@ function UomTimeProcessDefaultCalculator(props) {
         obj.processCost = dataToSend.processCost
         obj.TotalMachiningTime = totalMachiningTime
         obj.MachineRate = props.calculatorData.MHR
-
         dispatch(saveProcessCostCalculationData(obj, res => {
             if (res.data.Result) {
                 obj.ProcessCalculationId = res.data.Identity
@@ -182,8 +175,8 @@ function UomTimeProcessDefaultCalculator(props) {
                                 </Col>
                                 <Col md="12">
                                     <Row className={'mt15'}>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
                                                 label={`Cutting Diameter(mm)`}
                                                 name={'cuttingDiameter'}
@@ -197,7 +190,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -208,11 +200,9 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Cutting Speed (m/min)`}
+                                                label={`Cutting Speed(m/min)`}
                                                 name={'cuttingSpeed'}
                                                 Controller={Controller}
                                                 control={control}
@@ -224,7 +214,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -235,10 +224,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
 
-
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Spindle Speed`}
                                                 name={'spindleSpeed'}
@@ -253,7 +239,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^[0-9]\d*(\.\d+)?$/i,
                                                         message: 'Invalid Number.',
                                                     },
-                                                    // maxLength: 4,
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -262,14 +247,10 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 errors={errors.spindleSpeed}
                                                 disabled={true}
                                             />
-
-
                                         </Col>
-
                                     </Row>
 
                                     <Row>
-
                                         <Col md="4">
                                             <TextFieldHookForm
                                                 label={`Feed Per tooth`}
@@ -284,7 +265,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -293,11 +273,9 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 errors={errors.feedPerTooth}
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
-
-
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
                                                 label={`No of Tooth`}
                                                 name={'noOfTooth'}
@@ -311,7 +289,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -321,8 +298,8 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
                                                 label="Feed"
                                                 name={'feedAutoCalculated'}
@@ -342,14 +319,13 @@ function UomTimeProcessDefaultCalculator(props) {
                                 </Col>
 
                                 <Col md="12 mt-25">
-                                    {/* <div className="left-border">{'Speed:'}</div> */}
                                 </Col>
                                 <Col md="12">
                                     <Row className={'mt15'}>
                                         <Col md="4">
 
                                             <TextFieldHookForm
-                                                label={`Depth of Cut (mm)`}
+                                                label={`Depth of Cut(mm)`}
                                                 name={'doc'}
                                                 Controller={Controller}
                                                 control={control}
@@ -361,7 +337,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -371,16 +346,15 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Length / Depth`}
+                                                label={`Length/Depth`}
                                                 name={'lengthDepth'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
                                                 mandatory={true}
-
                                                 rules={{
                                                     required: true,
                                                     pattern: {
@@ -398,9 +372,8 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`No of passes / Holes`}
+                                                label={`No of passes/Holes`}
                                                 name={'noOfPasses'}
                                                 Controller={Controller}
                                                 control={control}
@@ -412,7 +385,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -422,10 +394,10 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Total Length / Depth`}
+                                                label={`Total Length/Depth`}
                                                 name={'totalLengthDepth'}
                                                 Controller={Controller}
                                                 control={control}
@@ -437,7 +409,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^[0-9]\d*(\.\d+)?$/i,
                                                         message: 'Invalid Number.',
                                                     },
-                                                    // maxLength: 4,
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -447,10 +418,10 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Cutting Time (mins)`}
+                                                label={`Cutting Time(min)`}
                                                 name={'cuttingTimeMins'}
                                                 Controller={Controller}
                                                 control={control}
@@ -464,7 +435,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-
                                     </Row>
                                 </Col>
 
@@ -474,9 +444,8 @@ function UomTimeProcessDefaultCalculator(props) {
                                 <Col md="12">
                                     <Row className={'mt15'}>
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Chip to Chip Timing (mins)`}
+                                                label={`Chip to Chip Timing(min)`}
                                                 name={'chipToChipTiming'}
                                                 Controller={Controller}
                                                 control={control}
@@ -487,7 +456,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 mandatory={false}
                                                 handleChange={() => { }}
@@ -498,10 +466,10 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Tool non cutting time (mins)`}
+                                                label={`Tool non cutting time(min)`}
                                                 name={'totalNonCuttingTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -513,7 +481,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -523,10 +490,10 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={props.CostingViewMode ? true : false}
                                             />
                                         </Col>
-                                        <Col md="4">
 
+                                        <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Indexing table positioning time (mins)`}
+                                                label={`Indexing table positioning time(min)`}
                                                 name={'indexingTablePositioningTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -538,7 +505,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -550,9 +516,8 @@ function UomTimeProcessDefaultCalculator(props) {
                                         </Col>
 
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Loading & Unloading (mins)`}
+                                                label={`Loading & Unloading(min)`}
                                                 name={'loadingAndUnloadingTime'}
                                                 Controller={Controller}
                                                 control={control}
@@ -564,7 +529,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d{0,4}(\.\d{0,7})?$/i,
                                                         message: 'Maximum length for interger is 4 and for decimal is 7',
                                                     },
-
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -575,10 +539,9 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Total Cycle Time (mins)`}
+                                                label={`Total Cycle Time(min)`}
                                                 name={'totalCycleTimeMins'}
                                                 Controller={Controller}
                                                 control={control}
@@ -593,11 +556,9 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
 
-
-
                                         <Col md="4">
                                             <TextFieldHookForm
-                                                label={`Total Cycle Time (sec)`}
+                                                label={`Total Cycle Time(sec)`}
                                                 name={'totalCycleTimeSec'}
                                                 Controller={Controller}
                                                 control={control}
@@ -612,11 +573,9 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
-                                                label={`Efficiency (Percentage)`}
+                                                label={`Efficiency(%)`}
                                                 name={'efficiencyPercentage'}
                                                 Controller={Controller}
                                                 control={control}
@@ -627,7 +586,6 @@ function UomTimeProcessDefaultCalculator(props) {
                                                         value: /^\d*\.?\d*$/,
                                                         message: 'Invalid Number.'
                                                     },
-
                                                     max: {
                                                         value: 100,
                                                         message: "Should not be greater than 100"
@@ -643,11 +601,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
 
-
-
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Parts per hour`}
                                                 name={'partsPerHour'}
@@ -664,9 +618,7 @@ function UomTimeProcessDefaultCalculator(props) {
                                             />
                                         </Col>
 
-
                                         <Col md="4">
-
                                             <TextFieldHookForm
                                                 label={`Process Cost`}
                                                 name={'processCost'}
@@ -682,10 +634,8 @@ function UomTimeProcessDefaultCalculator(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-
                                     </Row>
                                 </Col>
-
                             </div>
                         </Col>
                         <div className="mt25 col-md-12 text-right">
